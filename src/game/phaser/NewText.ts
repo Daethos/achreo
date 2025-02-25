@@ -63,6 +63,11 @@ export default class NewText {
             },
         };
         switch (key.toLowerCase()) {
+            case 'supertitle':
+                style.fontSize = 172;
+                style.strokeThickness = 8;
+                style.shadow.blur = 20;
+                break;
             case 'title':
                 style.fontSize = 112;
                 style.strokeThickness = 6;

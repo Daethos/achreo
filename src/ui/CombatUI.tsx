@@ -16,6 +16,7 @@ import { createHealthDisplay } from '../utility/health';
 import Settings from '../models/settings';
 import { Store } from 'solid-js/store';
 import { IRefPhaserGame } from '../game/PhaserGame';
+import { useResizeListener } from '../utility/dimensions';
 // import { CombatAttributes } from '../utility/combat';
 // import Equipment from '../models/equipment';
 // import Ascean, { initAscean } from '../models/ascean';
@@ -28,6 +29,7 @@ interface Props {
     grace: Accessor<number>;
 };
 export default function CombatUI({ instance, state, game, settings, stamina, grace }: Props) {
+    const dimensions = useResizeListener();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
@@ -55,8 +57,12 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             transition: 'background 0.5s ease-out',
         };
     };
+    const left = () => dimensions().WIDTH > 1200 ? '4.5vw' : '';
     const size = (len: number) => {
         switch (true) {
+            case len < 10 && dimensions().WIDTH > 1200: return '1.5em'; // 1.15em
+            case len < 20 && dimensions().WIDTH > 1200: return '1.3em'; // 1em
+            case len < 30 && dimensions().WIDTH > 1200: return '1.1em'; // 0.85em
             case len < 10: return '1.25em'; // 1.15em
             case len < 20: return '1.15em'; // 1em
             case len < 30: return '1em'; // 0.85em
@@ -65,6 +71,9 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     };
     const top = (len: number) => {
         switch (true) {
+            case len < 10 && dimensions().WIDTH > 1200: return '3vh'; // 1.15em
+            case len < 20 && dimensions().WIDTH > 1200: return '3.5vh'; // 1em
+            case len < 30 && dimensions().WIDTH > 1200: return '4vh'; // 0.85em
             case len < 10: return '1.5vh'; // -3%
             case len < 20: return '2vh'; // -2%
             case len < 30: return '2.5vh'; // -1%
@@ -91,7 +100,10 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             <div class='healthbarPosition' style={{ width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
             <div class='healthbarPosition' style={{ width: `${healthPercentage()}%`, 'background': state()?.isStealth ? 'linear-gradient(#000, #444)' : 'linear-gradient(gold, #fdf6d8)', transition: 'width 0.5s ease-out' }}></div>
         </div>
-        <p class='playerName' style={{ top: top(state().player?.name.length as number), 'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <p class='playerName' style={{
+            top: top(state().player?.name.length as number), 
+            'color': `${state().isStealth ? '#fdf6d8' : 'gold'}`, 'text-shadow': `0.1em 0.1em 0.1em ${state().isStealth ? '#444' : '#000'}`, 
+            'font-size': size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id='playerHealthbarBorder' src={'../assets/gui/player-healthbar.png'} alt="Health Bar" onClick={changeDisplay} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />

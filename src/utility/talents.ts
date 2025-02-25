@@ -26,6 +26,7 @@ export default class Talents {
         arc: Talent;
         berserk: Talent;
         blind: Talent;
+        blink: Talent;
         chiomic: Talent;
         caerenesis: Talent;
         chiomism: Talent;
@@ -87,7 +88,7 @@ export default class Talents {
         suture: Talent;
         tether: Talent;
         ward: Talent;
-        writhe: Talent;    
+        writhe: Talent;
     };
 
     constructor(id: string) {
@@ -109,6 +110,7 @@ export default class Talents {
             arc: initTalent,
             berserk: initTalent,
             blind: initTalent,
+            blink: initTalent,
             chiomic: initTalent,
             caerenesis: initTalent,
             chiomism: initTalent,
@@ -170,7 +172,7 @@ export default class Talents {
             suture: initTalent,
             tether: initTalent,
             ward: initTalent,
-            writhe: initTalent,    
+            writhe: initTalent,
         };
     
     };

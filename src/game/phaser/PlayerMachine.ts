@@ -642,7 +642,7 @@ export default class PlayerMachine {
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = this.scene.showCombatText('Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
             this.player.isCounterSpelling = true;
-            this.player.flickerCarenic(1000); 
+            this.player.flickerCaerenic(1000); 
             this.scene.time.delayedCall(1000, () => {
                 this.player.isCounterSpelling = false;
             }, undefined, this);
@@ -725,7 +725,7 @@ export default class PlayerMachine {
         if (this.player.hasMagic === true) {
             this.player.specialCombatText = this.scene.showCombatText('Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
             this.player.isCounterSpelling = true;
-            this.player.flickerCarenic(1000); 
+            this.player.flickerCaerenic(1000); 
             this.scene.time.delayedCall(1000, () => {
                 this.player.isCounterSpelling = false;
             }, undefined, this);
@@ -890,7 +890,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.ACHIRE, PLAYER.STAMINA.ACHIRE);
-            screenShake(this.scene, 90);
+            screenShake(this.scene, 96, 0.004);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -946,23 +946,30 @@ export default class PlayerMachine {
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
         this.player.castbar.setVisible(true); 
-        this.player.flickerCarenic(3000); 
+        this.player.flickerCaerenic(3000); 
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0]?.name}.`
         });
-        this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 2,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 500,
-            yoyo: true
-        });
+        // this.scene.tweens.add({
+        //     targets: this.scene.cameras.main,
+        //     zoom: this.scene.cameras.main.zoom * 2,
+        //     ease: Phaser.Math.Easing.Elastic.InOut,
+        //     duration: 500,
+        //     yoyo: true
+        // });
     };
     onArcUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isArcing);
         if (this.player.isArcing) this.player.castbar.update(dt, 'channel', 'DAMAGE');
         if (this.player.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.player.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
             this.player.isAttacking = true;
+            this.scene.tweens.add({
+                targets: this.player,
+                scale: 1.2,
+                ease: Phaser.Math.Easing.Elastic.InOut,
+                duration: 400,
+                yoyo: true
+            });
         };
         if (this.player.castbar.time <= 0) {
             this.player.castingSuccess = true;
@@ -971,14 +978,7 @@ export default class PlayerMachine {
     };
     onArcExit = () => {
         if (this.player.castingSuccess === true) {
-            this.scene.tweens.add({
-                targets: this.scene.cameras.main,
-                zoom: this.scene.cameras.main.zoom * 2,
-                ease: Phaser.Math.Easing.Elastic.InOut,
-                duration: 500,
-                yoyo: true
-            });
-            screenShake(this.scene, 120, 0.005);
+            screenShake(this.scene, 96, 0.004);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.ARC, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.player.checkTalentCost(States.ARC, PLAYER.STAMINA.ARC);
@@ -1027,7 +1027,7 @@ export default class PlayerMachine {
                 }, undefined, this);
             };
         };
-        this.player.flickerCarenic(750); 
+        this.player.flickerCaerenic(750);
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
 
@@ -1134,7 +1134,7 @@ export default class PlayerMachine {
     onDesperationEnter = () => {
         this.player.specialCombatText = this.scene.showCombatText('Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
         this.player.checkTalentCost(States.DESPERATION, PLAYER.STAMINA.DESPERATION);
-        this.player.flickerCarenic(PLAYER.DURATIONS.HEALING); 
+        this.player.flickerCaerenic(PLAYER.DURATIONS.HEALING); 
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes your body.`
         });
@@ -1154,12 +1154,20 @@ export default class PlayerMachine {
         this.player.currentTarget.isConsumed = true;
         this.player.checkTalentCost(States.DEVOUR, PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
-        this.player.flickerCarenic(2000); 
+        this.player.flickerCaerenic(2000); 
         this.player.specialCombatText = this.scene.showCombatText('Devouring', PLAYER.DURATIONS.DEVOUR / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
         this.player.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.DEVOUR);
         const power = this.player.checkTalentEnhanced(States.DEVOUR) ? 0.06 : 0.04;
+        this.scene.tweens.add({
+            targets: [this.player, this.player.spriteShield, this.player.spriteWeapon],
+            scale: 1.1,
+            ease: Phaser.Math.Easing.Back.InOut,
+            duration: 500,
+            yoyo: true,
+            repeat: 1
+        });
         this.player.devourTimer = this.scene.time.addEvent({
             delay: 400,
             callback: () => this.devour(power),
@@ -1394,7 +1402,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.isPraying = true;
         this.player.setStatic(true);
-        this.player.flickerCarenic(1000); 
+        this.player.flickerCaerenic(1000); 
         this.player.invokeCooldown = 30;
         if (this.player.playerBlessing === '' || this.player.playerBlessing !== this.scene.state.playerBlessing) {
             this.player.playerBlessing = this.scene.state.playerBlessing;
@@ -1501,7 +1509,7 @@ export default class PlayerMachine {
         this.player.isCasting = true;
         this.player.checkTalentCost(States.KYRNAICISM, PLAYER.STAMINA.KYRNAICISM);    
         this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
-        this.player.flickerCarenic(3000); 
+        this.player.flickerCaerenic(3000); 
         this.player.specialCombatText = this.scene.showCombatText('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
         this.player.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
@@ -1644,7 +1652,7 @@ export default class PlayerMachine {
         this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: 'Sacrifice', data: power });
-            this.player.currentTarget?.flickerCarenic(750);
+            this.player.currentTarget?.flickerCaerenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
@@ -1655,14 +1663,14 @@ export default class PlayerMachine {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id } });
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id } });
-            enemy.flickerCarenic(750);    
+            enemy.flickerCaerenic(750);    
         };
     };
     suture = (id: string, power: number) => {
         this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: 'Suture', data: power });
-            this.player.currentTarget?.flickerCarenic(750);
+            this.player.currentTarget?.flickerCaerenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
@@ -1673,7 +1681,7 @@ export default class PlayerMachine {
             EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id} });
             this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id} });
-            enemy.flickerCarenic(750);
+            enemy.flickerCaerenic(750);
         };
     };
 
@@ -1731,7 +1739,7 @@ export default class PlayerMachine {
         this.player.particleEffect = this.scene.particleManager.addEffect('hook', this.player, 'hook', true);
         this.player.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
-        this.player.flickerCarenic(750);
+        this.player.flickerCaerenic(750);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.HOOK, PLAYER.COOLDOWNS.SHORT);
         this.player.checkTalentCost(States.HOOK, PLAYER.STAMINA.HOOK);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
@@ -1766,7 +1774,7 @@ export default class PlayerMachine {
         this.player.setStatic(true);
         this.player.isPraying = true;
         this.player.specialCombatText = this.scene.showCombatText('Marking', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(1000);
+        this.player.flickerCaerenic(1000);
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onMarkExit = () => {
@@ -1801,7 +1809,7 @@ export default class PlayerMachine {
             };
             this.scene.hud.actionBar.setVisible(false);
         };
-        this.player.flickerCarenic(1000);
+        this.player.flickerCaerenic(1000);
     };
     onNetherswapUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onNetherswapExit = () => {
@@ -1832,7 +1840,7 @@ export default class PlayerMachine {
         this.player.setStatic(true);
         this.player.isPraying = true;
         this.player.specialCombatText = this.scene.showCombatText('Recalling', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(1000);
+        this.player.flickerCaerenic(1000);
         if (!this.player.isComputer) {
             if (this.scene.hud.settings.desktop === false) {
                 this.scene.hud.joystick.joystick.setVisible(false);
@@ -1957,7 +1965,7 @@ export default class PlayerMachine {
                 this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);
             }, undefined, this);
         };
-        this.player.flickerCarenic(750);
+        this.player.flickerCaerenic(750);
         screenShake(this.scene, 96);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
@@ -2127,7 +2135,7 @@ export default class PlayerMachine {
         };
         this.player.checkTalentCost(States.SLOW, PLAYER.STAMINA.SLOW);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SLOW, PLAYER.COOLDOWNS.SHORT);
-        this.player.flickerCarenic(500); 
+        this.player.flickerCaerenic(500); 
         this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You ensorcel ${this.player.currentTarget.ascean?.name}, slowing them!`
@@ -2147,7 +2155,7 @@ export default class PlayerMachine {
         this.sacrifice(this.player.spellTarget, 10);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SACRIFICE, PLAYER.COOLDOWNS.MODERATE);
         if (this.player.checkTalentEnhanced(States.SACRIFICE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Damage' });
-        this.player.flickerCarenic(500);  
+        this.player.flickerCaerenic(500);  
         this.scene.time.delayedCall(500, () => this.player.isSacrificing = false, undefined, this);
     };
     onSacrificeUpdate = (_dt: number) => this.player.combatChecker(this.player.isSacrificing);
@@ -2215,7 +2223,7 @@ export default class PlayerMachine {
         this.suture(this.player.spellTarget, 20);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SUTURE, PLAYER.COOLDOWNS.MODERATE);
         if (this.player.checkTalentEnhanced(States.SUTURE)) this.scene.combatManager.combatMachine.action({ type: 'Prayer', data: 'Buff' });
-        this.player.flickerCarenic(500); 
+        this.player.flickerCaerenic(500); 
         this.scene.time.delayedCall(500, () => {
             this.player.isSuturing = false;
         }, undefined, this);
@@ -2883,7 +2891,7 @@ export default class PlayerMachine {
         this.player.adjustSpeed(speed);
         this.player.checkTalentCost(States.SPRINTING, PLAYER.STAMINA.SPRINT);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SPRINTING, PLAYER.COOLDOWNS.MODERATE);
-        this.player.flickerCarenic(PLAYER.DURATIONS.SPRINT);
+        this.player.flickerCaerenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.player.isSprinting = false;
             this.player.adjustSpeed(-speed);    
@@ -3020,7 +3028,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Astrication', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isAstrifying = true;
         const duration = this.player.checkTalentEnhanced(States.ASTRICATION) ? PLAYER.DURATIONS.ASTRICATION * 1.5 : PLAYER.DURATIONS.ASTRICATION;
-        this.player.flickerCarenic(duration); 
+        this.player.flickerCaerenic(duration); 
         this.scene.time.delayedCall(duration, () => {
             this.scene.combatManager.combatMachine.input('astrication', {active:false,charges:0});
             this.player.isAstrifying = false;
@@ -3107,7 +3115,7 @@ export default class PlayerMachine {
         this.scene.sound.play('shield', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Endurance', 750, 'heal', false, true, () => this.player.specialCombatText = undefined);
         this.player.isEnduring = true;
-        this.player.flickerCarenic(PLAYER.DURATIONS.ENDURANCE); 
+        this.player.flickerCaerenic(PLAYER.DURATIONS.ENDURANCE); 
         const stamina = this.player.checkTalentEnhanced(States.ENDURANCE) ? -40 : -20;
         this.scene.time.addEvent({
             delay: 1000,
@@ -3131,7 +3139,7 @@ export default class PlayerMachine {
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Impermanence', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
         this.player.isImpermanent = true;
-        this.player.flickerCarenic(1500); 
+        this.player.flickerCaerenic(1500); 
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.IMPERMANENCE, PLAYER.COOLDOWNS.MODERATE);  
         const duration = this.player.checkTalentEnhanced(States.IMPERMANENCE) ? PLAYER.DURATIONS.IMPERMANENCE * 1.5 : PLAYER.DURATIONS.IMPERMANENCE;
         this.scene.time.delayedCall(duration, () => {
@@ -3151,7 +3159,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText('Seer', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
         this.player.isSeering = true;
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SEER, PLAYER.COOLDOWNS.MODERATE);
-        this.player.flickerCarenic(1500);
+        this.player.flickerCaerenic(1500);
         const duration = this.player.checkTalentEnhanced(States.SEER) ? PLAYER.DURATIONS.SEER * 1.5 : 1;
         this.scene.time.delayedCall(duration, () => {
             this.player.isSeering = false;
@@ -3172,7 +3180,7 @@ export default class PlayerMachine {
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.DISPEL, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('debuff', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(1000);
+        this.player.flickerCaerenic(1000);
         const bubbles = [];
         if (this.player.currentTarget.isMalicing) bubbles.push(States.MALICE);
         if (this.player.currentTarget.isMending) bubbles.push(States.MEND);
@@ -3212,7 +3220,7 @@ export default class PlayerMachine {
         if (this.player.checkTalentEnhanced(States.SHIRK)) {
             this.positiveMachine.setState(States.IMPERMANENCE);
         };
-        this.player.flickerCarenic(1500);
+        this.player.flickerCaerenic(1500);
         this.scene.time.delayedCall(1500, () => {
             this.player.isShirking = false;
         }, undefined, this); 
@@ -3229,7 +3237,7 @@ export default class PlayerMachine {
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SHADOW, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Shadowing', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(6000);
+        this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isShadowing = false;
         }, undefined, this);
@@ -3260,7 +3268,7 @@ export default class PlayerMachine {
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.TETHER, PLAYER.COOLDOWNS.MODERATE);
         this.scene.sound.play('dungeon', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Tethering', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.flickerCarenic(6000);
+        this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isTethering = false;
         }, undefined, this);
@@ -3280,7 +3288,7 @@ export default class PlayerMachine {
         this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText('Stimulate', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
         this.player.isStimulating = true;
-        this.player.flickerCarenic(1500); 
+        this.player.flickerCaerenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.STIMULATE, () => {
             this.player.isStimulating = false;
         }, undefined, this);
@@ -3345,6 +3353,7 @@ export default class PlayerMachine {
                 } else {   
                     randomDirection();
                     this.player.specialCombatText = this.scene.showCombatText(confusions[Math.floor(Math.random() * 5)], 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+                    screenShake(this.scene);
                 };
             },
             callbackScope: this,
@@ -3417,6 +3426,7 @@ export default class PlayerMachine {
                 } else {   
                     randomDirection();
                     this.player.specialCombatText = this.scene.showCombatText(fears[Math.floor(Math.random() * 5)], 750, 'damage', false, false, () => this.player.specialCombatText = undefined);
+                    screenShake(this.scene);
                 };
             },
             callbackScope: this,
@@ -3558,6 +3568,7 @@ export default class PlayerMachine {
                     randomDirection();
                     this.player.specialCombatText = this.scene.showCombatText('...thump', 1000, 'effect', false, false, () => this.player.specialCombatText = undefined);
                     this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: 20, id: this.player.playerID } });
+                    screenShake(this.scene);
                 };
             },
             callbackScope: this,

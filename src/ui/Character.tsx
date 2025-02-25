@@ -712,18 +712,18 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 <p class='animate' style={{ 'padding-left': '0.75em', 'padding-right': '0.75em' }}>Level++</p>
                             </button>
                         ) }
-                        <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5% auto 2.5%', 'text-align': 'center' } : { margin: '5% auto 2.5%', 'text-align': 'center' }}>
+                        <div class='gold' style={dimensions().ORIENTATION === 'landscape' ? { 'font-size': dimensions().WIDTH > 1200 ? '2em' : '', margin: '5% auto 2.5%', 'text-align': 'center' } : { margin: '5% auto 2.5%', 'text-align': 'center' }}>
                             {combat()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>
                             <HealthBar combat={combat} enemy={false} game={game} />
                         </Suspense>
-                        <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': '7.5%', transform: 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
-                        <Suspense fallback={<Puff color="gold"/>}>
-                            <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-                        </Suspense>
+                        <div style={dimensions().ORIENTATION === 'landscape' ? { 'margin-left': '0', 'margin-top': dimensions().WIDTH > 1200 ? '35%' : '7.5%', transform: dimensions().WIDTH > 1200 ? 'scale(1.2)' : 'scale(0.9)' } : { 'margin-left': '5%', transform: 'scale(0.75)', 'margin-top': '20%' }}>
+                            <Suspense fallback={<Puff color="gold"/>}>
+                                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                            </Suspense>
                         </div>
-                        <div style={{ 'margin-top': '-5%' }}>
+                        <div style={{ 'margin-top': dimensions().WIDTH > 1200 ? '35%' : '-5%' }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <ExperienceBar ascean={ascean} game={game} />
                             </Suspense>
@@ -772,7 +772,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': '0.9em', 'font-family': 'Cinzel Regular' }}>
+                    <div class='propertyBlock' style={{ 'margin-bottom': '0%', 'font-size': dimensions().WIDTH > 1200 ? '1.5em' : '0.9em', 'font-family': 'Cinzel Regular' }}>
                         <div>Level: <span class='gold'>{combat()?.player?.level}</span>{'\n'}</div>
                         <div>Silver: <span class='gold'>{ascean().currency.silver}</span> Gold: <span class='gold'>{ascean().currency.gold} {'\n'}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class='gold'>{ascean().faith}</span> | Mastery: <span class='gold'>{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
@@ -782,7 +782,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div>Magical Defense: <span class='gold'>{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{'\n'}</div>
                         <div>Physical Defense: <span class='gold'>{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{'\n'}</div>
                     </div>
-                    <div style={{ transform: 'scale(0.9)' }}>
+                    <div style={{ 'margin-top': dimensions().WIDTH > 1200 ? '5%' : '', transform: dimensions().WIDTH > 1200 ? 'scale(1)' : 'scale(0.9)' }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                 </div>

@@ -25,7 +25,7 @@ export class Preloader extends Scene {
         super('Preloader');
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
-        this.height = 40;
+        this.height = window.innerWidth > 1200 ? 80 : 40;
         this.width = this.centerX * 1.5;
     };
     init() {};
@@ -71,9 +71,9 @@ export class Preloader extends Scene {
     }; 
     createLoadingBar() {
         const shadow = MASTERIES[Math.floor(Math.random() * MASTERIES.length)];
-        this.title = new NewText(this, this.centerX, this.centerY / 1.9, 'Loading Game', 'subtitle', 0.5, shadow);
-        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.925, 'Loading...', 'preload', { x: 0.5, y: 1 }, shadow);
-        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.6, '', 'play', { x: 0.5, y: 1 }, shadow);
+        this.title = new NewText(this, this.centerX, this.centerY / 1.9, 'Loading Game', window.innerWidth > 1200 ? 'title' : 'subtitle', 0.5, shadow);
+        this.txt_progress = new NewText(this, this.centerX, this.centerY / 0.925, 'Loading...', window.innerWidth > 1200 ? 'subtitle' : 'preload', { x: 0.5, y: 1 }, shadow);
+        this.txt_file = new NewText( this, this.centerX, this.centerY / 0.6, '', window.innerWidth > 1200 ? 'preload' : 'play', { x: 0.5, y: 1 }, shadow);
         let x = this.centerX - (this.width / 2);
         let y = this.centerY / 0.85;
         this.progress = this.add.graphics({ x: x, y: y });

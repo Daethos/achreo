@@ -412,7 +412,7 @@ export default class Enemy extends Entity {
         this.setGlow(this.spriteShield, caerenic, 'shield');
     };
 
-    flickerCarenic = (duration: number) => {
+    flickerCaerenic = (duration: number) => {
         if (this.isGlowing === false) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {
@@ -2044,7 +2044,7 @@ export default class Enemy extends Entity {
 
     onBlinkEnter = () => {
         this.setVelocityX(this.flipX ? 35 : -35);
-        this.flickerCarenic(500);
+        this.flickerCaerenic(500);
         this.scene.time.delayedCall(500, () => {
                 // Define the map boundaries (you can derive these dynamically from your tilemap or world bounds)
             const mapBounds = {
@@ -2245,7 +2245,7 @@ export default class Enemy extends Entity {
         this.particleEffect = this.scene.particleManager.addEffect('hook', this, 'hook', true);
         this.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
         this.enemySound('dungeon', true);
-        this.flickerCarenic(750);
+        this.flickerCaerenic(750);
         this.beam.startEmitter(this.particleEffect.effect, 1750);
         this.hookTime = 0;
     };
@@ -2383,17 +2383,24 @@ export default class Enemy extends Entity {
         const target = new Phaser.Math.Vector2(this.currentTarget.x, this.currentTarget.y);
         const direction = target.subtract(this.position);
         const distance = direction.length();
-        const buffer = this.currentTarget.isMoving ? 40 : 30;
+        const buffer = this.currentTarget.isMoving ? 40 : 0;
         let leap = Math.min(distance + buffer, 200);
         direction.normalize();
         this.flipX = direction.x < 0;
-        this.flickerCarenic(900);
+        // this.flickerCaerenic(800);
         this.attack();
+        this.scene.tweens.add({
+            targets: this,
+            scale: 1.2,
+            duration: 400,
+            ease: Phaser.Math.Easing.Back.InOut,
+            yoyo: true,
+        });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * leap),
             y: this.y + (direction.y * leap),
-            duration: 900,
+            duration: 800,
             ease: 'Elastic',
             onComplete: () => { 
                 if (this.touching.length > 0) {
@@ -2652,15 +2659,22 @@ export default class Enemy extends Entity {
         const clampedX = Phaser.Math.Clamp(targetX, mapBounds.minX, mapBounds.maxX);
         const clampedY = Phaser.Math.Clamp(targetY, mapBounds.minY, mapBounds.maxY);
 
-        this.flickerCarenic(500);
+        // this.flickerCaerenic(600);
         direction.normalize();
         this.flipX = direction.x < 0;
         this.isParrying = true;
         this.scene.tweens.add({
             targets: this,
+            alpha: 0.25,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 300,
+            yoyo: true
+        });
+        this.scene.tweens.add({
+            targets: this,
             x: clampedX,
             y: clampedY,
-            duration: 500,
+            duration: 600,
             ease: 'Circ.easeOut',
             onComplete: () => this.rushComplete(),
         });         
@@ -2697,7 +2711,7 @@ export default class Enemy extends Entity {
         const id = this.getTargetId(); 
         this.sacrifice(30, id);
         this.enemySound('combat-round', true);
-        this.flickerCarenic(750);
+        this.flickerCaerenic(750);
     };
     onSacrificeUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
     onSacrificeExit = () => this.evaluateCombatDistance();
@@ -2716,7 +2730,7 @@ export default class Enemy extends Entity {
             this.scene.combatManager.slow(id, 3000);
         };
         this.enemySound('debuff', true);
-        this.flickerCarenic(500);
+        this.flickerCaerenic(500);
     };
     onSlowingUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
     onSlowingExit = () => this.evaluateCombatDistance();
@@ -2759,7 +2773,7 @@ export default class Enemy extends Entity {
         const id = this.getTargetId();
         this.suture(30, id);
         this.enemySound('debuff', true);
-        this.flickerCarenic(750);
+        this.flickerCaerenic(750);
     };
     onSutureUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
     onSutureExit = () => this.evaluateCombatDistance();
@@ -2882,7 +2896,7 @@ export default class Enemy extends Entity {
         if (this.currentTarget === undefined) return;
         this.enemySound('debuff', true);
         this.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.specialCombatText = undefined);
-        this.flickerCarenic(1000); 
+        this.flickerCaerenic(1000); 
         this.currentTarget.clearBubbles();
         // this.currentTarget.clearPositiveEffects();
     };
@@ -3320,7 +3334,7 @@ export default class Enemy extends Entity {
         this.isShadowing = true;
         this.enemySound('wild', true);
         this.specialCombatText = this.scene.showCombatText('Shadowing', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
-        this.flickerCarenic(6000);
+        this.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.isShadowing = false;
         }, undefined, this);
@@ -3427,7 +3441,7 @@ export default class Enemy extends Entity {
         if (this.health > 0) this.stateMachine.setState(States.COMBAT);
         this.negativeMachine.setState(States.CLEAN);
 
-        this.flickerCarenic(6000);
+        this.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.isShirking = false;
         }, undefined, this); 
@@ -3458,7 +3472,7 @@ export default class Enemy extends Entity {
         this.isTethering = true;
         this.enemySound('dungeon', true);
         this.specialCombatText = this.scene.showCombatText('Tethering', DURATION.TEXT, 'damage', false, true, () => this.specialCombatText = undefined);
-        this.flickerCarenic(6000);
+        this.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.isTethering = false;
         }, undefined, this);

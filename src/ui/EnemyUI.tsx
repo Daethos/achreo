@@ -109,6 +109,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
 };
 
 export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]> }) {
+    const dimensions = useResizeListener();
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
@@ -121,6 +122,9 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     };
     const size = (len: number) => {
         switch (true) {
+            case len < 10 && dimensions().WIDTH > 1200: return '1.5em'; // 1.15em
+            case len < 20 && dimensions().WIDTH > 1200: return '1.3em'; // 1em
+            case len < 30 && dimensions().WIDTH > 1200: return '1.1em'; // 0.85em
             case len < 10: return '1.25em'; // 1.15em
             case len < 20: return '1.15em'; // 1em
             case len < 30: return '1em'; // 0.85em
@@ -129,6 +133,9 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     };
     const top = (len: number) => {
         switch (true) {
+            case len < 10 && dimensions().WIDTH > 1200: return '3%'; // 1.15em
+            case len < 20 && dimensions().WIDTH > 1200: return '3.5%'; // 1em
+            case len < 30 && dimensions().WIDTH > 1200: return '4%'; // 0.85em
             case len < 10: return '1.5%'; // -3%
             case len < 20: return '2%'; // -2%
             case len < 30: return '2.5%'; // -1%
@@ -151,12 +158,12 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
     return ( // linear-gradient(#00AA00, green)
         <div class='enemyCombatUi'>
             <div class='enemyName' style={{ position: 'fixed', 'z-index': 1, 'font-size': size(state().computer?.name.length as number), 'right': '4.5vw', 'top': top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
-            <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'max-height': '24px', 'right':'2%', width:'20.75vw' }}>
-                <div class='enemyPortrait' style={{ 'font-size': '1.1em', color: '#fdf6d8', top: '-0.5%' }}>{healthDisplay()}</div>
+            <div class='center enemyHealthBar' onClick={changeDisplay} style={{ 'right':'2%', width:'20.75vw' }}>
+                <div class='enemyPortrait' style={{ color: '#fdf6d8', top: '-0.5%' }}>{healthDisplay()}</div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `100%`, 'background': 'linear-gradient(#aa0000, red)' }}></div>
                 <div style={{ position: 'absolute', bottom: 0, right: 0, top: 0, 'z-index': -1, width: `${healthPercentage()}%`, 'background': state().isEnemy ? 'linear-gradient(purple, #191970)' : 'linear-gradient(#00AA00, green)', transition: 'width 0.5s ease-out, background 0.5s ease-out' }}></div>
             </div>
-            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar-bold.png'} alt="Health Bar" style={{ 'z-index': -1, 'max-height': '74px' }} />
+            <img id='enemyHealthbarBorder' src={'../assets/gui/enemy-healthbar-bold.png'} alt="Health Bar" style={{ 'z-index': -1 }} />
             <div class='enemyUiWeapon' onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
                 <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
             </div>

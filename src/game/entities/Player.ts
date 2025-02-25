@@ -622,23 +622,23 @@ export default class Player extends Entity {
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 2,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 900,
-            yoyo: true
+            targets: this,
+            scale: 1.2,
+            duration: 400,
+            ease: Phaser.Math.Easing.Back.InOut,
+            yoyo: true,
         });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * Math.min(distance, 200)),
             y: this.y + (direction.y * Math.min(distance, 200)),
-            duration: 900,
+            duration: 800,
             ease: Phaser.Math.Easing.Back.InOut,
             onStart: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.scene.sound.play('leap', { volume: this.scene.hud.settings.volume });
-                this.flickerCarenic(900); 
+                // this.flickerCaerenic(800);
             },
             onComplete: () => { 
                 screenShake(this.scene);
@@ -646,12 +646,21 @@ export default class Player extends Entity {
                 const special = this.checkTalentEnhanced(States.LEAP);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
-                        this.scene.combatManager.playerMelee(this.touching[i].enemyID, 'leap');
-                        if (special) this.scene.combatManager.stun(this.touching[i].enemyID);
+                        const enemy = this.touching[i];
+                        this.scene.combatManager.playerMelee(enemy.enemyID, 'leap');
+                        if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
+                            if (enemy.isShielding) enemy.shield();
+                            if (enemy.isWarding) enemy.ward(this.playerID);
+                            return;
+                        };
+                        if (enemy.isMenacing) enemy.menace(this.playerID);
+                        if (enemy.isMultifaring) enemy.multifarious(this.playerID);
+                        if (enemy.isMystifying) enemy.mystify(this.playerID);
+                        if (special) this.scene.combatManager.stun(enemy.enemyID);
                     };
                 };
             },
-        });       
+        });
         EventBus.emit('special-combat-text', {
             playerSpecialDescription: `You launch yourself through the air!`
         });
@@ -667,6 +676,13 @@ export default class Player extends Entity {
         direction.normalize();
         this.flipX = direction.x < 0;
         this.scene.tweens.add({
+            targets: this,
+            alpha: 0.25,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 300,
+            yoyo: true
+        });
+        this.scene.tweens.add({
             targets: this.scene.cameras.main,
             zoom: this.scene.cameras.main.zoom * 1.5,
             ease: Phaser.Math.Easing.Quintic.InOut,
@@ -681,7 +697,6 @@ export default class Player extends Entity {
             ease: 'Circ.easeOut',
             onStart: () => {
                 screenShake(this.scene);
-                this.flickerCarenic(600);  
             },
             onComplete: () => {
                 const special = this.checkTalentEnhanced(States.RUSH);
@@ -711,7 +726,7 @@ export default class Player extends Entity {
                         };
                         if (enemy.isMenacing) enemy.menace(this.playerID);
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
-                        if (enemy.isMystifying) enemy.mystify(this.playerID);    
+                        if (enemy.isMystifying) enemy.mystify(this.playerID);
                         this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
                         if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
@@ -729,17 +744,10 @@ export default class Player extends Entity {
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 2,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 800,
-            yoyo: true
-        });
-        this.scene.tweens.add({
             targets: this,
             angle: 360,
             duration: 800,
-            onStart: () => this.flickerCarenic(3200),
+            onStart: () => this.flickerCaerenic(3200),
             onLoop: () => {
                 this.frameCount = 0;
                 this.clearAnimations();
@@ -1127,7 +1135,7 @@ export default class Player extends Entity {
         this.setGlow(this.spriteShield, caerenic, 'shield');
     };
 
-    flickerCarenic = (duration: number) => {
+    flickerCaerenic = (duration: number) => {
         if (this.isCaerenic === false && this.isGlowing === false) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {

@@ -436,15 +436,17 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit('save-settings', newSettings);
         EventBus.emit('update-left-hud-position', update);
     };
-    
+    /*
+        TODO: Change Zoom settings to be Multipled by 3-5? If DESKTOP
+    */
     {/* <div style={font('0.5em')}>[Aggressive AI Range: 0 - 100%]</div> */}
     return <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '0' } : { 'margin-top': '50%' }}>
             <h1 onClick={() => resetShaper('camera', !shaper().camera)} style={font('1.25em')}>Camera</h1>
             <Collapse value={shaper().camera} class='my-transition'>
                 <div style={font('1em')}>
-                <button class='highlight' onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), 0.5))}>-</button>
+                <button class='highlight' onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), (dimensions().WIDTH > 1200 ? 2 : 0.5)))}>-</button>
                 Zoom: ({settings().positions.camera?.zoom})
-                <button class='highlight' onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), 1.5))}>+</button></div>
+                <button class='highlight' onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), (dimensions().WIDTH > 1200 ? 3 : 1.5)))}>+</button></div>
             </Collapse>
         
             

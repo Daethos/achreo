@@ -1,5 +1,6 @@
 import { STARTING_MASTERY_UI, STARTING_SPECIALS } from "../utility/abilities";
 import { initTutorial, Tutorial } from "../utility/tutorial";
+console.log(navigator.userAgent, "User?");
 export default class Settings {
     public _id: string;
     public map: string;
@@ -57,6 +58,7 @@ export default class Settings {
         noiseEnable: boolean;
         noiseSeed: number; 
         noiseStrength: number; 
+
         vhsEnable: boolean; 
         vhsStrength: number; 
         scanlinesEnable: boolean; 
@@ -174,7 +176,7 @@ export default class Settings {
         this.combatText = { left: '20vw', top: '40vh', height: '50vh', width: '60vw' };
         this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
         this.control = 'Buttons';
-        this.desktop = false;
+        this.desktop = window.innerWidth > 1200;
         this.computerFocus = 'Balanced';
         this.computerLoadout = {
             attack: 15,
@@ -219,7 +221,7 @@ export default class Settings {
                 x: 0,
                 y: 0,
                 z: 0,
-                zoom: 1,
+                zoom: window.innerWidth > 1200 ? 3 : 1,
             },
             castbar: {
                 barHeight: 20,

@@ -128,8 +128,8 @@
 }
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr);}
-.playerName {position:absolute;left: 4.5vh;font-family: 'Cinzel Regular';font-weight: 600;margin:auto;max-height:40px;z-index:1;}
-.playerPortrait {font-family: 'Cinzel Regular';font-size:1.15em;font-weight: 700;margin:auto;text-align: center;z-index: 1;justify-content: center;align-items: center;z-index:1;}
+.playerName {position:absolute;left: 4.5vw;font-family: 'Cinzel Regular';font-weight: 600;margin:auto;max-height:40px;z-index:1;}
+.playerPortrait {font-family: 'Cinzel Regular';font-size:1.15em;font-weight: 700;margin:auto;text-align: center;z-index: 1;justify-content: center;align-items: center;}
 .playerHealthBar {position: absolute;top: 7.5vh;left: 4%;width: 20.75vw;height: 5vh;max-height:24px;overflow: hidden;border: 0.1rem solid purple;z-index:0;}
 #playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 0;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}
@@ -147,11 +147,11 @@
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 2.5vh;right: 25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.05);}
-.enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 0.5rem;}
+.enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;max-height:24px;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 0.5rem;}
 .enemyName {position: absolute;right: 5vw;font-family: 'Cinzel Regular';font-size: 1rem;color: red;font-weight: 600;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
-.enemyPortrait {font-family: 'Cinzel Regular';font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
+.enemyPortrait {font-family: 'Cinzel Regular';font-size:1.1em;font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
 .enemyHealthBar {position: fixed;top: 7.5vh;right: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1rem solid red;}
-#enemyHealthbarBorder {position: fixed;top: 4vh;right: 0;height: 12.5vh;width: 25vw;z-index: 1;}
+#enemyHealthbarBorder {position: fixed;top: 4vh;right: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 1;}
 .enemyPreview {position: absolute;color: #fdf6d8; border-color: #fdf6d8; text-align: center; width: 25vw;border-radius: 25%;top: 10vh;right: 5vw;}
 .smallHudButtons {position: fixed;bottom: 1%;background-color: black;}
 .cell {padding: 0.5rem;border: 0.1rem solid #fdf6d8;height: 100%;max-width: 50%;font-family: 'Cinzel Regular';align-items: center;justify-content: center;text-align: center;font-size: 1rem;font-weight: 600;color: #fdf6d8;}
@@ -251,6 +251,7 @@
     }
 }
 @media screen and (min-width: 1200px) {
+    #enemyHealthbarBorder, #playerHealthbarBorder {max-height:92px;}
     .border {
         border: 0.2em solid #fdf6d8; 
         box-shadow:
@@ -282,7 +283,6 @@
         text-indent: 6px;
     }       
     .juice:hover, .juice:focus {
-        transform: scale(1.15);
         box-shadow: inset #000 0 0 0 0.4rem, inset gold 0 0 0 0.6rem;
     }
     .view {
@@ -292,8 +292,10 @@
     .combatUiWeapon {left: 38vw;}
     .combatUiShield {left: 44vw;}
     .enemyUiWeapon {right: 26.5vw;}
-    .playerHealthBar {left: 2vw;top: 6.5vh;border: 0.175rem solid purple;}
-    .enemyHealthBar {right: 5vw; top: 6.5vh;border: 0.175rem solid red;}
+    .healthbar {border: 0.15rem solid #fdf6d8;border-radius: 2rem;}
+    .playerHealthBar {left: 2vw;top: 7vh;border: 0.175rem solid purple;max-height:30px;}
+    .enemyHealthBar {right: 5vw; top: 7vh;border: 0.175rem solid red;max-height:30px;}
+    .playerPortrait, .enemyPortrait {font-size:1.3em;}
     .staminaBubble,
     .graceBubble {
         border: 0.25em solid purple;
@@ -302,6 +304,7 @@
     }
 }
 @media screen and (min-width: 1800px) {
+    #enemyHealthbarBorder, #playerHealthbarBorder {max-height:110px;}
     .border {
         border: 0.3em solid #fdf6d8; 
         box-shadow:
@@ -333,20 +336,16 @@
         text-indent: 8px;
     }
     .juice:hover, .juice:focus {
-        transform: scale(1.2);
         box-shadow: inset #000 0 0 0 0.6rem, inset gold 0 0 0 0.9rem;
     }
     .character-name {
         font-size: 1.2rem; 
     }
-    .healthbar {
-        width: 50%; 
-        margin-left: 25%; 
-    }
     .combatUiWeapon, .combatUiShield, .enemyUiWeapon {top:5vh; transform: scale(2.5);}
-    .playerHealthBar {left: 2vw;top: 6vh;border: 0.2rem solid purple;}
-    .enemyHealthBar {right: 5vw; top: 6vh;border: 0.2rem solid red;}
-    /* .playerWindow {width: 25vw; } */
+    .playerHealthBar {left: 2vw;top: 7vh;border: 0.2rem solid purple;max-height:36px;}
+    .enemyHealthBar {right: 5vw; top: 7vh;border: 0.2rem solid red;max-height:36px;}
+    .healthbar {border: 0.2rem solid #fdf6d8;}
+    .playerPortrait, .enemyPortrait {font-size:1.5em;}
     .staminaBubble,
     .graceBubble {
         border: 0.25em solid purple;

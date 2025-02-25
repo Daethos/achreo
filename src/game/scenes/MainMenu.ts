@@ -26,7 +26,7 @@ export class MainMenu extends Phaser.Scene {
             this.centerX,
             this.centerY * 0.7,
             'The Ascean',
-            'title',
+            window.innerWidth > 1200 ? 'supertitle' : 'title',
             0.5,
             shadow
         );
@@ -36,7 +36,7 @@ export class MainMenu extends Phaser.Scene {
             'Enter Game', 
         {
             fontFamily: 'Cinzel Regular', 
-            fontSize: 36, 
+            fontSize: window.innerWidth > 1200 ? 72 : 36, 
             color: '#fdf6d8',
             stroke: '#000000', 
             strokeThickness: 8,

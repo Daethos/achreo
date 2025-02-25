@@ -32,19 +32,10 @@ body {margin:0; padding:0; width: 100%; height: 100vh; color: rgba(253, 246, 216
 
 @media (min-width: 1024px) {
     body {font-size: 1.2rem;}
-    .button, .highlight {width: 12em; padding: 0.75em;font-size: 1.1em;}
+    .button, .highlight {padding: 0.75em;font-size: 1.1em;}
     .title {font-size: 10em;}
     .cornerBR,
     .cornerTR,
     .cornerBL,
     .cornerTL {font-size: 1rem;}
-}
-@media (min-width: 2000px) {
-    body {font-size: 1.5em;}
-    .button, .highlight {width: 15rem;padding: 1rem;font-size: 1.3rem;}
-    .title {font-size: 15rem;}
-    .cornerBR,
-    .cornerTR,
-    .cornerBL,
-    .cornerTL {font-size: 1.2rem;}
 }

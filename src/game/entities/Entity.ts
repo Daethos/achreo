@@ -650,6 +650,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    outOfRange = (range: number) => {
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
+        if (distance > range) {
+            this.resistCombatText = this.scene.showCombatText(`Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+            return true;    
+        };
+        return false;
+    };
+
     hook = (target: Enemy, time: number) => {
         this.scene.tweens.add({
             targets: target,

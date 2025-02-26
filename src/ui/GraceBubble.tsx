@@ -19,8 +19,8 @@ export default function GraceBubble({ grace, show, setShow, settings }: {grace:A
                     };
                 } else if (desktop) {
                     return {
-                        "font-size": "1.5em",
-                        "margin-top": "30%",
+                        "font-size": "1.75em",
+                        "margin-top": "25%",
                     };
                 } else {
                     return {
@@ -36,7 +36,7 @@ export default function GraceBubble({ grace, show, setShow, settings }: {grace:A
                     };
                 } else if (desktop) {
                     return {
-                        "font-size": "1.75em",
+                        "font-size": "2em",
                         "margin-top": "25%",
                     };
                 } else {

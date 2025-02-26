@@ -255,16 +255,16 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         <div class='gold' style={{ position: 'absolute', top: '0', 'font-size': '1.25em', display: 'inline' }}>
             <div style={{ 'padding-top': '5%' }}>Controls - {settings().control}</div>
             <Show when={settings().control !== CONTROLS.BUTTONS}>
-                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
             </Show>
             <Show when={settings().control !== CONTROLS.POST_FX}>
-                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
             </Show>
             <Show when={settings().control !== CONTROLS.DIFFICULTY}>
-                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
             </Show>
             <Show when={settings().control !== CONTROLS.PHASER_UI}>
-                <button class='highlight' style={{ 'font-size': '0.25em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
             </Show>
         </div>
         <Switch>

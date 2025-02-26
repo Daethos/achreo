@@ -43,7 +43,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     function transformScale() {
         const width = dimensions().WIDTH;
         if (width > 1800) { // FHD
-            return 1.25;
+            return 1.1;
         } else if (width > 1200) { // Mid
             return 1;
         } else { // Mobile
@@ -51,7 +51,12 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
         };
     };
     return <div class='modal'>
-        <div class='border center' style={{ 'min-height': dimensions().ORIENTATION === 'landscape' ? '60%' : '50%', 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 'margin-top': '2%' }}>
+        <div class='border center' style={{ 
+            'height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%', 
+            // 'max-height': dimensions().ORIENTATION === 'landscape' ? '95%' : '50%',
+            'width': dimensions().ORIENTATION === 'landscape' ? '50%' : '70%', 
+            'margin-top': dimensions().ORIENTATION === 'landscape' ? `${dimensions().HEIGHT * 0.025}px` : '25%'
+        }}>
             <button class='highlight cornerBL' onClick={clearEnemy}>
                 <p>Clear UI</p>
             </button>
@@ -75,17 +80,17 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                     {state().computer?.description}
                 </h2>
                 <Suspense fallback={<Puff color="gold"/>}>
-                <div style={{ position: 'absolute', left: '25vw', display: 'inline', height: '75%', width: '50vw' }}>
+                <div style={{ position: 'absolute', left: '25vw', display: 'inline', height: '75%', width: '50vw', 'margin-top': dimensions().WIDTH > 1200 ? '1%' : '0%' }}>
                     <HealthBar combat={state} enemy={true} game={game} />
                 </div>
                 </Suspense>
-                <div style={{ color: '#fdf6d8', 'margin-top': '9.5%', 'font-size': '0.875em', 'margin-bottom': dimensions().WIDTH > 1200 ? '3%' : '0%' }}>
+                <div style={{ color: '#fdf6d8', 'margin-top': dimensions().WIDTH > 1200 ? '13.5%' : '9.5%', 'font-size': dimensions().WIDTH > 1200 ? '1.25em' : '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
-                <div class='view' style={{ transform: 'scale(0.875)', 'margin-top': '0%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '0%' }}>
+                <div class='' style={{ transform: 'scale(0.875)', 'margin-top': dimensions().WIDTH > 1200 ? '2.5%' : '0%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '0%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                 </div>
-                <div style={{ 'margin-left': '0', 'margin-top': '-7.5%', transform: `${transformScale()}`, 'z-index': 1 }}>
+                <div style={{ 'margin-left': '0', 'margin-top': dimensions().WIDTH > 1200 ? '' : '-7.5%', transform: `scale(${transformScale()})`, 'z-index': 1 }}>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
                 <Show when={itemShow()}>

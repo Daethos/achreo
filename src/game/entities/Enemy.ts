@@ -1057,6 +1057,7 @@ export default class Enemy extends Entity {
             this.stateMachine.setState(States.LEASH); 
             this.enemies = [];
             this.clearStatuses();
+            this.currentAction = '';
         } else if (this.enemies[0].id === this.scene?.player?.playerID || this.currentTarget?.name === 'player') {
             this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene.player.playerID);
             this.inCombat = false;
@@ -1065,10 +1066,12 @@ export default class Enemy extends Entity {
             const newEnemy = this.scene.enemies.find((e: Enemy) => newId === e.enemyID);
             this.currentTarget = newEnemy;
             this.stateMachine.setState(States.CHASE);
+            this.currentAction = '';
         } else {
             this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene.player.playerID);
             this.inCombat = false;
             this.isTriumphant = true;
+            this.currentAction = '';
         };
     };
 
@@ -1418,6 +1421,7 @@ export default class Enemy extends Entity {
         this.setTint(ENEMY_COLOR);
         this.currentTarget = undefined;
         this.isAggressive = false;
+        this.currentAction = '';
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.healthbar.setVisible(false);
@@ -2015,6 +2019,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Achire');
     };
     onAstraveEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Astrave', PLAYER.DURATIONS.ASTRAVE, 'cast')
     };
@@ -2063,6 +2068,7 @@ export default class Enemy extends Entity {
     onBlinkUpdate = (_dt: number) => {};
     onBlinkExit = () => {};
     onChiomismEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Chiomism', PLAYER.DURATIONS.CHIOMISM, 'damage');
     };
@@ -2105,6 +2111,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Chiomism');
     };
     onConfuseEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
     };
@@ -2156,6 +2163,7 @@ export default class Enemy extends Entity {
     onDesperationExit = () => this.isCasting = false;
 
     onFearingEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Fearing', PLAYER.DURATIONS.FEAR, 'cast');
     };
@@ -2182,6 +2190,7 @@ export default class Enemy extends Entity {
         this.instincts();
     };
     onFrostEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Frost', PLAYER.DURATIONS.FROST, 'cast');
     };
@@ -2258,6 +2267,7 @@ export default class Enemy extends Entity {
     onHookExit = () => this.beam.reset();
 
     onIlirechEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Ilirech', PLAYER.DURATIONS.ILIRECH, 'damage');
     };
@@ -2285,6 +2295,7 @@ export default class Enemy extends Entity {
     };
     
     onKyrisianEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Kyrisian', PLAYER.DURATIONS.KYRISIAN, 'damage');
     };
@@ -2328,6 +2339,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Kyrisian');
     };
     onKyrnaicismEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.startCasting('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM, 'damage', true);
         this.targetID = this.getTargetId();
         if (this.targetID === '') {
@@ -2431,6 +2443,7 @@ export default class Enemy extends Entity {
     };
         
     onLikyrUpdate = (dt: number) => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, 'cast');
         if (this.isSuccessful(PLAYER.DURATIONS.LIKYR)) {
@@ -2453,6 +2466,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Likyr');
     };
     onMaierethEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'damage');
     };
@@ -2496,6 +2510,7 @@ export default class Enemy extends Entity {
         this.stopCasting('Countered Maiereth');
     };
     onParalyzeEnter = () => { 
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Paralyzing', PLAYER.DURATIONS.PARALYZE, 'cast');
     };
@@ -2522,6 +2537,7 @@ export default class Enemy extends Entity {
         this.instincts();
     };
     onPolymorphingEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
     };
@@ -2549,6 +2565,7 @@ export default class Enemy extends Entity {
     };
 
     onPursuitEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
         if (this.inCombat) this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
         if (this.currentTarget) {
             if (this.currentTarget.flipX) {
@@ -2703,6 +2720,7 @@ export default class Enemy extends Entity {
     };
     
     onSacrificeEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.specialCombatText = this.scene.showCombatText('Sacrifice', 750, 'effect', false, true, () => this.specialCombatText = undefined);
         if (this.currentTarget?.name === 'player') {
             if (this.checkPlayerResist() === false) return;
@@ -2717,6 +2735,7 @@ export default class Enemy extends Entity {
     onSacrificeExit = () => this.evaluateCombatDistance();
         
     onSlowingEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.specialCombatText = this.scene.showCombatText('Slow', 750, 'cast', false, true, () => this.specialCombatText = undefined);
         const id = this.getTargetId();
         if (this.currentTarget?.name === 'player') {
@@ -2736,6 +2755,7 @@ export default class Enemy extends Entity {
     onSlowingExit = () => this.evaluateCombatDistance();
     
     onSnaringEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
         this.targetID = this.getTargetId();
         this.startCasting('Snaring', PLAYER.DURATIONS.SNARE, 'cast');
     };
@@ -2765,6 +2785,7 @@ export default class Enemy extends Entity {
     };
 
     onSutureEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.specialCombatText = this.scene.showCombatText('Suture', 750, 'effect', false, true, () => this.specialCombatText = undefined);
         if (this.currentTarget?.name === 'player') {
             if (this.checkPlayerResist() === false) return;    
@@ -2779,6 +2800,7 @@ export default class Enemy extends Entity {
     onSutureExit = () => this.evaluateCombatDistance();
 
     onDevourEnter = () => {
+        if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.startCasting('Devouring', PLAYER.DURATIONS.TSHAERAL, 'damage', true);
         this.targetID = this.getTargetId();
         if (this.currentTarget?.name === 'player') {

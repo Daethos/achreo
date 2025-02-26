@@ -9,7 +9,7 @@ import Enemy from '../entities/Enemy';
 import { CombatManager } from '../phaser/CombatManager';
 import { screenShake } from '../phaser/ScreenShake';
 import ParticleManager from '../matter/ParticleManager';
-import { Hud } from './Hud';
+import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from './Hud';
 import ScrollingCombatText from '../phaser/ScrollingCombatText';
 import { ObjectPool } from '../phaser/ObjectPool';
 import { Compiler } from '../../utility/ascean';
@@ -552,14 +552,14 @@ export class Tutorial extends Phaser.Scene {
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
-            this.offsetX = Math.min((width / 12.5), this.offsetX + 3);
+            this.offsetX = Math.min((width / X_OFFSET), this.offsetX + X_SPEED_OFFSET);
         } else {
-            this.offsetX = Math.max(this.offsetX - 3, -(width / 12.5));
+            this.offsetX = Math.max(this.offsetX - X_SPEED_OFFSET, -(width / X_OFFSET));
         };
         if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - 2, -(height / 9));
+            this.offsetY = Math.max(this.offsetY - Y_SPEED_OFFSET, -(height / Y_OFFSET));
         } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / 9), this.offsetY + 2);
+            this.offsetY = Math.min((height / Y_OFFSET), this.offsetY + Y_SPEED_OFFSET);
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };

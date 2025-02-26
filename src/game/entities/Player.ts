@@ -449,15 +449,6 @@ export default class Player extends Entity {
         return true;
     };
 
-    outOfRange = (range: number) => {
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
-        if (distance > range) {
-            this.resistCombatText = this.scene.showCombatText(`Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
-            return true;    
-        };
-        return false;
-    };
-
     getEnemyId = () => this.scene.state.enemyID || this.currentTarget?.enemyID;
 
     quickTarget = (enemy: Enemy) => {

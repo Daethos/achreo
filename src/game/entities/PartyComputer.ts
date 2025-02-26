@@ -701,7 +701,7 @@ export default class Party extends Entity {
         this.setGlow(this.spriteShield, caerenic, 'shield');
     };
 
-    flickerCarenic = (duration: number) => {
+    flickerCaerenic = (duration: number) => {
         if (this.isCaerenic === false && this.isGlowing === false) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {
@@ -829,7 +829,7 @@ export default class Party extends Entity {
             onStart: () => {
                 this.isAttacking = true;
                 this.enemySound('leap', true);
-                this.flickerCarenic(900); 
+                this.flickerCaerenic(900); 
             },
             onComplete: () => { 
                 this.isLeaping = false; 
@@ -861,7 +861,7 @@ export default class Party extends Entity {
             duration: 600,
             ease: 'Circ.easeOut',
             onStart: () => {
-                this.flickerCarenic(600);  
+                this.flickerCaerenic(600);  
             },
             onComplete: () => {
                 if (this.rushedEnemies.length > 0) {
@@ -909,7 +909,7 @@ export default class Party extends Entity {
             targets: this,
             angle: 360,
             duration: 800,
-            onStart: () => this.flickerCarenic(3200),
+            onStart: () => this.flickerCaerenic(3200),
             onLoop: () => {
                 this.frameCount = 0;
                 this.clearAnimations();

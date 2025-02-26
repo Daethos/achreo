@@ -4,7 +4,7 @@ import { useResizeListener } from '../utility/dimensions';
 import { Attributes } from '../utility/attributes';
 import { CombatAttributes } from '../utility/combat';
 import Ascean from '../models/ascean';
-const font = { 'font-size': '1em', margin: '0' };
+const font = { 'font-size': window.innerWidth > 1200 ? '' : '1em', margin: '0' };
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const dimensions = useResizeListener();
@@ -89,33 +89,33 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow, setDisp
     const inline = { width: dimensions().ORIENTATION === 'landscape' ? `28%` : `40%`, display: 'inline-block' };
     return <div class='creature-heading attributes' style={{ width: '100%', display: 'inline-flex' }}>
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}>Con</button>
+            <button class='buttonBorderless' onClick={() => toggle('constitution')} style={font}><p style={{ margin: '0 auto' }}>Con</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Constitution')}>{abilities()?.totalConstitution}</p>
         </div>
         <div>{'\n'}</div>
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}>Str</button>
+            <button class='buttonBorderless' onClick={() => toggle('strength')} style={font}><p style={{ margin: '0 auto' }}>Str</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Strength')}>{abilities()?.totalStrength}</p>
         </div>
         <div>{'\n'}</div>
 
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}>Agi</button>
+            <button class='buttonBorderless' onClick={() => toggle('agility')} style={font}><p style={{ margin: '0 auto' }}>Agi</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Agility')}> {abilities()?.totalAgility}</p>
         </div>
         <div>{'\n'}</div>
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}>Ach</button>
+            <button class='buttonBorderless' onClick={() => toggle('achre')} style={font}><p style={{ margin: '0 auto' }}>Ach</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Achre')}>{abilities()?.totalAchre}</p>
         </div>
         <div>{'\n'}</div>
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}>Caer</button>
+            <button class='buttonBorderless' onClick={() => toggle('caeren')} style={font}><p style={{ margin: '0 auto' }}>Caer</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Caeren')}>{abilities()?.totalCaeren}</p>
         </div>
         <div>{'\n'}</div>
         <div style={inline}>
-            <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}>Kyo</button>
+            <button class='buttonBorderless' onClick={() => toggle('kyosir')} style={font}><p style={{ margin: '0 auto' }}>Kyo</p></button>
             <p class='gold' style={font} onClick={() => highlightAttribute('Kyosir')}>{abilities()?.totalKyosir}</p>
         </div>
     </div>;

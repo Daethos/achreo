@@ -21,7 +21,6 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
                 [key]: value
             }
         };
-        console.log(update, 'Updating Settings');
         EventBus.emit('save-settings', update);
     };
     return <div>

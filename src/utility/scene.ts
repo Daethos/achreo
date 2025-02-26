@@ -107,31 +107,24 @@ export const INTRO_NODES = {
         key: 1,
         prev: 0,
         next: 2,
-        text: `Most humans died. Those who survived did so thanks to the brilliance of the prophet of Daethos, Laetrois Ath'Shaorah, 
-        who warred against the Ancients on behalf of humanity. \n
-        Humans were freed: from the Ancients, from their homelands, 
-        and from each other. The Sundering's last gift.
+        text: `Most humans died. Those who survived did so thanks to the brilliance of the prophet of Daethos, Laetrois Ath'Shaorah, who warred against the Ancients on behalf of humanity. \n
+        Humans were freed: from the Ancients, from their homelands, and from each other. The Sundering's last gift. \n
         For a thousand years since, strange peoples from stranger lands clashed. Few coalesced.`,
     },
     2: {
         key: 2,
         prev: 1,
         next: 3,
-        text: `And yet, the beauty of this world bloomed once more, with many now curious and traveling round the realm,
-        despite whispers of the old and the Ancient being seen again. \n
-        Whether in their mythic forms or of another nature altogether, 
-        perhaps not all perished in their war. \n
+        text: `And yet, the beauty of this world bloomed once more, with many now curious and traveling round the realm, despite whispers of the old and the Ancient being seen again. \n
+        Whether in their mythic forms or of another nature altogether, perhaps not all perished in their war. \n
         Perhaps its horror has returned.`,
     },
     3: {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside the past century, warring ceased to an uncomfortable peace, with many fathers and sons dying in its making, their progeny now placid. \n
-        The Ascea now satiates those wary of their idle, listless nature; 
-        a decennial tournament full of jape, jest, and joust, 
-        where honor, prestige, and wealth are sought, and title, 
-        the ‘Ascean va'Esai,’ is crowned.`,
+        text: `Inside the past century, warring ceased toward an uncomfortable peace, with many fathers and sons dying in its making—their progeny rapt with placidity. \n
+        The Ascea now satiates those wary of their idle, listless nature; a decennial tournament full of jest and joust, where prestige and wealth are sought, and the title, ‘Ascean va'Esai,’ is crowned.`,
     },
     4: {
         key: 4,
@@ -147,12 +140,9 @@ export const INTRO_NODES = {
         key: 5,
         prev: 4,
         next: undefined, // undefined
-        text: `The Ascea may grant forms of honor, prestige, swathes of land, and numerous titles—yet these are base; inert. 
-        To become the Ascean va'Esai. To be Worthy. 
-        That is the offer. That is the reward. \n
-        Do not listen to whispers otherwise. Do not be led astray. 
-        Do not fear the bleating of the fallen and the beaten. 
-        There is nothing else.`,
+        text: `The Ascea may grant forms of honor, prestige, swathes of land, and numerous titles—yet these are base; inert. \n
+        To become the Ascean. The va'Esai. To be Worthy. That is the offer. That is the reward. \n
+        Do not listen to whispers otherwise. Do not be led astray. Do not fear the bleating of the fallen and the beaten. There is nothing else.`,
     },
 }; 
 // with some speaking shadows, dreaming of ignition,

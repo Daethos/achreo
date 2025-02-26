@@ -353,6 +353,6 @@
         max-height: 88px;
     }
     .view {
-        transform: scale(2);
+        transform: scale(1.75);
     }
 }

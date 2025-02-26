@@ -23,7 +23,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         };
         if (canTick(effect, effectTimer, combat().combatTimer)) { 
             // console.log('%c Prayer Effect Ticking...', 'color: gold');
-            EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });    
+            EventBus.emit('initiate-combat', { data: { effect, effectTimer: effectTimer() }, type: 'Tick' });
         };
         if (effectTimer() <= 0) {
             // console.log('%c Prayer Effect Removed Naturally', 'color: red');
@@ -40,7 +40,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
     };
 
     createEffect(() => {
-        if (game().pauseState === true) return;    
+        if (game().pauseState === true) return;
         timeout = setInterval(tick, 1000);
         onCleanup(() => clearInterval(timeout));
     });
@@ -65,7 +65,6 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         setEffect(effect);
         setShow(!show());
     };
-    // {...itemStyle(combat()?.weapons?.[0]?.rarity as string) }
     return <div class={enemy === true ? 'enemyStatusEffects' : 'playerStatusEffects'} style={{ 'margin-left': '0.5vw' }}>
         <button style={{ border: `0.15em solid ${borderColor(effect.prayer)}`, 'background-color': '#000' }} onClick={() => showEffect()}>
             <img src={effect?.imgUrl} />

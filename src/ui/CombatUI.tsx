@@ -57,7 +57,6 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
             transition: 'background 0.5s ease-out',
         };
     };
-    const left = () => dimensions().WIDTH > 1200 ? '4.5vw' : '';
     const size = (len: number) => {
         switch (true) {
             case len < 10 && dimensions().WIDTH > 1200: return '1.5em'; // 1.15em

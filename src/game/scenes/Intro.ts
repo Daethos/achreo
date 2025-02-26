@@ -44,7 +44,8 @@ export class Intro extends Scene {
                 fontSize,
                 stroke: 'black',
                 strokeThickness: 2,
-                align: 'center',
+                fixedWidth: width * WRAP.WIDTH,
+                align: 'left',
                 wordWrap: {
                     width: width * WRAP.WIDTH,
                     callback: undefined,

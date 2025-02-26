@@ -859,7 +859,7 @@ function rarityCompiler(ascean: Ascean) {
         };
         return rarities;
     } catch (err) {
-        console.log(err, 'Rarity Compiler Error');
+        console.warn(err, 'Rarity Compiler Error');
     };
 };
 
@@ -939,7 +939,7 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         const defense = defenseCompiler(ascean, attributes, combatStats, rarities);
         return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense } as Compiler;
     } catch (err) {
-        console.log(err, 'Ascean Compiler Error');
+        console.warn(err, 'Ascean Compiler Error');
     };
 };
 export const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {

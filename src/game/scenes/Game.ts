@@ -19,7 +19,7 @@ import Party from '../entities/PartyComputer';
 import Ascean from '../../models/ascean';
 import { getEnemy, populateEnemy } from '../../assets/db/db';
 import { asceanCompiler, Compiler } from '../../utility/ascean';
-import { WindPipeline } from '../shaders/Wind';
+// import { WindPipeline } from '../shaders/Wind';
 // @ts-ignore
 import { PhaserNavMeshPlugin } from 'phaser-navmesh';
 // @ts-ignore
@@ -80,7 +80,7 @@ export class Game extends Scene {
 
     preload() {
         this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-        this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
+        // this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
     };
 
     create (hud: Hud) {
@@ -133,21 +133,21 @@ export class Game extends Scene {
         this.overlay.fillRect(0, 0, 4096, 4096);
         this.overlay.setDepth(99);
 
-        if (this.game.renderer.type === Phaser.WEBGL) {
-            var windPipeline = new WindPipeline(this.game);
-            (this.game.renderer as any).pipelines.add('Wind', windPipeline);
-            layer2?.setPipeline('Wind');
-            layer3?.setPipeline('Wind');
-            layer4?.setPipeline('Wind');
-            this.time.addEvent({
-                delay: 100,
-                loop: true,
-                callback: () => {
-                    windPipeline.updateTime(this.time.now / 1000);
-                },
-                callbackScope: this
-            });
-        };
+        // if (this.game.renderer.type === Phaser.WEBGL) {
+        //     var windPipeline = new WindPipeline(this.game);
+        //     (this.game.renderer as any).pipelines.add('Wind', windPipeline);
+        //     layer2?.setPipeline('Wind');
+        //     layer3?.setPipeline('Wind');
+        //     layer4?.setPipeline('Wind');
+        //     this.time.addEvent({
+        //         delay: 100,
+        //         loop: true,
+        //         callback: () => {
+        //             windPipeline.updateTime(this.time.now / 1000);
+        //         },
+        //         callbackScope: this
+        //     });
+        // };
 
         // const debugGraphics = this.add.graphics().setAlpha(0.75);
         // this.navMesh.enableDebug(debugGraphics); 
@@ -161,13 +161,14 @@ export class Game extends Scene {
             this.enemies.push(e);
             e.setPosition(enemy.x, enemy.y);
         });
-        if (this.hud.settings.desktop) {
-            for (let i = 0; i < 40; ++i) {
+        const num = this.hud.settings.desktop ? 40 : 10
+        // if (this.hud.settings.desktop) {
+            for (let i = 0; i < num; ++i) {
                 const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
             };
-        };
+        // };
         map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
             this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
         let camera = this.cameras.main;

@@ -35,7 +35,6 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         width: settings()?.combatSettings?.width || '50%',
     });
     const poly = window.innerWidth * Number(`0.${settings()?.combatSettings?.width.split("%")[0]}`) * 0.9;
-    console.log(poly, 'poly')
     createEffect(() => {
         if (!settings().combatSettings) return;
         setEdit({...settings().combatSettings});

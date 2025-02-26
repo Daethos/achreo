@@ -16,7 +16,8 @@ export const TALENT_COST = {
     "60": 45,
 };
 export const TALENT_COOLDOWN = {
-    "6000": 2000,
+    "3000": 1000,
+    "6000": 3000,
     "10000": 6000,
     "15000": 10000,
 };

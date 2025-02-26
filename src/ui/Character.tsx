@@ -46,7 +46,8 @@ export const COST = {
     "60": "45 Grace",
 };
 export const COOLDOWN = {
-    "6s": "2s",
+    "3s": "1s",
+    "6s": "3s",
     "10s": "6s",
     "15s": "10s",
 };
@@ -202,18 +203,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const addTalent = (talent: string, type: string) => {
-        console.log(talent, type, 'addTalent');
         if (talents().points.spent === talents().points.total) {
-            console.log('You do not have any points to spend, returning!');
             setShowTalentConfirm({ show: false, type: '' });    
             return;
         };
         let newTalents = JSON.parse(JSON.stringify(talents()));
-        console.log(newTalents.talents[talent as keyof typeof newTalents.talents], 'Talent?');
         (newTalents.talents[talent as keyof typeof newTalents.talents] as any)[type] = true;
         newTalents.points.spent += 1;
         EventBus.emit('update-talents', newTalents);
-        console.log(newTalents.talents[talent as keyof typeof newTalents.talents], newTalents.points, "New Talent and Points?");
         setShowTalentConfirm({ show: false, type: '' });
     };
 

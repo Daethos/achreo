@@ -18,15 +18,14 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const viewMargin = { margin: '3%' };
     const [positioning, setPositioning] = createSignal({
-        top: dimensions().WIDTH > 1200 ? '37.5%' : '50%',
-        left: dimensions().WIDTH > 1200 ? '37.5%' : '50%',
+        top: dimensions().WIDTH > 1800 ? '33%' : dimensions().WIDTH > 1200 ? '30%' : '50%',
+        left: dimensions().WIDTH > 1800 ? '27.5%' : dimensions().WIDTH > 1200 ? '25%' : '50%',
     });
     createEffect(() => {
         setPositioning({
             top: dimensions().WIDTH > 1800 ? '33%' : dimensions().WIDTH > 1200 ? '30%' : '50%',
-            left: dimensions().WIDTH > 1800 ? '33%' : dimensions().WIDTH > 1200 ? '30%' : '50%',
+            left: dimensions().WIDTH > 1800 ? '27.5%' : dimensions().WIDTH > 1200 ? '25%' : '50%',
         });
-        console.log(dimensions().WIDTH, 'width');
     });
     return <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
         <div class='border superCenter center' style={{ height: '100', width: '85%', overflow: 'scroll', 'scrollbar-width': 'none' }}>
@@ -73,31 +72,31 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
             </div>
             <div class='border right center' style={{ height: '80vh', width: '48%', top: '10%' }}>
                 <div class='superCenter view' style={{ position: 'absolute', ...positioning() }}>
-                <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
-                <Suspense fallback={<Puff color="gold" />}>
-                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-                </Suspense>
+                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                    <Suspense fallback={<Puff color="gold" />}>
+                        <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                    </Suspense>
                 </div>
             </div>
         </div>
         <div class='creature-heading center'>
-        <Show when={show()}>
-            <div class='modal' onClick={() => setShow(!show())}>
-            <Suspense fallback={<Puff color="gold" />}>
-                <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
-            </Suspense>
-            </div>
-        </Show>
-        <Show when={attrShow()}>
-        <div class='modal' onClick={() => setAttrShow(!attrShow())}>
-            <AttributeModal attribute={attribute()}/>
-        </div> 
-        </Show>
-        <Show when={attributeDisplay().show}>
-            <div class='modal' onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
-                <AttributeNumberModal attribute={attributeDisplay} />
-            </div>
-        </Show>
+            <Show when={show()}>
+                <div class='modal' onClick={() => setShow(!show())}>
+                <Suspense fallback={<Puff color="gold" />}>
+                    <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+                </Suspense>
+                </div>
+            </Show>
+            <Show when={attrShow()}>
+            <div class='modal' onClick={() => setAttrShow(!attrShow())}>
+                <AttributeModal attribute={attribute()}/>
+            </div> 
+            </Show>
+            <Show when={attributeDisplay().show}>
+                <div class='modal' onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                    <AttributeNumberModal attribute={attributeDisplay} />
+                </div>
+            </Show>
         </div>
     </Show>;
 };

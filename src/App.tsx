@@ -578,7 +578,7 @@ export default function App() {
                     <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}} style={{ 'background-color': 'black' }}>Create Character</button>
+                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
                 </Show>
             </div>
         ) : ascean() ? (
@@ -587,10 +587,10 @@ export default function App() {
                     <AsceanView ascean={ascean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length > 0}>
-                    <button class='highlight cornerTL' onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} } style={{ 'background-color': 'black' }}>Main Menu</button> 
+                    <button class='highlight cornerTL' onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} }>Main Menu</button> 
                 </Show>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}} style={{ 'background-color': 'black' }}>Create Character</button>
+                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
                 </Show>
                 <Show when={menu().deleteModal}>
                     <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
@@ -598,17 +598,17 @@ export default function App() {
                         <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
                     </div>
                 </Show> 
-                <button class="highlight cornerBL" style={{ 'background-color': 'black' }} onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
-                <button class='highlight cornerBR animate' style={{ 'background-color': 'black' }} onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
+                <button class="highlight cornerBL" onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
+                <button class='highlight cornerBR animate' onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
             </>
         ) : ( 
             <Suspense fallback={<Puff color="gold"/>}>
             <div class="cornerTL super" style={{ 'text-shadow': '0em 0em 0.1em #ffd700' }}>The Ascean v0.0.1</div>
             <Show when={menu().loading === false} fallback={<div class='superCenter'><Puff color="gold"/></div>}>
-            <div class='superCenter cinzel' style={{ width: '100%' }}>
+            <div class='superCenter cinzel full'>
                 <div class='center'>
                     <div class='title long-animate'>The Ascean</div>
-                    <button class='center highlight animate' style={{ 'font-size': '1.5em', 'font-family': 'Cinzel Regular' }} onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
+                    <button class='center highlight animate cinzel enter' onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
                 </div>
             </div>
             </Show>
@@ -623,4 +623,4 @@ export default function App() {
         </Suspense>
         </Show>
     </div>;
-};
+}; //  margin-bottom: 0.25em; margin-top: -0.5em;

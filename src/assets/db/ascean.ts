@@ -2908,7 +2908,7 @@ export const Asceans: any[] = [
         name: 'Achreon Amulet',
         rarity: 'Uncommon',
     },"trinket":    {
-        name: "Quor'eite Trinker",
+        name: "Quor'eite Trinket",
         rarity: 'Uncommon',
     },
     "faith":"adherent",
@@ -4258,7 +4258,7 @@ export const Asceans: any[] = [
         name: 'Achreon Amulet',
         rarity: 'Rare',
     },"trinket":    {
-        name: "Quor'eite Trinker",
+        name: "Quor'eite Trinket",
         rarity: 'Rare',
     },
     "faith":"adherent",

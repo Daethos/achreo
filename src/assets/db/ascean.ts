@@ -2231,25 +2231,25 @@ export const Asceans: any[] = [
     "kyosir":13,
     "weaponOne":{
         name: "Hand of Se'dyro",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"weaponTwo":{
         name: 'Sedyrus Shortbow',
-        rarity: 'Commong',
+        rarity: 'Common',
     },"weaponThree":{
         name: "Se'narian Spear",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"shield":{
         name: 'Shaorahi',
-        rarity: 'Commong',
+        rarity: 'Common',
     },"helmet":{
         name: "Sedyrus Helm",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"chest":{
         name: "Sedyrus Armor",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"legs":{
         name: "Sedyrus Greaves",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"ringOne":{
         name: 'Empty Ring Slot',
         rarity: 'Default',
@@ -2447,25 +2447,25 @@ export const Asceans: any[] = [
     "kyosir":12,
     "weaponOne":{
         name: "Caerenic Halberd",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"weaponTwo":{
         name: "Sunshear",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"weaponThree":{
         name: "Caerenic Shatter",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"shield":{
         name: 'Heater',
-        rarity: 'Commong',
+        rarity: 'Common',
     },"helmet":{
         name: "Soverain Helm",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"chest":{
         name: "Soverain Cuirass",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"legs":{
         name: "Soverain Greaves",
-        rarity: 'Commong',
+        rarity: 'Common',
     },"ringOne":{
         name: 'Empty Ring Slot',
         rarity: 'Default',

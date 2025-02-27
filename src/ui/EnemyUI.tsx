@@ -87,7 +87,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                 <div style={{ color: '#fdf6d8', 'margin-top': dimensions().WIDTH > 1200 ? '13.5%' : '9.5%', 'font-size': dimensions().WIDTH > 1200 ? '1.25em' : '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
-                <div class='' style={{ transform: 'scale(0.875)', 'margin-top': dimensions().WIDTH > 1200 ? '2.5%' : '0%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '0%' }}>
+                <div class='' style={{ transform: 'scale(0.875)', 'margin-top': dimensions().WIDTH > 1200 ? '2.5%' : '1%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '3%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                 </div>
                 <div style={{ 'margin-left': '0', 'margin-top': dimensions().WIDTH > 1200 ? '' : '-7.5%', transform: `scale(${transformScale()})`, 'z-index': 1 }}>

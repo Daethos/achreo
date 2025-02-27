@@ -23,7 +23,7 @@ export function randomIntFromInterval(min: number, max: number): number {
 };
 
 export function randomFloatFromInterval(min: number, max: number): number {
-    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+    return Number(parseFloat((Math.random() * (max - min) + min).toString()).toFixed(2));
 };
 
 function influence(influences: string[] | undefined): string[] | undefined {

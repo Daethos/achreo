@@ -261,7 +261,7 @@ export default class Settings {
                 spacing: 4,
                 x: 0.7,
                 y: 0.62,
-                width: 1,
+                width: 0.75,
             },
             fpsText: {
                 x: 0.45,

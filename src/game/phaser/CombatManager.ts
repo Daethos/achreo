@@ -402,7 +402,7 @@ export class CombatManager {
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };
@@ -417,7 +417,7 @@ export class CombatManager {
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };

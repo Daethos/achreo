@@ -276,29 +276,20 @@ export const PLAYER = {
     },
 };
 
-// ELEMENT IN ARRAY
-
 // [0]: Critical Heal
 // [1]: Casual Heal
 // [2]: Starter Heal
-
 // [3]: Critical Damage
 // [4]: Casual Damage
 // [5]: Starter Damage
-
 // [6]: Melee < 75 Distance
 // [7]: Ranged < 75 Distance
-
 // [8]: Melee > 75 && < 150 Distance
 // [9]: Ranged > 75 && < 150 Distance
-
 // [10]: Melee > 150 Distance && Distance < 225
 // [11]: Ranged > 150 Distance && Distance < 225
-
 // [12]: Melee > 225 Distance
 // [13]: Ranged > 225 Distance
-
-// Currently 14 'Instincts' and 16 Options + Invoke
 
 const STATE = "stateMachine";
 const POSITIVE = "positiveMachine";

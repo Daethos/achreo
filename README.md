@@ -1,6 +1,6 @@
 # [The Ascean](https://achreo.vercel.app)
 
-## This is a Mobile-First Action Roleplaying Game with 2-D Top-Down Graphics. It runs on mobile as a progressive web app (PWA), and is laptop (1440x900) and desktop (1920x1080) friendly.
+### This is a Mobile-First Action Roleplaying Game with 2-D Top-Down Graphics. It runs on mobile as a progressive web app (PWA), and is laptop (1440x900) and desktop (1920x1080) friendly.
 
 ## Playing the Game
 <details>
@@ -31,7 +31,7 @@
 #### Multiple avenues of dispatching your enemies are present in the form of physical actions, such as swinging your weapon, rolling into them, and dodging or parrying their attacks. You also possess special abilities which are augmented by your mastery: from casting damaging effects and forms of crowd control such as confuse and polymorph, to healing yourself and creating protective shields.
 
 #### You may run across enemies fighting each other, and engage with them, or be roped into their melee cause of their general aggression. It is a very unsafe world, proceed with caution!
-![gif](https://media.giphy.com/media/I63VtxaRJpu1kHDJdv/giphy.gif)
+![gif](https://media.giphy.com/media/0aJTZtGSQ5hOBwfLm9/giphy.gif)
 
 </details>
 <details>

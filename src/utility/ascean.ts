@@ -805,11 +805,12 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
             coefficient = ascean.level / 2;
             break;
         case 'Uncommon':
-            coefficient = 1;
-            // coefficient = ascean.level / 8;
+            // coefficient = 1;
+            coefficient = ascean.level / 4;
             break;
         case 'Rare':
             coefficient = 1;
+            // coefficient = ascean.level / 6;
             break;
         case 'Epic':
             coefficient = 1;
@@ -818,15 +819,15 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
             coefficient = 1;
             break;
     };
-    if (coefficient > 1) {
-        if (coefficient > 3) {
-            coefficient = 2;
-        } else if (coefficient > 2) {
-            coefficient = 1.5;
-        } else {
-            coefficient = 1;
-        };
+    // if (coefficient > 1) {
+    if (coefficient >= 3) {
+        coefficient = 2;
+    } else if (coefficient >= 2) {
+        coefficient = 1.5;
+    } else {
+        coefficient = 1;
     };
+    // };
     return coefficient;
 };
 

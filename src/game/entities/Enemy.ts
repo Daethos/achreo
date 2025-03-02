@@ -1019,6 +1019,7 @@ export default class Enemy extends Entity {
         this.isDefeated = true;
         this.isAggressive = false;
         this.enemies = [];
+        this.currentAction = '';
     };
 
     clearArenaWin = () => {
@@ -1031,6 +1032,7 @@ export default class Enemy extends Entity {
         this.isTriumphant = true;
         this.isAggressive = false;
         this.enemies = [];
+        this.currentAction = '';
     };
 
     clearCombatLoss = () => {
@@ -1043,6 +1045,7 @@ export default class Enemy extends Entity {
         this.isAggressive = false;
         this.enemies = [];
         this.clearStatuses();
+        this.currentAction = '';
     };
     
     clearCombatWin = () => { 
@@ -1899,6 +1902,8 @@ export default class Enemy extends Entity {
         if (this.currentTarget !== undefined && this.currentTarget.enemyID) {
             this.currentTarget = undefined;
         };
+        this.currentAction = '';
+        this.enemies = [];
         this.setSpecialCombat(false);
         this.leashTimer = this.scene.time.addEvent({
             delay: 500,
@@ -4277,6 +4282,8 @@ export default class Enemy extends Entity {
             };
             this.inCombat = false;
             this.inComputerCombat = false;
+            this.currentAction = '';
+            this.enemies = [];
             return;
         };
         let direction = this.currentTarget.position.subtract(this.position);

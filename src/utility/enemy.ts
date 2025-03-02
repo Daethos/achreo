@@ -129,7 +129,7 @@ export const ENEMY_SPECIAL = {
 export const DISTANCE = {
     MIN: 0,
     ATTACK: 25,
-    MOMENTUM: 2,
+    MOMENTUM: 1.25,
     THRESHOLD: 75,
     CHASE: 75,
     RANGED_ALIGNMENT: 25,

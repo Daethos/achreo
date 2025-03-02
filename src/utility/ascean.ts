@@ -1,8 +1,9 @@
-import { Accessor } from "solid-js";
+import { Accessor, Setter } from "solid-js";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { GameState } from "../stores/game";
 import { CombatAttributes, Defense } from "./combat";
+import { AXE, BOW, CURVED_SWORD, DAGGER, EARTH, FIRE, FROST, GREATAXE, GREATBOW, GREATMACE, GREATSWORD, LIGHTNING, LONG_SWORD, MACE, ONE_HAND, POLEARM, RIGHTEOUS, SCYTHE, SHORT_SWORD, SORCERY, SPOOKY, TWO_HAND, WILD, WIND } from "./weaponTypes";
 
 export type CharacterSheet = {
     name: string,
@@ -402,6 +403,31 @@ const WEIGHTS = {
     ATTRIBUTE_START: 10,
 };
 
+const CONSTITUTION = "Constitution";
+const STRENGTH = "Strength";
+const AGILITY = "Agility";
+const ACHRE = "Achre";
+const CAEREN = "Caeren";
+const KYOSIR = "Kyosir";
+const MAN = "Man";
+const WOMAN = "Woman";
+const INITIATIVE = 10;
+const HEALTH = 50;
+const GRACE = 75;
+const STAMINA = 75;
+const RACE_BOOST = 2;
+const MASTERY_MULTIPLIER = 1.15;
+const RAW_MODIFIER_DIVIDE = 2;
+const RAW_MODIFIER_SUBTRACT = 10;
+const RAW_MODIFIER_TWO_HAND_CLEARANCE = 50;
+const WEAPON_MULTIPLIER = 120;
+// const WEAPON_MODIFIER = 20;
+const FAITH_LOW_MODIFIER = 1.025;
+const FAITH_MID_MODIFIER = 1.05;
+const FAITH_HIGH_MODIFIER = 1.075;
+const FAITH_FLAT_MODIFIER = 3;
+const DEFENSE_MODIFIER_DIVIDE = 12;
+
 export type Skills = {
     'Axe': number;
     'Bow': number;
@@ -463,8 +489,7 @@ const RACE = {
 };
 
 // ================================== HELPER FUNCTIONS =================================== \\
-const attributeCompiler = (ascean: Ascean, 
-    rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number; weaponOne: number; weaponTwo: number; }): CombatAttributes => {
+const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: number; legs: number; ringOne: number; ringTwo: number; amulet: number; shield: number; trinket: number; weaponOne: number; weaponTwo: number; }): CombatAttributes => {
     let newAttributes: CombatAttributes | any = {};
     let itemRarity = {
         helmCon: ascean.helmet.constitution * rarities.helmet,
@@ -529,26 +554,26 @@ const attributeCompiler = (ascean: Ascean,
         weaponTwoKyo: ascean.weaponTwo.kyosir * rarities.weaponTwo,    
     };
         
-    newAttributes.rawConstitution =  Math.round((ascean.constitution + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0)) * (ascean?.mastery === 'Constitution' ? 1.1 : 1));
-    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === RACE.SEDYREAL || ascean?.origin === RACE.ASHTRE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Strength' ? 1.15 : 1));
-    newAttributes.rawAgility =  Math.round(((ascean?.agility + (ascean?.origin === RACE.QUOREITE || ascean?.origin === RACE.ASHTRE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0))) * (ascean?.mastery === 'Agility' ? 1.15 : 1));
-    newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Man' ? 2 : 0)) * (ascean?.mastery === 'Achre' ? 1.15 : 1));
-    newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 2 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean?.mastery === 'Caeren' ? 1.15 : 1));
-    newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === "Fyers" || ascean?.origin === RACE.QUOREITE ? 2 : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === 'Woman' ? 2 : 0)) * (ascean.mastery === 'Kyosir' ? 1.15 : 1));
+    newAttributes.rawConstitution =  Math.round((ascean.constitution + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? RACE_BOOST : 0)) * (ascean?.mastery === CONSTITUTION ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === RACE.SEDYREAL || ascean?.origin === RACE.ASHTRE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === MAN ? RACE_BOOST : 0)) * (ascean?.mastery === STRENGTH ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawAgility =  Math.round(((ascean?.agility + (ascean?.origin === RACE.QUOREITE || ascean?.origin === RACE.ASHTRE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? RACE_BOOST : 0))) * (ascean?.mastery === AGILITY ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === MAN ? RACE_BOOST : 0)) * (ascean?.mastery === ACHRE ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? RACE_BOOST : 0)) + (ascean?.sex === WOMAN ? RACE_BOOST : 0)) * (ascean?.mastery === CAEREN ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawKyosir =  Math.round(((ascean?.kyosir + (ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === WOMAN ? RACE_BOOST : 0)) * (ascean.mastery === KYOSIR ? MASTERY_MULTIPLIER : 1));
     
-    newAttributes.rawConMod = (newAttributes.rawConstitution - 10) / 2;
-    newAttributes.rawStrMod = (newAttributes.rawStrength - 10) / 2;
-    newAttributes.rawAgiMod = (newAttributes.rawAgility - 10) / 2;
-    newAttributes.rawAchMod = (newAttributes.rawAchre - 10) / 2;
-    newAttributes.rawCaerMod = (newAttributes.rawCaeren - 10) / 2;
-    newAttributes.rawKyoMod = (newAttributes.rawKyosir - 10) / 2;
+    newAttributes.rawConMod = (newAttributes.rawConstitution - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
+    newAttributes.rawStrMod = (newAttributes.rawStrength - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
+    newAttributes.rawAgiMod = (newAttributes.rawAgility - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
+    newAttributes.rawAchMod = (newAttributes.rawAchre - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
+    newAttributes.rawCaerMod = (newAttributes.rawCaeren - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
+    newAttributes.rawKyoMod = (newAttributes.rawKyosir - RAW_MODIFIER_SUBTRACT) / RAW_MODIFIER_DIVIDE;
     
-    newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.weaponCon + (newAttributes.rawConstitution > 50 ? itemRarity.weaponTwoCon : 0) + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
-    newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.weaponStr + (newAttributes.rawStrength > 50 ? itemRarity.weaponTwoStr : 0) + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
-    newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.weaponAgi + (newAttributes.rawAgility > 50 ? itemRarity.weaponTwoAgi : 0) + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
-    newAttributes.totalAchre = newAttributes.rawAchre + itemRarity.weaponAch + (newAttributes.rawAchre > 50 ? itemRarity.weaponTwoAch : 0) + itemRarity.shieldAch + itemRarity.helmAch + itemRarity.chestAch + itemRarity.legsAch + itemRarity.ringOneAch + itemRarity.ringTwoAch + itemRarity.amuletAch + itemRarity.trinketAch;
-    newAttributes.totalCaeren = newAttributes.rawCaeren + itemRarity.weaponCae + (newAttributes.rawCaeren > 50 ? itemRarity.weaponTwoCae : 0) + itemRarity.shieldCae + itemRarity.helmCae + itemRarity.chestCae + itemRarity.legsCae + itemRarity.ringOneCae + itemRarity.ringTwoCae + itemRarity.amuletCae + itemRarity.trinketCae;
-    newAttributes.totalKyosir = newAttributes.rawKyosir + itemRarity.weaponKyo + (newAttributes.rawKyosir > 50 ? itemRarity.weaponTwoKyo : 0) + itemRarity.shieldKyo + itemRarity.helmKyo + itemRarity.chestKyo + itemRarity.legsKyo + itemRarity.ringOneKyo + itemRarity.ringTwoKyo + itemRarity.amuletKyo + itemRarity.trinketKyo;
+    newAttributes.totalConstitution = newAttributes.rawConstitution + itemRarity.weaponCon + (newAttributes.rawConstitution > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoCon : 0) + itemRarity.shieldCon + itemRarity.helmCon + itemRarity.chestCon + itemRarity.legsCon + itemRarity.ringOneCon + itemRarity.ringTwoCon + itemRarity.amuletCon + itemRarity.trinketCon;
+    newAttributes.totalStrength = newAttributes.rawStrength + itemRarity.weaponStr + (newAttributes.rawStrength > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoStr : 0) + itemRarity.shieldStr + itemRarity.helmStr + itemRarity.chestStr + itemRarity.legsStr + itemRarity.ringOneStr + itemRarity.ringTwoStr + itemRarity.amuletStr + itemRarity.trinketStr;
+    newAttributes.totalAgility = newAttributes.rawAgility + itemRarity.weaponAgi + (newAttributes.rawAgility > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoAgi : 0) + itemRarity.shieldAgi + itemRarity.helmAgi + itemRarity.chestAgi + itemRarity.legsAgi + itemRarity.ringOneAgi + itemRarity.ringTwoAgi + itemRarity.amuletAgi + itemRarity.trinketAgi;
+    newAttributes.totalAchre = newAttributes.rawAchre + itemRarity.weaponAch + (newAttributes.rawAchre > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoAch : 0) + itemRarity.shieldAch + itemRarity.helmAch + itemRarity.chestAch + itemRarity.legsAch + itemRarity.ringOneAch + itemRarity.ringTwoAch + itemRarity.amuletAch + itemRarity.trinketAch;
+    newAttributes.totalCaeren = newAttributes.rawCaeren + itemRarity.weaponCae + (newAttributes.rawCaeren > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoCae : 0) + itemRarity.shieldCae + itemRarity.helmCae + itemRarity.chestCae + itemRarity.legsCae + itemRarity.ringOneCae + itemRarity.ringTwoCae + itemRarity.amuletCae + itemRarity.trinketCae;
+    newAttributes.totalKyosir = newAttributes.rawKyosir + itemRarity.weaponKyo + (newAttributes.rawKyosir > RAW_MODIFIER_TWO_HAND_CLEARANCE ? itemRarity.weaponTwoKyo : 0) + itemRarity.shieldKyo + itemRarity.helmKyo + itemRarity.chestKyo + itemRarity.legsKyo + itemRarity.ringOneKyo + itemRarity.ringTwoKyo + itemRarity.amuletKyo + itemRarity.trinketKyo;
     
     newAttributes.totalStrength = Math.round(newAttributes.totalStrength);
     newAttributes.totalAgility = Math.round(newAttributes.totalAgility);
@@ -571,16 +596,16 @@ const attributeCompiler = (ascean: Ascean,
     newAttributes.equipCaeren = newAttributes.totalCaeren - newAttributes.rawCaeren;
     newAttributes.equipKyosir = newAttributes.totalKyosir - newAttributes.rawKyosir;
 
-    newAttributes.healthTotal = 50 + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
-    newAttributes.initiative = 10 + (newAttributes.agilityMod + newAttributes.achreMod);
-    newAttributes.stamina = 75 + (newAttributes.rawConMod + newAttributes.rawStrMod + newAttributes.rawAgiMod); // Use the raw and mod it (newAttributes.rawConstitution - 10) / 2
-    newAttributes.grace = 75 + (newAttributes.rawAchMod + newAttributes.rawCaerMod + newAttributes.rawKyoMod); // Use the raw and mod it
+    newAttributes.healthTotal = HEALTH + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
+    newAttributes.initiative = INITIATIVE + (newAttributes.agilityMod + newAttributes.achreMod);
+    newAttributes.stamina = STAMINA + (newAttributes.rawConMod + newAttributes.rawStrMod + newAttributes.rawAgiMod); // Use the raw and mod it (newAttributes.rawConstitution - 10) / 2
+    newAttributes.grace = GRACE + (newAttributes.rawAchMod + newAttributes.rawCaerMod + newAttributes.rawKyoMod); // Use the raw and mod it
     newAttributes.stamina *= (ascean.origin === RACE.QUOREITE ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHEO) ? 1.05 : 1);
     newAttributes.grace *= (ascean.origin === RACE.FYERS ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHOS) ? 1.05 : 1);
     return newAttributes;
 };
 
-function originCompiler(weapon: any, ascean: Ascean): Equipment {
+function origin(weapon: any, ascean: Ascean): Equipment {
     switch (ascean.origin) {
         case RACE.ASHTRE:
             weapon.criticalChance += 5;
@@ -622,10 +647,10 @@ function originCompiler(weapon: any, ascean: Ascean): Equipment {
     return weapon;
 };
 
-function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: Ascean): Equipment {
+function grip(weapon: Equipment, attributes: CombatAttributes, _ascean: Ascean): Equipment {
     let physicalMultiplier: number = 1;
     let magicalMultiplier: number = 1; 
-    if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
+    if (weapon.grip === ONE_HAND || weapon.type === BOW) {
         weapon.physicalDamage +=
             ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
             + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR))
@@ -638,13 +663,13 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
         weapon.physicalDamage *= 1 
             + ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
             + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR)) 
-            / (100 + (20 / ascean.level));
+            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
         weapon.magicalDamage *= 1 
             + ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
             + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
-            / (100 + (20 / ascean.level));
+            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
     };
-    if (weapon.grip === 'Two Hand' && weapon.type !== 'Bow') {
+    if (weapon.grip === TWO_HAND && weapon.type !== BOW) {
         weapon.physicalDamage += 
             ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
             + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR)) 
@@ -657,22 +682,22 @@ function gripCompiler(weapon: Equipment, attributes: CombatAttributes, ascean: A
         weapon.physicalDamage *= 1 
             + ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
             + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR))
-            / (100 + (20 / ascean.level));
+            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
         weapon.magicalDamage *= 1 
             + ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 
             + (weapon.achre / WEIGHTS.MINOR + attributes.achreMod / WEIGHTS.MAJOR)) 
-            / (100 + (20 / ascean.level));    
+            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));    
     };
     return weapon;
 };
 
-function penetrationCompiler(weapon: any, attributes: CombatAttributes, combatStats: { penetrationMagical: number; penetrationPhysical: number; }): Equipment {
+function penetration(weapon: any, attributes: CombatAttributes, combatStats: { penetrationMagical: number; penetrationPhysical: number; }): Equipment {
     weapon.magicalPenetration += Math.round(combatStats.penetrationMagical + attributes.kyosirMod + (weapon.kyosir / WEIGHTS.MAJOR));
     weapon.physicalPenetration += Math.round(combatStats.penetrationPhysical + attributes.kyosirMod + (weapon.kyosir / WEIGHTS.MAJOR));
     return weapon;
 };
 
-function critCompiler(weapon: Equipment, attributes: CombatAttributes, combatStats: { criticalChance: number; criticalDamage: number }): Equipment { 
+function crit(weapon: Equipment, attributes: CombatAttributes, combatStats: { criticalChance: number; criticalDamage: number }): Equipment { 
     if (weapon.attackType === 'Physical') {
         weapon.criticalChance += 
             combatStats.criticalChance + (attributes.agilityMod / WEIGHTS.MODIFIER) + (weapon.agility / WEIGHTS.MAJOR);
@@ -689,49 +714,49 @@ function critCompiler(weapon: Equipment, attributes: CombatAttributes, combatSta
     return weapon;
 };
 
-function faithCompiler(weapon: Equipment, ascean: Ascean): Equipment { 
+function faith(weapon: Equipment, ascean: Ascean): Equipment { 
     if (ascean.faith === 'adherent') {
-        if (weapon.damageType?.[0] === 'Earth' || weapon.damageType?.[0] === 'Wild' || weapon.damageType?.[0] === 'Fire' || weapon.damageType?.[0] === 'Frost' || weapon.damageType?.[0] === 'Lightning' || weapon.damageType?.[0] === 'Wind' || weapon.damageType?.[0] === 'Sorcery') {
-            weapon.magicalDamage *= 1.075;
-            weapon.criticalChance += 3;
+        if (weapon.damageType?.[0] === EARTH || weapon.damageType?.[0] === WILD || weapon.damageType?.[0] === FIRE || weapon.damageType?.[0] === FROST || weapon.damageType?.[0] === LIGHTNING || weapon.damageType?.[0] === WIND || weapon.damageType?.[0] === SORCERY) {
+            weapon.magicalDamage *= FAITH_HIGH_MODIFIER;
+            weapon.criticalChance += FAITH_FLAT_MODIFIER;
         };
-        if (weapon.type === 'Bow' || weapon.type === 'Greataxe' || weapon.type === 'Greatmace' || weapon.type === 'Greatbow') {
-            weapon.physicalDamage *= 1.075;
+        if (weapon.type === BOW || weapon.type === GREATAXE || weapon.type === GREATMACE || weapon.type === GREATBOW) {
+            weapon.physicalDamage *= FAITH_HIGH_MODIFIER;
         };
-        if (weapon.type === 'Greatsword' || weapon.type === 'Polearm') {
-            weapon.physicalDamage *= 1.05;
-            weapon.magicalDamage *= 1.05;
+        if (weapon.type === GREATSWORD || weapon.type === POLEARM) {
+            weapon.physicalDamage *= FAITH_MID_MODIFIER;
+            weapon.magicalDamage *= FAITH_MID_MODIFIER;
         };
-        if (weapon.type === 'Axe' || weapon.type === 'Mace' || weapon.type === 'Curved Sword' || weapon.type === 'Dagger' || weapon.type === 'Long Sword') {
-            weapon.physicalDamage *= 1.05;
-            weapon.criticalChance += 3;
+        if (weapon.type === AXE || weapon.type === MACE || weapon.type === CURVED_SWORD || weapon.type === DAGGER || weapon.type === LONG_SWORD) {
+            weapon.physicalDamage *= FAITH_MID_MODIFIER;
+            weapon.criticalChance += FAITH_FLAT_MODIFIER;
         };
-        if (weapon.grip === 'Two Hand') {
-            weapon.physicalDamage *= 1.05;
-            weapon.magicalDamage *= 1.05;
-            weapon.criticalChance += 3
+        if (weapon.grip === TWO_HAND) {
+            weapon.physicalDamage *= FAITH_MID_MODIFIER;
+            weapon.magicalDamage *= FAITH_MID_MODIFIER;
+            weapon.criticalChance += FAITH_FLAT_MODIFIER
         };
-        weapon.criticalChance *= 1.075;
-        weapon.roll += 3;
+        weapon.criticalChance *= FAITH_HIGH_MODIFIER;
+        weapon.roll += FAITH_FLAT_MODIFIER;
     }
     if (ascean.faith === 'devoted') {
-        if (weapon.damageType?.[0] === 'Wild' || weapon.damageType?.[0] === 'Righteous' || weapon.damageType?.[0] === 'Spooky' || weapon.damageType?.[0] === 'Sorcery') {
-            weapon.physicalDamage *= 1.075;
-            weapon.magicalDamage *= 1.075;
-            weapon.criticalDamage *= 1.025;
+        if (weapon.damageType?.[0] === WILD || weapon.damageType?.[0] === RIGHTEOUS || weapon.damageType?.[0] === SPOOKY || weapon.damageType?.[0] === SORCERY) {
+            weapon.physicalDamage *= FAITH_HIGH_MODIFIER;
+            weapon.magicalDamage *= FAITH_HIGH_MODIFIER;
+            weapon.criticalDamage *= FAITH_LOW_MODIFIER;
         };
-        if (weapon.type === 'Short Sword' || weapon.type === 'Long Sword' || weapon.type === 'Curved Sword' || weapon.type === 'Dagger' || weapon.type === 'Scythe' || weapon.type === 'Polearm') {
-            weapon.physicalDamage *= 1.05;
-            weapon.magicalDamage *= 1.05;
-            weapon.criticalDamage *= 1.05;
+        if (weapon.type === SHORT_SWORD || weapon.type === LONG_SWORD || weapon.type === CURVED_SWORD || weapon.type === DAGGER || weapon.type === SCYTHE || weapon.type === POLEARM) {
+            weapon.physicalDamage *= FAITH_MID_MODIFIER;
+            weapon.magicalDamage *= FAITH_MID_MODIFIER;
+            weapon.criticalDamage *= FAITH_MID_MODIFIER;
         };
-        if (weapon.grip === 'One Hand' || weapon.type === 'Bow' || weapon.type === 'Greatbow') {
-            weapon.physicalDamage *= 1.05;
-            weapon.magicalDamage *= 1.05;
-            weapon.criticalDamage *= 1.05;
+        if (weapon.grip === ONE_HAND || weapon.type === BOW || weapon.type === GREATBOW) {
+            weapon.physicalDamage *= FAITH_MID_MODIFIER;
+            weapon.magicalDamage *= FAITH_MID_MODIFIER;
+            weapon.criticalDamage *= FAITH_MID_MODIFIER;
         };
-        weapon.criticalDamage *= 1.075;
-        weapon.dodge -= 3;
+        weapon.criticalDamage *= FAITH_HIGH_MODIFIER;
+        weapon.dodge -= FAITH_FLAT_MODIFIER;
     };
     weapon.criticalChance = Math.round(weapon.criticalChance * 100) / 100;
     weapon.criticalDamage = Math.round(weapon.criticalDamage * 100) / 100;
@@ -740,7 +765,7 @@ function faithCompiler(weapon: Equipment, ascean: Ascean): Equipment {
 
 // =============================== COMPILER FUNCTIONS ================================== \\
 
-const weaponCompiler = (weapon: any, ascean: Ascean, attributes: CombatAttributes, combatStats: CombatStats, rarity: number): Equipment => { 
+function weaponCompiler(weapon: any, ascean: Ascean, attributes: CombatAttributes, combatStats: CombatStats, rarity: number): Equipment { 
     const newWeapon = {
         name: weapon.name,
         type: weapon.type,
@@ -748,47 +773,47 @@ const weaponCompiler = (weapon: any, ascean: Ascean, attributes: CombatAttribute
         grip: weapon.grip,
         attackType: weapon.attackType,
         damageType: weapon.damageType,
-        physicalDamage: (weapon.physicalDamage * rarity),
-        magicalDamage: (weapon.magicalDamage * rarity),
-        physicalPenetration: (weapon.physicalPenetration * rarity),
-        magicalPenetration: (weapon.magicalPenetration * rarity),
-        criticalChance: (weapon.criticalChance * rarity),
-        criticalDamage: (weapon.criticalDamage),
-        dodge: (weapon.dodge),
-        roll: (weapon.roll * rarity),
-        constitution: (weapon.constitution * rarity),
-        strength: (weapon.strength * rarity),
-        agility: (weapon.agility * rarity),
-        achre: (weapon.achre * rarity),
-        caeren: (weapon.caeren * rarity),
-        kyosir: (weapon.kyosir * rarity),
+        physicalDamage: weapon.physicalDamage * rarity,
+        magicalDamage: weapon.magicalDamage * rarity,
+        physicalPenetration: weapon.physicalPenetration * rarity,
+        magicalPenetration: weapon.magicalPenetration * rarity,
+        criticalChance: weapon.criticalChance * rarity,
+        criticalDamage: weapon.criticalDamage,
+        dodge: weapon.dodge,
+        roll: weapon.roll * rarity,
+        constitution: weapon.constitution * rarity,
+        strength: weapon.strength * rarity,
+        agility: weapon.agility * rarity,
+        achre: weapon.achre * rarity,
+        caeren: weapon.caeren * rarity,
+        kyosir: weapon.kyosir * rarity,
         influences: weapon.influences,
         imgUrl: weapon.imgUrl,
-        _id: weapon._id,
+        _id: weapon._id
     };
-    originCompiler(newWeapon, ascean);
-    gripCompiler(newWeapon, attributes, ascean);
-    penetrationCompiler(newWeapon, attributes, combatStats);
-    critCompiler(newWeapon, attributes, combatStats);
-    faithCompiler(newWeapon, ascean);
-    newWeapon.dodge += (60 + (combatStats.dodgeCombat));
+    origin(newWeapon, ascean);
+    grip(newWeapon, attributes, ascean);
+    penetration(newWeapon, attributes, combatStats);
+    crit(newWeapon, attributes, combatStats);
+    faith(newWeapon, ascean);
+    // newWeapon.dodge += (60 + combatStats.dodgeCombat);
     newWeapon.roll += combatStats.rollCombat;
     newWeapon.physicalDamage = Math.round(newWeapon.physicalDamage * combatStats.damagePhysical);
     newWeapon.magicalDamage = Math.round(newWeapon.magicalDamage * combatStats.damageMagical);
     return newWeapon;
 };
 
-const defenseCompiler = (ascean: any, attributes: CombatAttributes, combatStats: CombatStats, rarities: any): Defense => { 
+function defenseCompiler(ascean: any, attributes: CombatAttributes, combatStats: CombatStats, rarities: any): Defense { 
     const defense = {
         physicalDefenseModifier: 
             Math.round((ascean.helmet.physicalResistance * rarities.helmet) + (ascean.chest.physicalResistance * rarities.chest) + (ascean.legs.physicalResistance * rarities.legs) + 
             (ascean.ringOne.physicalResistance * rarities.ringOne) + (ascean.ringTwo.physicalResistance * rarities.ringTwo) + (ascean.amulet.physicalResistance * rarities.amulet) + (ascean.trinket.physicalResistance * rarities.trinket) 
-            + Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / 12)) + combatStats.originPhysDef), // Need to create these in the backend as well
+            + Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / DEFENSE_MODIFIER_DIVIDE)) + combatStats.originPhysDef),
         
         magicalDefenseModifier: 
             Math.round((ascean.helmet.magicalResistance * rarities.helmet) + (ascean.chest.magicalResistance * rarities.chest) + (ascean.legs.magicalResistance * rarities.legs) + 
            (ascean.ringOne.magicalResistance * rarities.ringOne) + (ascean.ringTwo.magicalResistance * rarities.ringTwo) + (ascean.amulet.magicalResistance * rarities.amulet) + (ascean.trinket.magicalResistance * rarities.trinket) 
-            + Math.round(((attributes.constitutionMod + attributes.caerenMod + attributes.kyosirMod) / 12)) + combatStats.originMagDef),
+            + Math.round(((attributes.constitutionMod + attributes.caerenMod + attributes.kyosirMod) / DEFENSE_MODIFIER_DIVIDE)) + combatStats.originMagDef),
 
         physicalPosture: combatStats.defensePhysical + Math.round(ascean.shield.physicalResistance * rarities.shield),
         magicalPosture: combatStats.defenseMagical + Math.round(ascean.shield.magicalResistance * rarities.shield),
@@ -796,7 +821,7 @@ const defenseCompiler = (ascean: any, attributes: CombatAttributes, combatStats:
     return defense;
 };
 
-const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
+function coefficientCompiler(ascean: Ascean, item: Equipment): number {
     let coefficient = 0;
     // console.log(item, 'Item!');
     switch (item.rarity) {
@@ -819,15 +844,15 @@ const coefficientCompiler = (ascean: Ascean, item: Equipment): number => {
             coefficient = 1;
             break;
     };
-    // if (coefficient > 1) {
-    if (coefficient >= 3) {
-        coefficient = 2;
-    } else if (coefficient >= 2) {
-        coefficient = 1.5;
-    } else {
-        coefficient = 1;
+    if (coefficient > 1) {
+        if (coefficient > 3) {
+            coefficient = 2;
+        } else if (coefficient > 2) {
+            coefficient = 1.5;
+        } else {
+            coefficient = 1;
+        };
     };
-    // };
     return coefficient;
 };
 
@@ -873,9 +898,9 @@ function setHealth(ascean: Ascean, max: number, current?: number): Ascean {
         ascean.health = {current:max, max};
     };
     return ascean;
-}
+};
 
-const asceanCompiler = (ascean: any): Compiler | undefined => {
+function asceanCompiler(ascean: any): Compiler | undefined {
     try {
         const rarities = rarityCompiler(ascean);
         const attributes = attributeCompiler(ascean, rarities);
@@ -943,7 +968,8 @@ const asceanCompiler = (ascean: any): Compiler | undefined => {
         console.warn(err, 'Ascean Compiler Error');
     };
 };
-export const fetchTrait = (trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } => {
+
+function fetchTrait(trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } {
     switch (trait) {
         case "Arbituous": // Con / Ach
             return {
@@ -1076,7 +1102,7 @@ export const fetchTrait = (trait:  string): { name: string; traitOneName: string
     };
 };
 
-function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
+function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: Setter<any>) {
     setPlayerTraitWrapper({
         'primary': fetchTrait(game().traits.primary.name),
         'secondary': fetchTrait(game().traits.secondary.name),
@@ -1084,4 +1110,4 @@ function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: any) {
     });
 };
 
-export { asceanCompiler, playerTraits };
+export { asceanCompiler, fetchTrait, playerTraits };

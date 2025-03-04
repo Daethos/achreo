@@ -9,16 +9,16 @@ import { asceanCompiler, Compiler } from "./ascean";
 
 export interface DialogNodeOption {
     text: string;
-    next: string | null;
+    next: string | undefined;
     npcIds?: Array<number | string>;
     conditions?: { key: string; operator: string; value: string; }[];
-    action?: string | null;
+    action?: string | undefined;
     keywords?: any[];
 };
 
 export interface DialogNodeText {
     text: string;
-    next: string | null;
+    next: string | undefined;
     npcIds?: Array<number | string>;
     conditions?: { key: string; operator: string; value: string; }[];
 };
@@ -126,6 +126,7 @@ export const TUTORIAL = {
     "firewater":{"current":5,"max":5},
     "health":{"current":10,"max":10}
 };
+
 const KRECEUS = {
     "_id":"kreceus_16",
     "origin":"Ashtre",
@@ -181,6 +182,7 @@ const KRECEUS = {
     "firewater":{"current":5,"max":5},
     "health":{"current":1000,"max":1000}
 };
+
 const ASHREUUL = {
     "_id":"ashreuul_16",
     "origin":"Ashtre",
@@ -261,9 +263,7 @@ export function fetchDm(_data: { enemy: string; npcType: string; }) {
 export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
     const matchingNodes: DialogNode[] = [];
     for (const node of EnemyDialogNodes.nodes) {
-        if (node.options.length === 0) {
-            continue;
-        };
+        if (node.options.length === 0) continue;
         const npcOptions = (node.options as any).filter((option: DialogNodeOption) => (option as DialogNodeOption)?.npcIds?.includes(enemy.name))
         if (npcOptions.length > 0) {
             const updatedNode = { ...node, options: npcOptions };
@@ -276,14 +276,11 @@ export function getNodesForEnemy(enemy: Ascean): DialogNode[] {
 export function getNodesForNPC(npcId: number): DialogNode[] {
     const matchingNodes: DialogNode[] = [];
     for (const node of DialogNodes.nodes) {
-        // if (node.options.length === 0) {
-        //     continue;
-        // };
+        // if (node.options.length === 0) continue;
         const npcOptions = node.options.filter((option) => (option as DialogNodeOption)?.npcIds?.includes(npcId));
-        // console.log(npcOptions, 'NPC Options');
         // if (npcOptions.length > 0) {
-            const updatedNode = { ...node, options: npcOptions };
-            matchingNodes.push(updatedNode as DialogNode);
+        const updatedNode = { ...node, options: npcOptions };
+        matchingNodes.push(updatedNode as DialogNode);
         // };
     };
     return matchingNodes;
@@ -291,7 +288,7 @@ export function getNodesForNPC(npcId: number): DialogNode[] {
 
 export interface DialogOptionProps {
     option: DialogNodeOption;
-    onClick: (nextNodeId: string | null) => void;
+    onClick: (nextNodeId: string | undefined) => void;
     actions: { [key: string]: Function }
 };
 
@@ -308,13 +305,11 @@ export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) =>
         onClick(option.next);
     };
 
-    return (
-      <div>
-      <button onClick={handleClick} class='dialog-buttons inner' >
-        {option.text}
-      </button>
-      </div>
-    );
+    return <div>
+        <button onClick={handleClick} class='dialog-buttons inner'>
+            {option.text}
+        </button>
+    </div>;
 };
 
 interface DialogTreeProps {
@@ -415,8 +410,8 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         };
     });
 
-    const handleOptionClick = (nextNodeId: string | null) => {
-        if (nextNodeId === null) {
+    const handleOptionClick = (nextNodeId: string | undefined) => {
+        if (nextNodeId === undefined) {
             EventBus.emit('blend-game', { setCurrentNodeIndex: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node) => node.id === nextNodeId);
@@ -425,19 +420,15 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         };
     };
 
-    if (!game()?.currentNode) {
-        return null;
-    };
+    if (!game()?.currentNode) return undefined;
 
-    return (
-        <div>
-            <p>{game()?.renderedText}</p>
-            {game()?.renderedOptions?.map((option: DialogNodeOption) => (
-                <DialogOption option={option} onClick={handleOptionClick} actions={actions} />
-            ))}
-            <br />
-        </div>
-    );
+    return <div>
+        <p>{game()?.renderedText}</p>
+        {game()?.renderedOptions?.map((option: DialogNodeOption) => (
+            <DialogOption option={option} onClick={handleOptionClick} actions={actions} />
+        ))}
+        <br />
+    </div>;
 };
 
 export default DialogTree;

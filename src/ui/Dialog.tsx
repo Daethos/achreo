@@ -3,7 +3,7 @@ import { EventBus } from '../game/EventBus';
 import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
-import { ProvincialWhispersButtons, Region, regionInformation } from '../utility/regions';
+import { ProvincialWhispersButtons, Region, provincialInformation } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
@@ -287,7 +287,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
-    const [region, setRegion] = createSignal<any>(regionInformation['Astralands']);
+    const [region, setRegion] = createSignal<any>(provincialInformation['Astralands']);
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
@@ -631,7 +631,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     const handleRegion = (region: keyof Region) => {
-        setRegion(regionInformation[region]);
+        setRegion(provincialInformation[region]);
     };
     
     const engageCombat = (id: string): void => {
@@ -809,7 +809,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     return (
         <Show when={combat().computer}>  
-        <div class='dialog-window'>
+        <div class='dialog-window' style={{ height: '80%', top: '10%', "z-index" : 1 }}>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
                 <div style={{ display: 'inline' }}>
@@ -1038,21 +1038,21 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === 'provincialWhispers' ? (
                     <>
-                        { combat().playerWin || combat().enemyPersuaded ? (
-                            <>
-                                <ProvincialWhispersButtons options={regionInformation} handleRegion={handleRegion}  />
-                                <br /><br />
+                        {/* { combat().playerWin || combat().enemyPersuaded ? (
+                            <> */}
                                 <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
-                                <br />
+                                <br /><br />
+                                <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
+                                <br /><br />
                                 <div style={{ color: 'gold' }}>
                                     <Typewriter stringText={region} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                                 </div>
-                            </>
+                            {/* </>
                         ) : combat().computerWin ? (
                             <Typewriter stringText={`"Those whispers must wait another day, then."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
                         ) : ( 
                             <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />                            
-                        ) }
+                        ) } */}
                     </>
                 ) : game().currentIntent === 'worldLore' ? (
                         <Typewriter stringText={"This will entail the world lore of the region you inhabit, the history of the world from the perspective of the enemy in question, and hopefully grant more insight into the cultural mindset."} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' }} performAction={hollowClick} />
@@ -1079,7 +1079,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
             <div class='modal'>
-            <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
+            <div class='creature-heading' style={{ position: 'absolute', left: '20%', top: '2.5%', height: '95%', width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
                 <Currency ascean={ascean} />
                 <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
             </div>
@@ -1146,7 +1146,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={showSell()}>
             <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
-                <div class='creature-heading' style={{ position: 'absolute',left: '20%',top: '20%',height: '70%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll', 'scrollbar-width':'none'}}>
+                <div class='creature-heading' style={{  position: 'absolute',left: '20%',top: '2.5%',height: '95%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll', 'scrollbar-width':'none'}}>
                     <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
                 <div class='center'>
                 <Currency ascean={ascean} />

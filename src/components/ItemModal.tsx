@@ -21,7 +21,6 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const dimensions = useResizeListener();
     const poly = dimensions().WIDTH * 0.45;
     const scale = dimensions().WIDTH / 800;
-    console.log(scale, 'scale')
     const empty = item.name.includes('Empty');
     const name = item.name.includes('Starter') ? ( item.name.split(' ')[0] + ' ' + item.name.split(' ')[1] ) : ( item.name );
     const centerImage = dimensions()?.ORIENTATION === 'landscape' ? (name.length > 18 ? '45%' : name.length > 10 ? '7.5%' : '15%') : (name.length > 13 ? '40%' : name.length > 10 ? '5%' : '10%');

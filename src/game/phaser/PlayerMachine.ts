@@ -162,6 +162,107 @@ export default class PlayerMachine {
         };
     };
 
+    caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
+
+    levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
+
+    mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
+
+    chiomism = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
+        if (id === this.player.getEnemyId() || id === this.player.playerID) {
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: power }); 
+        } else {
+            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
+            if (!enemy) return;
+            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
+            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
+            const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: id } });
+        };
+    };
+
+    devour = (power: number) => {
+        const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
+        if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
+            this.player.isCasting = false;
+            this.player.devourTimer?.remove(false);
+            this.player.devourTimer = undefined;
+            return;
+        };
+        if (this.player.spellTarget === this.player.getEnemyId()) {
+            this.scene.combatManager.combatMachine.action({ type: 'Tshaeral', data: 4 });
+        } else {
+            const drained = Math.round(this.scene.state.playerHealth * power * this.caerenicDamage() * this.levelModifier());
+            const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
+            const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
+            const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.player.playerID } });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: this.player.spellTarget } });
+        };
+    };
+
+    kyrnaicism = (power: number) => {
+        const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
+        if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
+            this.player.isCasting = false;
+            this.player.chiomicTimer?.remove(false);
+            this.player.chiomicTimer = undefined;
+            return;
+        };
+        this.scene.combatManager.slow(this.player.spellTarget, 1000);
+        if (this.player.spellTarget === this.player.getEnemyId()) {
+            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(power) }); 
+        } else {
+            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.caerenicDamage() * this.levelModifier());
+            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
+            const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.player.spellTarget } });
+        };
+        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
+    };
+
+    sacrifice = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
+        if (id === this.player.getEnemyId()) {
+            this.scene.combatManager.combatMachine.action({ type: 'Sacrifice', data: power });
+            this.player.currentTarget?.flickerCaerenic(750);
+        } else {
+            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
+            if (!enemy) return;
+            const sacrifice = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
+            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1));
+            let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
+            const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id } });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id } });
+            enemy.flickerCaerenic(750);    
+        };
+    };
+
+    suture = (id: string, power: number) => {
+        this.player.entropicMultiplier(power);
+        if (id === this.player.getEnemyId()) {
+            this.scene.combatManager.combatMachine.action({ type: 'Suture', data: power });
+            this.player.currentTarget?.flickerCaerenic(750);
+        } else {
+            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
+            if (!enemy) return;
+            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * power / 100) * 0.8;
+            let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
+            let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
+            const playerActionDescription = `Your suture ${enemy.ascean?.name}'s caeren into you, absorbing and healing for ${suture}.`;
+            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
+            this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id} });
+            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id} });
+            enemy.flickerCaerenic(750);
+        };
+    };
+
     healCheck = (power: number) => {
         if (this.player.currentTarget?.name === 'party') {
             const partyMember = this.scene.party.find((e: Party) => e.enemyID === this.player.currentTarget?.enemyID);
@@ -188,6 +289,111 @@ export default class PlayerMachine {
             };
         };
         this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: power, id: this.player.playerID }, type: 'Health' });
+    };
+
+    
+    instincts = () => {
+        if (this.player.inCombat === false || this.player.health <= 0) {
+            this.player.inCombat = false;
+            // this.stateMachine.setState(States.IDLE);
+            return;
+        };
+        this.player.isMoving = false;
+        this.player.setVelocity(0);
+        const ranged = this.player.isRanged;
+        let chance = [1, 2, 4, 5, (!ranged ? 6 : 7), (!ranged ? 8 : 9), (!ranged ? 10 : 11), (!ranged ? 12 : 13)][Math.floor(Math.random() * 8)];
+        let mastery = this.player.ascean.mastery;
+        let pHealth = this.player.health / this.player.ascean.health.max;
+        let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
+        let oHealth = 1;
+        for (const party of this.scene.party) {
+            const ratio = party.health / party.ascean.health.max;
+            if (ratio < oHealth) {
+                oHealth = ratio;
+            };
+        };
+        const direction = this.player.currentTarget?.position.subtract(this.player.position);
+        const distance = direction?.length() || 0;
+        let instinct =
+            (pHealth <= 0.25 || oHealth <= 0.25) ? 0 :
+            (pHealth <= 0.5 || oHealth <= 0.5) ? 1 :
+            ((pHealth >= 0.7 && pHealth <= 0.9) || (oHealth >= 0.7 && oHealth <= 0.9)) ? 2 :
+
+            eHealth <= 0.35 ? 3 :
+            eHealth <= 0.6 ? 4 :
+            eHealth >= 0.85 ? 5 :
+            
+            (distance <= 60 && !ranged) ? 6 :
+            (distance <= 60 && ranged) ? 7 :
+
+            (distance > 60 && distance <= 120 && !ranged) ? 8 :
+            (distance > 60 && distance <= 120 && ranged) ? 9 :
+
+            (distance > 120 && distance <= 180 && !ranged) ? 10 :
+            (distance > 120 && distance <= 180 && ranged) ? 11 :
+
+            (distance > 180 && !ranged) ? 12 :
+            (distance > 180 && ranged) ? 13 :
+
+            chance;
+
+        if (this.player.prevInstinct === instinct) {
+            instinct = chance;
+        };
+
+        const focus = this.scene.hud.settings.computerFocus || BALANCED;
+        let foci;
+        switch (focus) {
+            case BALANCED:
+                foci = BALANCED_INSTINCTS[mastery as keyof typeof BALANCED_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+            case DEFENSIVE:
+                foci = DEFENSIVE_INSTINCTS[mastery as keyof typeof DEFENSIVE_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+            case OFFENSIVE:
+                foci = OFFENSIVE_INSTINCTS[mastery as keyof typeof OFFENSIVE_INSTINCTS];
+                foci = foci[Math.floor(Math.random() * foci.length)];
+                break;
+        };
+
+        let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+        let finals = [instinct, foci];
+        if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
+            finals.push(instinct);
+        };
+
+        let final = finals[Math.floor(Math.random() * finals.length)];
+
+        if (final === typeof 'string') {
+            if (specialStateMachines.includes(final)) { // State Machine
+                key = "stateMachine";
+                value = final;
+            } else { // Positive Machine
+                key = "positiveMachine";
+                value = final;
+            };
+        };
+
+        let check: {success:boolean;cost:number;} = {success:false,cost:0};
+        const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
+        check = staminaCheck(this.player.grace, grace);
+
+        if (check.success === true) {
+            this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+            this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
+            this.player.prevInstinct = instinct;
+            (this as any)[key].setState(value);
+            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+        } else {
+            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
+            if (Math.random() > 0.5) {
+                this.stateMachine.setState(States.COMPUTER_COMBAT);
+            } else {
+                this.stateMachine.setState(States.CHASE);
+            };
+        };
     };
 
     onChaseEnter = () => {
@@ -462,107 +668,6 @@ export default class PlayerMachine {
         this.instincts();
     };
 
-    instincts = () => {
-        if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
-            this.player.inCombat = false;
-            this.stateMachine.setState(States.IDLE);
-            return;
-        };
-        this.player.isMoving = false;
-        this.player.setVelocity(0);
-        const ranged = this.player.isRanged;
-        let chance = [1, 2, 4, 5, (!ranged ? 6 : 7), (!ranged ? 8 : 9), (!ranged ? 10 : 11), (!ranged ? 12 : 13)][Math.floor(Math.random() * 8)];
-        let mastery = this.player.ascean.mastery;
-        let pHealth = this.player.health / this.player.ascean.health.max;
-        let eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
-        let oHealth = 1;
-        for (const party of this.scene.party) {
-            const ratio = party.health / party.ascean.health.max;
-            if (ratio < oHealth) {
-                oHealth = ratio;
-            };
-        };
-        const direction = this.player.currentTarget?.position.subtract(this.player.position);
-        const distance = direction?.length() || 0;
-        let instinct =
-            (pHealth <= 0.25 || oHealth <= 0.25) ? 0 :
-            (pHealth <= 0.5 || oHealth <= 0.5) ? 1 :
-            ((pHealth >= 0.7 && pHealth <= 0.9) || (oHealth >= 0.7 && oHealth <= 0.9)) ? 2 :
-
-            eHealth <= 0.35 ? 3 :
-            eHealth <= 0.6 ? 4 :
-            eHealth >= 0.85 ? 5 :
-            
-            (distance <= 60 && !ranged) ? 6 :
-            (distance <= 60 && ranged) ? 7 :
-            (distance > 60 && distance <= 120 && !ranged) ? 8 :
-            (distance > 60 && distance <= 120 && ranged) ? 9 :
-            (distance > 120 && distance <= 180 && !ranged) ? 10 :
-            (distance > 120 && distance <= 180 && ranged) ? 11 :
-            (distance > 180 && !ranged) ? 12 :
-            (distance > 180 && ranged) ? 13 :
-
-            chance;
-
-        if (this.player.prevInstinct === instinct) {
-            instinct = chance;
-        };
-
-        const focus = this.scene.hud.settings.computerFocus || BALANCED;
-        let foci;
-        switch (focus) {
-            case BALANCED:
-                foci = BALANCED_INSTINCTS[mastery as keyof typeof BALANCED_INSTINCTS];
-                foci = foci[Math.floor(Math.random() * foci.length)];
-                break;
-            case DEFENSIVE:
-                foci = DEFENSIVE_INSTINCTS[mastery as keyof typeof DEFENSIVE_INSTINCTS];
-                foci = foci[Math.floor(Math.random() * foci.length)];
-                break;
-            case OFFENSIVE:
-                foci = OFFENSIVE_INSTINCTS[mastery as keyof typeof OFFENSIVE_INSTINCTS];
-                foci = foci[Math.floor(Math.random() * foci.length)];
-                break;
-        };
-
-        let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
-        let finals = [instinct, foci];
-        if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
-            finals.push(instinct);
-        };
-
-        let final = finals[Math.floor(Math.random() * finals.length)];
-
-        if (final === typeof 'string') {
-            if (specialStateMachines.includes(final)) { // State Machine
-                key = "stateMachine";
-                value = final;
-            } else { // Positive Machine
-                key = "positiveMachine";
-                value = final;
-            };
-        };
-
-        let check: {success:boolean;cost:number;} = {success:false,cost:0};
-        const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
-        check = staminaCheck(this.player.grace, grace);
-
-        if (check.success === true) {
-            this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-            this.scene.hud.logger.log(`Your instinct leads you to ${value}.`);
-            this.player.prevInstinct = instinct;
-            (this as any)[key].setState(value);
-            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
-        } else {
-            this.player.specialCombatText = this.scene.showCombatText('Compose Yourself', 750, 'dread', false, true, () => this.player.specialCombatText = undefined);
-            if (Math.random() > 0.5) {
-                this.stateMachine.setState(States.COMPUTER_COMBAT);
-            } else {
-                this.stateMachine.setState(States.CHASE);
-            };
-        };
-    };
-
     onIdleEnter = () => {
         this.player.setVelocity(0);
         this.player.currentRound = 0;
@@ -595,9 +700,9 @@ export default class PlayerMachine {
     onLullExit = () => {};
     
     onComputerCombatEnter = () => {  
-        if (this.player.inCombat === false || this.scene.state.newPlayerHealth <= 0) {
+        if (this.player.inCombat === false || this.player.health <= 0) {
             this.player.inCombat = false;
-            this.stateMachine.setState(States.IDLE);
+            // this.stateMachine.setState(States.IDLE);
             return;
         };
         if (this.player.isSuffering()) return;
@@ -1399,7 +1504,7 @@ export default class PlayerMachine {
     };
 
     onInvokeEnter = () => {
-        if (this.player.currentTarget === undefined || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        if (this.player.currentTarget === undefined || this.player.invalidTarget(this.player.currentTarget?.enemyID) || this.player.outOfRange(PLAYER.RANGE.LONG)) return;
         this.player.isPraying = true;
         this.player.setStatic(true);
         this.player.flickerCaerenic(1000); 
@@ -1411,7 +1516,7 @@ export default class PlayerMachine {
     onInvokeUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onInvokeExit = () => {
         this.player.setStatic(false);
-        if (!this.player.currentTarget || this.player.currentTarget.health <= 0) return;
+        if (!this.player.currentTarget || this.player.currentTarget.health <= 0 || this.player.outOfRange(PLAYER.RANGE.LONG)) return;
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.INVOKE, PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.action({ type: 'Instant', data: this.scene.state.playerBlessing });
         if (this.player.checkTalentEnhanced(States.INVOKE)) {
@@ -1461,6 +1566,7 @@ export default class PlayerMachine {
         this.player.frameCount = 0;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
     };
+
     onKyrisianEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1503,6 +1609,7 @@ export default class PlayerMachine {
         this.player.beam.reset();
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);  
     };
+
     onKyrnaicismEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
@@ -1589,100 +1696,6 @@ export default class PlayerMachine {
         this.player.spellTarget = '';
         this.player.spellName = '';
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false); 
-    };
-
-    caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
-    levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
-    mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
-    chiomism = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
-        if (id === this.player.getEnemyId() || id === this.player.playerID) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: power }); 
-        } else {
-            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-            if (!enemy) return;
-            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
-            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
-            const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: id } });
-        };
-    };
-    devour = (power: number) => {
-        const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
-        if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
-            this.player.isCasting = false;
-            this.player.devourTimer?.remove(false);
-            this.player.devourTimer = undefined;
-            return;
-        };
-        if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Tshaeral', data: 4 });
-        } else {
-            const drained = Math.round(this.scene.state.playerHealth * power * this.caerenicDamage() * this.levelModifier());
-            const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
-            const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
-            const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.player.playerID } });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: this.player.spellTarget } });
-        };
-    };
-    kyrnaicism = (power: number) => {
-        const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
-        if (this.player.isCasting === false || !enemy || enemy.health <= 0) {
-            this.player.isCasting = false;
-            this.player.chiomicTimer?.remove(false);
-            this.player.chiomicTimer = undefined;
-            return;
-        };
-        this.scene.combatManager.slow(this.player.spellTarget, 1000);
-        if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Chiomic', data: this.player.entropicMultiplier(power) }); 
-        } else {
-            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.caerenicDamage() * this.levelModifier());
-            const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
-            const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.player.spellTarget } });
-        };
-        this.scene.sound.play('absorb', { volume: this.scene.hud.settings.volume });
-    };
-    sacrifice = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
-        if (id === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Sacrifice', data: power });
-            this.player.currentTarget?.flickerCaerenic(750);
-        } else {
-            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-            if (!enemy) return;
-            const sacrifice = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
-            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1));
-            let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
-            const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSacrifice, id } });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySacrifice, id } });
-            enemy.flickerCaerenic(750);    
-        };
-    };
-    suture = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
-        if (id === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: 'Suture', data: power });
-            this.player.currentTarget?.flickerCaerenic(750);
-        } else {
-            const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-            if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * power / 100) * 0.8;
-            let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
-            let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
-            const playerActionDescription = `Your suture ${enemy.ascean?.name}'s caeren into you, absorbing and healing for ${suture}.`;
-            EventBus.emit('add-combat-logs', { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: 'Set Health', data: { key: 'player', value: playerSuture, id} });
-            this.scene.combatManager.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: enemySuture, id} });
-            enemy.flickerCaerenic(750);
-        };
     };
 
     onLeapEnter = () => {

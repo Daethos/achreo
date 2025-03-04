@@ -804,6 +804,7 @@ export default class Enemy extends Entity {
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.hud.showDialog(true);
+                            console.log("Showing Dialog?");
                         } else {
                             this.stateMachine.setState(States.AWARE);
                         };
@@ -821,7 +822,7 @@ export default class Enemy extends Entity {
                         // const newEnemy = this.isNewComputerEnemy(other.gameObjectB);
                         // const realEnemy = this.potentialEnemies.includes(other.gameObjectB.ascean.name);
                     // };
-                }
+                };
             },
             context: this.scene,
         });

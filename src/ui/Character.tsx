@@ -570,13 +570,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         // ? showQuest()?.quest?.requirements.description?.replace('{name}', showQuest()?.quest?.giver.name) 
         // : showQuest()?.quest?.requirements.description}
     };
-    return (
-        <div style={{ 'z-index': 1, position: 'fixed', top: 0, left: 0 }}>
+    return <div class="characterMenu">
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
-            <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}>
+            <button class='highlight menuHeader' onClick={() => setNextView()}>
                 <div class='playerMenuHeading'>Character</div>
             </button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.5vh', 'z-index': 1, 'font-size': '1.25em' }}>
+            <div class='playerSettingSelect'>
                 { settings().characterViews === CHARACTERS.QUESTS ? (
                     <button class='highlight menuButton' onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
                         <div>Quests</div>
@@ -604,7 +603,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
-            <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
+            <button class='highlight menuHeader' onClick={() => setNextView()}><div class='playerMenuHeading'>Inventory</div></button>
             <button class='highlight menuButton' onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: 'fixed', top: '-1.25vh', right: '10vh', 'z-index': 1, 'font-size': '1.15em' }}>
                 <div>{expandedCharacter() === true ? 'Player Stats' : 'Equipment'}</div>
             </button>
@@ -612,20 +611,20 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <Firewater ascean={ascean} />
             </Suspense>
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
-            <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
+            <button class='highlight menuHeader' onClick={() => setNextView()}><div class='playerMenuHeading'>Gameplay</div></button>
             {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
-                <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.75vw', 'z-index': 1, 'font-family': 'Cinzel-Regular', 'font-size': '1.25em' }}>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
-                    <button class='highlight menuButton' style={{ margin: '0.5em 0.25em 0 0' }} onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
+                <div class='playerSettingSelect' style={{ right: '0.75vw' }}>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
+                    <button class='highlight menuButton insideMenu' onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
                 </div>
             )}
         </> ) : ( <>
-            <button class='highlight' style={{ 'margin-left': '4%', 'font-size': '1.1em', 'margin-top': '3%' }} onClick={() => setNextView()}><div class='playerMenuHeading'>Personal</div></button>
-            <div class='playerSettingSelect' style={{ position: 'fixed', top: '-1vh', right: '0.5vh', 'z-index': 1, 'font-size': '1.25em' }}>
+            <button class='highlight menuHeader' onClick={() => setNextView()}><div class='playerMenuHeading'>Personal</div></button>
+            <div class='playerSettingSelect'>
             { settings().faithViews === FAITH.DEITIES ? (
                 <button class='highlight menuButton' onClick={() => currentFaithView(FAITH.JOURNAL)}>
                     <div>Deities</div>
@@ -646,18 +645,18 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <p style={{ color: 'gold', 'font-size': '1.25em' }}>Feedback</p>
                         <Form class='verticalCenter' style={{ 'text-wrap': 'balance' }}>
                             <Form.Text class="text-muted">
-                                If you happen across any bugs, errors, or have any thoughts about the game, please leave an email. It would greatly help understanding my blindspots as a developer and progrmamer.
+                                If you happen across any bugs, errors, or have any thoughts about the game, please leave an email. It would greatly help understanding my blindspots as a developer and programmer.
                             </Form.Text>
                             <br /><br />
                         <Form.Group class="mb-3" controlId="formBasicEmail">
-                            <Form.Text class="text-muted">
+                            <Form.Text class="text-muted gold">
                                 Warning: This will prompt your browser to open up a mail service of your choice.
                             </Form.Text>
                             <br /><br />
-                            <a href="mailto:ascean@gmx.com">Send Gameplay Feedback </a>
+                            <a href="mailto:ascean@gmx.com">Send Gameplay Feedback</a>
                             <br /><br />
-                            <Form.Text class="text-muted">
-                                [Bugs, Errors, Issues, or Suggestions]
+                            <Form.Text class="text-muted gold">
+                                [Bugs, Errors, Issues, Suggestions]
                             </Form.Text>
                         </Form.Group>
                         </Form>
@@ -1025,8 +1024,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>
             </div>
         </Show>
-        </div>
-    );
+    </div>;
 }; 
 
 export default Character;

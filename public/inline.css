@@ -15,6 +15,8 @@
     inset #000 0 0 0 0.2rem, 
     inset #fdf6d8 0 0 0 0.3rem; 
 }
+.characterMenu { z-index: 2; position: fixed; top: 0; left: 0; }
+.playerSettingSelect { font-size: 1.25em; position: fixed; top: -1vh; right: 0.5vh; z-index: 1 }
 .character-name {font-size:1em}
 .compare-border {border: 0.1rem solid #fdf6d8;border-left: 0.1rem solid #fdf6d8;border-right: 0.1rem solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
@@ -137,7 +139,9 @@
 .disengage {position: absolute;left: 10vw;top: 5vh;}
 .menuButton {font-family: 'Cinzel-Regular';font-size:0.85em;}
 .lootDropWindow {position: absolute;font-family: 'Cinzel-Regular';background-color: #000;height: 35%;width: 35%;top: 55%;left: 50%;transform: translateX(-50%);padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
-.playerMenuHeading {font-family: 'Cinzel-Regular';font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;} 
+.menuHeader { font-size: 1.1em; margin-left: 4%; margin-top: 3%; }
+.insideMenu { margin: 0.5em 0.25em 0 0; }
+.playerMenuHeading {font-family: 'Cinzel-Regular';font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;}
 .playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15rem solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
 .stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }

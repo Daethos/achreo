@@ -43,7 +43,7 @@
 }
 .juice:hover, .juice:focus {
     background: #27001d;
-    transform: scale(1.1); /* Focused/hovered element grows */
+    transform: scale(1.1); 
     border-color: gold;
     box-shadow: inset #000 0 0 0 0.2rem, inset gold 0 0 0 0.3rem;
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
@@ -64,13 +64,29 @@
     transition: transform 0.75s ease;
 }
 .juiceNB:hover, .juiceNB:focus {
-    transform: scale(1.25); /* Focused/hovered element grows */
+    transform: scale(1.25); 
     transition: transform 0.75s ease, background-color 0.75s ease;
     filter: drop-shadow(0 0 2px #fdf6d8);
 }
 .juiceNB:not(:hover):not(:focus) {
     transform: scale(1);
     transition: transform 0.75s ease, background-color 0.75s ease;
+}
+.juiceSmall {
+    animation: juicy 0.75s ease;
+    transition: transform 0.75s ease;
+}
+.juiceSmall:hover, .juiceSmall:focus {
+    background: #27001d;
+    transform: scale(1.1); 
+    border-color: gold;
+    box-shadow: inset #000 0 0 0 0.125rem, inset gold 0 0 0 0.15rem;
+    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
+}
+.juiceSmall:not(:hover):not(:focus) {
+    transform: scale(1);
+    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
+    border-color: green;
 }
 .menu:hover .juiceNB:not(:hover),
 .menu:focus-within .juiceNB:not(:focus) {

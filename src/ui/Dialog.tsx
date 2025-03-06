@@ -3,7 +3,7 @@ import { EventBus } from '../game/EventBus';
 import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
-import { ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, provincialInformation } from '../utility/regions';
+import { LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, localLore, provincialInformation } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
@@ -246,18 +246,12 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
             case 'localWhispers':
                 o = 'Local Whispers';
                 break;
-            case 'supernaturalEntity':
-                o = 'Entities';
-                break;
-            case 'supernaturalPhenomena':
-                o = 'Phenomena';
-                break;
             default:
                 break;
         };
         return (
             <div style={{ margin: '5%' }}>
-                <button class='dialog-buttons' onClick={() => setIntent(o)} style={{ background: '#000', 'font-size': '0.5em' }}>{o}</button>
+                <button class='highlight dialog-buttons juiceSmall' onClick={() => setIntent(o)} style={{ background: '#000', 'font-size': '0.5em' }}>{o}</button>
             </div>
         );
     });
@@ -295,6 +289,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>('');
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
+    const [local, setLocal] = createSignal<any>(localLore["Astralands"]);
     const [region, setRegion] = createSignal<any>(provincialInformation['Astralands']);
     const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Ahn'are"]);
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
@@ -634,10 +629,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 clean = 'localWhispers';
                 break;
             case 'Entities':
-                clean = 'supernaturalEntity';
+                clean = 'entities';
                 break;
             case 'Phenomena':
-                clean = 'supernaturalPhenomena';
+                clean = 'phenomena';
                 break;
             default:
                 clean = intent;
@@ -646,11 +641,18 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit('blend-game', { currentIntent: clean });
     };
 
+    const handleLocal = (local: keyof Region) => {
+        setRegion(localLore[local]);
+    };
+
     const handleRegion = (region: keyof Region) => {
         setRegion(provincialInformation[region]);
     };
     
     const handleEntity = (entity: keyof SupernaturalEntity) => {
+        // if (entity === "Back") {
+
+        // };
         setEntity(SupernaturalEntityLore[entity]);
     };
 
@@ -1034,7 +1036,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         ) : ( '' ) }
                     </>
                 ) : game().currentIntent === 'localLore' ? (
-                    <Typewriter stringText={`This will entail the local lore of the region you inhabit, and the history of the area from the perspective of the enemy in question, and hopefully grant more insight into the world.`} styling={typewriterStyling} performAction={hollowClick} />
+                    <>
+                        <Typewriter stringText={`Of which province to you wish to understand a little more?`} styling={typewriterStyling} performAction={hollowClick} />
+                        <br /><br />
+                        <div style={{ color: 'gold' }}>
+                            <Typewriter stringText={local} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        </div>    
+                    </>
                 ) : game().currentIntent === 'localWhispers' ? (
                     <Typewriter stringText={`Local Whispers will provide localized intrigue to the region you're inhabiting and the actual details of the map itself.`} styling={typewriterStyling} performAction={hollowClick} />
                 ) : game().currentIntent === 'persuasion' ? (
@@ -1068,8 +1076,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <> */}
                                 <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={typewriterStyling} performAction={hollowClick} />
                                 <br /><br />
-                                <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
-                                <br /><br />
                                 <div style={{ color: 'gold' }}>
                                     <Typewriter stringText={region} styling={typewriterStyling} performAction={hollowClick} />
                                 </div>
@@ -1080,24 +1086,20 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} styling={typewriterStyling} performAction={hollowClick} />                            
                         ) } */}
                     </>
-                ) : game().currentIntent === 'supernaturalEntity' ? (
+                ) : game().currentIntent === 'entities' ? (
                     <>
                         <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
-                        <br /><br />
-                        <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity}  />
                         <br /><br />
                         <div style={{ color: 'gold' }}>
                             <Typewriter stringText={entity} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
                         </div>
                     </>
-                ) : game().currentIntent === 'supernaturalPhenomena' ? (
+                ) : game().currentIntent === 'phenomena' ? (
                     <>
                         <Typewriter stringText={`"Many notions exist of man extending themselves further than they are readily capable of physically. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br /><br />
-                        <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena}  />
-                        <br /><br />
                         <div style={{ color: 'gold' }}>
-                            <Typewriter stringText={phenomena} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={phenomena} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : game().currentIntent === 'worldLore' ? (
@@ -1114,9 +1116,22 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
             </Show>
             </div>
+            {/* && game().currentIntent !== "entities" && game().currentIntent !== "phenomena" */}
             <Show when={combat().isEnemy}>
                 <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
                     <DialogButtons options={game().dialog} setIntent={handleIntent} />
+                <Show when={game().currentIntent === "localLore"}>
+                    <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
+                </Show>
+                <Show when={game().currentIntent === "provincialWhispers"}>
+                    <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
+                </Show>
+                <Show when={game().currentIntent === "entities"}>
+                    <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
+                </Show>
+                <Show when={game().currentIntent === "phenomena"}>
+                    <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                </Show>
                 </div>
             </Show>
         </div>

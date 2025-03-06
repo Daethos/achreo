@@ -1,12 +1,12 @@
 type Dialog = {
     conditions: {};
     challenge: {};
-    supernaturalEntity: {};
+    entities: {};
     farewell: {}; 
     localLore: {};
     localWhispers: {};
     persuasion: {}; 
-    supernaturalPhenomena: {};
+    phenomena: {};
     provincialWhispers: {}; 
     worldLore: {};
 };
@@ -15,12 +15,12 @@ const createDialog = (): Dialog => {
     return {
         conditions: {},
         challenge: {}, 
-        supernaturalEntity: {},
+        entities: {},
         farewell: {}, 
         localLore: {},
         localWhispers: {},
         persuasion: {}, 
-        supernaturalPhenomena: {},
+        phenomena: {},
         provincialWhispers: {}, 
         worldLore: {},
     };

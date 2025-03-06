@@ -81,6 +81,20 @@ export interface RegionInformation {
     };
 };
 
+export interface Insitutions {
+    Augmentum: string; // Arbiters
+    Museum: string;
+    Seyr: string;
+};
+
+export interface Whispers {
+    Blood_Moon_Prophecy: string;
+    Black_Sun_Prophecy: string;
+    Ilire: string;
+    "Ma'ier": string;
+    Draochre: string;
+};
+
 export interface Region {
     Astralands: string;
     Kingdom: string;
@@ -90,6 +104,16 @@ export interface Region {
     Firelands: string;
     Sedyrus: string;
     Isles: string; 
+};
+
+export interface World_Events {
+    Age_of_the_Ancients: string;
+    Flourishing: string;
+    Sundering: string;
+    Last_Rites: string;
+    Age_of_Wars: string;
+    Purification_Trials: string;
+    False_Prophecy_Wars: string;
 };
 
 export interface SupernaturalEntity {
@@ -335,16 +359,16 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
         In any case, while much has been spoken of and turned ot writings, perhaps more is to be gained through the understanding of what they mean to us abtractly, for the good of us all."`,
     
     Aphyero: `"Though to be the manifestation of Wild. Fire Much of its history is chronicled and conflated with that of the Anashtre, and it is difficult to tease out its distinctions from what has been written, unfortunately. \n
-        However, be mindful of what it thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
+        However, be mindful of what is thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
     
     Fyrash: `"Thought to be the manifestation of Fire and Lightning. Much of its history is chronicled and conflated with that of the Anashtre, and it is difficult to tease out its distinctions from what has been written, unfortunately. \n
-        However, be mindful of what it thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
+        However, be mindful of what is thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
     
     "Quor'eo": `"Thought to be the manifestation of Wild Earth. Much of its history is chronicled and conflated with that of the Anashtre, and it is difficult to tease out its distinctions from what has been written, unfortunately. \n
-        However, be mindful of what it thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
+        However, be mindful of what is thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
     
     Chyrolus: `"Thought to be the manifestation of Wild Water. Much of its history is chronicled and conflated with that of the Anashtre, and it is difficult to tease out its distinctions from what has been written, unfortunately. \n
-        However, be mindful of what it thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
+        However, be mindful of what is thought to be its nature, if you have a mind for it, you may be able to come to your own conclusions."`,
     
     Canire: `"One of the more sinister creatures we have heard rumor of, thought to be a gross mixture of misplaced obedience and uncontrollable avarice. These notions, unfortunately, appear to have a bite of truth to them, more than we care to imagine. \n
         It is said, largely through conjecture--through some of this has been put to parchment by various quills, to have been a plotted effort to breed a more savage, ravenous hound, with thrice the loyalty of a normal one. A by chance occurrence took place long ago, where a litter of pups were birthed carrying two heads in place of one. \n
@@ -353,7 +377,7 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
         These hounds seem to share a mind with the others, both in themself and their kin, and can respond to events transpiring near one even when far away from the others. Since, much has been written after the matter about these monsters, how to raise them, their behavior, eating habits, preferences of other animals and humans, a heavy treatise on steeling yourself for the journey. \n
         Very few are gifted in the sense of animal bonding, which coupled with the specific nature of the breeding, causes these creatures to be a rare sight throughout most of the lands, those who may afford the services tend to establish a whole keep and kennel for them alone."`,
     
-    Carrier_Birds: `"It is said there is a dinctiont of an Ahn'are for every one fot eh lands in which they inhabit, and for this reason, the various leaders have made these birds their moniker to breed and use as carriers of messages, and are cared after more thoroughly the the rest. \n
+    Carrier_Birds: `"It is said there is a distinction of an Ahn'are for every one fot eh lands in which they inhabit, and for this reason, the various leaders have made these birds their moniker to breed and use as carriers of messages, and are cared after more thoroughly the the rest. \n
         Oral tradition has given way to the writing of various books, scrolls, and tomes on the subject, with most conjecture believing in the existence of said Ahn'are, now or once before, as said writings keep valuable information on the instructuion to tend for the birds, in addition to quirks, breeding practices, behaviors, eating habits, and preferred places of habitation. \n
         They are as follows: Gray Parrots of the Astralands, Ilian Eagles of the Daethic Kingdom, Long Dobes of Licivitas, Prime Owls of the Soverains, Rainbow Parrots and Harpy Eagles of the Alluring Isles, Burnished Crows of the West Fangs, Ghost Hawks of the Firelands, and Blue Pigeons of Sedyrus."`,
     
@@ -381,7 +405,10 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
 };
 export const SupernaturalEntityButtons = ({ options, handleEntity }: { options: any, handleEntity: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleEntity(o)}>{o}</button>;
+        const text = o.split("_").join(" ");
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handleEntity(o)}>{text}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };
@@ -419,59 +446,114 @@ export const SupernaturalPhenomenaLore: SupernaturalPhenomena = {
 };
 export const SupernaturalPhenomenaButtons = ({ options, handlePhenomena }: { options: any, handlePhenomena: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handlePhenomena(o)}>{o}</button>;
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handlePhenomena(o)}>{o}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };
 
-export const localLore: Region = { // Localized Provincial Lore
-    Astralands: "Good one, those Ashtre have quite the mouth on them I hear yet never heard. Perhaps you'll be able to catch their whispers.", 
-    Kingdom: "The King, Mathyus Caderyn II, has been away from his court as of late, his son Dorien sitting the throne--though constant feathers aid his communication when abroad. Despite its unification, groans have increased with disparate and slow recovery from the century long war only having quelled for 7 years prior, with select places receiving abundance of aid over others, the discernment itself seeming weighed in favor of longstanding allies. As the King reaches further East to establish peaceable connections with the Soverains, it leads one to speculate on the disposition of those houses already under his kingship.", 
-    Soverains: "The Soverain-Eulex, Garrick Myelle, is throwing a week's long feast for the coming manhood of his son, Relien Myelle. It is his last surviving son, others perishing in the Kingdom-Soverain War, and his daughter being wed off to the Kingdom as part of a truce. It has been wondered whether the boy can live up to the immense fortune and luck of his father, who started not long ago as a would-be trader lord, slowly building roads and connectivitiy throughout the Soverains during the war, a wild boon during the war economically--its enhancement of intra-provincial aid notwithstanding.", 
-    Fangs: "Word has spread that the growing settlement and peaceable futures of provinces has caused the chaotic stability of mercenary life in the Fangs to decouple from the consistent pattern of war occurring throughout the land for centuries. Some have been accepting work which brings them far and away from their homelands, by whom and for what purpose remains to be recorded. The Fang Lords themselves have outstretched their lands to incorporate better agriculture, with some of the more inland mercenaries providing a challenge as they wish to graze the land as any animal would. What do you believe?", 
-    Licivitas: "The Ascean, General Peroumes, is avoiding the prospect of coming back to Lor without cause of the authority of both the First Lorian and the Dae it seems. Much criticism of his prolonged campaign among the optimate fall to whipsers on the shoulders of the adoring populare, tales of his commentaries reaching further than the Good Lorian's word, its been said. The Cragorean, enemies in the current war against Licivitas, despite their fewer numbers and armament, have proved ruthless in their willingness to defy Licivitan conquest. What do you make of that growing sentiment?", 
-    Firelands: "The Ghosthawk of Greyrock, Theogeni Spiras, has not been seen as of late--his wife's health has been failing worse. He has been leaning on his administration housed with devoted, a strong change from the previous Protectorate, the Ashfyres and their adherence to Fyer, tradition that has persisted since written word. Peculiar, the man, once wildly famed from his crowning at the Ascea in 130, to overthrowing the longstanding Fyerslord, Laveous Ashfyre. The last vestige of their lineage, Searous Ashfyre, has been left in a fragile position, and many are curious as to the future of the Firelands. What do you think?", 
-    Sedyrus: "The Sedyren Sun, Cyrian Shyne, has reached an agreement with a lesser Quor'ator to betrothe his firstborn son to one of their daughters, hoping to stem general unrest from the cooling tempers of various families being uprooted of the Quor'eite, who lost a surprise war against their neighboring Sedyreal some decades past--the province solidifying after centuries of a Sedyrus/Quor'eia split into Sedyrus. Would you believe those that say this will leads toward a more peaceful future?", 
-    Isles: "The Alluring Isles is its own world, gigantic and terrifying despite its grandeur isolated by strange tides. The land itself a shade of this world, yet what can allow a man to travel a fortnight here, and a day there? I've heard about the size of the animals that stalk those jungles and swim in the waters, hard to believe anyone can sustain themselves there. Would you wish to see this place?",
+export const localLore: Region = { // Localized, Smaller Concerned Knowledge of Provinces
+    Astralands: `"The Spinal Fusion: Not much is known or recorded byt he texts held at the Mseum concerning the customs, cultures, and people of the Spin. What is known is they were among the primal worshipers of the Ancients, who fought most loyally for their side ina zealous vervor that caused even an Ancient or two to pause with concern. \n
+        After the Last Rites, nothing was left for the accumulation of knowledge on the Northren and Central parts of the realm to continuously record, yet all the same they seemed to have developed a written language not unlike ours, as both were developed from Shaorahi. \n
+        One of the peculiar qualities over this part of the realm is their formal use of the term 'The Spine' for their countryside, embedded in their vernacular. Another most curious observation being that from their sources, there does not appear to be a war held in their lands after the Last Rites, which would put them as perhaps the most unfied, whole, and pure hold of people left over from the War of the Ancients. \n
+        Much of their general customs seem to ahve followed with what was known to be commponplace before the Wars, that rule of Archons over vast parts of the land, and underpinning it, a tetrad: the Valour, their martial lord over weapons, strategy, and commander of their army and fleets; Justiciar, their political lord, governing their laws, civility, and diplomacy; Metalurge, the craftsman, concerning commerce, creativity, travel, and trade; the Ashtral, their religious lord over worship of Astra, ceremony, and belief. \n
+        How they go about their choosing of whom may reign appears to be a mixture, in one ethos, a vote spread across their voices, those of age who are active members of their land, and worsking for the better of themselves, their family, and their ruling body at large. In aother, it seems as though these choices of who reigns are preselected by means we are not able to discern.\n
+        It appears there exists bloodlines that run down throughout their history, tracing back to the Age of the ancients, if their texts are true, and rarely have there ever been cases of those not of a blessed blood put at the forefront to rule their masses, and in the event of, I doubt they were considered with much weight."`,
+    Kingdom: `"The Achreon Kingdom Conquest: Their rule by unification of a king came under the tile of the 'Achreon' Kingdom, under House Caderyn, whose heradly is that of the Fox. The king, Mathyus Caderyn I was a well educated man, and in his youth, instead of being charged under an allied house specifically, was encouraged by his father to scour the known world with several allied houses children. \n
+        In doing so, he learned from each province he visited, the House's wealth aiding in cordiality and admiration of the people. Being gone for for over a decade, he returned at new of his father's mortal illness, settling as heir to his name, and the Fox Hollow settlement. The Northren'wes became engulfed in a massive war amongst itself, with the returning heirs agitating reaching eastward to the Eye. \n
+        Many houses experienced multiple crises from the attrition, their natural resources and wealth depleting and seizing, many tied their fates to each other in an effort to stabilize, and various bands warred further, till all that were left to trade were words and oaths. \n
+        A summit was called to agree to terms between all factions and houses, and through patience and tact, coupled with the timing of an Arbiter of an allied house, crimes were charged and arrests made, thwarting peace deals, with the First Fox executing enemy leaders, and proclaiming kingship. No retaliation could be surmounted, and with an Arbiter, such justice was served with the weight of all ley law behind it, the Augmentum known to carry their word with a sword. \n
+        The First Fox conquers the northwest in 50 AE, and has since become a kingdom, first the 'Achreon,' then 'Daethic' after the Arbitration War [51-58 AE], back to the Achreon after the Second Insurrection in 113 AE, and once again back to the Daethic Kingdom, after the return of Mathyus Caderyn [II] in 122 AE, during the Exiled Rebellion. \n
+        Many issues with infight accrued, as throughout this time the Kingdom sought expansion into the West, past the old border of the Eye. Some Houses were subsumed and assimilated, and many others sought to repel the invasion. Those East of the Eye became hardened in their isolation, and began to proclaim soverainty in response. \n
+        Entreatment occurred during the Ascean in 140 AE, with a treaty written and signed in 141 AE, ending almost a century of agitation and war."`, // 
+    Soverains: `"The Soverain Pact: Originally, lords were simply those who accrued land and resources greater than others, settling in areas they could defend and manage their wealth, which slowly accumulated peasantry who needed to survive after the Last Rites. However, through the unification of the Western Achreon Kingdom under the First Fox, and his declaration of gathering all the North under one realm, the lords of the east opted for a different title. \n
+        Through the Soverain Pact, they renamed themselves the Sveraoins to proclaim their independence in perpetuity. This remains in effect to this day, with the Soverains being the title in the Northren'eas--the king abiding by the ranking, though not without his proper mockery. It is said that whenever he visited the father of his daughter in law, he speaks of him as his 'Soverain Eulex', though it is unknown to what degree this is endearing. \n
+        Each Soverain had been proclaimed for different merits, some had became wealthy through trade and commerce, some had rich mineral deposits under their feet, others had an insular culture that became paramount in the land, be is martial or one of worship. All had become sworn to each other in the Great Northren War, knowing their fates intertwined against the cleverness of the Fox, and became dilluted of their isolation as many of their peoples interacted to bolster each other's defense and resources for the better part of a century. \n
+        It has only been seven years since the treaty after the Ascea in 141 AE, and relations have no ceased in the least."`,
+    Fangs: `"The Rapier Rebellion: First, Licivitan Honor must be explained: to be a Good Lorian is foundation to the culture of Licivitas, post War of the Ancients. This manner of conduct, whilst extended toward everyone of this world loosely, tends to be restricted toward those of Li'ivi Blood, which encompasses the Fang Lords to an extent, at least at the beginning of their settlements. \n
+        Because the War of the Ancients had seen such a rise in mortality between provinces and within, it has been an unofficial yet practiced decree that no Li'ivi blood should be spilled upon its soil, nor of one to take the life of another fellow Li'ivi. The loss of life suffered throughout the War of the Ancients caused a depression in birthing and repopulation while the Seyr of Daethos and the Good Lorian attempted to restructure and rebuild their civilization. \n
+        This caused a fundamental warping of how life before Daethos had been, a loose affiliation of warring tribes, looking to conquer and subsume their neighbors.\n
+        Now that you know of their honor, this follows suit with not waging an all out war against the burgeoning Fang Lords, but still attmpting to corrale them in some measure, starting with an embargo. The lords, determined to cut out their own independence from the heavy hand of Licivitas, had to find ways to thrive, and with them being of foreign blood, caused caustic relations initially with the folk that had settled the area post War of the Ancients: those emigrating from the North, No'theo; the East, exiled Old Li'ivi; and South, the Fyers. \n
+        These people had created anarchic tribal low lord provincial battle clans with times of tentative peace. The Fang Lords, as they were later known, at this time it would be an apocryphal declaration, were unwelcome and pushed to the coast in an effort to establish ports and trade and work around the embargo, trying to carve out homes and settlements on the prcipitous cliffsides of the 'fangs,' which most tribes had stayed away from to settle along the easier, more seal level coasts of teh West and South. \n
+        The Li'ivi, through their ingenuity, were able to functionally use the coast to establish trade by working tirelessly to create paths that would allow transport not only of the people but commerce down to the rocky coasts, and build flourishing economies. To circumvent this old code of honor, the lords worked in turn to hire the battle clans and loose coalitions of armies, and through these mercenaries, sought to thwart the Licivitan forefathers, and became an independent faction of port-cities. \n
+        The ensuing war left both sides with depleting resources, and from suing for peace, negotations were made with the Augmentum to create a formal variant of duels as means of severing the authority of Licivitas. This was seen as more human than the slaughtering and spilling of Li'ivi blood, and would grant the prospect of earning freedom and letting go of lands in a more dignified manner.\n
+        The craft members of the newly settled land, who would in retrospect herald their first fang lords, had their blacksmiths craft various weapons for the occasion, knowing the customs. Taking inspiration from the legendary weapon, Ancient's Bane, lost in the annals of history and warfare, they crafted what they surmised what such a weapon might look like, based on the records and vague descriptions still existing. \n
+        A series of duels from their best representatives came ot be one of the most contentious events in the history of the realm, as the livelikhood and indepenedence rested on the quick-witted and agile bodyies of a selected few. The original ruling was to have it go to three cuts, and quickly it devoled into three cuts discounting arms. When the first man fell upon the third duel, it was rectified to henceforth be to the death, for the weight of every duel needed to be reflected in the determination of a whole people. \n
+        Despite the nature of the newly crafted weapon being lighter, more nimble, and with a longer reach, the time it took t opractice and impart eperience ont he user caused a gamble to occur. Would the effort of learning a new style to carry such a weaon be worth the short time invested against the long-standing tradition offered witht he longsword, carried and trained for centuries previously? It was a high risk, but riskier they believed were their freedoms under the weight of Licivitas, a home they no longer knew and were not longing to be subjugated under."`,
+    Licivitas: `"Daethos Rising: As many of what now are to be considered separate lands became settled and established, it allowed the burgeoning of what started as a form of cult fromthe time between the Sundering and the Last Rites to begin flourishing, with the uprising of Laetrois Ath'shaorah. Worship of Daethos sweapt through Licivitas as the old faith waned in its stranglehold in people's minds and beliefs. \n
+        While many of the oral traditions were transcribed with quil over voluminous texts and tomes, not everyone was capable of reading these and slowly the stories became quieter and more distant. In addition, as generations of new poeple were born, the remembrance of the past became more vague, and slowly seeped out of sight for many of the common folk and peasantry, as they looked simply to survive throughout their lives and make something of and for themselves. \n
+        During this transition of those who could read and were teaching those who could not, the small and once-heretical sect overtook the Ancients in the majority of the faith for the population. For some time, it grew and many of the higher birthed nobles converted, and those in ambition reigned in power, eventually unifying with the governance of society. \n
+        For a time which aided in peaceable terms and agreements between the rulers of Licivitas and the commoners who were subservient, the new established faith aided in better establishing the ability of the nedy and downtrodden to earn and move up in the land. This included many reforms to plot out land for the average folk, becoming farmers and bolstering their ability to produce agriculture as a whole. \n
+        Toward the South and the East, newly discovered caves and mines were found and laid claim to by Licivitas, causing books in iron, coal, silver, and gold, allowing them to grow to a powerful enterprise that would aid in the development of their society. \n
+        To reiterate, one ofthe ways they sustained their existence into a prosperous chain of city-states is putting resources toward bolstering their agriculture and engineering. Every poor hand needed not be, and could enable themselves to live off the land given by the First Commoner, Lorian, in return for a portion of the goods and wealth accumulated. Everything else he may trade, offter to traders and merchants in exchange for minted coins, or utilize themselves. \n
+        Farmers worked together to extend their fields, lending hands in culvation, joining through marriage pacts to strength the joint unity of their fields in perpetuity. This allowed a great strengthening throughout their land, including the prospect and expansion, establishing ports and cities elsewhere. \n
+        One of their most celebrated and successful excursions in claiming new territory for settlement became what is now reffered to as the Teeth in the West Fangs, although a rebellion took place and Licivitas no longer rules over that province, though the relations maintained afterward have been congenial and healthy."`,
+    Firelands: `"The Smoldering: The Firelands appear to be a bit of a mystery even to those who have ventured to the province and subsequently forged cities and castles. \n
+        From what is known, based on the accounts of their history, they appeared to have the paramount seat of power of Fyer, the Fire Ancient. Much of this is reflected in their prominent status and shrined that were built caeremoniously to the Ancient, in addition to the perennial Fyers Protectorate, the Ashfyres, carrying the Phoenix as their coat of arms. \n
+        It is said that whatever was to be made of the Ancient and his penchant for modality, it is reflected amongst the lives of its people. This is not to say they are of a nomadic variance, but more a freely shifting and interconnected society that has arranged more marrieages in each generation than the totality of which the Seyr could hope to yield. \n
+        Some claim that it is their lessened strain due to the nature of their land, yielding constant and bountiful harvests, when combined with their milder weather, leaves much time for frivollities. Whether they can be seen honing their crafts at carpentry and engineering, archery and jousting, needlework and writing, these people danced well, fought well, sung well, and lead well. \n
+        But was it always this way? If stories are to be believed, during the Sundering, and after the Last Rites, a series of wars had sprung up amongst the lords with split loyalties causing severe death and turmoil by its end. A tenuous truce loosely held them together in order to pick up the pieces of their homelands, and to ward off the evil that was influcted in horrific, nightly raids by the leftover entities of the Ancients. \n
+        And yet, as though a cycle of the moon instantiated fervor once more, the lords began again in their battles for supremacy, with none ever managing more than sieging one or two castles before needing defense and stabilization of their own. The Phoenix, Bryne Ashfyre, came to prominence, utilizing a Shaorahi strategy on the battlefield, uniting the arring armies and forgeing themselves greater. In the end, he was nominally named their king, though he revoked the right of it himself, knowing the follow of such grandeur against the Seyr, but the title remained in their hearts, and he became the leading figure for guidance and displacy as other lands began surfacing. \n
+        His title and legend became haralded across the realm during the Fourth Purification Trials, showing his unmatched brilliance in warfare and righteouness, with his appeasement toward the new faith in trickery."`,
+    Sedyrus: `"The Sedyren Wars: Previous understanding of the dispute between Licivitas and Sedyrus is necessary to understand the conquest of Quor'eia by the Sedyreal. Much contention arises to this day as to who may place ownership of the Sedyrus mountain chain, for WArs were fought for the rights to hold these lands. \n
+        This sounds folly , to wage such large scale wars due to the rights of claiming the mountain, as it would not move its position in our realm, and it seemed as though the crafted who lived there had no been unwilling to provide their services for all who were worthy, 'One's heart, mind, and caer who had been tempered by Kyrisos himself, and whose body were protected by Se'dyro to meet out those ends. Only a noble Man may lay claim to these treasures by which both Ancients regard as fyers.' \n
+        This was a heavy price for Licivitas to bargain with, considering their change of aith towards Daethos, though I imagine they would not quite impose those beliefs upon the smiths of these mountaintops. However, as tragic as this may have been, onces the fires were extinguished and those who lived amongst the rocks and caverns perished for reasons we are not yet to discern, the knowledge to accrue such refinment passed away with them. \n
+        The war between Licivitas and Sedyrus was held near entirely for this reason, amongst perhaps other quarrels due to displomacy, trade, and raids--yet the fervor and passion for these wars were smothered with the last traces of ember in the furnaces.\n
+        One of the emergent learnings from the Sedyren Wars was the frightening lethality of the Sedyreal archers amongst their cavalry. Their level of mastery as whown in several battles over the course of a multi-stage war saw the icivitan armies routing and submitting in awe of their expertise in saddle with speras and bows. Both riding heavy destriers with full plate adorning themselves and their horses, bred to break lines and trample over infantry, and mthe much more agile courses, the premier choice for their archers who swarmed in dazzling displays of destness and fury. \n
+        A contentious belief is that the people of northern Quor'eia, who are now known as the Sedyreal, were pehaps rebranded by their chief hierarch, the Sedyren Sun, to lay better claim over the cluster of mountains, and the forges that lie within."`,
+    Isles: `"The Enchanted Wars: These isles are thought to not have any indigenous habitation in part because little exists of historical context, and that the first records seem to showcase a battle for its reign in the land between the Astralands, Licivitas, and Sedyrus after the Last Rites and the beginning of the Age of Wars. \n
+        It is often speculated among the writings that we do have, some of the more outspoken or 'touched' folk who survived the Age of the Ancients were exiled from their lands, and sought refuge across the war in the form of an uninhabited jungle. It appears around this time that the folk of Sedyur who left the lands in search of other pastures and did not take to the cohesion after the Southron Sedyren War, taking to the island chain to start anew. \n
+        Folk of Licivitas were positioned in such a way to not be driven North, or perhaps did not have steadfasts or holdings there, and felt more inclined to run the risk of moving further South. It is unknown about the conditions that led some of the people from the Astralands to be driven south, as not much is given in understanding the Ashtrean perspective. \n
+        The lands were and are currently rich in agriculture and landscape, with smooth, sandy beaches in myriad colors, warm waters, temperate weather, strong sunlight, and a host of bizarre animals. On the last part, it is good to note that a varying amount of new animals had been discovered from the advent of migrating there, with the largest cats we now have on record, tigers, and their horrific variants in the Gatshyr being reported through the settlements. \n
+        Vicious and feral apes seem to rule parts of the more dangerous jungle. Amongst other findings are the largest land animal we have seen recorded through work and observation of the Sages, elephants. These monstrous creatures dwarf even bears in measure, and have the surprising ability to be tamed for use in agriculture, and as been demonstrated more recently, warfare. \n
+        Over time, the warring between the three more established lands gave way to commonality in the midst of sheer survival, and through multiple arrangements with peace treaties, marriages, and the joining of houses, it has been somewhat settled and calmer. Though, whenever the houses have risen arms against a larger-scale threat, such as the attempted qcquisition of their land by Licivitas, or the raiding of Sedyrus, they have proven to be formidable warriors, taking to the conditions of their envrionment in the form of sneak attacks, ambush tactics, and overall hidden warfare. \n
+        Folk from the Alluring Isles whose ancestry is infused with Astral blood are referred to as Mire, Mirefolk, Miren, and Miremen.\n
+        Folk from the Alluring Isles whose ancestry is infused with Licivitan blood are referred to as Lilos if they are adherent, or Daefarer's if devoted.\n
+        Folk from the Alluring Isles whose ancestry is infused with Sedyren blood are referred to as Slabs, referring to their worship of Quor'ei and Se'dyro alike, and neither are fit for Island and sailing like. Quite derogatory."`
 };
 export const LocalLoreButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleRegion(o)}>{o}</button>;
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };
 
-export const localWhispers: Region = { // Localized, Smaller Concerned Knowledge of Provinces
-    Astralands: "Good one, those Ashtre have quite the mouth on them I hear yet never heard. Perhaps you'll be able to catch their whispers.", 
-    Kingdom: "The King, Mathyus Caderyn II, has been away from his court as of late, his son Dorien sitting the throne--though constant feathers aid his communication when abroad. Despite its unification, groans have increased with disparate and slow recovery from the century long war only having quelled for 7 years prior, with select places receiving abundance of aid over others, the discernment itself seeming weighed in favor of longstanding allies. As the King reaches further East to establish peaceable connections with the Soverains, it leads one to speculate on the disposition of those houses already under his kingship.", 
-    Soverains: "The Soverain-Eulex, Garrick Myelle, is throwing a week's long feast for the coming manhood of his son, Relien Myelle. It is his last surviving son, others perishing in the Kingdom-Soverain War, and his daughter being wed off to the Kingdom as part of a truce. It has been wondered whether the boy can live up to the immense fortune and luck of his father, who started not long ago as a would-be trader lord, slowly building roads and connectivitiy throughout the Soverains during the war, a wild boon during the war economically--its enhancement of intra-provincial aid notwithstanding.", 
-    Fangs: "Word has spread that the growing settlement and peaceable futures of provinces has caused the chaotic stability of mercenary life in the Fangs to decouple from the consistent pattern of war occurring throughout the land for centuries. Some have been accepting work which brings them far and away from their homelands, by whom and for what purpose remains to be recorded. The Fang Lords themselves have outstretched their lands to incorporate better agriculture, with some of the more inland mercenaries providing a challenge as they wish to graze the land as any animal would. What do you believe?", 
-    Licivitas: "The Ascean, General Peroumes, is avoiding the prospect of coming back to Lor without cause of the authority of both the First Lorian and the Dae it seems. Much criticism of his prolonged campaign among the optimate fall to whipsers on the shoulders of the adoring populare, tales of his commentaries reaching further than the Good Lorian's word, its been said. The Cragorean, enemies in the current war against Licivitas, despite their fewer numbers and armament, have proved ruthless in their willingness to defy Licivitan conquest. What do you make of that growing sentiment?", 
-    Firelands: "The Ghosthawk of Greyrock, Theogeni Spiras, has not been seen as of late--his wife's health has been failing worse. He has been leaning on his administration housed with devoted, a strong change from the previous Protectorate, the Ashfyres and their adherence to Fyer, tradition that has persisted since written word. Peculiar, the man, once wildly famed from his crowning at the Ascea in 130, to overthrowing the longstanding Fyerslord, Laveous Ashfyre. The last vestige of their lineage, Searous Ashfyre, has been left in a fragile position, and many are curious as to the future of the Firelands. What do you think?", 
-    Sedyrus: "The Sedyren Sun, Cyrian Shyne, has reached an agreement with a lesser Quor'ator to betrothe his firstborn son to one of their daughters, hoping to stem general unrest from the cooling tempers of various families being uprooted of the Quor'eite, who lost a surprise war against their neighboring Sedyreal some decades past--the province solidifying after centuries of a Sedyrus/Quor'eia split into Sedyrus. Would you believe those that say this will leads toward a more peaceful future?", 
-    Isles: "The Alluring Isles is its own world, gigantic and terrifying despite its grandeur isolated by strange tides. The land itself a shade of this world, yet what can allow a man to travel a fortnight here, and a day there? I've heard about the size of the animals that stalk those jungles and swim in the waters, hard to believe anyone can sustain themselves there. Would you wish to see this place?",
+export const localWhispers: Region = { // Localized Provincial Lore
+    Astralands: `""`, 
+    Kingdom: `""`,   
+    Soverains: `""`, 
+    Fangs: `""`, 
+    Licivitas: `""`, 
+    Firelands: `""`, 
+    Sedyrus: `""`, 
+    Isles: `""` 
 };
 export const LocalWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleRegion(o)}>{o}</button>;
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };
 
-
-export const worldLore: Region = { // Old World Lore of each Province
-    Astralands: "Good one, those Ashtre have quite the mouth on them I hear yet never heard. Perhaps you'll be able to catch their whispers.", 
-    Kingdom: "The King, Mathyus Caderyn II, has been away from his court as of late, his son Dorien sitting the throne--though constant feathers aid his communication when abroad. Despite its unification, groans have increased with disparate and slow recovery from the century long war only having quelled for 7 years prior, with select places receiving abundance of aid over others, the discernment itself seeming weighed in favor of longstanding allies. As the King reaches further East to establish peaceable connections with the Soverains, it leads one to speculate on the disposition of those houses already under his kingship.", 
-    Soverains: "The Soverain-Eulex, Garrick Myelle, is throwing a week's long feast for the coming manhood of his son, Relien Myelle. It is his last surviving son, others perishing in the Kingdom-Soverain War, and his daughter being wed off to the Kingdom as part of a truce. It has been wondered whether the boy can live up to the immense fortune and luck of his father, who started not long ago as a would-be trader lord, slowly building roads and connectivitiy throughout the Soverains during the war, a wild boon during the war economically--its enhancement of intra-provincial aid notwithstanding.", 
-    Fangs: "Word has spread that the growing settlement and peaceable futures of provinces has caused the chaotic stability of mercenary life in the Fangs to decouple from the consistent pattern of war occurring throughout the land for centuries. Some have been accepting work which brings them far and away from their homelands, by whom and for what purpose remains to be recorded. The Fang Lords themselves have outstretched their lands to incorporate better agriculture, with some of the more inland mercenaries providing a challenge as they wish to graze the land as any animal would. What do you believe?", 
-    Licivitas: "The Ascean, General Peroumes, is avoiding the prospect of coming back to Lor without cause of the authority of both the First Lorian and the Dae it seems. Much criticism of his prolonged campaign among the optimate fall to whipsers on the shoulders of the adoring populare, tales of his commentaries reaching further than the Good Lorian's word, its been said. The Cragorean, enemies in the current war against Licivitas, despite their fewer numbers and armament, have proved ruthless in their willingness to defy Licivitan conquest. What do you make of that growing sentiment?", 
-    Firelands: "The Ghosthawk of Greyrock, Theogeni Spiras, has not been seen as of late--his wife's health has been failing worse. He has been leaning on his administration housed with devoted, a strong change from the previous Protectorate, the Ashfyres and their adherence to Fyer, tradition that has persisted since written word. Peculiar, the man, once wildly famed from his crowning at the Ascea in 130, to overthrowing the longstanding Fyerslord, Laveous Ashfyre. The last vestige of their lineage, Searous Ashfyre, has been left in a fragile position, and many are curious as to the future of the Firelands. What do you think?", 
-    Sedyrus: "The Sedyren Sun, Cyrian Shyne, has reached an agreement with a lesser Quor'ator to betrothe his firstborn son to one of their daughters, hoping to stem general unrest from the cooling tempers of various families being uprooted of the Quor'eite, who lost a surprise war against their neighboring Sedyreal some decades past--the province solidifying after centuries of a Sedyrus/Quor'eia split into Sedyrus. Would you believe those that say this will leads toward a more peaceful future?", 
-    Isles: "The Alluring Isles is its own world, gigantic and terrifying despite its grandeur isolated by strange tides. The land itself a shade of this world, yet what can allow a man to travel a fortnight here, and a day there? I've heard about the size of the animals that stalk those jungles and swim in the waters, hard to believe anyone can sustain themselves there. Would you wish to see this place?",
+export const worldLore: World_Events = { // Old World Lore of each Province
+    Age_of_the_Ancients: "",
+    Flourishing: "",
+    Sundering: "",
+    Last_Rites: "",
+    Age_of_Wars: "",
+    Purification_Trials: "",
+    False_Prophecy_Wars: ""
 };
 export const WorldLoreButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleRegion(o)}>{o}</button>;
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };
@@ -488,7 +570,9 @@ export const provincialInformation: Region = { // Current Provincial Knowledge
 };
 export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
-        return <button class='dialog-buttons' style={{ background: '#000', margin: '2%' }} onClick={() => handleRegion(o)}>{o}</button>;
+        return <div style={{ margin: "5%"}}>
+            <button class='highlight dialog-buttons juiceSmall' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+        </div>;
     });
     return <>{buttons}</>;
 };

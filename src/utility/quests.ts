@@ -133,7 +133,7 @@ export const QUEST_TEMPLATES = [
     {
         name: [ACHREON_DRUID, AHNARE_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KRECEUS, KYNGIAN_SHAMAN, LEAF, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE],
         title: "Principles and Principalities",
-        description: "The land is becoming profuse with stain of enemies, stem the tide and awash the land with their blood.",
+        description: "The land is becoming profuse with the stain of enemies, please stem the tide and leave this place awash with their blood.",
         requirements: {
             description: "Kill 10 enemies of the {name} to ingratiate yourself toward their cause.",
             technical: initFetch

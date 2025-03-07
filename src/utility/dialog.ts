@@ -4,10 +4,10 @@ type Dialog = {
     entities: {};
     farewell: {}; 
     localLore: {};
-    localWhispers: {};
     persuasion: {}; 
     phenomena: {};
-    provincialWhispers: {}; 
+    provinces: {};
+    whispers: {}; 
     worldLore: {};
 };
 
@@ -18,10 +18,10 @@ const createDialog = (): Dialog => {
         entities: {},
         farewell: {}, 
         localLore: {},
-        localWhispers: {},
         persuasion: {}, 
         phenomena: {},
-        provincialWhispers: {}, 
+        provinces: {},
+        whispers: {}, 
         worldLore: {},
     };
 };

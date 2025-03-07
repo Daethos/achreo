@@ -3,7 +3,7 @@ import { EventBus } from '../game/EventBus';
 import { Combat } from '../stores/combat';
 import Ascean from '../models/ascean';
 import { GameState } from '../stores/game';
-import { LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, localLore, provincialInformation } from '../utility/regions';
+import { LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, localLore, provincialInformation, whispers, worldLore } from '../utility/regions';
 import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
 import Typewriter from '../utility/Typewriter';
@@ -237,8 +237,6 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
             case 'localLore':
                 o = 'Local Lore';
                 break;
-            case 'provincialWhispers':
-                o = 'Provincial Whispers';
                 break;
             case 'worldLore':
                 o = 'World Lore';
@@ -293,6 +291,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [region, setRegion] = createSignal<any>(provincialInformation['Astralands']);
     const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Ahn'are"]);
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
+    const [worship, setWorship] = createSignal<any>(whispers["Ancients"]);
+    const [world, setWorld] = createSignal<any>(worldLore["Age_of_Darkness"])
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
@@ -619,20 +619,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             case 'Local Lore':
                 clean = 'localLore';
                 break;
-            case 'Provincial Whispers':
-                clean = 'provincialWhispers';
-                break;
             case 'World Lore':
                 clean = 'worldLore';
                 break;
             case 'Local Whispers':
                 clean = 'localWhispers';
-                break;
-            case 'Entities':
-                clean = 'entities';
-                break;
-            case 'Phenomena':
-                clean = 'phenomena';
                 break;
             default:
                 clean = intent;
@@ -642,7 +633,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     const handleLocal = (local: keyof Region) => {
-        setRegion(localLore[local]);
+        setLocal(localLore[local]);
     };
 
     const handleRegion = (region: keyof Region) => {
@@ -650,14 +641,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
     
     const handleEntity = (entity: keyof SupernaturalEntity) => {
-        // if (entity === "Back") {
-
-        // };
         setEntity(SupernaturalEntityLore[entity]);
     };
 
     const handlePhenomena = (phenomena: keyof SupernaturalPhenomena) => {
         setPhenomena(SupernaturalPhenomenaLore[phenomena]);
+    };
+
+    const handleWorship = (worship: keyof Whispers) => {
+        setWorship(whispers[worship]);
+    };
+
+    const handleWorld = (world: keyof World_Events) => {
+        setWorld(worldLore[world]);
     };
     
     const engageCombat = (id: string): void => {
@@ -1070,7 +1066,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         ) : ( '' ) }
                         <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
                     </>
-                ) : game().currentIntent === 'provincialWhispers' ? (
+                ) : game().currentIntent === 'provinces' ? (
                     <>
                         {/* { combat().playerWin || combat().enemyPersuaded ? (
                             <> */}
@@ -1103,7 +1099,21 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         </div>
                     </>
                 ) : game().currentIntent === 'worldLore' ? (
-                        <Typewriter stringText={"This will entail the world lore of the region you inhabit, the history of the world from the perspective of the enemy in question, and hopefully grant more insight into the cultural mindset."} styling={typewriterStyling} performAction={hollowClick} />
+                        <>
+                            <Typewriter stringText={"This will entail the world lore of the region you inhabit, the history of the world from the perspective of the enemy in question, and hopefully grant more insight into the cultural mindset."} styling={typewriterStyling} performAction={hollowClick} />
+                            <br /><br />
+                            <div style={{ color: "gold" }}>
+                                <Typewriter stringText={world} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                            </div>
+                        </>
+                ) : game().currentIntent === 'whispers' ? (
+                    <>
+                        <Typewriter stringText={`Worship intrigue on the occult and religiosity around the realm.`} styling={typewriterStyling} performAction={hollowClick} />
+                        <br /><br />
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={worship} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        </div>
+                    </>
                 ) : ( '' ) }
                 </div>
             ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
@@ -1116,14 +1126,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
             </Show>
             </div>
-            {/* && game().currentIntent !== "entities" && game().currentIntent !== "phenomena" */}
             <Show when={combat().isEnemy}>
                 <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
                     <DialogButtons options={game().dialog} setIntent={handleIntent} />
                 <Show when={game().currentIntent === "localLore"}>
                     <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
                 </Show>
-                <Show when={game().currentIntent === "provincialWhispers"}>
+                <Show when={game().currentIntent === "provinces"}>
                     <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
                 </Show>
                 <Show when={game().currentIntent === "entities"}>
@@ -1131,6 +1140,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </Show>
                 <Show when={game().currentIntent === "phenomena"}>
                     <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                </Show>
+                <Show when={game().currentIntent === "whispers"}>
+                    <WhispersButtons options={whispers} handleWhisper={handleWorship} />
+                </Show>
+                <Show when={game().currentIntent === "worldLore"}>
+                    <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
                 </Show>
                 </div>
             </Show>

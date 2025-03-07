@@ -80,7 +80,6 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                 It rings and stretches your soft edges,<br /> 
                 Pleading yield and hither.
                 </p>
-                ^500
                 <button class='button' data-function-name='blessPlayer'>
                 <img src=${ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt=${ascean().faith}  class=${'godBorder'+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
                 </button>

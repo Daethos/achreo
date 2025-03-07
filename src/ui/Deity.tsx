@@ -42,7 +42,7 @@ function getNodesForDeity(enemy: string, interactions: any): DialogNode[] {
     const nodeRange = `000${interactions}`; // interactions
     const matchingNodes: DialogNode[] = [];
     for (const node of EnemyDialogNodes.nodes) {
-        if (node.options.length === 0 || !checkRootId(node, nodeRange)) {
+        if (node.options.length === 0 || !checkRootId(node as any, nodeRange)) {
             continue;
         };
         const npcOptions = (node.options as any).filter((option: DialogNodeOption) => (option as DialogNodeOption)?.npcIds?.includes(enemy))

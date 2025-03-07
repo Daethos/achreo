@@ -629,6 +629,7 @@ export class Arena extends Phaser.Scene {
                 return;
             };
             let marker: any, markers: any[] = [], count = 0, current: number = 1250;
+            const team = this.registry.get("team");
             for (let i = 0; i < this.markers.length; i++) {
                 const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
                 const direction = position.subtract(this.player.position);
@@ -647,12 +648,14 @@ export class Arena extends Phaser.Scene {
                     count = j;
                     current = distance;
                 };
-                for (let k = 0; k < this.party.length; k++) {
-                    this.party[k].enemies.push({id:enemy.enemyID, threat:0});
-                    enemy.enemies.push({id:this.party[k].enemyID,threat:0});
+                if (team) {
+                    for (let k = 0; k < this.party.length; k++) {
+                        this.party[k].enemies.push({id:enemy.enemyID, threat:0});
+                        enemy.enemies.push({id:this.party[k].enemyID,threat:0});
+                    };
                 };
                 this.time.delayedCall(1000, () => {
-                    if (this.party.length > 0 && Math.random() > 0.5) {
+                    if (this.party.length > 0 && Math.random() > 0.5 && team) {
                         enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
                         enemy.enemies.push({id:this.player.playerID,threat:0});
                         enemy.inCombat = true;

@@ -2,7 +2,8 @@ type Dialog = {
     conditions: {};
     challenge: {};
     entities: {};
-    farewell: {}; 
+    farewell: {};
+    institutions: {};
     localLore: {};
     persuasion: {}; 
     phenomena: {};
@@ -16,7 +17,8 @@ const createDialog = (): Dialog => {
         conditions: {},
         challenge: {}, 
         entities: {},
-        farewell: {}, 
+        farewell: {},
+        institutions: {}, 
         localLore: {},
         persuasion: {}, 
         phenomena: {},

@@ -37,11 +37,11 @@
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 
 .moisten {animation: moist 0.5s ease;}
-.juice {
+.juice, .juiceNB, .juiceConcept, .juiceSmall, .juiceSub {
     animation: juicy 0.75s ease;
     transition: transform 0.75s ease;
 }
-.juice:hover, .juice:focus {
+.juice:hover, .juice:focus, .juiceConcept:hover, .juiceConcept:focus, .juiceSmall:hover, .juiceSmall:focus, .juiceSub:hover, .juiceSub:focus {
     background: #27001d;
     transform: scale(1.1); 
     border-color: gold;
@@ -59,10 +59,6 @@
     transition: transform 0.5s ease;
 }
 
-.juiceNB {
-    animation: juicy 0.75s ease;
-    transition: transform 0.75s ease;
-}
 .juiceNB:hover, .juiceNB:focus {
     transform: scale(1.25); 
     transition: transform 0.75s ease, background-color 0.75s ease;
@@ -72,32 +68,19 @@
     transform: scale(1);
     transition: transform 0.75s ease, background-color 0.75s ease;
 }
-.juiceSmall {
-    animation: juicy 0.75s ease;
-    transition: transform 0.75s ease;
-}
-.juiceSmall:hover, .juiceSmall:focus {
-    background: #27001d;
-    transform: scale(1.1); 
-    border-color: gold;
-    box-shadow: inset #000 0 0 0 0.125rem, inset gold 0 0 0 0.15rem;
+.juiceConcept:not(:hover):not(:focus) {
+    transform: scale(1);
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
+    border-color: aqua;
+    color: aqua;
+}
+.juiceConcept:hover, .juiceConcept:focus, .juiceSmall:hover, .juiceSmall:focus, .juiceSub:hover, .juiceSub:focus {
+    box-shadow: inset #000 0 0 0 0.125rem, inset gold 0 0 0 0.15rem;
 }
 .juiceSmall:not(:hover):not(:focus) {
     transform: scale(1);
     transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
     border-color: green;
-}
-.juiceSub {
-    animation: juicy 0.75s ease;
-    transition: transform 0.75s ease;
-}
-.juiceSub:hover, .juiceSub:focus {
-    background: #27001d;
-    transform: scale(1.1); 
-    border-color: gold;
-    box-shadow: inset #000 0 0 0 0.125rem, inset gold 0 0 0 0.15rem;
-    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
 }
 .juiceSub:not(:hover):not(:focus) {
     transform: scale(1);

@@ -3310,7 +3310,7 @@ export const Asceans: any[] = [
     "caeren":17,
     "kyosir":10,
     "weaponOne":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Uncommon',
     },"weaponTwo":{
         name: "Slivermoon",
@@ -4822,7 +4822,7 @@ export const Asceans: any[] = [
     "caeren":19,
     "kyosir":12,
     "weaponOne":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Rare',
     },"weaponTwo":{
         name: "Slivermoon",
@@ -6013,7 +6013,7 @@ export const Asceans: any[] = [
         name: "Whirlwind",
         rarity: 'Epic',
     },"weaponTwo":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Epic',
     },"weaponThree":{
         name: "Moontear",
@@ -6226,10 +6226,10 @@ export const Asceans: any[] = [
     "caeren":12,
     "kyosir":18,
     "weaponOne":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Epic',
     },"weaponTwo":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Epic',
     },"weaponThree":{
         name: "Moontear",
@@ -6604,7 +6604,7 @@ export const Asceans: any[] = [
     "caeren":21,
     "kyosir":14,
     "weaponOne":{
-        name: "Shotel",
+        name: "Scythe",
         rarity: 'Rare',
     },"weaponTwo":{
         name: "Slivermoon",

@@ -6292,7 +6292,7 @@ export let Weapons = [
         imgUrl: '../assets/images/cursed-dagger.png'
     },{
         _id: '',
-        name: 'Shotel',
+        name: 'Scythe',
         type: 'Scythe',
         rarity: 'Common',
         grip: 'One Hand',
@@ -6316,7 +6316,7 @@ export let Weapons = [
         imgUrl: '../assets/images/scythe.png'
     },{
         _id: '',
-        name: 'Shotel',
+        name: 'Scythe',
         type: 'Scythe',
         rarity: 'Uncommon',
         grip: 'One Hand',
@@ -6340,7 +6340,7 @@ export let Weapons = [
         imgUrl: '../assets/images/scythe.png'
     },{
         _id: '',
-        name: 'Shotel',
+        name: 'Scythe',
         type: 'Scythe',
         rarity: 'Rare',
         grip: 'One Hand',
@@ -6364,7 +6364,7 @@ export let Weapons = [
         imgUrl: '../assets/images/scythe.png'
     },{
         _id: '',
-        name: 'Shotel',
+        name: 'Scythe',
         type: 'Scythe',
         rarity: 'Epic',
         grip: 'One Hand',
@@ -6388,7 +6388,7 @@ export let Weapons = [
         imgUrl: '../assets/images/scythe.png'
     },{
         _id: '',
-        name: 'Shotel',
+        name: 'Scythe',
         type: 'Scythe',
         rarity: 'Legendary',
         grip: 'One Hand',

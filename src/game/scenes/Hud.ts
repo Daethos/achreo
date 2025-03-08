@@ -185,7 +185,7 @@ export class Hud extends Phaser.Scene {
         //         this.borders.push(border);
         //     };
         // };
-        this.game.scale.on('resize', this.resize, this);
+        // this.game.scale.on('resize', this.resize, this);
         this.startGameScene();
     };
     // toggleArenaView() { 

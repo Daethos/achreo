@@ -294,7 +294,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [region, setRegion] = createSignal<any>(provincialInformation['Astralands']);
     const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Ahn'are"]);
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
-    const [worship, setWorship] = createSignal<any>(whispers["Ancients"]);
+    const [currentWhisper, setCurrentWhisper] = createSignal<any>("Ancients");
+    const [whisper, setWhisper] = createSignal<any>(whispers["Ancients"]);
+    const [whisperConcept, setWhisperConcept] = createSignal<any>(whispers["Ancients"].history);
     const [world, setWorld] = createSignal<any>(worldLore["Age_of_Darkness"])
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
@@ -638,6 +640,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const handleInstitutionalConcept = (con: string) => {
         setConcept(institution()[con]);
     };
+    
+    const handleWhisperConcept = (con: string) => {
+        setWhisperConcept(whisper()[con]);
+    };
 
     const handleInstitution = (inst: keyof Institutions) => {
         setCurrentInstitution(inst);
@@ -661,8 +667,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setPhenomena(SupernaturalPhenomenaLore[phenomena]);
     };
 
-    const handleWorship = (worship: keyof Whispers) => {
-        setWorship(whispers[worship]);
+    const handleWhisper = (worship: keyof Whispers) => {
+        setCurrentWhisper(worship);
+        setWhisper(whispers[worship]);
+        setWhisperConcept(whispers[worship]["history"]);
     };
 
     const handleWorld = (world: keyof World_Events) => {
@@ -1132,7 +1140,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <Typewriter stringText={`"What do you wish to know of the worship and intrigue on the occult and religiosity around the realm."`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={worship} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                            <Typewriter stringText={whisperConcept} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : ( '' ) }
@@ -1166,7 +1174,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
                     </Show>
                     <Show when={game().currentIntent === "whispers"}>
-                        <WhispersButtons options={whispers} handleWhisper={handleWorship} />
+                        <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
                     </Show>
                     <Show when={game().currentIntent === "worldLore"}>
                         <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />

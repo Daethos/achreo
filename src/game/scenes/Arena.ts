@@ -633,7 +633,7 @@ export class Arena extends Phaser.Scene {
             for (let i = 0; i < this.markers.length; i++) {
                 const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
                 const direction = position.subtract(this.player.position);
-                if (direction.length() < 1250) {
+                if (direction.length() < 1250 && direction.length() > 250) { // Not too far, not too close
                     markers.push(this.markers[i]);
                 };
             };
@@ -704,6 +704,14 @@ export class Arena extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
+    partyDestroy = (party: Party) => {
+        party.isDeleting = true;
+        this.time.delayedCall(1000, () => {
+            this.party = this.party.filter((p: Party) => p.enemyID !== party.enemyID);
+            party.cleanUp();
+            party.destroy();
+        }, undefined, this);
+    };
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();
@@ -750,6 +758,7 @@ export class Arena extends Phaser.Scene {
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
         for (let i = 0; i < this.party.length; i++) {
+            // if (this.party[i].isDefeated && !this.party[i].isDeleting) this.partyDestroy(this.party[i]);
             if (this.party[i].isDeleting || !this.party[i].active) return;
             this.party[i].update(delta);
         };

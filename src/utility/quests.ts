@@ -40,7 +40,7 @@ export class Quest {
     public reward: {
         currency: { silver: number, gold: number },
         experience: number,
-        items: Equipment[] | string[] | undefined
+        items: Equipment[] | string[] | undefined,
     };
     public special: string;
 
@@ -51,7 +51,7 @@ export class Quest {
         this.level = quest.giver.level;
         this.mastery = quest.giver.mastery;
         this.requirements = quest.requirements;
-        this.reward = this.getReward(quest);
+        this.rewards = this.getReward(quest);
         this.special = quest.reward[Math.floor(Math.random() * quest.reward.length)];    
     };
     [key: string]: any;
@@ -100,7 +100,7 @@ export class Quest {
         return {
             currency: this.getCurrency(quest.giver.level),
             items: this.getItems(quest.giver.level),
-            experience: this.getExperience(quest.giver.level)
+            experience: this.getExperience(quest.giver.level),
         };
     };
 };
@@ -329,21 +329,21 @@ export const getQuests = (name: string) => {
     return QUEST_TEMPLATES.filter(quest => quest.name.includes(name));
 };
 
-export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, ascean: Ascean) => {
+export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, ascean: Ascean): Quest | undefined => {
     try {
-        const quest = QUEST_TEMPLATES.filter(quest => quest.title === title)[0];
-        const rewards = quest.reward.filter((r: string) => SPECIAL[ascean.mastery as keyof typeof SPECIAL].includes(r));
+        const template = QUEST_TEMPLATES.filter(quest => quest.title === title)[0];
+        const rewards = template.reward.filter((r: string) => SPECIAL[ascean.mastery as keyof typeof SPECIAL].includes(r));
         const rep = reputation?.factions?.find(faction => faction.name === enemy.name)?.reputation ?? 0;
         const prospect = {
             giver: enemy,
             mastery: enemy.mastery,
-            title: quest.title,
-            description: quest.description,
+            title: template.title,
+            description: template.description,
             requirements: {
                 level: enemy.level,
                 reputation: rep + (enemy.level * 2),
-                description: quest.requirements.description,
-                technical: quest.requirements.technical
+                description: template.requirements.description,
+                technical: template.requirements.technical
             },
             rewards    
         };

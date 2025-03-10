@@ -215,7 +215,7 @@ export default class Party extends Entity {
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
         this.checkSpecials(ascean);
-        scene.time.delayedCall(1000, () => {
+        scene.time.delayedCall(3000, () => {
             if (this.scene.state.isCaerenic) this.caerenicUpdate();
             if (this.scene.state.isStalwart) this.stalwartUpdate(this.scene.state.isStalwart);
         }, undefined, this);

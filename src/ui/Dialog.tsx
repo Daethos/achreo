@@ -850,11 +850,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit('show-dialog-false');
     };
 
-    const typewriterStyling: JSX.CSSProperties = { 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none' };
+    const typewriterStyling: JSX.CSSProperties = { 'margin-left': '3%' };
 
     return (
         <Show when={combat().computer}>  
-        <div class='dialog-window' style={{ height: '80%', top: '10%', "z-index" : 1 }}>
+        <div class='dialog-window' style={{ height: '80%', top: '10%', "z-index" : 1, 'overflow': 'scroll', 'scrollbar-width': 'none' }}>
             <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
                 <div style={{ display: 'inline' }}>
@@ -909,7 +909,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </>
             ) : ( '' ) }
             { combat().isEnemy && combat().computer ? (
-                <div style={{ 'font-size': '0.75em' }}>
+                <div style={{ 'font-size': '0.75em', 'overflow': 'scroll', 'scrollbar-width': 'none' }}>
                     <DialogTree game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}} reputation={reputation} />
                 { game().currentIntent === 'challenge' ? (
                     <>
@@ -1068,8 +1068,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter stringText={local} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
                         </div>    
                     </>
-                ) : game().currentIntent === 'localWhispers' ? (
-                    <Typewriter stringText={`Local Whispers will provide localized intrigue to the region you're inhabiting and the actual details of the map itself.`} styling={typewriterStyling} performAction={hollowClick} />
                 ) : game().currentIntent === 'persuasion' ? (
                     <>
                         { combat().playerWin ? (

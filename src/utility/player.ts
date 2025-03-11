@@ -692,7 +692,7 @@ export const ENEMY_ENEMIES = {
     "Marauder": [FANG_DUELIST, FANG_MERCENARY, CHIOMIC_JESTER, NYREN, RAHVREHCUR, SHRYGEIAN_BARD],
     "Mavrosin Occultist": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, KINGSMAN, MAIER_OCCULTIST, NORTHREN_WANDERER],
     "Northren Wanderer": [ACHREON_DRUID, CAMBIREN_DRUID, MARAUDER, SOUTHRON_WANDERER, KINGSMAN, SOVERAIN_BLOOD_CLOAK],
-    "Nyren": [FANG_DUELIST, FANG_MERCENARY, RAHVREHCUR, SEVA_SHRIEKER, MARAUDER, FANG_MERCENARY],
+    "Nyren": [FANG_DUELIST, FANG_MERCENARY, RAHVREHCUR, SEVA_SHRIEKER, MARAUDER],
     "Old Li'ivi Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAIER_OCCULTIST, QUOREITE_OCCULTIST],
     "Quor'eite Occultist": [DAETHIC_INQUISITOR, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST],
     "Quor'eite Stalker": [DAETHIC_KNIGHT, FIRESWORN, SEVA_SHRIEKER, SEDYREAL_GUARD, SOUTHRON_WANDERER],
@@ -721,8 +721,7 @@ export const ENEMY_ENEMIES = {
     "Sera Lorian": ["Evrio Lorian Peroumes", "Dorien Caderyn"],
     "Synaethi Spiras": ["Fierous Ashfyre", "Torreous Ashfyre"],
     "Torreous Ashfyre": ["Synaethi Spiras"],
-    "Tshios Ash'air": [],
-    "Vincere": ["King Mathyus Caderyn", "Dorien Caderyn", "Sera Lorian", "Evrio Lorian Peroumes"]
+    "Vincere": ["King Mathyus Caderyn", "Dorien Caderyn", "Sera Lorian", "Evrio Lorian Peroumes"],
 };
 export const NAMED_ENEMY = [
     "Achreus", 

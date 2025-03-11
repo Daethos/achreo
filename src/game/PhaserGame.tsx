@@ -18,10 +18,10 @@ import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from '../utility/
 import { fetchNpc } from '../utility/npc';
 import { checkDeificConcerns } from '../utility/deities';
 import { STARTING_SPECIALS } from '../utility/abilities';
-import { Inventory, Reputation, faction } from '../utility/player';
+import { ENEMY_ENEMIES, Inventory, Reputation, faction } from '../utility/player';
 import { Puff } from 'solid-spinner';
 import Talents from '../utility/talents';
-import QuestManager from '../utility/quests';
+import QuestManager, { Quest } from '../utility/quests';
 const BaseUI = lazy(async () => await import('../ui/BaseUI'));
 const rarityGoldMap = {
     'Uncommon': 1,
@@ -453,6 +453,31 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit('update-statistics', newStats);    
     };
 
+    function recordQuestUpdate(enemy: Ascean) {
+        let quests = JSON.parse(JSON.stringify(props.quests().quests));
+        let updated = false;
+        for (let i = 0; i < quests.length; ++i) {
+            const quest: Quest = quests[i];
+            if (quest.title === "Principles and Principalities") {
+                const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
+                if (enemies.includes(enemy.name)) {
+                    console.log(`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities!`);
+                    quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, 10);
+                    updated = true;
+                } else {
+                    console.log(`${enemy.name} is NOT an enemy of ${quest.giver}`);
+                };
+            };
+        };
+        if (updated) {
+            const newQuests = {
+                ...props.quests(),
+                quests
+            };
+            EventBus.emit("update-quests", newQuests);
+        };
+    };
+
     function recordSkills(skills: string[]) {
         let newSkills = { ...props.ascean().skills };
         skills.forEach((skill: string, index: number) => {
@@ -482,6 +507,7 @@ export default function PhaserGame (props: IProps) {
         const newStats = recordCombat(stat);
         const newReputation = recordCombatReputation(record.computer as Ascean);
         const newSkills = recordSkills(record.skillData);
+        recordQuestUpdate(record.computer as Ascean);
         let silver: number = 0, gold: number = 0, experience: number = levelSheet.opponentExp, firewater = { ...props.ascean().firewater };
         // levelSheet.currency.silver | levelSheet.currency.gold
         let computerLevel: number = levelSheet.opponent;

@@ -382,7 +382,7 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
                 {traits().map((trait: any) => {
                     return (
                         <div style={{ margin: '3%' }}>
-                            <button class='dialog-buttons inner' 
+                            <button class='inner' 
                                 style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} 
                                 onClick={() => callback(trait.name)}>
                                     [{trait.name}] - {trait.luckout.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
@@ -397,11 +397,11 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
             </div>
         </div>
         </Show>
-        <button class='dialog-buttons inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Combat Alternative(s) {'<<<'} ]</button>
+        <button class='inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Combat Alternative(s) Expalantion {'<<<'} ]</button>
         {traits().map((trait: any) => {
             return (
                 <div style={{ margin: '3%' }}>
-                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
+                    <button class='inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                 </div>
             )
         })}
@@ -426,7 +426,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
                 {traits().map((trait: any) => {
                     return (
                         <div style={{ margin: '3%' }}>
-                            <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
+                            <button class='inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                         </div>
                     )
                 })}
@@ -436,11 +436,11 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
             </div>
         </div>
         </Show>
-        <button class='dialog-buttons inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Persuasive Alternative(s) {'<<<'} ]</button>
+        <button class='inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Persuasive Alternative(s) Explanation {'<<<'} ]</button>
         {traits().map((trait: any) => {
             return (
                 <div style={{ margin: '5%' }}>
-                    <button class='dialog-buttons inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
+                    <button class='inner' style={{ color: traitStyle(trait.name), background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                 </div>
             )
         })}
@@ -478,7 +478,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
             </div>
         </div>
         </Show>
-        <button class='dialog-buttons inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Quests {'<<<'} ]</button>
+        <button class='inner' style={{ color: "#fdf6d8", background: '#000', margin: '3%' }} onClick={() => setShow(!show())}>[ {'>>>'} Quests {'<<<'} ]</button>
         </>
     );
 };

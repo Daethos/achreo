@@ -11,9 +11,9 @@ import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
 import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment, getSpecificArmor } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
-import { getRarityColor, sellRarity } from '../utility/styling';
+import { font, getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
-import QuestManager, { getQuests, Quest } from '../utility/quests';
+import QuestManager, { getQuests, Quest, replaceChar } from '../utility/quests';
 import { faction, initFaction, namedNameCheck, Reputation } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
@@ -282,6 +282,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [luckoutShow, setLuckoutShow] = createSignal<boolean>(false);
     const [luckoutTraits, setLuckoutTraits] = createSignal<any>([]);
     const [persuasion, setPersuasion] = createSignal<boolean>(false);
+    const [persuasionShow, setPersuasionShow] = createSignal<boolean>(false);
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
     const [enemyArticle, setEnemyArticle] = createSignal<any>('');
     const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>('');
@@ -302,8 +303,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
     const [showBuy, setShowBuy] = createSignal<boolean>(false);
+    const [completeQuests, setCompleteQuests] = createSignal<any[]>([]);
     const [prospectiveQuests, setProspectiveQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
+    const [showQuestComplete, setShowQuestComplete] = createSignal<any>({complete:false,show:false,quest:undefined});
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
@@ -407,6 +410,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     }; 
 
     const checkQuests = (enemy: Ascean, quest: Quest[]) => {
+        const completedQuests = [];
+        for (const q of quest) {
+            const completed = q.requirements.technical.id === "fetch" ? q.requirements.technical.current === q.requirements.technical.total : q.requirements.technical.solved;
+            if (q.giver === enemy.name && completed) { // Quest The Enemy of One of the Faction Has Given the Player
+                completedQuests.push(q);
+            };
+        };
+        setCompleteQuests(completedQuests);
+
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
         if (enemyQuests.length === 0) return;        
@@ -421,6 +433,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
         };        
         setProspectiveQuests(prospectiveQuests);
+    };
+
+    const completeQuest = async (quest: Quest) => {
+        try {
+            
+            setShowQuestComplete({...showQuestComplete, complete: true});
+            EventBus.emit('complete-quest', showQuestComplete().quest);
+        } catch (err) {
+            console.warn(err, "Error Completing Quest");
+        };
     };
     
     const hollowClick = () => console.log('Hollow Click');
@@ -785,14 +807,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             return;
         } else if (forge()?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
             return;
-        } else if (forge()?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
-            return;
-        } else if (forge()?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
-            return;
-        } else if (forge()?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
-            return;
-        } else if (forge()?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
-            return;
+        // } else if (forge()?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
+        //     return;
+        // } else if (forge()?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
+        //     return;
+        // } else if (forge()?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
+        //     return;
+        // } else if (forge()?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
+        //     return;
         };
         try {
             let match = JSON.parse(JSON.stringify(game().inventory.inventory));
@@ -848,6 +870,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit('blend-game', { showDialog: false });
         EventBus.emit('update-pause', false);
         EventBus.emit('show-dialog-false');
+    };
+
+    function checkReward(item: string | Equipment) {
+        if (item === typeof 'string') {
+            return item;
+        } else { // Equipment
+            
+        };
     };
 
     const typewriterStyling: JSX.CSSProperties = { 'margin-left': '3%' };
@@ -922,7 +952,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                     <p style={{ color: '#fdf6d8' }}>
                                     You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                     </p>
-                                    <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                    <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                 </>
                             ) : ( '' ) }
                         </div>
@@ -935,7 +965,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                     <p style={{ color: '#fdf6d8' }}>
                                     You lucked out against {namedEnemy() ? '' : ` the`} {combat().computer?.name} to forego hostilities. You may now travel freely through this area.
                                     </p>
-                                    <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                    <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                 </>
                             ) : ( '' ) }    
                         </div>   
@@ -961,13 +991,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <>
                                     <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} styling={typewriterStyling} performAction={hollowClick} />
                                     <br />
-                                    <button class='highlight dialog-buttons' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
+                                    <button class='highlight' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
                                 </> 
                             ) : ( 
                                 <>
                                     <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} styling={typewriterStyling} performAction={hollowClick} />
                                     <br />
-                                    <button class='highlight dialog-buttons' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
+                                    <button class='highlight' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
                                 </> 
                             ) }
                             { luckout() ? ( 
@@ -1005,7 +1035,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: '#fdf6d8' }}>
                                         You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
                                 ) : ( '' ) }
                             </div>
@@ -1018,7 +1048,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: '#fdf6d8' }}>
                                         You lucked out against {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
                                 ) : ( '' ) }    
                             </div>   
@@ -1030,12 +1060,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                     <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} styling={typewriterStyling} performAction={hollowClick} />
                                 ) }
                                 <br />
-                                <button class='highlight dialog-buttons' onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
+                                <button class='highlight' onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
                             </>
                         ) : combat().computerWin ? (
                             <>
                                 <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={typewriterStyling} performAction={hollowClick} />
-                                <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
+                                <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
                         ) : (
                             <>
@@ -1045,11 +1075,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} styling={typewriterStyling} performAction={hollowClick} />
                             ) }
                                 <br />
-                                <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Keep moving.</button>
+                                <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Keep moving.</button>
                             </>
                         ) }
                         { checkTraits("Kyn'gian", game().traits) && !combat().playerWin && !combat().computerWin ? (
-                            <button class='highlight dialog-buttons' onClick={() => clearDuel()}>You remain at the edges of sight and sound, and before {combat()?.computer?.name} can react, you attempt to flee.</button>
+                            <button class='highlight' onClick={() => clearDuel()}>You remain at the edges of sight and sound, and before {combat()?.computer?.name} can react, you attempt to flee.</button>
                         ) : ( '' ) }
                     </>
                 ) : game().currentIntent === 'institutions' ? (
@@ -1071,11 +1101,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 ) : game().currentIntent === 'persuasion' ? (
                     <>
                         { combat().playerWin ? (
-                            <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
+                            <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
                         ) : combat().computerWin ? (
-                            <button class='highlight dialog-buttons' style={{ color: 'red' }} onClick={() => clearDuel()}>Continue moving along your path, there's nothing left to say now.</button>
+                            <button class='highlight' style={{ color: 'red' }} onClick={() => clearDuel()}>Continue moving along your path, there's nothing left to say now.</button>
                         ) : persuasion() && !combat().persuasionScenario ? (
-                                <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} /> 
+                                <>
+                                <button class='highlight' onClick={() => setPersuasionShow(!persuasionShow())}>{persuasionShow() ? 'Hide Scenarios' : 'Show Persuasion Scenarios'}</button><br />
+                                <Show when={persuasionShow()}>
+                                    <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} /> 
+                                </Show>
+                                </>
                         ) : ('') }
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
@@ -1086,12 +1121,22 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: '#fdf6d8' }}>
                                         You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight dialog-buttons' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
                                 ) : ( '' ) }
                             </div>
                         ) : ( '' ) }
                         <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
+                        <Show when={completeQuests().length > 0}>
+                            <h1>Completed Quests</h1>
+                            <div class="creature-heading">
+                            <For each={completeQuests()}>{(quest) => {
+                                return <div class="border juice wrap creature-heading">
+                                    <button class="highlight" onClick={() => setShowQuestComplete({...showQuestComplete(),show:true,quest})}>{quest.title}</button>
+                                </div>
+                            }}</For>
+                            </div>
+                        </Show>
                     </>
                 ) : game().currentIntent === 'provinces' ? (
                     <>
@@ -1281,6 +1326,59 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 }}>
                     Sell {sellItem()?.name} for {sellRarity(sellItem()?.rarity as string)}
                 </button>
+            </div>
+        </Show>
+        <Show when={showQuestComplete().show}>
+            <div class="modal">
+                <div class="creature-heading superCenter" style={{ width: "60%" }}>
+                    <div class="border moisten">
+                    <h1 class='center' style={{ margin: '3%' }}>
+                        {showQuestComplete()?.quest.title} <br />
+                    </h1>
+                    <h2 class='center' style={{ color: 'gold' }}>
+                        Quest Giver: {showQuestComplete()?.quest.giver}, Level {showQuestComplete()?.quest.level} ({showQuestComplete()?.quest?.mastery.charAt(0).toUpperCase() + showQuestComplete()?.quest?.mastery.slice(1)}) <br />
+                    </h2>
+                    <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', 'margin': '3%' }}>
+                        {showQuestComplete()?.quest.description}
+                    </p>
+                    <div class='row' style={{ display: 'block' }}>
+                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
+                        Requirements
+                    </h4>
+                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
+                        Rewards
+                    </h4>
+                    <br />
+                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Level: <span class='gold'>{showQuestComplete()?.quest?.requirements.level}</span><br />
+                        Reputation: <span class='gold'>{showQuestComplete()?.quest?.requirements.reputation}</span><br />
+                        <span>{showQuestComplete()?.quest?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showQuestComplete()?.quest?.requirements?.technical?.current} / {showQuestComplete()?.quest?.requirements?.technical?.total}</span></> : showQuestComplete()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
+                    </p>
+                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Currency: <span class='gold'>{showQuestComplete()?.quest?.rewards?.currency?.gold}g {showQuestComplete()?.quest.rewards?.currency?.silver}s.</span><br />
+                        Experience: <span class='gold'>{showQuestComplete()?.quest?.rewards?.experience}</span><br />
+                        Items: <For each={showQuestComplete()?.quest?.rewards?.items}>{(item, index) => {
+                            const length = showQuestComplete()?.quest?.rewards?.items.length;
+                            return <div style={{ display: 'inline-block', color: "gold" }}>
+                                {checkReward(item)}{length === 0 || length - 1 === index() ? '' : `,\xa0`}{' '}
+                            </div>
+                        }}</For>
+                        {showQuestComplete()?.quest?.special ? <><br /> Special: <span class="gold">{showQuestComplete()?.quest?.special}</span></> : ""}
+                    </p>
+                    </div>
+                    <h2 style={{ 'text-align':'center', color: "gold" }}>
+                        {replaceChar(showQuestComplete()?.quest?.requirements.description, showQuestComplete()?.quest?.giver)}
+                    </h2>
+                    </div>
+                    <Show when={!showQuestComplete().complete}>
+                        <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', right: '0', 'color': 'green' }} onClick={() => completeQuest(showQuestComplete()?.quest)}>
+                            <p style={font('0.75em')}>Complete Quest</p>
+                        </button>
+                    </Show>
+                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowQuestComplete({ complete:false, show: false, quest: undefined })}>
+                        <p style={font('0.75em')}>X</p>
+                    </button>
+                </div>
             </div>
         </Show>
         </Show> 

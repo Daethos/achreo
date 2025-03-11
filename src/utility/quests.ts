@@ -10,6 +10,41 @@ const QUESTING = {
     SILVER_MULTIPLIER: 10,
 };
 
+type FETCH = {
+    id: 'fetch';
+    current: number;
+    total: number;
+    [key: string]: number | string;
+};
+
+type SOLVE = {
+    id: 'solve';
+    solved: boolean;
+    [key: string]: boolean | string;
+};
+
+const initFetch: FETCH = {
+    id: 'fetch',
+    current: 0,
+    total: 10
+};
+
+const initSolve: SOLVE = {
+    id: 'solve',
+    solved: false,
+};
+
+export function replaceChar(str: string, rep: string): string {
+    const yes = str?.split('').find((char: string) => char === '{');
+    if (yes) {
+        const replace = str?.replace('{name}', rep);
+        return replace; 
+    };
+    return str;
+    // ? showQuest()?.quest?.requirements.description?.replace('{name}', showQuest()?.quest?.giver.name) 
+    // : showQuest()?.quest?.requirements.description}
+};
+
 export default class QuestManager {
     public _id: string;
     public quests: Quest[];
@@ -36,6 +71,7 @@ export class Quest {
         level: number,
         reputation: number,
         description: string,
+        technical: FETCH | SOLVE,
     };
     public reward: {
         currency: { silver: number, gold: number },
@@ -52,7 +88,7 @@ export class Quest {
         this.mastery = quest.giver.mastery;
         this.requirements = quest.requirements;
         this.rewards = this.getReward(quest);
-        this.special = quest.reward[Math.floor(Math.random() * quest.reward.length)];    
+        this.special = quest.rewards.length ? quest.rewards[Math.floor(Math.random() * quest.rewards.length)] : "";    
     };
     [key: string]: any;
 
@@ -103,30 +139,6 @@ export class Quest {
             experience: this.getExperience(quest.giver.level),
         };
     };
-};
-
-type FETCH = {
-    id: 'fetch';
-    current: number;
-    total: number;
-    [key: string]: number | string;
-};
-
-type SOLVE = {
-    id: 'solve';
-    solved: boolean;
-    [key: string]: boolean | string;
-};
-
-const initFetch: FETCH = {
-    id: 'fetch',
-    current: 0,
-    total: 10
-};
-
-const initSolve: SOLVE = {
-    id: 'solve',
-    solved: false,
 };
 
 export const QUEST_TEMPLATES = [

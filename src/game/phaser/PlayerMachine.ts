@@ -2891,13 +2891,13 @@ export default class PlayerMachine {
 
     onSprintEnter = () => {
         this.player.isSprinting = true;
-        this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.5,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 750,
-            yoyo: true
-        });
+        // this.scene.tweens.add({
+        //     targets: this.scene.cameras.main,
+        //     zoom: this.scene.cameras.main.zoom * 1.5,
+        //     ease: Phaser.Math.Easing.Elastic.InOut,
+        //     duration: 750,
+        //     yoyo: true
+        // });
         screenShake(this.scene);
         this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
         const speed = this.player.checkTalentEnhanced(States.SPRINTING) ? PLAYER.SPEED.SPRINT + 0.75 : PLAYER.SPEED.SPRINT;

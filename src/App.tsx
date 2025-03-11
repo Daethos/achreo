@@ -360,6 +360,14 @@ export default function App() {
             console.warn(err, 'Error Removing Quest');
         };
     };
+    const updateQuest = async (quests: QuestManager) => {
+        try {
+            await updateQuests(quests);
+            setQuests(quests);
+        } catch (err) {
+            console.warn(err, "Error Updating Quests");
+        };
+    };
     const updateRep = async (rep: Reputation): Promise<void> => {
         try {
             await updateReputation(rep);
@@ -467,6 +475,7 @@ export default function App() {
     usePhaserEvent('request-talents', () => EventBus.emit('talents', talents()));
     usePhaserEvent('add-quest', addQuest);
     usePhaserEvent('remove-quest', removeQuest);
+    usePhaserEvent('update-quests', updateQuest);
     usePhaserEvent('update-reputation', updateRep);
     usePhaserEvent('update-statistics', updateStat);
     usePhaserEvent('update-talents', updateTal);

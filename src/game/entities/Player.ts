@@ -514,7 +514,7 @@ export default class Player extends Entity {
     
     eventUpdate = (e: Combat) => {
         if (this.scene.scene.isSleeping(this.scene.scene.key)) return;
-        const { computerCriticalSuccess, newPlayerHealth } = e;
+        const { computerCriticalSuccess, computerParrySuccess, newPlayerHealth, parrySuccess, rollSuccess } = e;
         if (this.health > newPlayerHealth) {
             let damage: number | string = Math.round(this.health - newPlayerHealth);
             // damage = computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
@@ -545,16 +545,16 @@ export default class Player extends Entity {
         this.health = newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-        if (e.computerParrySuccess === true) {
+        if (computerParrySuccess === true) {
             this.isStunned = true;
             this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
             this.resistCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
-        if (e.rollSuccess === true) {
+        if (rollSuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.useStamina(-5);
         };
-        if (e.parrySuccess === true) {
+        if (parrySuccess === true) {
             this.specialCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
             this.scene.combatManager.useStamina(-5);
@@ -562,7 +562,7 @@ export default class Player extends Entity {
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
-            if (e.computerDamaged || e.playerDamaged || e.rollSuccess || e.parrySuccess || e.computerRollSuccess || e.computerParrySuccess) this.soundEffects(e);
+            if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
         };
         if (e.newComputerHealth <= 0 && e.playerWin === true) {
             this.defeatedEnemyCheck(e.enemyID);
@@ -573,7 +573,7 @@ export default class Player extends Entity {
         };    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
-        if (e.criticalSuccess || e.glancingBlow || e.computerGlancingBlow || computerCriticalSuccess) {
+        if (e.criticalSuccess || e.glancingBlow || parrySuccess || rollSuccess || e.computerGlancingBlow || computerCriticalSuccess || computerParrySuccess) {
             EventBus.emit('blend-combat', { 
                 computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
             });

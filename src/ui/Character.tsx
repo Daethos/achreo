@@ -25,7 +25,7 @@ import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
 import { ACTION_ORIGIN } from '../utility/actions';
 import { svg } from '../utility/settings';
-import QuestManager from '../utility/quests';
+import QuestManager, { replaceChar } from '../utility/quests';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -267,6 +267,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class='creature-heading'>
                     <h1 style={{ 'margin-bottom': '3%' }}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
+                        console.log(quest, "Quest?");
                         return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: 'gold' }}>{quest.title}</h2>
                             <p style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
@@ -337,6 +338,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class='creature-heading'>
                     <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h1 style={{color:'#fdf6d8'}}>{talents().points.spent} / {talents().points.total}</h1>
+
                     <For each={specials()}>{(special) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
@@ -560,16 +562,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         setDeity(item?.influences?.[0]);
     };
 
-    function replaceChar(str: string, rep: string): string {
-        const yes = str?.split('').find((char: string) => char === '{');
-        if (yes) {
-            const replace = str?.replace('{name}', rep);
-            return replace; 
-        };
-        return str;
-        // ? showQuest()?.quest?.requirements.description?.replace('{name}', showQuest()?.quest?.giver.name) 
-        // : showQuest()?.quest?.requirements.description}
-    };
     return <div class="characterMenu">
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
             <button class='highlight menuHeader' onClick={() => setNextView()}>
@@ -921,42 +913,44 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </Show>
         <Show when={showQuest().show}>
             <div class='modal'>
-                <div class='superCenter' style={{ width:'50%' }}>
+                <div class='superCenter' style={{ width:'60%' }}>
                 <div class='border  juice' style={{ margin: '1em auto', 'border-color': masteryColor(showQuest()?.quest?.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em` }}>
                     <div class='creature-heading' style={{ padding: '1em' }}>
                     <h1 class='center' style={{ margin: '3%' }}>
                         {showQuest()?.quest.title} <br />
                     </h1>
                     <h2 class='center' style={{ color: 'gold' }}>
-                        Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery}) <br />
+                        Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery.charAt(0).toUpperCase() + showQuest()?.quest?.mastery.slice(1)}) <br />
                     </h2>
                     <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', 'margin': '3%' }}>
                         {showQuest()?.quest.description}
                     </p>
                     <div class='row' style={{ display: 'block' }}>
-                    <h4 style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
                         Requirements
                     </h4>
-                    <h4 style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '7.5%'}}>
+                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
                         Rewards
                     </h4>
                     <br />
-                    <p style={{ color: 'gold', display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Level: {showQuest()?.quest?.requirements.level}<br />
-                        Reputation: {showQuest()?.quest?.requirements.reputation}<br />
+                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Level: <span class='gold'>{showQuest()?.quest?.requirements.level}</span><br />
+                        Reputation: <span class='gold'>{showQuest()?.quest?.requirements.reputation}</span><br />
+                        <span>{showQuest()?.quest?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showQuest()?.quest?.requirements?.technical?.current} / {showQuest()?.quest?.requirements?.technical?.total}</span></> : showQuest()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
-                    <p style={{ color: 'gold', display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Currency: {showQuest()?.quest?.reward?.currency?.gold}g {showQuest()?.quest.reward?.currency?.silver}s.<br />
-                        Experience: {showQuest()?.quest?.reward?.experience}<br />
-                        Items: <For each={showQuest()?.quest?.reward?.items}>{(item, index) => {
-                            const length = showQuest()?.quest?.reward?.items.length;
-                            return <div style={{ display: 'inline-block' }}>
+                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
+                        Currency: <span class='gold'>{showQuest()?.quest?.rewards?.currency?.gold}g {showQuest()?.quest.rewards?.currency?.silver}s.</span><br />
+                        Experience: <span class='gold'>{showQuest()?.quest?.rewards?.experience}</span><br />
+                        Items: <For each={showQuest()?.quest?.rewards?.items}>{(item, index) => {
+                            const length = showQuest()?.quest?.rewards?.items.length;
+                            return <div style={{ display: 'inline-block', color: "gold" }}>
                                 {item}{length === 0 || length - 1 === index() ? '' : `,\xa0`}{' '}
                             </div>
                         }}</For>
+                        {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""}
                     </p>
                     </div>
-                    <h2 style={{ 'text-align':'center' }}>
+                    <h2 style={{ 'text-align':'center', color: "gold" }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>
                     </div>

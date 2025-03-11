@@ -9,7 +9,7 @@ import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds 
 import Typewriter from '../utility/Typewriter';
 import Currency from '../utility/Currency';
 import MerchantTable from './MerchantTable';
-import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getPhysicalWeaponEquipment, getSpecificArmor } from '../models/equipment';
+import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from '../models/equipment';
 import { LevelSheet } from '../utility/ascean';
 import { font, getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
@@ -306,10 +306,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [completeQuests, setCompleteQuests] = createSignal<any[]>([]);
     const [prospectiveQuests, setProspectiveQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
-    const [showQuestComplete, setShowQuestComplete] = createSignal<any>({complete:false,show:false,quest:undefined});
+    const [showQuestComplete, setShowQuestComplete] = createSignal<any>(false);
+    const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
+    const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
+    const [rewardItem, setRewardItem] = createSignal<{show:boolean,item:any}>({show:false,item:undefined});
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
@@ -324,7 +327,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     createEffect(() => { 
-        checkEnemy(combat()?.computer as Ascean, quests());
+        checkEnemy(combat()?.computer as Ascean, quests);
         checkLuckout(game());
         checkPersuasion(game());
         checkInfluence(ascean);
@@ -391,9 +394,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
-    const checkEnemy = (enemy: Ascean, manager: QuestManager) => {
+    const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
         if (!enemy) return;
-        checkQuests(enemy, manager.quests);
+        checkQuests(enemy, manager().quests);
         setNamedEnemy(namedNameCheck(enemy.name));
         setEnemyArticle(() => ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a');
         setEnemyDescriptionArticle(() => combat().computer?.description.split(' ')[0].toLowerCase() === 'the' ? 'the' : ['a', 'e', 'i', 'o', 'u'].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? 'an' : 'a');
@@ -427,19 +430,45 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             return;
         };
         const playerQuests = new Set(quest.map(q => q.title)); // Convert player quests to a set for easy lookup
+        const questGiverCheck = (enemyQuest: any) => {
+            let check = true;
+            for (let i = 0; i < quest.length; ++i) {
+                if (quest[i].title === enemyQuest.title && quest[i].giver === enemy.name) {
+                    check = false;
+                };
+            };
+            return check;
+        };
         for (const enemyQuest of enemyQuests) {
-            if (!playerQuests.has(enemyQuest.title)) {
+            if (!playerQuests.has(enemyQuest.title) || questGiverCheck(enemyQuest)) { // && enemyQuest.giver !== computer().name
                 prospectiveQuests.push(enemyQuest);
             };
-        };        
+        };
         setProspectiveQuests(prospectiveQuests);
     };
 
     const completeQuest = async (quest: Quest) => {
         try {
-            
-            setShowQuestComplete({...showQuestComplete, complete: true});
-            EventBus.emit('complete-quest', showQuestComplete().quest);
+            const items = [];
+            for (let i = 0; i < (quest.rewards.items?.length as number); ++i) {
+                const item = await getOneDetermined(ascean().level, quest.rewards.items?.[i] as string);
+                items.push(item?.[0]);
+            };
+            const complete = {
+                ...quest,
+                rewards: {
+                    ...quest.rewards,
+                    items
+                }
+            };
+            let completed = JSON.parse(JSON.stringify(completeQuests()));
+            completed = completed.filter((q: Quest) => q._id !== quest._id);
+
+            setCompleteQuests(completed);
+            setShowCompleteQuest(complete);
+            setShowQuestSave(true);
+            EventBus.emit('complete-quest', quest);
+            EventBus.emit("save-quest-to-player", complete);
         } catch (err) {
             console.warn(err, "Error Completing Quest");
         };
@@ -873,10 +902,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function checkReward(item: string | Equipment) {
-        if (item === typeof 'string') {
+        if (typeof item === 'string') {
             return item;
         } else { // Equipment
-            
+            return <div onClick={() => setRewardItem({show:true,item})} style={{ "border": `0.2em solid ${getRarityColor(item.rarity as string)}`, "transform": "scale(1.1)", "background-color": "#000", "margin": "0.25em" }}>
+                <img src={item.imgUrl} alt={item.name} class="juiceNB" style={{ height: "100%", width: "100%" }} />
+            </div>;
         };
     };
 
@@ -1132,7 +1163,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <div class="creature-heading">
                             <For each={completeQuests()}>{(quest) => {
                                 return <div class="border juice wrap creature-heading">
-                                    <button class="highlight" onClick={() => setShowQuestComplete({...showQuestComplete(),show:true,quest})}>{quest.title}</button>
+                                    <div class="highlight" onClick={() => {
+                                        setShowCompleteQuest(quest);
+                                        setShowQuestComplete(true);
+                                        setShowQuestSave(false);
+                                }}>{quest.title}</div>
                                 </div>
                             }}</For>
                             </div>
@@ -1328,18 +1363,18 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </button>
             </div>
         </Show>
-        <Show when={showQuestComplete().show}>
+        <Show when={showQuestComplete()}>
             <div class="modal">
                 <div class="creature-heading superCenter" style={{ width: "60%" }}>
                     <div class="border moisten">
-                    <h1 class='center' style={{ margin: '3%' }}>
-                        {showQuestComplete()?.quest.title} <br />
+                    <h1 class='center' style={{ margin: '3%', color: showQuestSave() ? "gold" : "#fdf6d8" }}>
+                        {showCompleteQuest().title} {showQuestSave() ? "(Completed!)" : ""} <br />
                     </h1>
                     <h2 class='center' style={{ color: 'gold' }}>
-                        Quest Giver: {showQuestComplete()?.quest.giver}, Level {showQuestComplete()?.quest.level} ({showQuestComplete()?.quest?.mastery.charAt(0).toUpperCase() + showQuestComplete()?.quest?.mastery.slice(1)}) <br />
+                        Quest Giver: {showCompleteQuest().giver}, Level {showCompleteQuest().level} ({showCompleteQuest()?.mastery.charAt(0).toUpperCase() + showCompleteQuest()?.mastery.slice(1)}) <br />
                     </h2>
                     <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', 'margin': '3%' }}>
-                        {showQuestComplete()?.quest.description}
+                        {showCompleteQuest().description}
                     </p>
                     <div class='row' style={{ display: 'block' }}>
                     <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
@@ -1350,35 +1385,40 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </h4>
                     <br />
                     <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Level: <span class='gold'>{showQuestComplete()?.quest?.requirements.level}</span><br />
-                        Reputation: <span class='gold'>{showQuestComplete()?.quest?.requirements.reputation}</span><br />
-                        <span>{showQuestComplete()?.quest?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showQuestComplete()?.quest?.requirements?.technical?.current} / {showQuestComplete()?.quest?.requirements?.technical?.total}</span></> : showQuestComplete()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
+                        Level: <span class='gold'>{showCompleteQuest()?.requirements.level}</span><br />
+                        Reputation: <span class='gold'>{showCompleteQuest()?.requirements.reputation}</span><br />
+                        <span>{showCompleteQuest()?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showCompleteQuest()?.requirements?.technical?.current} / {showCompleteQuest()?.requirements?.technical?.total}</span></> : showCompleteQuest()?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
                     <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Currency: <span class='gold'>{showQuestComplete()?.quest?.rewards?.currency?.gold}g {showQuestComplete()?.quest.rewards?.currency?.silver}s.</span><br />
-                        Experience: <span class='gold'>{showQuestComplete()?.quest?.rewards?.experience}</span><br />
-                        Items: <For each={showQuestComplete()?.quest?.rewards?.items}>{(item, index) => {
-                            const length = showQuestComplete()?.quest?.rewards?.items.length;
+                        Currency: <span class='gold'>{showCompleteQuest()?.rewards?.currency?.gold}g {showCompleteQuest().rewards?.currency?.silver}s.</span><br />
+                        Experience: <span class='gold'>{showCompleteQuest()?.rewards?.experience}</span><br />
+                        Items: <For each={showCompleteQuest()?.rewards?.items}>{(item, index) => {
+                            const length = showCompleteQuest()?.rewards?.items.length;
                             return <div style={{ display: 'inline-block', color: "gold" }}>
-                                {checkReward(item)}{length === 0 || length - 1 === index() ? '' : `,\xa0`}{' '}
+                                {checkReward(item)}{typeof item === 'string' ? length === 0 || length - 1 === index() ? '' : `,\xa0` : ''}{' '}
                             </div>
                         }}</For>
-                        {showQuestComplete()?.quest?.special ? <><br /> Special: <span class="gold">{showQuestComplete()?.quest?.special}</span></> : ""}
+                        {showCompleteQuest()?.special ? <><br /> Special: <span class="gold">{showCompleteQuest()?.special}</span></> : ""}
                     </p>
                     </div>
                     <h2 style={{ 'text-align':'center', color: "gold" }}>
-                        {replaceChar(showQuestComplete()?.quest?.requirements.description, showQuestComplete()?.quest?.giver)}
+                        {replaceChar(showCompleteQuest()?.requirements.description, showCompleteQuest()?.giver)}
                     </h2>
                     </div>
-                    <Show when={!showQuestComplete().complete}>
-                        <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', right: '0', 'color': 'green' }} onClick={() => completeQuest(showQuestComplete()?.quest)}>
+                </div>
+                    <Show when={!showQuestSave()}>
+                        <button class='highlight cornerTR' style={{ right: '0', 'color': 'green', "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
                             <p style={font('0.75em')}>Complete Quest</p>
                         </button>
                     </Show>
-                    <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowQuestComplete({ complete:false, show: false, quest: undefined })}>
+                    <button class='highlight cornerBR' style={{ bottom: '0', right: '0', 'color': 'red' }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
                         <p style={font('0.75em')}>X</p>
                     </button>
-                </div>
+            </div>
+        </Show>
+        <Show when={rewardItem().show}>
+            <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})}>
+                <ItemModal item={rewardItem().item} caerenic={false} stalwart={false} />
             </div>
         </Show>
         </Show> 

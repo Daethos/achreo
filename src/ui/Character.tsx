@@ -271,6 +271,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: 'gold' }}>{quest.title}</h2>
                             <p style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
+                            <p style={{ color: 'gold' }}>{quest.giver}</p>
                         </div>
                     }}</For>
                 </div>;

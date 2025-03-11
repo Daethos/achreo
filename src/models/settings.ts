@@ -10,6 +10,7 @@ export default class Settings {
     public vibration: number;
     public actions: string[];
     public specials: string[];
+    public totalSpecials: string[];
     public prayer: string;
     public fps: { min: number; target: number; limit: number; forceSetTimeOut: boolean; deltaHistory: number; panicMax: number; smoothStep: boolean; };
     public shake: { duration: number; intensity: number; };
@@ -141,6 +142,7 @@ export default class Settings {
         this.vibration = 100;
         this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
         this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
+        this.totalSpecials = ["Invoke", "Consume"];
         this.prayer = 'Buff';
         this.fps = {
             min: 5,

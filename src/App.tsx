@@ -347,6 +347,25 @@ export default function App() {
             console.warn(err, 'Error Adding Quest');
         };
     };
+    const completeQuest = async (quest: Quest) => {
+        try {
+            let newQuests = JSON.parse(JSON.stringify(quests().quests));
+            newQuests = newQuests.filter((q: Quest) => q._id !== quest._id);
+            // for (let i = 0; i < newQuests.length; ++i) {
+            //     if (quest._id === newQuests[i]._id) {
+            //         newQuests[i].completed = true;
+            //     };
+            // };
+            const newQuestManager: QuestManager = {
+                ...quests(),
+                quests: newQuests
+            };
+            await updateQuests(newQuestManager);
+            setQuests(newQuestManager);
+        } catch (err) {
+            console.warn(err, "Error Completing Quest");
+        };
+    };
     const removeQuest = async (quest: Quest) => {
         try {
             const newQuests = quests().quests.filter(q => q.title !== quest.title);
@@ -474,6 +493,7 @@ export default function App() {
     usePhaserEvent('request-statistics', () => EventBus.emit('statistics', statistics()));
     usePhaserEvent('request-talents', () => EventBus.emit('talents', talents()));
     usePhaserEvent('add-quest', addQuest);
+    usePhaserEvent('complete-quest', completeQuest);
     usePhaserEvent('remove-quest', removeQuest);
     usePhaserEvent('update-quests', updateQuest);
     usePhaserEvent('update-reputation', updateRep);

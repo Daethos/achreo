@@ -1,7 +1,8 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ABSORB, ACHIRE, ARC, ASTRAVE, BLINK, CHIOMIC, CHIOMISM, CONFUSE, DESPERATION, DISEASE, DISPEL, ENVELOP, FREEZE, FYERUS, HEALING, HOOK, HOWL, ILIRECH, KYNISOS, KYRISIAN, KYRNAICISM, LEAP, LIKYR, MAIERETH, MALICE, MARK, MENACE, MEND, MODERATE, MULTIFARIOUS, MYSTIFY, NETHERSWAP, PARALYZE, POLYMORPH, PROTECT, PURSUIT, QUOR, RECALL, RECONSTITUTE, RECOVER, REIN, RENEWAL, ROOT, RUSH, SACRIFICE, SCREAM, SHADOW, SHIELD, SHIMMER, SHIRK, SPECIAL, SPRINT, STORM, SUTURE, TETHER, WARD, WRITHE } from "./abilities";
-import { ACHREON_DRUID, AHNARE_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KRECEUS, KYNGIAN_SHAMAN, LEAF, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "./player";
+import { ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "./player";
+import { v4 as uuidv4 } from 'uuid';
 const QUESTING = {
     PLAYER_THRESHOLD_ONE: 4,
     PLAYER_THRESHOLD_TWO: 8,
@@ -25,7 +26,7 @@ type SOLVE = {
 
 const initFetch: FETCH = {
     id: 'fetch',
-    current: 0,
+    current: 10,
     total: 10
 };
 
@@ -60,6 +61,7 @@ export const initQuests = new QuestManager('quest');
 export const createQuests = (id: string): QuestManager => new QuestManager(id);
 
 export class Quest {
+    public _id: string;
     public title: string;
     public mastery: string;
     public description: string;
@@ -73,7 +75,7 @@ export class Quest {
         description: string,
         technical: FETCH | SOLVE,
     };
-    public reward: {
+    public rewards: {
         currency: { silver: number, gold: number },
         experience: number,
         items: Equipment[] | string[] | undefined,
@@ -81,6 +83,7 @@ export class Quest {
     public special: string;
 
     constructor(quest: any) {
+        this._id = uuidv4();
         this.title = quest.title;    
         this.description = this.getDescription(quest);
         this.giver = quest.giver.name;
@@ -143,7 +146,7 @@ export class Quest {
 
 export const QUEST_TEMPLATES = [
     {
-        name: [ACHREON_DRUID, AHNARE_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KRECEUS, KYNGIAN_SHAMAN, LEAF, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE],
+        name: [ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE],
         title: "Principles and Principalities",
         description: "The land is becoming profuse with the stain of enemies, please stem the tide and leave this place awash with their blood.",
         requirements: {
@@ -152,7 +155,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [DESPERATION, FREEZE, HEALING, KYRISIAN, PURSUIT, RECONSTITUTE, SPRINT, STORM]
     }, {
-        name: [MARAUDER, SOUTHRON_WANDERER, FANG_MERCENARY, QUOREITE_OCCULTIST],
+        name: [MARAUDER, SOUTHRON_WANDERER, FANG_MERCENARY, QUOREITE_OCCULTIST, QUOREITE_STALKER],
         title: "Lost Temple",
         description: "Travel deep into the jungle to find a hidden temple and explore its secrets", 
         requirements: {
@@ -161,7 +164,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [MARK, RECALL],
     }, {
-        name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, ACHREON_DRUID, CAMBIREN_DRUID, SEVA_SHRIEKER, FYERS_OCCULTIST],
+        name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, ACHREON_DRUID, CAMBIREN_DRUID, SEVA_SHRIEKER, FYERS_OCCULTIST, LIIVI_LEGIONNAIRE],
         title: "Replenish Firewater",
         description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy",
         requirements: {
@@ -170,7 +173,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [DESPERATION, HEALING, MARK, RECALL, RECONSTITUTE],
     }, {
-        name: [NORTHREN_WANDERER, SOUTHRON_WANDERER, NYREN, RAHVREHCUR, SEDYRIST],
+        name: [NORTHREN_WANDERER, SOUTHRON_WANDERER, NYREN, RAHVREHCUR, SEDYRIST, QUOREITE_STALKER],
         title: "Sunken Cities",
         description: "Explore the ruins of an ancient city and discover its treasures",
         requirements: {
@@ -179,7 +182,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [MARK, RECALL],
     }, {
-        name: [FANG_DUELIST, SHRYGEIAN_BARD, CHIOMIC_JESTER, RAHVREHCUR],
+        name: [FANG_DUELIST, SHRYGEIAN_BARD, CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, RAHVREHCUR],
         title: "The Murder of a Merchant",
         description: "Aid in the investigation of a murder that occured recently",
         requirements: {
@@ -291,7 +294,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [ACHIRE, ASTRAVE, BLINK],
     }, {
-        name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, SERA],
+        name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SERA, LIIVI_LEGIONNAIRE],
         title: "Seek Devotion",
         description: "Become initiated into the faith of Daethos",
         requirements: {
@@ -300,7 +303,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
-        name: ["Anashtre", AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
+        name: [ANASHTRE, AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
         title: "Anashtre Ascension",
         description: "Seek information about the Anashtre and the ritual of the past to form the lightning wing of Astra",
         requirements: {
@@ -309,7 +312,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [ASTRAVE, BLINK, DISPEL, KYNISOS, PARALYZE, ROOT, RUSH, SHADOW, SHIRK, SPRINT],
     }, {
-        name: ["Anashtre", AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
+        name: [ANASHTRE, AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
         title: "Astrification",
         description: "Seek information about Astrification and the ritual of the past to form the lightning spear of Astra",
         requirements: {
@@ -327,7 +330,7 @@ export const QUEST_TEMPLATES = [
         },
         reward: [DISEASE, HOOK, KYRISIAN, KYRNAICISM, LIKYR, RENEWAL, SACRIFICE, SUTURE],
     }, {
-        name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, SERA],
+        name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SERA, LIIVI_LEGIONNAIRE],
         title: "Providence",
         description: "Aid in the proliferation of Daethos across the land",
         requirements: {

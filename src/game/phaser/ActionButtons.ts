@@ -288,7 +288,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             );
             let button: ActionButton = {
                 key: 'special',
-                name: scene.settings.specials[index],
+                name: "", // scene.settings.specials[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
                 color: scene.settings.positions.specialButtons.color,
@@ -465,7 +465,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public draw = (): void => {
         this.actionButtons = this.actionButtons.map((button: ActionButton) => {
             this.scaleButton(button, this.scene.settings.positions.actionButtons.width, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border); // * this.scene.settings.positions.specialButtons.width
-            this.repositionButtons({ type: 'action', x: this.scene.settings.positions.actionButtons.x, y: this.scene.settings.positions.actionButtons.y });    
+            this.repositionButtons({ type: 'action', x: this.scene.settings.positions.actionButtons.x, y: this.scene.settings.positions.actionButtons.y });
+            button.border.setActive(button.name !== "");
+            button.border.setVisible(button.name !== "");
+            button.graphic.setActive(button.name !== "");
+            button.graphic.setVisible(button.name !== "");
             return button;    
         });
         this.specialButtons = this.specialButtons.map((button: ActionButton) => { 
@@ -928,7 +932,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
-                    this.setButtonInteractive(button);
+                    this.setButtonInteractive(button);button.border.setActive(button.name !== "");
+                    button.border.setVisible(button.name !== "");
+                    button.graphic.setActive(button.name !== "");
+                    button.graphic.setVisible(button.name !== "");
                     return button;
                 });
                 break;

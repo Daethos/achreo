@@ -321,6 +321,28 @@ async function mutate(equipment: Equipment[], _rarity?: string | 'Common') {
     };
 };
 
+function checkType(types: string[]) {
+    return types[Math.floor(Math.random() * types.length)];
+};
+
+async function getOneDetermined(level: number = 1, type: string) {
+    try {
+        const levelCheck = type === "Jewelry" ? Math.max(level, 4) : level;
+        const typeCheck =
+            type === "Jewelry" ? checkType(["Amulet", "Ring", "Trinket"])
+            : type === "Armor" ? checkType(["Helmet", "Chest", "Legs"])
+            : type;
+        let rarity = determineRarityByLevel(levelCheck);
+        if (type === "Jewelry" && rarity === "Common") rarity = "Uncommon";
+        let equipment: Equipment[] = []; // Initialize equipment as an empty array
+        equipment = await aggregate(rarity, typeCheck, 1) as Equipment[];
+        equipment.forEach(item => new Equipment(deepClone(item)));
+        return equipment;
+    } catch (err) {
+        console.warn(err, 'Error Getting One Equipment');
+    };
+};
+
 async function getOneRandom(level: number = 1) {
     try {
         let rarity = determineRarityByLevel(level);
@@ -787,4 +809,4 @@ function deepClone<T>(obj: T): T {
     return objCopy;
 };
 
-export { create, defaultMutate, mutate, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment, getSpecificArmor, deepClone };
+export { create, defaultMutate, mutate, getOneDetermined, getOneRandom, upgradeEquipment, getPhysicalWeaponEquipment, getMagicalWeaponEquipment, getArmorEquipment, getJewelryEquipment, getMerchantEquipment, getClothEquipment, getSpecificArmor, deepClone };

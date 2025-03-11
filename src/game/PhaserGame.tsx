@@ -384,20 +384,48 @@ export default function PhaserGame (props: IProps) {
     function recordCombatReputation(computer: Ascean) {
         let newReputation = { ...props.reputation() };
         if (!computer?.name) return newReputation;
+        const enemies = ENEMY_ENEMIES[computer.name as keyof typeof ENEMY_ENEMIES];
         newReputation.factions.forEach((faction: faction) => {
-            if (faction.name === computer.name) {
-                if (faction.reputation < 25) {
-                    faction.reputation += 1;
-                } else {
-                    faction.reputation -= 5;
-                };
-                if (faction.reputation >= 25 && faction.aggressive === true) {
+            if (enemies.includes(faction.name)) {
+                faction.reputation = Math.min(faction.reputation + 1, 50);
+                // faction.reputation += 1;
+                if (faction.reputation >= 10 && faction.aggressive === true) {
                     faction.aggressive = false;
                 };
             };
+            if (faction.name === computer.name) {
+                // faction.reputation -= 3;
+                faction.reputation = Math.max(0, faction.reputation - 3);
+                if (faction.reputation < 10 && !faction.aggressive) {
+                    faction.aggressive = true;
+                };
+            };
+            // if (faction.name === computer.name) {
+
+                // if (faction.reputation < 10) { // Old, Outdated Idea
+                //     faction.reputation += 1;
+                // } else {
+                //     faction.reputation -= 5;
+                // };
+            // };
         });
         return newReputation;
-    }; 
+    };
+    
+    function recordQuestReputation(giver: string) {
+        let newReputation = { ...props.reputation() };
+        if (!giver) return newReputation;
+        newReputation.factions.forEach((faction: faction) => {
+            if (faction.name === giver) {
+                faction.reputation += 10;
+            };
+            if (faction.aggressive && faction.reputation >= 10) {
+                faction.aggressive = false;
+            };
+        });
+        return newReputation;
+    };
+
     
     function recordLoss(data: Combat) {
         let stat = {
@@ -649,6 +677,35 @@ export default function PhaserGame (props: IProps) {
             },
         };
         EventBus.emit('silent-save', update);
+    };
+
+    function saveQuest(quest: Quest) {
+        let currency = quest.rewards.currency;
+        let experience = Math.min(props.ascean().experience + quest.rewards.experience, 1000 * props.ascean().level);
+        let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+        
+        for (let i = 0; i < (quest.rewards.items?.length as number); ++i) {
+            inventory.push(quest.rewards.items?.[i]);
+        };
+        
+        const clean = { ...game().inventory, inventory };
+        currency = rebalanceCurrency(currency);
+
+        const newReputation = recordQuestReputation(quest.giver);
+
+        const update = {
+            ...props.ascean(),
+            health: {
+                current: combat().newPlayerHealth,
+                max: combat().playerHealth
+            },
+            experience,
+            currency
+        };
+        
+        EventBus.emit("update-ascean", update);
+        EventBus.emit("update-inventory", clean);
+        EventBus.emit('update-reputation', newReputation);
     };
 
     function checkDeificInteractions(ascean: Ascean): boolean {
@@ -953,6 +1010,7 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
         EventBus.on('enemy-loot', (e: { enemyID: string; level: number }) => lootDrop(e));
+        EventBus.on("save-quest-to-player", saveQuest);
         EventBus.on('interacting-loot', (e: { interacting: boolean; loot: string }) => {
             if (e.interacting === true) {
                 setGame({ ...game(), showLootIds: [...game().showLootIds, e.loot], lootTag: true });
@@ -1147,6 +1205,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener('show-dialogue');
             EventBus.removeListener('show-player');
             EventBus.removeListener('set-player');
+            EventBus.removeListener('save-quest-to-player');
             
             EventBus.removeListener('toggle-pause');
             EventBus.removeListener('update-combat-player');

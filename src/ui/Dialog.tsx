@@ -14,7 +14,7 @@ import { LevelSheet } from '../utility/ascean';
 import { font, getRarityColor, sellRarity } from '../utility/styling';
 import ItemModal from '../components/ItemModal';
 import QuestManager, { getQuests, Quest, replaceChar } from '../utility/quests';
-import { faction, initFaction, namedNameCheck, Reputation } from '../utility/player';
+import { ENEMY_ENEMIES, faction, initFaction, namedNameCheck, Reputation } from '../utility/player';
 import Thievery from './Thievery';
 import Merchant from './Merchant';
 import Roster from './Roster';
@@ -236,7 +236,6 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
         switch (o) {
             case 'localLore':
                 o = 'Local Lore';
-                break;
                 break;
             case 'worldLore':
                 o = 'World Lore';
@@ -911,12 +910,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
-    const typewriterStyling: JSX.CSSProperties = { 'margin-left': '3%' };
-
+    const typewriterStyling: JSX.CSSProperties = { };
     return (
         <Show when={combat().computer}>  
-        <div class='dialog-window' style={{ height: '80%', top: '10%', "z-index" : 1, 'overflow': 'scroll', 'scrollbar-width': 'none' }}>
-            <div class='wrap' style={{ width: combat().isEnemy ? '75%' : '100%', padding: '2%', height: 'auto' }}> 
+        <div class='dialog-window' style={{ width: combat().isEnemy && combat().computer ? "55%" : "70%" }}>
+            <div class='dialog-tab wrap'> 
             <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
@@ -970,7 +968,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </>
             ) : ( '' ) }
             { combat().isEnemy && combat().computer ? (
-                <div style={{ 'font-size': '0.75em', 'overflow': 'scroll', 'scrollbar-width': 'none' }}>
+                <div style={{ 'font-size': '0.75em', 'overflow-y': 'scroll', 'scrollbar-width': 'none' }}>
                     <DialogTree game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}} reputation={reputation} />
                 { game().currentIntent === 'challenge' ? (
                     <>
@@ -1043,18 +1041,25 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     ) } 
                     </>
                 ) : game().currentIntent === 'conditions' ? (
-                    rep()?.reputation >= 0 && party() ? (
+                    <>
+                    <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of ${ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].length; console.log(e, "E"); return `${length - 1 === i ? " and " : " "}${e}s`}) }."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                    <br />
+                    {rep()?.reputation >= 25 && party() ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={`[Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                            <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
                             <br />
                             <button class="highlight" onClick={changeEnemyToParty}>
                                 <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={typewriterStyling} performAction={hollowClick} />
                             </button>
                         </div>
-                    ) : (                         
+                    ) : rep()?.reputation >= 25 && !party() ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={`[You have reached maximum party size. The ${combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]`} styling={{ 'margin-left': '3%', overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
-                        </div> )
+                            <Typewriter stringText={`[You have reached maximum party size. The ${combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                        </div>
+                    ) : ( <div style={{ color: "gold" }}>
+                        <Typewriter stringText={`[The ${combat().computer?.name} is not capable of being recruited to your party. You must reach a higher level of reputation with them in order to recruit for your journey.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                    </div> )}
+                    </>
                 ) : game().currentIntent === 'farewell' ? (
                     <>
                         { combat().persuasionScenario ? (
@@ -1233,32 +1238,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
             </Show>
             </div>
-            <Show when={combat().isEnemy}>
-                <div class='story-dialog-options' style={{ width: '25%', margin: 'auto', 'text-align': 'center', overflow: 'scroll', height: 'auto', 'scrollbar-width': 'none' }}>
-                    <DialogButtons options={game().dialog} setIntent={handleIntent} />
-                    <Show when={game().currentIntent === "institutions"}>
-                        <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
-                    </Show>
-                    <Show when={game().currentIntent === "localLore"}>
-                        <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
-                    </Show>
-                    <Show when={game().currentIntent === "provinces"}>
-                        <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
-                    </Show>
-                    <Show when={game().currentIntent === "entities"}>
-                        <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
-                    </Show>
-                    <Show when={game().currentIntent === "phenomena"}>
-                        <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
-                    </Show>
-                    <Show when={game().currentIntent === "whispers"}>
-                        <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
-                    </Show>
-                    <Show when={game().currentIntent === "worldLore"}>
-                        <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
-                    </Show>
-                </div>
-            </Show>
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
@@ -1419,6 +1398,32 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Show when={rewardItem().show}>
             <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})}>
                 <ItemModal item={rewardItem().item} caerenic={false} stalwart={false} />
+            </div>
+        </Show>
+        <Show when={combat().isEnemy}>
+            <div class='story-dialog-options'>
+                <DialogButtons options={game().dialog} setIntent={handleIntent} />
+                <Show when={game().currentIntent === "institutions"}>
+                    <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
+                </Show>
+                <Show when={game().currentIntent === "localLore"}>
+                    <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
+                </Show>
+                <Show when={game().currentIntent === "provinces"}>
+                    <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
+                </Show>
+                <Show when={game().currentIntent === "entities"}>
+                    <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
+                </Show>
+                <Show when={game().currentIntent === "phenomena"}>
+                    <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                </Show>
+                <Show when={game().currentIntent === "whispers"}>
+                    <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
+                </Show>
+                <Show when={game().currentIntent === "worldLore"}>
+                    <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
+                </Show>
             </div>
         </Show>
         </Show> 

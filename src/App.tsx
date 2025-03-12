@@ -38,7 +38,6 @@ export default function App() {
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
-    // const [party, setParty] = createSignal<Party<Ascean>>(initParty);
     const [quests, setQuests] = createSignal<QuestManager>(initQuests);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
@@ -167,20 +166,10 @@ export default function App() {
             } else {
                 setTalents(tal);
             };
-
-            // };
-            // let newTalent = {
-            //     ...tal,
-            //     points: {
-            //         ...tal.points,
-            //         total: ascean().level - 1
-            //     }
-            // };
             setInventory(inv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
-            // setTalents(tal);
             setQuests(quest);
             if (set.difficulty.tidbits === true) setTips(true);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
@@ -351,11 +340,6 @@ export default function App() {
         try {
             let newQuests = JSON.parse(JSON.stringify(quests().quests));
             newQuests = newQuests.filter((q: Quest) => q._id !== quest._id);
-            // for (let i = 0; i < newQuests.length; ++i) {
-            //     if (quest._id === newQuests[i]._id) {
-            //         newQuests[i].completed = true;
-            //     };
-            // };
             const newQuestManager: QuestManager = {
                 ...quests(),
                 quests: newQuests
@@ -519,7 +503,6 @@ export default function App() {
         } else {
             const hud = scene.scene.get('Hud');
             scene.scene.launch('Tutorial', hud);
-            // scene.scene.launch('Game', hud);
         };
         EventBus.emit('boot-tutorial');
         EventBus.emit('current-scene-ready', game);
@@ -554,17 +537,17 @@ export default function App() {
                 <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
             </Suspense>
             <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
-                <>{(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) && 
+                <>{(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) &&
                     <button class='highlight cornerBL' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV);}}>
                         <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
-                {(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) && 
+                {(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) &&
                     <button class='highlight cornerBR' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT);}}>
                         <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
-                {SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY && 
+                {SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY &&
                     <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
                         <div>Create {newAscean()?.name?.split(' ')[0]}</div>
                     </button>
@@ -652,4 +635,4 @@ export default function App() {
         </Suspense>
         </Show>
     </div>;
-}; //  margin-bottom: 0.25em; margin-top: -0.5em;
+};

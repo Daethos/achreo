@@ -388,26 +388,16 @@ export default function PhaserGame (props: IProps) {
         newReputation.factions.forEach((faction: faction) => {
             if (enemies.includes(faction.name)) {
                 faction.reputation = Math.min(faction.reputation + 1, 50);
-                // faction.reputation += 1;
                 if (faction.reputation >= 10 && faction.aggressive === true) {
                     faction.aggressive = false;
                 };
             };
             if (faction.name === computer.name) {
-                // faction.reputation -= 3;
                 faction.reputation = Math.max(0, faction.reputation - 3);
                 if (faction.reputation < 10 && !faction.aggressive) {
                     faction.aggressive = true;
                 };
             };
-            // if (faction.name === computer.name) {
-
-                // if (faction.reputation < 10) { // Old, Outdated Idea
-                //     faction.reputation += 1;
-                // } else {
-                //     faction.reputation -= 5;
-                // };
-            // };
         });
         return newReputation;
     };
@@ -417,7 +407,7 @@ export default function PhaserGame (props: IProps) {
         if (!giver) return newReputation;
         newReputation.factions.forEach((faction: faction) => {
             if (faction.name === giver) {
-                faction.reputation += 10;
+                faction.reputation = Math.min(faction.reputation + 10, 100);
             };
             if (faction.aggressive && faction.reputation >= 10) {
                 faction.aggressive = false;
@@ -490,7 +480,7 @@ export default function PhaserGame (props: IProps) {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
                 if (enemies.includes(enemy.name)) {
                     console.log(`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities!`);
-                    quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, 10);
+                    quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
                     updated = true;
                 } else {
                     console.log(`${enemy.name} is NOT an enemy of ${quest.giver}`);
@@ -680,7 +670,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function saveQuest(quest: Quest) {
-        let currency = quest.rewards.currency;
+        let currency = {gold:quest.rewards.currency.gold + props.ascean().currency.gold,silver:quest.rewards.currency.silver + props.ascean().currency.silver};
         let experience = Math.min(props.ascean().experience + quest.rewards.experience, 1000 * props.ascean().level);
         let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
         

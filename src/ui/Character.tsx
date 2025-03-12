@@ -917,7 +917,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <div class='superCenter' style={{ width:'60%' }}>
                 <div class='border  juice' style={{ margin: '1em auto', 'border-color': masteryColor(showQuest()?.quest?.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em` }}>
                     <div class='creature-heading' style={{ padding: '1em' }}>
-                    <h1 class='center' style={{ margin: '3%' }}>
+                    <h1 class='center' style={{ color: "#fdf6d8", margin: '3%' }}>
                         {showQuest()?.quest.title} <br />
                     </h1>
                     <h2 class='center' style={{ color: 'gold' }}>

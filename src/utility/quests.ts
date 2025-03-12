@@ -26,8 +26,8 @@ type SOLVE = {
 
 const initFetch: FETCH = {
     id: 'fetch',
-    current: 10,
-    total: 10
+    current: 0,
+    total: 5
 };
 
 const initSolve: SOLVE = {
@@ -153,7 +153,7 @@ export const QUEST_TEMPLATES = [
             description: "Kill 10 enemies of the {name} to ingratiate yourself toward their cause.",
             technical: initFetch
         },
-        reward: [DESPERATION, FREEZE, HEALING, KYRISIAN, PURSUIT, RECONSTITUTE, SPRINT, STORM]
+        reward: [ARC, CHIOMISM, DESPERATION, FREEZE, HEALING, KYRISIAN, MAIERETH, PURSUIT, RECONSTITUTE, SPRINT, STORM]
     }, {
         name: [MARAUDER, SOUTHRON_WANDERER, FANG_MERCENARY, QUOREITE_OCCULTIST, QUOREITE_STALKER],
         title: "Lost Temple",

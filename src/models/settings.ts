@@ -12,10 +12,31 @@ export default class Settings {
     public specials: string[];
     public totalSpecials: string[];
     public prayer: string;
-    public fps: { min: number; target: number; limit: number; forceSetTimeOut: boolean; deltaHistory: number; panicMax: number; smoothStep: boolean; };
-    public shake: { duration: number; intensity: number; };
-    public selected: { prayer: number; damageType: number; weapon: number; highlight: string; };
-    public show: { combat: boolean; dialog: boolean; inventory: boolean; loot: boolean; player: boolean; };
+    public fps: { 
+        min: number; 
+        target: number; 
+        limit: number; 
+        forceSetTimeOut: boolean; 
+        deltaHistory: number; 
+        panicMax: number; 
+        smoothStep: boolean; 
+    };
+    public shake: { 
+        duration: number; intensity: number; 
+    };
+    public selected: { 
+        prayer: number; 
+        damageType: number; 
+        weapon: number; 
+        highlight: string; 
+    };
+    public show: { 
+        combat: boolean; 
+        dialog: boolean; 
+        inventory: boolean; 
+        loot: boolean; 
+        player: boolean; 
+    };
     public asceanViews: string;
     public settingViews: string;
     public characterViews: string;
@@ -23,8 +44,18 @@ export default class Settings {
     public healthViews: string;
     public grace: string;
     public stamina: string;
-    public combatText: { left: string; top: string; height: string; width: string; };
-    public combatSettings: { left: string; top: string; height: string; width: string; };
+    public combatText: { 
+        left: string; 
+        top: string; 
+        height: string; 
+        width: string; 
+    };
+    public combatSettings: { 
+        left: string; 
+        top: string; 
+        height: string; 
+        width: string; 
+    };
     public control: string;
     public desktop: boolean;
     public computerFocus: string;
@@ -115,7 +146,10 @@ export default class Settings {
             y: number; 
             width: number; 
         };
-        fpsText: { x: number; y: number; };
+        fpsText: { 
+            x: number; 
+            y: number; 
+        };
         leftHud: { 
             offset: number;
             scale: number
@@ -134,16 +168,16 @@ export default class Settings {
 
     public constructor(id: string, mastery: string) {
         this._id = id;
-        this.map = 'Tutorial';
+        this.map = "Tutorial";
         this.music = true;
         this.sound = true;
         this.volume = 0.3;
         this.joystick = 0.5;
         this.vibration = 100;
-        this.actions = ['Attack', 'Posture', 'Roll', 'Dodge', 'Parry'];
+        this.actions = ["Attack", "Posture", "Roll", "Dodge", "Parry"];
         this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
         this.totalSpecials = ["Invoke", "Consume"];
-        this.prayer = 'Buff';
+        this.prayer = "Buff";
         this.fps = {
             min: 5,
             target: 60,
@@ -158,7 +192,7 @@ export default class Settings {
             prayer: 0,
             damageType: 0,
             weapon: 0,
-            highlight: 'Weapon',
+            highlight: "Weapon",
         };
         this.show = {
             combat: false,
@@ -167,18 +201,18 @@ export default class Settings {
             loot: false,
             player: false,
         };
-        this.asceanViews = 'Inventory';
-        this.settingViews = 'Control';
-        this.characterViews = 'Statistics';
-        this.faithViews = 'Deities';
-        this.healthViews = 'FULL';
-        this.grace = 'NUMBER';
-        this.stamina = 'NUMBER';
-        this.combatText = { left: '20vw', top: '40vh', height: '50vh', width: '60vw' };
-        this.combatSettings = { left: '20%', top: '40%', height: '50%', width: '60%' };
-        this.control = 'Buttons';
+        this.asceanViews = "Inventory";
+        this.settingViews = "Control";
+        this.characterViews = "Statistics";
+        this.faithViews = "Deities";
+        this.healthViews = "FULL";
+        this.grace = "NUMBER";
+        this.stamina = "NUMBER";
+        this.combatText = { left: "20vw", top: "40vh", height: "50vh", width: "60vw" };
+        this.combatSettings = { left: "20%", top: "40%", height: "50%", width: "60%" };
+        this.control = "Buttons";
         this.desktop = window.innerWidth > 1200;
-        this.computerFocus = 'Balanced';
+        this.computerFocus = "Balanced";
         this.computerLoadout = {
             attack: 15,
             posture: 15,
@@ -287,4 +321,4 @@ export default class Settings {
     [key: string]: any;
 };
 
-export const initSettings: Settings = new Settings('settings', 'constitution');
+export const initSettings: Settings = new Settings("settings", "constitution");

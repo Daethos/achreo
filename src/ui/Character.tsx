@@ -25,7 +25,7 @@ import { FAITH_RARITY } from '../utility/combatTypes';
 import Talents from '../utility/talents';
 import { ACTION_ORIGIN } from '../utility/actions';
 import { svg } from '../utility/settings';
-import QuestManager, { replaceChar } from '../utility/quests';
+import QuestManager, { Quest, replaceChar } from '../utility/quests';
 const AsceanImageCard = lazy(async () => await import('../components/AsceanImageCard'));
 const ExperienceBar = lazy(async () => await import('./ExperienceBar'));
 const Firewater = lazy(async () => await import('./Firewater'));
@@ -135,7 +135,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [weaponCompared, setWeaponCompared] = createSignal<string>('');
     const [showTalent, setShowTalent] = createSignal<any>({show:false,talent:undefined});
     const [showTalentConfirm, setShowTalentConfirm] = createSignal<any>({show:false, type:''});
-    const [showQuest, setShowQuest] = createSignal<any>({show:false,quest:undefined});
+    const [showQuest, setShowQuest] = createSignal<any>({show:false,quest:undefined,complete:false});
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showInventory, setShowInventory] = createSignal<boolean>(false);
     const [tutorial, setTutorial] = createSignal<string>('');
@@ -223,7 +223,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             const item = game().inventory.inventory.find((item) => item?._id === highlighted()?.item?._id);
             if (!item) setHighlighted({ item: undefined, comparing: false, type: '' });
         };
-    }; 
+    };
+
+    const checkQuest = (quest: Quest) => {
+        const completed = quest.requirements.technical.id === "fetch" ? quest.requirements.technical.current === quest.requirements.technical.total : quest.requirements.technical.solved;
+        const questReputation = quest.requirements.reputation <= reputation().factions.find((f: faction) => f.name === quest.giver)?.reputation!;
+        setShowQuest({show:true,quest,complete:completed&&questReputation});
+    };
 
     const saveSettings = async (newSettings: Settings) => {
         try {
@@ -267,8 +273,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class='creature-heading'>
                     <h1 style={{ 'margin-bottom': '3%' }}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
-                        console.log(quest, "Quest?");
-                        return <div class='border juice wrap' onClick={() => setShowQuest({show:true,quest})} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
+                        return <div class='border juice wrap' onClick={() => checkQuest(quest)} style={{ 'min-height': '100%', margin: '5% auto', 'text-align': 'center', 'border-color': masteryColor(quest.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: 'gold' }}>{quest.title}</h2>
                             <p style={{'margin-left': '10%', width: '80%' }}>{quest.description}</p>    
                             <p style={{ color: 'gold' }}>{quest.giver}</p>
@@ -914,11 +919,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </Show>
         <Show when={showQuest().show}>
             <div class='modal'>
-                <div class='superCenter' style={{ width:'60%' }}>
+                <div class='superCenter' style={{ width:'65%' }}>
                 <div class='border  juice' style={{ margin: '1em auto', 'border-color': masteryColor(showQuest()?.quest?.mastery), 'box-shadow': `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em` }}>
                     <div class='creature-heading' style={{ padding: '1em' }}>
-                    <h1 class='center' style={{ color: "#fdf6d8", margin: '3%' }}>
-                        {showQuest()?.quest.title} <br />
+                    <h1 class='center' style={{ color: showQuest()?.complete ? "gold" : "#fdf6d8", margin: '3%' }}>
+                        {showQuest()?.quest.title} {showQuest()?.complete ? "(Completed)" : ""}<br />
                     </h1>
                     <h2 class='center' style={{ color: 'gold' }}>
                         Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery.charAt(0).toUpperCase() + showQuest()?.quest?.mastery.slice(1)}) <br />
@@ -957,10 +962,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </div>
                 </div>
-                <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', right: '0', 'color': 'red' }} onClick={() => {EventBus.emit('remove-quest', showQuest().quest); setShowQuest({ show: false, quest: undefined });}}>
+                <button class='highlight cornerTR' style={{ transform: 'scale(0.85)', right: '0', 'color': 'red' }} onClick={() => {EventBus.emit('remove-quest', showQuest().quest); setShowQuest({ show: false, quest: undefined, complete: false });}}>
                     <p style={font('0.75em')}>Remove Quest</p>
                 </button>
-                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowQuest({ show: false, quest: undefined })}>
+                <button class='highlight cornerBR' style={{ transform: 'scale(0.85)', bottom: '0', right: '0', 'color': 'red' }} onClick={() => setShowQuest({ show: false, quest: undefined, complete: false })}>
                     <p style={font('0.75em')}>X</p>
                 </button>
             </div>

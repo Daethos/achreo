@@ -1,4 +1,4 @@
-import { Accessor, Setter } from 'solid-js';
+import { Accessor, JSX, Setter } from 'solid-js';
 import Ascean from '../models/ascean';
 import Equipment from '../models/equipment';
 import { getRarityColor } from '../utility/styling';
@@ -11,20 +11,20 @@ interface Props {
 export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
     function item(rarity: string) {
         return { 
-            'border': '0.2em solid ' + getRarityColor(rarity), 
-            'transform': 'scale(1.1)',
-            'background-color': 'black', 
-            'padding-bottom': '-0.25em',
-            margin: '0.25em',
+            "background-color": "#000", 
+            border: "0.2em solid " + getRarityColor(rarity), 
+            margin: "0.25em",
+            "padding-bottom": "-0.25em",
+            transform: "scale(1.1)",
         };
     };
-    const div = (eqp: Equipment) => {
-        return <div class='' onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
-            <img src={eqp.imgUrl} alt="item" class='juiceNB' style={image} />
+    const div = (eqp: Equipment): JSX.Element => {
+        return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
+            <img src={eqp.imgUrl} alt={eqp.name} class='juiceNB' style={image} />
         </div>;
     };
     const image = { width: '100%', height: '100%' };
-    function info(item: Equipment) {
+    function info(item: Equipment): void {
         setEquipment(item);
         setShow(!show());
     }; 

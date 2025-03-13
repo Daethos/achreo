@@ -1,29 +1,29 @@
-import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX } from 'solid-js'
-import { EventBus } from '../game/EventBus';
-import { Combat } from '../stores/combat';
-import Ascean from '../models/ascean';
-import { GameState } from '../stores/game';
-import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore } from '../utility/regions';
-import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from '../utility/traits';
-import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
-import Typewriter from '../utility/Typewriter';
-import Currency from '../utility/Currency';
-import MerchantTable from './MerchantTable';
-import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from '../models/equipment';
-import { LevelSheet } from '../utility/ascean';
-import { font, getRarityColor, sellRarity } from '../utility/styling';
-import ItemModal from '../components/ItemModal';
-import QuestManager, { getQuests, Quest, replaceChar } from '../utility/quests';
-import { ENEMY_ENEMIES, faction, initFaction, namedNameCheck, Reputation } from '../utility/player';
-import Thievery from './Thievery';
-import Merchant from './Merchant';
-import Roster from './Roster';
-import { ArenaRoster } from './BaseUI';
-import Settings from '../models/settings';
-import { usePhaserEvent } from '../utility/hooks';
-import { fetchTutorial } from '../utility/enemy';
-import { getParty } from '../assets/db/db';
-import { IRefPhaserGame } from '../game/PhaserGame';
+import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX } from "solid-js"
+import { EventBus } from "../game/EventBus";
+import { Combat } from "../stores/combat";
+import Ascean from "../models/ascean";
+import { GameState } from "../stores/game";
+import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore } from "../utility/regions";
+import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from "../utility/traits";
+import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
+import Typewriter from "../utility/Typewriter";
+import Currency from "../utility/Currency";
+import MerchantTable from "./MerchantTable";
+import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from "../models/equipment";
+import { LevelSheet } from "../utility/ascean";
+import { font, getRarityColor, sellRarity } from "../utility/styling";
+import ItemModal from "../components/ItemModal";
+import QuestManager, { getQuests, Quest, replaceChar } from "../utility/quests";
+import { ENEMY_ENEMIES, faction, initFaction, namedNameCheck, Reputation } from "../utility/player";
+import Thievery from "./Thievery";
+import Merchant from "./Merchant";
+import Roster from "./Roster";
+import { ArenaRoster } from "./BaseUI";
+import Settings from "../models/settings";
+import { usePhaserEvent } from "../utility/hooks";
+import { fetchTutorial } from "../utility/enemy";
+import { getParty } from "../assets/db/db";
+import { IRefPhaserGame } from "../game/PhaserGame";
 
 const GET_FORGE_COST = {
     Common: 1,
@@ -76,8 +76,8 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
     return (
       <div>
         { showDialogOptions() && (
-            <button class='highlight' style={{ 'font-size': '0.85em' }} onClick={handleClick} data-function-name='handleClick'>
-                <Typewriter stringText={option.text} styling={{ 'overflow-y': 'auto', 'scrollbar-width': 'none', 'text-align': 'left' }} performAction={hollowClick} />
+            <button class="highlight" style={{ "font-size": "0.85em" }} onClick={handleClick} data-function-name="handleClick">
+                <Typewriter stringText={option.text} styling={{ "overflow-y": "auto", "scrollbar-width": "none", "text-align": "left" }} performAction={hollowClick} />
             </button>
         ) }
       </div>
@@ -99,20 +99,20 @@ interface DialogTreeProps {
 
 export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, setPlayerResponses, setKeywordResponses, styling, reputation }: DialogTreeProps) => {
     const [showDialogOptions, setShowDialogOptions] = createSignal<boolean>(false);
-    const [renderedText, setRenderedText] = createSignal<string>('');
+    const [renderedText, setRenderedText] = createSignal<string>("");
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
     const [currentIndex, setCurrentIndex] = createSignal<number>(0);
     const [style, setStyle] = createSignal({
-        'overflow-y': 'auto',
-        'scrollbar-width' : 'none',
-        'text-align': 'left',
+        "overflow-y": "auto",
+        "scrollbar-width" : "none",
+        "text-align": "left",
         ...styling
     });
 
     const processText = (text: string, context: any): string => {
-        if (!text) return '';
+        if (!text) return "";
         return text.replace(/\${(.*?)}/g, (_, g) => {
-            const value = g.split('.').reduce((obj: { [x: string]: any; }, key: string | number) => obj && obj[key], context);
+            const value = g.split(".").reduce((obj: { [x: string]: any; }, key: string | number) => obj && obj[key], context);
             return value;
         });
     };
@@ -123,15 +123,15 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
                 const { key, operator, value } = condition;
                 const optionValue = getOptionKey(ascean, combat, game, key);
                 switch (operator) {
-                    case '>':
+                    case ">":
                         return Number(optionValue) > Number(value);
-                    case '>=':
+                    case ">=":
                         return Number(optionValue) >= Number(value);
-                    case '<':
+                    case "<":
                         return Number(optionValue) < Number(value);
-                    case '<=':
+                    case "<=":
                         return Number(optionValue) <= Number(value);
-                    case '=':
+                    case "=":
                         return Number(optionValue) === Number(value);
                     default:
                         return false;
@@ -146,12 +146,12 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     onMount(() => searchCurrentNode(game()?.currentNodeIndex));
 
     function searchCurrentNode(index: number) {
-        let newText: string = '';
+        let newText: string = "";
         let newOptions: DialogNodeOption[] = [];
         let currentNode = dialogNodes?.[index];
         if (currentNode === undefined) return;
         const { text, options } = currentNode as DialogNode;
-        if (typeof text === 'string') {
+        if (typeof text === "string") {
             newText = (text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
         } else if (Array.isArray(text)) {
             const npcOptions = text.filter((option: any) => {
@@ -162,19 +162,19 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
                     const { key, operator, value } = option.conditions[0];
                     const optionValue = getOptionKey(ascean, combat, game, key);
                     switch (operator) {
-                        case '>':
+                        case ">":
                             condition = Number(optionValue) > Number(value);
                             break;
-                        case '>=':
+                        case ">=":
                             condition = Number(optionValue) >= Number(value);
                             break;
-                        case '<':
+                        case "<":
                             condition = Number(optionValue) < Number(value);
                             break;
-                        case '<=':
+                        case "<=":
                             condition = Number(optionValue) <= Number(value);
                             break;
-                        case '=':
+                        case "=":
                             condition = Number(optionValue) === Number(value);
                             break;
                         default:
@@ -191,7 +191,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
         setRenderedOptions(newOptions);
         setRenderedText(newText);
         setCurrentIndex(index || 0);
-        EventBus.emit('blend-game', { 
+        EventBus.emit("blend-game", { 
             currentNode: currentNode,
             currentNodeIndex: index || 0,
             renderedOptions: newOptions, 
@@ -201,17 +201,17 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
 
     const dialogTimeout = () => setShowDialogOptions(true);
 
-    usePhaserEvent('typing-complete', dialogTimeout);
+    usePhaserEvent("typing-complete", dialogTimeout);
 
     const getOptionKey = (ascean: Ascean, combat: any, game: Accessor<GameState>, key: string) => {
 
-        const newKey = key === 'mastery' ? ascean[key].toLowerCase() : key;
+        const newKey = key === "mastery" ? ascean[key].toLowerCase() : key;
         return ascean[newKey] !== undefined ? ascean[newKey] : combat[newKey] !== undefined ? combat[newKey] : game()[newKey as keyof typeof game];
     };
   
     const handleOptionClick = (nextNodeId: string | undefined) => {
         if (nextNodeId === undefined) {
-            EventBus.emit('blend-game', { currentNodeIndex: 0 });
+            EventBus.emit("blend-game", { currentNodeIndex: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node: any) => node.id === nextNodeId);
             if (nextNodeIndex === -1) nextNodeIndex = 0;
@@ -220,7 +220,7 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     };
   
     return (
-        <div class='wrap' style={{ 'text-align':'left' }}> 
+        <div class="wrap" style={{ "text-align":"left" }}> 
             <Typewriter stringText={renderedText} styling={style()} performAction={handleOptionClick} main={true} />
             <br />
             {renderedOptions()?.map((option: DialogNodeOption) => (
@@ -234,21 +234,21 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
     const filteredOptions = Object.keys(options);
     const buttons = filteredOptions.map((o: any) => {
         switch (o) {
-            case 'localLore':
-                o = 'Local Lore';
+            case "localLore":
+                o = "Local Lore";
                 break;
-            case 'worldLore':
-                o = 'World Lore';
+            case "worldLore":
+                o = "World Lore";
                 break;
-            case 'localWhispers':
-                o = 'Local Whispers';
+            case "localWhispers":
+                o = "Local Whispers";
                 break;
             default:
                 break;
         };
         return (
-            <div style={{ margin: '5%' }}>
-                <button class='highlight dialog-buttons juiceSmall' onClick={() => setIntent(o)} style={{ background: '#000', 'font-size': '0.5em' }}>{o}</button>
+            <div style={{ margin: "5%" }}>
+                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "0.5em" }}>{o}</button>
             </div>
         );
     });
@@ -269,8 +269,8 @@ interface StoryDialogProps {
 export default function Dialog({ ascean, asceanState, combat, game, settings, quests, reputation, instance }: StoryDialogProps) {
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
-    const [persuasionString, setPersuasionString] = createSignal<string>('');
-    const [luckoutString, setLuckoutString] = createSignal<string>('');
+    const [persuasionString, setPersuasionString] = createSignal<string>("");
+    const [luckoutString, setLuckoutString] = createSignal<string>("");
     const [upgradeItems, setUpgradeItems] = createSignal<any | undefined>(undefined);
     const [namedEnemy, setNamedEnemy] = createSignal<boolean>(false);
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
@@ -283,15 +283,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [persuasion, setPersuasion] = createSignal<boolean>(false);
     const [persuasionShow, setPersuasionShow] = createSignal<boolean>(false);
     const [persuasionTraits, setPersuasionTraits] = createSignal<any>([]);
-    const [enemyArticle, setEnemyArticle] = createSignal<any>('');
-    const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>('');
+    const [enemyArticle, setEnemyArticle] = createSignal<any>("");
+    const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>("");
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
     const [concept, setConcept] = createSignal<any>(institutions["Ascea"].preamble);
     const [currentInstitution, setCurrentInstitution] = createSignal<any>("Ascea");
     const [institution, setInstitution] = createSignal<any>(institutions["Ascea"]);
     const [local, setLocal] = createSignal<any>(localLore["Astralands"]);
-    const [region, setRegion] = createSignal<any>(provincialInformation['Astralands']);
+    const [region, setRegion] = createSignal<any>(provincialInformation["Astralands"]);
     const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Ahn'are"]);
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
     const [currentWhisper, setCurrentWhisper] = createSignal<any>("Ancients");
@@ -317,11 +317,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
     const [rep, setRep] = createSignal<faction>(initFaction);
     const [party, setParty] = createSignal(false);
-    const capitalize = (word: string): string => word === 'a' ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
+    const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
             border: `0.15em solid ${getRarityColor(rarity)}`,
-            'background-color': 'black',
+            "background-color": "#000",
         };
     };
 
@@ -337,45 +337,45 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     createEffect(() => setMerchantTable(game().merchantEquipment));
     
     const KEYS = {
-        'Traveling Senarian':'magical-weapon',
-        'Traveling Sevasi':'physical-weapon',
-        'Traveling Armorer':'armor',
-        'Traveling Jeweler':'jewelry',
-        'Traveling Tailor':'cloth',
-        'Traveling General Merchant':'general',
-        'Traveling Sedyreal':'Sedyreal',
-        'Traveling Kyrisian':'Kyrisian',
-        'Kreceus': 'Kreceus',
+        "Traveling Senarian":"magical-weapon",
+        "Traveling Sevasi":"physical-weapon",
+        "Traveling Armorer":"armor",
+        "Traveling Jeweler":"jewelry",
+        "Traveling Tailor":"cloth",
+        "Traveling General Merchant":"general",
+        "Traveling Sedyreal":"Sedyreal",
+        "Traveling Kyrisian":"Kyrisian",
+        "Kreceus": "Kreceus",
         "Ashreu'ul": "Ashreu'ul",
-        'Tutorial Teacher': 'Tutorial Teacher',
+        "Tutorial Teacher": "Tutorial Teacher",
     };
 
     const actions = {
         getCombat: () => engageCombat(combat()?.enemyID),
-        getArmor: async () => await getLoot('armor'),
-        getGeneral: async () => await getLoot('general'),
-        getJewelry: async () => await getLoot('jewelry'),
-        getMystic: async () => await getLoot('magical-weapon'),
-        getTailor: async () => await getLoot('cloth'),
-        getWeapon: async () => await getLoot('physical-weapon'),
+        getArmor: async () => await getLoot("armor"),
+        getGeneral: async () => await getLoot("general"),
+        getJewelry: async () => await getLoot("jewelry"),
+        getMystic: async () => await getLoot("magical-weapon"),
+        getTailor: async () => await getLoot("cloth"),
+        getWeapon: async () => await getLoot("physical-weapon"),
         getFlask: () => refillFlask(),
         getSell: () => setShowSell(!showSell()),
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
         setRoster: () => setArena({ ...arena(), show: true }),
-        getTutorialMovement: () => EventBus.emit('highlight', 'joystick'),
+        getTutorialMovement: () => EventBus.emit("highlight", "joystick"),
         getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
-        getTutorialSettings: () => EventBus.emit('highlight', 'smallhud'),
-        getTutorialCombat: () => EventBus.emit('highlight', 'action-bar'),
-        getDialogClose: () => EventBus.emit('outside-press', 'dialog'),
+        getTutorialSettings: () => EventBus.emit("highlight", "smallhud"),
+        getTutorialCombat: () => EventBus.emit("highlight", "action-bar"),
+        getDialogClose: () => EventBus.emit("outside-press", "dialog"),
     };
 
     function fetchTutorialEnemyPrompt() {
         const enemy = fetchTutorial();
         setTimeout(() => {
-            EventBus.emit('blend-game', { tutorialEncounter: game().tutorialEncounter + 1 });
-            EventBus.emit('set-tutorial-enemy', enemy);
-            EventBus.emit('outside-press', 'dialog');
+            EventBus.emit("blend-game", { tutorialEncounter: game().tutorialEncounter + 1 });
+            EventBus.emit("set-tutorial-enemy", enemy);
+            EventBus.emit("outside-press", "dialog");
         }, 5000);
     };
     
@@ -395,13 +395,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
         if (!enemy) return;
-        checkQuests(enemy, manager().quests);
         setNamedEnemy(namedNameCheck(enemy.name));
-        setEnemyArticle(() => ['a', 'e', 'i', 'o', 'u'].includes(enemy.name.charAt(0).toLowerCase()) ? 'an' : 'a');
-        setEnemyDescriptionArticle(() => combat().computer?.description.split(' ')[0].toLowerCase() === 'the' ? 'the' : ['a', 'e', 'i', 'o', 'u'].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? 'an' : 'a');
-        // console.log(enemyArticle(), 'Enemy Name Article', enemyDescriptionArticle(), 'Enemy Description Article');
+        setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
+        setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
+        // console.log(enemyArticle(), "Enemy Name Article", enemyDescriptionArticle(), "Enemy Description Article");
         const rep = reputation().factions.find((f: faction) => f.name === combat().computer?.name) as faction;
         if (rep) setRep(rep);
+        checkQuests(enemy, manager().quests);
     };
     
     const checkInfluence = (a: Accessor<Ascean>) => setInfluence(a()?.weaponOne?.influences?.[0]);
@@ -415,7 +415,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         const completedQuests = [];
         for (const q of quest) {
             const completed = q.requirements.technical.id === "fetch" ? q.requirements.technical.current === q.requirements.technical.total : q.requirements.technical.solved;
-            if (q.giver === enemy.name && completed) { // Quest The Enemy of One of the Faction Has Given the Player
+            const qRep = rep().reputation >= q.requirements.reputation;
+            if (q.giver === enemy.name && completed && qRep) { // Quest The Enemy of One of the Faction Has Given the Player
                 completedQuests.push(q);
             };
         };
@@ -462,18 +463,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
             let completed = JSON.parse(JSON.stringify(completeQuests()));
             completed = completed.filter((q: Quest) => q._id !== quest._id);
-
             setCompleteQuests(completed);
             setShowCompleteQuest(complete);
             setShowQuestSave(true);
-            EventBus.emit('complete-quest', quest);
+            EventBus.emit("complete-quest", quest);
             EventBus.emit("save-quest-to-player", complete);
         } catch (err) {
             console.warn(err, "Error Completing Quest");
         };
     };
     
-    const hollowClick = () => console.log('Hollow Click');
+    const hollowClick = () => console.log("Hollow Click");
 
     const attemptPersuasion = async (persuasion: string): Promise<void> => {
         let playerPersuasion: number = 0;
@@ -901,7 +901,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function checkReward(item: string | Equipment) {
-        if (typeof item === 'string') {
+        if (typeof item === "string") {
             return item;
         } else { // Equipment
             return <div onClick={() => setRewardItem({show:true,item})} style={{ "border": `0.2em solid ${getRarityColor(item.rarity as string)}`, "transform": "scale(1.1)", "background-color": "#000", "margin": "0.25em" }}>
@@ -912,16 +912,42 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const typewriterStyling: JSX.CSSProperties = { };
     return (
-        <Show when={combat().computer}>  
-        <div class='dialog-window' style={{ width: combat().isEnemy && combat().computer ? "55%" : "70%" }}>
-            <div class='dialog-tab wrap'> 
-            <div style={{ color: 'gold', 'font-size': '1em', 'margin-bottom': "3%" }}>
+        <Show when={combat().computer}>
+        <Show when={combat().isEnemy}>
+            <div class='story-dialog-options'>
+                <DialogButtons options={game().dialog} setIntent={handleIntent} />
+                <Show when={game().currentIntent === "institutions"}>
+                    <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
+                </Show>
+                <Show when={game().currentIntent === "localLore"}>
+                    <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
+                </Show>
+                <Show when={game().currentIntent === "provinces"}>
+                    <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
+                </Show>
+                <Show when={game().currentIntent === "entities"}>
+                    <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
+                </Show>
+                <Show when={game().currentIntent === "phenomena"}>
+                    <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                </Show>
+                <Show when={game().currentIntent === "whispers"}>
+                    <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
+                </Show>
+                <Show when={game().currentIntent === "worldLore"}>
+                    <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
+                </Show>
+            </div>
+        </Show> 
+        <div class="dialog-window" style={{ width: combat().isEnemy && combat().computer ? "55%" : "70%" }}>
+            <div class="dialog-tab wrap"> 
+            <div style={{ color: "gold", "font-size": "1em", "margin-bottom": "3%" }}>
                 <div style={{ display: 'inline' }}>
                     <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
                     {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
                 </div>
             </div>
-            { combat().npcType === 'Merchant-Smith' ? ( <>
+            { combat().npcType === "Merchant-Smith" ? ( <>
                 <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
                     <br /><br />
                     Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
@@ -931,7 +957,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <p class='darkorangeMarkup'>[Sedyreal - 60g]</p>
                     <br /><button class='highlight' data-function-name='setForgeSee'>See if any of your equipment can be Forged?</button>
                     <br /><button class='highlight' data-function-name='getSell'>Sell your equipment to the Traveling Blacksmith?</button>
-                `} styling={{ margin: '0 5%', width: '90%', overflow: 'auto', 'scrollbar-width': 'none', 'font-size':'0.9em' }} performAction={performAction} />
+                `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
                 {forgeSee() && upgradeItems() ? ( <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
                     {upgradeItems().map((item: any) => {
@@ -1344,10 +1370,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={showQuestComplete()}>
             <div class="modal">
-                <div class="creature-heading superCenter" style={{ width: "60%" }}>
+                <div class="creature-heading superCenter" style={{ width: "65%" }}>
                     <div class="border moisten">
                     <h1 class='center' style={{ margin: '3%', color: showQuestSave() ? "gold" : "#fdf6d8" }}>
-                        {showCompleteQuest().title} {showQuestSave() ? "(Completed!)" : ""} <br />
+                        {showCompleteQuest().title} {showQuestSave() ? "(Completed)" : ""} <br />
                     </h1>
                     <h2 class='center' style={{ color: 'gold' }}>
                         Quest Giver: {showCompleteQuest().giver}, Level {showCompleteQuest().level} ({showCompleteQuest()?.mastery.charAt(0).toUpperCase() + showCompleteQuest()?.mastery.slice(1)}) <br />
@@ -1398,32 +1424,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Show when={rewardItem().show}>
             <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})}>
                 <ItemModal item={rewardItem().item} caerenic={false} stalwart={false} />
-            </div>
-        </Show>
-        <Show when={combat().isEnemy}>
-            <div class='story-dialog-options'>
-                <DialogButtons options={game().dialog} setIntent={handleIntent} />
-                <Show when={game().currentIntent === "institutions"}>
-                    <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
-                </Show>
-                <Show when={game().currentIntent === "localLore"}>
-                    <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
-                </Show>
-                <Show when={game().currentIntent === "provinces"}>
-                    <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
-                </Show>
-                <Show when={game().currentIntent === "entities"}>
-                    <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
-                </Show>
-                <Show when={game().currentIntent === "phenomena"}>
-                    <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
-                </Show>
-                <Show when={game().currentIntent === "whispers"}>
-                    <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
-                </Show>
-                <Show when={game().currentIntent === "worldLore"}>
-                    <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
-                </Show>
             </div>
         </Show>
         </Show> 

@@ -28,6 +28,26 @@ export function calculateThreat(damage: number, currentHealth: number, totalHeal
     return relative;
 };
 export type Player_Scene = Game | Underground | Tutorial | Arena;
+export const FRAMES = {
+    ANIMATION_COMPLETE: "animationcomplete",
+    CLIMB: "player_climb",
+    CROUCH_IDLE: "player_crouch_idle",
+    IDLE: "player_idle",
+    RUNNING: "player_running",
+    RUN_DOWN: "run_down",
+    RUN_UP: "run_up",
+    SWIM_DOWN: "swim_down",
+    SWIM_UP: "swim_up",
+    CAST: "player_health",
+    HURT: "player_hurt",
+    PRAY: "player_pray",
+    ATTACK: "player_attack_1",
+    DODGE: "player_slide",
+    PARRY: "player_attack_1",
+    POSTURE: "player_attack_3",
+    ROLL: "player_roll",
+    THRUST: "player_attack_2",
+};
 export type ENEMY = {id:string; threat:number};
 export const FRAME_COUNT = {
     ATTACK_LIVE: 16,
@@ -45,9 +65,9 @@ export const FRAME_COUNT = {
 }; 
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
-export const SWING_TIME = { 'One Hand': 1250, 'Two Hand': 1500 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { 'One Hand': 1000, 'Two Hand': 1250 }; // 750, 1250 [old]
-const DAMAGE_TYPES = { 'magic': ['earth', 'fire', 'frost', 'lightning', 'righteous', 'spooky', 'sorcery', 'wild', 'wind'], 'physical': ['blunt', 'pierce', 'slash'] };
+export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
+const DAMAGE_TYPES = { "magic": ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], "physical": ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
@@ -157,8 +177,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     attackedTarget: any = undefined;
     dodgeCooldown: number = 0;
     invokeCooldown: number = 0;
-    playerBlessing: string = '';
-    prayerConsuming: string = '';
+    playerBlessing: string = "";
+    prayerConsuming: string = "";
     rollCooldown: number = 0;
     sensor: any = undefined;
     interacting: any[] = [];
@@ -171,14 +191,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     spriteShield: Phaser.GameObjects.Sprite;
     spriteWeapon: Phaser.GameObjects.Sprite;
     frameCount: number = 0;
-    currentWeaponSprite: string = '';
+    currentWeaponSprite: string = "";
     particleEffect: Particle | undefined;
     stunDuration: number = 3000;
-    currentDamageType: string = '';
+    currentDamageType: string = "";
     currentRound: number = 0;
-    currentAction: string = '';
-    polymorphDirection: string = '';
-    polymorphMovement: string = '';
+    currentAction: string = "";
+    polymorphDirection: string = "";
+    polymorphMovement: string = "";
     scrollingCombatText: any | undefined;
     specialCombatText: any | undefined;
     resistCombatText: any | undefined;
@@ -204,10 +224,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     specialCombat: Phaser.Time.TimerEvent | undefined;
     originPoint: any = {}; // For Leashing
     originalPosition: Phaser.Math.Vector2;
-    specialAction: string = '';
+    specialAction: string = "";
     isComputer: boolean = false;
     evadeType: number = 1;
-    negationName: string = '';
+    negationName: string = "";
     evadeRight: boolean = false;
     evadeUp: boolean = false;
     contemplationTime: number;
@@ -361,12 +381,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     setColor = (mastery: string): number => {
         switch (mastery) {
-            case 'constitution': return 0xFDF6D8;
-            case 'strength': return 0xFF0000;
-            case 'agility': return 0x00FF00;
-            case 'achre': return 0x0000FF;
-            case 'caeren': return 0x800080;
-            case 'kyosir': return 0xFFD700;
+            case "constitution": return 0xFDF6D8;
+            case "strength": return 0xFF0000;
+            case "agility": return 0x00FF00;
+            case "achre": return 0x0000FF;
+            case "caeren": return 0x800080;
+            case "kyosir": return 0xFFD700;
             default: return 0xFFFFFF;
         };
     };
@@ -395,36 +415,36 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     checkIfAnimated = () => this.anims.currentAnim ? true : false;
 
     attack = () => { 
-        this.anims.play(`player_attack_1`, true).on('animationcomplete', () => {
+        this.anims.play(FRAMES.ATTACK, true).on(FRAMES.ANIMATION_COMPLETE, () => {
             this.isAttacking = false;
-            this.currentAction = '';
+            this.currentAction = "";
         }); 
     };
     parry = () => { 
-        this.anims.play('player_attack_1', true).on('animationcomplete', () => { 
+        this.anims.play(FRAMES.PARRY, true).on(FRAMES.ANIMATION_COMPLETE, () => { 
             this.isParrying = false; 
-            this.currentAction = '';
+            this.currentAction = "";
         });
     };
     posture = () => { 
-        this.anims.play('player_attack_3', true).on('animationcomplete', () => {
+        this.anims.play(FRAMES.POSTURE, true).on(FRAMES.ANIMATION_COMPLETE, () => {
             this.isPosturing = false;
-            this.currentAction = '';
+            this.currentAction = "";
         }); 
     }; 
     thrustAttack = () => { 
-        this.anims.play('player_attack_2', true).on('animationcomplete', () => { 
+        this.anims.play(FRAMES.THRUST, true).on(FRAMES.ANIMATION_COMPLETE, () => { 
             this.isThrusting = false; 
-            this.currentAction = '';
+            this.currentAction = "";
         });
     };
     hurt = () => {
         this.clearAnimations();
         this.clearTint();
-        this.anims.play('player_hurt', true).on('animationcomplete', () => {
+        this.anims.play(FRAMES.HURT, true).on(FRAMES.ANIMATION_COMPLETE, () => {
             this.isHurt = false;
-            if (this.name === 'enemy') this.setTint(0xFF0000);    
-            if (this.name === 'party') this.setTint(0x00FF00);    
+            if (this.name === "enemy") this.setTint(0xFF0000);    
+            if (this.name === "party") this.setTint(0x00FF00);    
         }); 
     };
     knockback(id: string) {
@@ -467,23 +487,23 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     handleIdleAnimations = () => {
         if (this.isClimbing) {
-            this.anims.play('player_climb', true);
+            this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
         } else if (this.inWater) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
+            this.anims.play(this.velocity?.y as number > 0 ? FRAMES.SWIM_DOWN : FRAMES.SWIM_UP, true);
         } else {
-            this.anims.play(this.isStealthing ? 'player_crouch_idle' : 'player_idle', true);
+            this.anims.play(this.isStealthing ? FRAMES.CROUCH_IDLE : FRAMES.IDLE, true);
         };
     };
     handleMovementAnimations = () => {
         if (this.isClimbing) {
-            this.anims.play('player_climb', true);
+            this.anims.play(FRAMES.CLIMB, true);
         } else if (this.inWater) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'swim_down' : 'swim_up', true);
+            this.anims.play(this.velocity?.y as number > 0 ? FRAMES.SWIM_DOWN : FRAMES.SWIM_UP, true);
         } else if (!this.xCheck()) {
-            this.anims.play(this.velocity?.y as number > 0 ? 'run_down' : 'run_up', true);
+            this.anims.play(this.velocity?.y as number > 0 ? FRAMES.RUN_DOWN : FRAMES.RUN_UP, true);
         } else {
-            this.anims.play('player_running', true);
+            this.anims.play(FRAMES.RUNNING, true);
         };
     };
     handleTerrain = (): number => (this.isClimbing || this.inWater) ? 0.65 : 1;
@@ -520,15 +540,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {
         switch (ailment) {
-            case 'isConfused':
+            case "isConfused":
                 return this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
-            case 'isFeared':
+            case "isFeared":
                 return this.isConfused || this.isParalyzed || this.isPolymorphed || this.isStunned;
-            case 'isParalyzed':
+            case "isParalyzed":
                 return this.isConfused || this.isFeared || this.isPolymorphed || this.isStunned;
-            case 'isPolymorphed':
+            case "isPolymorphed":
                 return this.isConfused || this.isParalyzed || this.isParalyzed || this.isStunned;                        
-            case 'isStunned':
+            case "isStunned":
                 return this.isConfused || this.isParalyzed || this.isParalyzed || this.isPolymorphed;    
             default: 
                 return this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
@@ -536,7 +556,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     bowDamageType = () => {
-        return this.currentDamageType === 'pierce' || this.currentDamageType === 'blunt' ? 'arrow' : this.currentDamageType;
+        return this.currentDamageType === "pierce" || this.currentDamageType === "blunt" ? "arrow" : this.currentDamageType;
     };
 
     checkActionSuccess = (entity: string, target: Player | Enemy | Party) => {
@@ -570,7 +590,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
         };
-        if ((entity === 'enemy' || entity === 'party') && target && target.body) {
+        if ((entity === "enemy" || entity === "party") && target && target.body) {
             const direction = target.position.subtract(this.position);
             const distance = direction.length();
             if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting && target.health > 0) {
@@ -579,14 +599,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
         };
     };
-    checkBow = (type: string) => type === 'Bow' || type === 'Greatbow';
+    checkBow = (type: string) => type === "Bow" || type === "Greatbow";
     checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);
     checkMeleeOrRanged = (weapon: Equipment) => {
         if (weapon === undefined) return;
-        this.isRanged = weapon?.attackType === 'Magic' || weapon?.type === 'Bow' || weapon?.type === 'Greatbow';
-        if (this.name === 'player') {
+        this.isRanged = weapon?.attackType === "Magic" || weapon?.type === "Bow" || weapon?.type === "Greatbow";
+        if (this.name === "player") {
             this.swingTimer = SWING_TIME[weapon?.grip as keyof typeof SWING_TIME] || 1500;
-            if (weapon?.grip === 'One Hand') {
+            if (weapon?.grip === "One Hand") {
                 this.weaponHitbox.radius = 24;
             } else {
                 this.weaponHitbox.radius = 28;
@@ -637,7 +657,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     imgSprite = (item: Equipment) => {
-        return item.imgUrl.split('/')[3].split('.')[0];
+        return item.imgUrl.split("/")[3].split(".")[0];
     };
 
     hitBoxCheck = (enemy: Enemy) => {
@@ -653,7 +673,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
-            this.resistCombatText = this.scene.showCombatText(`Out of Range: -${Math.round(distance - range)}`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+            this.resistCombatText = this.scene.showCombatText(`Out of Range: -${Math.round(distance - range)}`, 1000, "damage", false, false, () => this.resistCombatText = undefined);
             return true;    
         };
         return false;
@@ -664,7 +684,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             targets: target,
             x: { from: target.x, to: this.x, duration: time },
             y: { from: target.y, to: this.y, duration: time }, 
-            ease: 'Circ.easeInOut',
+            ease: "Circ.easeInOut",
             onStart: () => this.beam.startEmitter(target, time),
             onComplete: () => this.beam.reset(),
             yoyo: false
@@ -672,7 +692,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     particleAoe = (effect: Particle) => {
-        new AoE(this.scene, effect.key.split('_effect')[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
+        new AoE(this.scene, effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
     functionality = (entity: string, target: Player | Enemy | Party) => {
@@ -702,25 +722,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_FRAME_CONFIG.thrusting[configKey].noFlipX;
 
             if (this.frameCount === FRAME_COUNT.THRUST_LIVE) {
-                if (entity === 'player' && this.isRanged) { // && this.inCombat
+                if (entity === "player" && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'party' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('thrust', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("thrust", this, this.bowDamageType());
                     };
                 };
             }; 
@@ -730,18 +750,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.frameCount += 1;
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
-                if (entity === 'enemy' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("roll", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("roll", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'party' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("roll", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('roll', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("roll", this, this.bowDamageType());
                     };
                 };
             };
@@ -754,25 +774,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_FRAME_CONFIG.attacking[configKey].noFlipX;
                 
             if (this.frameCount === FRAME_COUNT.ATTACK_LIVE) {
-                if (entity === 'player' && this.isRanged) {
+                if (entity === "player" && this.isRanged) {
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'party' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('attack', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("attack", this, this.bowDamageType());
                     };
                 };
             };
@@ -788,25 +808,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_FRAME_CONFIG.posturing[configKey].noFlipX;
             
             if (this.frameCount === FRAME_COUNT.POSTURE_LIVE) {
-                if (entity === 'player' && this.isRanged) { // && this.inCombat
+                if (entity === "player" && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'enemy' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.bowDamageType());
                     };
                 };
-                if (entity === 'party' && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
+                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.currentDamageType);
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.currentDamageType);
                     } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect('posture', this, this.bowDamageType());
+                        this.particleEffect = this.scene.particleManager.addEffect("posture", this, this.bowDamageType());
                     };
                 };
             }; 

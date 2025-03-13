@@ -1,4 +1,4 @@
-import Entity, { assetSprite, Player_Scene, SWING_TIME } from "./Entity";  
+import Entity, { assetSprite, FRAMES, Player_Scene, SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
@@ -1520,31 +1520,31 @@ export default class Player extends Entity {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false);
+            this.anims.play(FRAMES.PARRY, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
         } else if (this.isThrusting) {
             sprint(this.scene);
-            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
+            this.anims.play(FRAMES.THRUST, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isThrusting = false);
         } else if (this.isDodging) { 
-            this.anims.play('player_slide', true);
+            this.anims.play(FRAMES.DODGE, true);
             if (this.dodgeCooldown === 0) this.playerDodge();
         } else if (this.isRolling) {
             sprint(this.scene);
-            this.anims.play('player_roll', true);
+            this.anims.play(FRAMES.ROLL, true);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
-            this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
+            this.anims.play(FRAMES.POSTURE, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false);
+            this.anims.play(FRAMES.ATTACK, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
         } else if (this.moving()) {
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
             // walk(this.scene);
-            this.anims.play('player_health', true);
+            this.anims.play(FRAMES.CAST, true);
         } else if (this.isPraying) {
-            this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
+            this.anims.play(FRAMES.PRAY, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isPraying = false);
         } else {
             this.isMoving = false;
             this.handleIdleAnimations();

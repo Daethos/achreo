@@ -368,7 +368,6 @@ interface TraitModalProps {
 export const LuckoutModal = ({ traits, callback, name, influence, show, setShow }: TraitModalProps) => {
     return (
         <>
-        {/* show={show()} onHide={() => setShow(false)} */}
         <Show when={show()}>
         <div class='modal' onClick={() => setShow(!show())}>
             <div class='border superCenter' style={{ 'font-size': "1.25em" }}>
@@ -382,10 +381,7 @@ export const LuckoutModal = ({ traits, callback, name, influence, show, setShow 
                 {traits().map((trait: any) => {
                     return (
                         <div style={{ margin: '3%' }}>
-                            <button class='inner' 
-                                style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} 
-                                onClick={() => callback(trait.name)}>
-                                    [{trait.name}] - {trait.luckout.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
+                            <button class='inner' style={{ color: traitStyle(trait.name), 'font-size': "1em", background: '#000' }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.modal.replace('{enemy.name}', name).replace('{ascean.weaponOne.influences[0]}', influence())}</button>
                         </div>
                     )
                 })}
@@ -453,8 +449,8 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
     return ( // onClick={() => setShow(!show())}
         <>
         <Show when={show()}>
-        <div class='modal'>
-            <div class='border superCenter' style={{ 'font-size': "1.25em", overflow: 'auto', 'scrollbar-width': 'none', width: '60%' }}>
+        <div class='modal' style={{ "z-index": 2 }}>
+            <div class='border superCenter' style={{ 'font-size': "1.25em", "overflow-y": 'auto', 'scrollbar-width': 'none', width: '65%', "z-index": 2 }}>
             <div class='creature-heading wrap'>
                 <h1 style={{ margin: '3%' }}>Quests</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
@@ -464,7 +460,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
                 Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
                 <div style={{ 'font-size': "0.75em", margin: "5%" }}>
                 {quests().map((quest: Quest, index: number) => {
-                    return <div class='' style={{ margin: '3%' }}>
+                    return <div style={{ margin: '3%' }}>
                         <div class='dialog-buttons inner juiceNB' style={{ color: index % 2 === 0 ? 'gold' : 'white', 'font-size': "1em", background: '#000' }}>[{quest.title}]: {quest.description}</div>
                         <button class='highlight' onClick={() => {EventBus.emit('add-quest', {title:quest.title,enemy}); }} style={font('1em', 'green')}>Accept {quest.title}</button>
                     </div>

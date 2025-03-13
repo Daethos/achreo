@@ -176,7 +176,7 @@ export default class Settings {
         this.vibration = 100;
         this.actions = ["Attack", "Posture", "Roll", "Dodge", "Parry"];
         this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
-        this.totalSpecials = ["Invoke", "Consume"];
+        this.totalSpecials = [];
         this.prayer = "Buff";
         this.fps = {
             min: 5,

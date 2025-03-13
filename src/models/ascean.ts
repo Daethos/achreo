@@ -3,30 +3,30 @@ import { Weapons } from "../assets/db/weaponry";
 import Equipment, { mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { addAscean } from "../assets/db/db";
 import Quest from "../utility/quests";
 
 export default class Ascean {
     _id: string = uuidv4();
-    origin: string = 'Ashtre';
-    sex: string = 'Man';
-    mastery: string = 'achre';
+    origin: string = "Ashtre";
+    sex: string = "Man";
+    mastery: string = "achre";
     level: number = 1;
     experience: number = 0;
-    faith: string = 'Adherent';
+    faith: string = "Adherent";
     currency: { silver: number; gold: number; } = { silver: 0, gold: 0 };
     firewater: { current: number; max: number; } = { current: 5, max: 5 };
     health: { current: number; max: number; } = { current: 0, max: 0 };
-    name: string = 'Kreceus';
-    description: string = 'Apostle of Astra';
+    name: string = "Kreceus";
+    description: string = "Apostle of Astra";
     constitution: number = 12;
     strength: number = 10;
     agility: number = 12;
     achre: number = 16;
     caeren: number = 10;
     kyosir: number = 13;
-    imgUrl: string = '../assets/images/Asthre-Man.jpg';
+    imgUrl: string = "../assets/images/Asthre-Man.jpg";
     helmet: Equipment;
     chest: Equipment;
     legs: Equipment;
@@ -108,29 +108,29 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const pref = data.preference;
     const faith = data.faith;
     switch (pref) {
-        case 'Plate-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Plate Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Plate Cuirass (Starter)');
-            data.legs = Legs.find(item => item.name === 'Plate Greaves (Starter)');
-            data.shield = Shields.find(item => item.name === 'Pavise' && item.rarity === 'Common');
+        case "Plate-Mail":
+            data.helmet = Helmets.find(item => item.name === "Plate Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Plate Cuirass (Starter)");
+            data.legs = Legs.find(item => item.name === "Plate Greaves (Starter)");
+            data.shield = Shields.find(item => item.name === "Pavise" && item.rarity === "Common");
             break;
-        case 'Chain-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Chain Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Chain Armor (Starter)');
-            data.legs = Legs.find(item => item.name === 'Chain Greaves (Starter)');
-            data.shield = Shields.find(item => item.name === 'Scutum' && item.rarity === 'Common');
+        case "Chain-Mail":
+            data.helmet = Helmets.find(item => item.name === "Chain Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Chain Armor (Starter)");
+            data.legs = Legs.find(item => item.name === "Chain Greaves (Starter)");
+            data.shield = Shields.find(item => item.name === "Scutum" && item.rarity === "Common");
             break;
-        case 'Leather-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Leather Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Leather Brigandine (Starter)');
-            data.legs = Legs.find(item => item.name === 'Leather Sandals (Starter)');
-            data.shield = Shields.find(item => item.name === 'Heater' && item.rarity === 'Common');
+        case "Leather-Mail":
+            data.helmet = Helmets.find(item => item.name === "Leather Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Leather Brigandine (Starter)");
+            data.legs = Legs.find(item => item.name === "Leather Sandals (Starter)");
+            data.shield = Shields.find(item => item.name === "Heater" && item.rarity === "Common");
             break;
-        case 'Leather-Cloth':
-            data.helmet = Helmets.find(item => item.name === 'Cloth Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Cloth Robes (Starter)');
-            data.legs = Legs.find(item => item.name === 'Cloth Skirt (Starter)');
-            data.shield = Shields.find(item => item.name === 'Parma' && item.rarity === 'Common');
+        case "Leather-Cloth":
+            data.helmet = Helmets.find(item => item.name === "Cloth Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Cloth Robes (Starter)");
+            data.legs = Legs.find(item => item.name === "Cloth Skirt (Starter)");
+            data.shield = Shields.find(item => item.name === "Parma" && item.rarity === "Common");
             break;
         default:
             break;
@@ -141,68 +141,68 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const caeren = parseInt(data.caeren);
     const physical = strength + agility;
     const magical = achre + caeren;
-    if (faith === 'Adherent') {
+    if (faith === "Adherent") {
         if (physical > magical) {
             if (strength > agility) {
-                data.weaponOne = 'War Hammer';
-                data.weaponTwo = 'Sunshatter';
+                data.weaponOne = "War Hammer";
+                data.weaponTwo = "Sunshatter";
             } else if (strength < agility) {
-                data.weaponOne = 'Longsword';
-                data.weaponTwo = 'Sevashyr';
+                data.weaponOne = "Longsword";
+                data.weaponTwo = "Sevashyr";
             } else {
-                data.weaponOne = 'Claymore';
-                data.weaponTwo = 'Longbow';
+                data.weaponOne = "Claymore";
+                data.weaponTwo = "Longbow";
             };
         } else {
             if (achre > caeren) {
-                data.weaponOne = 'Astral Spear';
+                data.weaponOne = "Astral Spear";
                 data.weaponTwo = "Quor'eite Crush";
             } else if (achre < caeren) {
-                data.weaponOne = 'Ashfyre';
-                data.weaponTwo = 'Nyrolean Wave';
+                data.weaponOne = "Ashfyre";
+                data.weaponTwo = "Nyrolean Wave";
             } else {
-                data.weaponOne = 'Wildstrike';
-                data.weaponTwo = 'Nightmare';
+                data.weaponOne = "Wildstrike";
+                data.weaponTwo = "Nightmare";
             };
         };
     } else {
         if (physical > magical) {
             if (strength > agility) {
-                data.weaponOne = 'Daethic Halberd';
-                data.weaponTwo = 'Hush of Daethos';
+                data.weaponOne = "Daethic Halberd";
+                data.weaponTwo = "Hush of Daethos";
             } else if (strength < agility) {
-                data.weaponOne = 'Gladius';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Gladius";
+                data.weaponTwo = "Daethic Bow";
             } else {
-                data.weaponOne = 'Daethic Halberd';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Daethic Halberd";
+                data.weaponTwo = "Daethic Bow";
             };
         } else {
             if (achre > caeren) {
-                data.weaponOne = 'Tendril';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Tendril";
+                data.weaponTwo = "Daethic Bow";
             } else if (achre < caeren) {
-                data.weaponOne = 'Hush of Daethos';
-                data.weaponTwo = 'Tendril of Daethos';
+                data.weaponOne = "Hush of Daethos";
+                data.weaponTwo = "Tendril of Daethos";
             } else {
-                data.weaponOne = 'Blessed Dagger';
-                data.weaponTwo = 'Cursed Dagger';
+                data.weaponOne = "Blessed Dagger";
+                data.weaponTwo = "Cursed Dagger";
             };
         };
     };
-    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === 'Common'));
-    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === 'Common'));
+    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common"));
+    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common"));
     const helmet = data.helmet;
     const chest = data.chest;
     const legs = data.legs;
     const shield = data.shield;
-    const weaponThree = Weapons.find(item => item.rarity === 'Default');
+    const weaponThree = Weapons.find(item => item.rarity === "Default");
     const ringOne = Rings.find(ring => ring.name === "Empty Ring Slot");
     const ringTwo = Rings.find(ring => ring.name === "Empty Ring Slot Two");
-    const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
-    const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
+    const amulet = Amulets.find(amulet => amulet.rarity === "Default");
+    const trinket = Trinkets.find(trinket => trinket.rarity === "Default");
     if (!template) {
-        await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], 'Common');
+        await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], "Common");
     };
     
     if (template) {
@@ -260,29 +260,29 @@ function createTemplate(data: any): Ascean {
     const pref = data.preference;
     const faith = data.faith;
     switch (pref) {
-        case 'Plate-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Plate Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Plate Cuirass (Starter)');
-            data.legs = Legs.find(item => item.name === 'Plate Greaves (Starter)');
-            data.shield = Shields.find(item => item.name === 'Pavise' && item.rarity === 'Common');
+        case "Plate-Mail":
+            data.helmet = Helmets.find(item => item.name === "Plate Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Plate Cuirass (Starter)");
+            data.legs = Legs.find(item => item.name === "Plate Greaves (Starter)");
+            data.shield = Shields.find(item => item.name === "Pavise" && item.rarity === "Common");
             break;
-        case 'Chain-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Chain Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Chain Armor (Starter)');
-            data.legs = Legs.find(item => item.name === 'Chain Greaves (Starter)');
-            data.shield = Shields.find(item => item.name === 'Scutum' && item.rarity === 'Common');
+        case "Chain-Mail":
+            data.helmet = Helmets.find(item => item.name === "Chain Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Chain Armor (Starter)");
+            data.legs = Legs.find(item => item.name === "Chain Greaves (Starter)");
+            data.shield = Shields.find(item => item.name === "Scutum" && item.rarity === "Common");
             break;
-        case 'Leather-Mail':
-            data.helmet = Helmets.find(item => item.name === 'Leather Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Leather Brigandine (Starter)');
-            data.legs = Legs.find(item => item.name === 'Leather Sandals (Starter)');
-            data.shield = Shields.find(item => item.name === 'Heater' && item.rarity === 'Common');
+        case "Leather-Mail":
+            data.helmet = Helmets.find(item => item.name === "Leather Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Leather Brigandine (Starter)");
+            data.legs = Legs.find(item => item.name === "Leather Sandals (Starter)");
+            data.shield = Shields.find(item => item.name === "Heater" && item.rarity === "Common");
             break;
-        case 'Leather-Cloth':
-            data.helmet = Helmets.find(item => item.name === 'Cloth Helm (Starter)');
-            data.chest = Chests.find(item => item.name === 'Cloth Robes (Starter)');
-            data.legs = Legs.find(item => item.name === 'Cloth Skirt (Starter)');
-            data.shield = Shields.find(item => item.name === 'Parma' && item.rarity === 'Common');
+        case "Leather-Cloth":
+            data.helmet = Helmets.find(item => item.name === "Cloth Helm (Starter)");
+            data.chest = Chests.find(item => item.name === "Cloth Robes (Starter)");
+            data.legs = Legs.find(item => item.name === "Cloth Skirt (Starter)");
+            data.shield = Shields.find(item => item.name === "Parma" && item.rarity === "Common");
             break;
         default:
             break;
@@ -295,68 +295,68 @@ function createTemplate(data: any): Ascean {
     const physical = strength + agility;
     const magical = achre + caeren;
 
-    if (faith === 'Adherent') {
+    if (faith === "Adherent") {
         if (physical > magical) {
             if (strength > agility) {
-                data.weaponOne = 'War Hammer';
-                data.weaponTwo = 'Sunshatter';
+                data.weaponOne = "War Hammer";
+                data.weaponTwo = "Sunshatter";
             } else if (strength < agility) {
-                data.weaponOne = 'Longsword';
-                data.weaponTwo = 'Sevashyr';
+                data.weaponOne = "Longsword";
+                data.weaponTwo = "Sevashyr";
             } else {
-                data.weaponOne = 'Claymore';
-                data.weaponTwo = 'Longbow';
+                data.weaponOne = "Claymore";
+                data.weaponTwo = "Longbow";
             };
         } else {
             if (achre > caeren) {
-                data.weaponOne = 'Astral Spear';
+                data.weaponOne = "Astral Spear";
                 data.weaponTwo = "Quor'eite Crush";
             } else if (achre < caeren) {
-                data.weaponOne = 'Ashfyre';
-                data.weaponTwo = 'Nyrolean Wave';
+                data.weaponOne = "Ashfyre";
+                data.weaponTwo = "Nyrolean Wave";
             } else {
-                data.weaponOne = 'Wildstrike';
-                data.weaponTwo = 'Nightmare';
+                data.weaponOne = "Wildstrike";
+                data.weaponTwo = "Nightmare";
             };
         };
     } else {
         if (physical > magical) {
             if (strength > agility) {
-                data.weaponOne = 'Daethic Halberd';
-                data.weaponTwo = 'Hush of Daethos';
+                data.weaponOne = "Daethic Halberd";
+                data.weaponTwo = "Hush of Daethos";
             } else if (strength < agility) {
-                data.weaponOne = 'Hush';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Hush";
+                data.weaponTwo = "Daethic Bow";
             } else {
-                data.weaponOne = 'Daethic Halberd';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Daethic Halberd";
+                data.weaponTwo = "Daethic Bow";
             };
         } else {
             if (achre > caeren) {
-                data.weaponOne = 'Tendril';
-                data.weaponTwo = 'Daethic Bow';
+                data.weaponOne = "Tendril";
+                data.weaponTwo = "Daethic Bow";
             } else if (achre < caeren) {
-                data.weaponOne = 'Hush of Daethos';
-                data.weaponTwo = 'Tendril of Daethos';
+                data.weaponOne = "Hush of Daethos";
+                data.weaponTwo = "Tendril of Daethos";
             } else {
-                data.weaponOne = 'Blessed Dagger';
-                data.weaponTwo = 'Cursed Dagger';
+                data.weaponOne = "Blessed Dagger";
+                data.weaponTwo = "Cursed Dagger";
             };
         };
     };
 
-    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === 'Common'));
-    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === 'Common'));
+    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common"));
+    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common"));
     const helmet = data.helmet;
     const chest = data.chest;
     const legs = data.legs;
     const shield = data.shield;
 
-    const weaponThree = Weapons.find(item => item.rarity === 'Default');
-    const ringOne = Rings.find(ring => ring.rarity === 'Default');
-    const ringTwo = Rings.find(ring => ring.rarity === 'Default');
-    const amulet = Amulets.find(amulet => amulet.rarity === 'Default');
-    const trinket = Trinkets.find(trinket => trinket.rarity === 'Default');
+    const weaponThree = Weapons.find(item => item.rarity === "Default");
+    const ringOne = Rings.find(ring => ring.rarity === "Default");
+    const ringTwo = Rings.find(ring => ring.rarity === "Default");
+    const amulet = Amulets.find(amulet => amulet.rarity === "Default");
+    const trinket = Trinkets.find(trinket => trinket.rarity === "Default");
     
     const ascean = new Ascean({
         ...data,

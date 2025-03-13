@@ -781,7 +781,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Ahn'are Apostle",
         reputation: 0,
@@ -789,7 +789,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Anashtre",
         reputation: 0,
@@ -797,7 +797,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Astral Apostle",
         reputation: 0,
@@ -805,7 +805,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Cambiren Druid",
         reputation: 0,
@@ -813,7 +813,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Chiomic Jester",
         reputation: 0,
@@ -821,7 +821,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Daethic Inquisitor",
         reputation: 0,
@@ -829,7 +829,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Daethic Knight",
         reputation: 0,
@@ -837,7 +837,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Fang Duelist",
         reputation: 0,
@@ -845,7 +845,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Fang Mercenary",
         reputation: 0,
@@ -853,7 +853,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Firesworn",
         reputation: 0,
@@ -861,7 +861,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Fyers Occultist",
         reputation: 0,
@@ -869,7 +869,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Ilire Occultist",
         reputation: 0,
@@ -877,7 +877,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Kingsman",
         reputation: 0,
@@ -885,7 +885,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Kyn'gian Shaman",
         reputation: 0,
@@ -893,7 +893,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Kyrisian Occultist",
         reputation: 0,
@@ -901,15 +901,15 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
-        name: "Licivitan Soldier",
+        name: "Li'ivi Legionnaire",
         reputation: 0,
         named: false,
         aggressive: true,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Ma'ier Occultist",
         reputation: 0,
@@ -917,7 +917,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Marauder",
         reputation: 0,
@@ -925,7 +925,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Northren Wanderer",
         reputation: 0,
@@ -933,7 +933,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Nyren",
         reputation: 0,
@@ -941,7 +941,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Old Li'ivi Occultist",
         reputation: 0,
@@ -949,7 +949,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Quor'eite Occultist",
         reputation: 0,
@@ -957,7 +957,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Quor'eite Stalker",
         reputation: 0,
@@ -965,7 +965,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Rahvrehcur",
         reputation: 0,
@@ -973,7 +973,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Se'dyrist",
         reputation: 0,
@@ -981,7 +981,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Sedyreal Guard",
         reputation: 0,
@@ -989,7 +989,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Se'va Shrieker",
         reputation: 0,
@@ -997,7 +997,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Shrygeian Bard",
         reputation: 0,
@@ -1005,7 +1005,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Southron Wanderer",
         reputation: 0,
@@ -1013,7 +1013,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Soverain Blood Cloak",
         reputation: 0,
@@ -1021,7 +1021,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Tshaeral Shaman",
         reputation: 0,
@@ -1029,7 +1029,7 @@ const initFactions: faction[] = [
         aggressive: true,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, { // ===== Named Enemies ===== 
         name: "Ah'gani",
         reputation: 0,
@@ -1037,7 +1037,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Ashreu'ul",
         reputation: 0,
@@ -1045,7 +1045,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Cyrian Shyne",
         reputation: 0,
@@ -1053,7 +1053,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Daetheus",
         reputation: 0,
@@ -1061,7 +1061,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Dorien Caderyn",
         reputation: 0,
@@ -1069,7 +1069,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Eugenes",
         reputation: 0,
@@ -1077,7 +1077,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Evrio Lorian Peroumes",
         reputation: 0,
@@ -1085,7 +1085,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Fierous Ashfyre",
         reputation: 0,
@@ -1093,7 +1093,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Garris Ashenus",
         reputation: 0,
@@ -1101,7 +1101,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "King Mathyus Caderyn",
         reputation: 0,
@@ -1109,7 +1109,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Kreceus",
         reputation: 0,
@@ -1117,7 +1117,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Laetrois Ath'Shaorah",
         reputation: 0,
@@ -1125,7 +1125,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Leaf",
         reputation: 0,
@@ -1133,7 +1133,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Lorian",
         reputation: 0,
@@ -1141,7 +1141,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Mavros Ilios",
         reputation: 0,
@@ -1149,7 +1149,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Mirio",
         reputation: 0,
@@ -1157,7 +1157,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Quor'estes",
         reputation: 0,
@@ -1165,7 +1165,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Relien Myelle",
         reputation: 0,
@@ -1173,7 +1173,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Sera Lorian",
         reputation: 0,
@@ -1181,7 +1181,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Devoted',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Sky",
         reputation: 0,
@@ -1189,7 +1189,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Synaethi Spiras",
         reputation: 0,
@@ -1197,7 +1197,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Torreous Ashfyre",
         reputation: 0,
@@ -1205,7 +1205,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     }, {
         name: "Vincere",
         reputation: 0,
@@ -1213,7 +1213,7 @@ const initFactions: faction[] = [
         aggressive: false,
         betrayed: false,
         faith: 'Adherent',
-        dialog: 25,
+        dialog: 5,
     },
 ];
 

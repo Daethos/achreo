@@ -8,42 +8,40 @@ const QUESTING = {
     PLAYER_THRESHOLD_TWO: 8,
     EXPERIENCE_MULTIPLIER: 500,
     SILVER_ADDED: 25,
-    SILVER_MULTIPLIER: 10,
+    SILVER_MULTIPLIER: 15,
 };
 
 type FETCH = {
-    id: 'fetch';
+    id: "fetch";
     current: number;
     total: number;
     [key: string]: number | string;
 };
 
 type SOLVE = {
-    id: 'solve';
+    id: "solve";
     solved: boolean;
     [key: string]: boolean | string;
 };
 
 const initFetch: FETCH = {
-    id: 'fetch',
+    id: "fetch",
     current: 0,
     total: 5
 };
 
 const initSolve: SOLVE = {
-    id: 'solve',
+    id: "solve",
     solved: false,
 };
 
 export function replaceChar(str: string, rep: string): string {
-    const yes = str?.split('').find((char: string) => char === '{');
+    const yes = str?.split("").find((char: string) => char === "{");
     if (yes) {
-        const replace = str?.replace('{name}', rep);
+        const replace = str?.replace("{name}", rep);
         return replace; 
     };
     return str;
-    // ? showQuest()?.quest?.requirements.description?.replace('{name}', showQuest()?.quest?.giver.name) 
-    // : showQuest()?.quest?.requirements.description}
 };
 
 export default class QuestManager {
@@ -57,7 +55,7 @@ export default class QuestManager {
     [key: string]: any;
 };
 
-export const initQuests = new QuestManager('quest');
+export const initQuests = new QuestManager("quest");
 export const createQuests = (id: string): QuestManager => new QuestManager(id);
 
 export class Quest {
@@ -109,12 +107,12 @@ export class Quest {
     };
 
     private getDescription(quest: any) {
-        const article = ['a', 'e', 'i', 'o', 'u'].includes(quest.giver.name[0].toLowerCase()) ? "an" : "a";
+        const article = ["a", "e", "i", "o", "u"].includes(quest.giver.name[0].toLowerCase()) ? "an" : "a";
         const namelessDescriptors = ["druid", "shaman", "apostle", "jester", "occultist", "stalker", "guard", "knight", "daethic", "bard", "kingsman", "firesword", "shrieker", "northren", "southron", "marauder", "fang", "soldier", "soverain", "rahvrecur", "se'dyrist", "nyren"];
         const nameParts = quest.giver.name.toLowerCase().split(" ");
         const hasDescriptor = nameParts.some((part: string) => namelessDescriptors.includes(part));
         const nameless = hasDescriptor ? true : false;
-        const description = `${quest.description}. You have been tasked with ${quest.title} by ${nameless ? article + ' ' : ''}${quest.giver.name}.`;
+        const description = `${quest.description}. You have been tasked with ${quest.title} by ${nameless ? article + " " : ""}${quest.giver.name}.`;
         return description;
     };
 
@@ -124,7 +122,7 @@ export class Quest {
     };
 
     private getItems(level: number) {
-        const choices = ['Weapon', 'Weapon', 'Weapon', 'Armor', 'Armor', 'Armor', 'Jewelry', 'Shield'];
+        const choices = ["Weapon", "Weapon", "Weapon", "Armor", "Armor", "Armor", "Jewelry", "Shield"];
         const items = [];
         items.push(choices[Math.floor(Math.random() * choices.length)]);
         if (level >= QUESTING.PLAYER_THRESHOLD_ONE) {
@@ -348,7 +346,7 @@ export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, a
     try {
         const template = QUEST_TEMPLATES.filter(quest => quest.title === title)[0];
         const rewards = template.reward.filter((r: string) => SPECIAL[ascean.mastery as keyof typeof SPECIAL].includes(r));
-        const rep = reputation?.factions?.find(faction => faction.name === enemy.name)?.reputation ?? 0;
+        // const rep = reputation?.factions?.find(faction => faction.name === enemy.name)?.reputation ?? 0;
         const prospect = {
             giver: enemy,
             mastery: enemy.mastery,
@@ -356,7 +354,7 @@ export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, a
             description: template.description,
             requirements: {
                 level: enemy.level,
-                reputation: rep + (enemy.level * 2),
+                reputation: enemy.level * 5,
                 description: template.requirements.description,
                 technical: template.requirements.technical
             },
@@ -364,6 +362,6 @@ export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, a
         };
         return new Quest(prospect);
     } catch (err) {
-        console.warn(err, 'Error Getting Quest');
+        console.warn(err, "Error Getting Quest");
     };
 };

@@ -342,11 +342,10 @@ export const getQuests = (name: string) => {
     return QUEST_TEMPLATES.filter(quest => quest.name.includes(name));
 };
 
-export const getQuest = (title: string, enemy: Ascean, reputation: Reputation, ascean: Ascean): Quest | undefined => {
+export const getQuest = (title: string, enemy: Ascean, ascean: Ascean): Quest | undefined => {
     try {
         const template = QUEST_TEMPLATES.filter(quest => quest.title === title)[0];
         const rewards = template.reward.filter((r: string) => SPECIAL[ascean.mastery as keyof typeof SPECIAL].includes(r));
-        // const rep = reputation?.factions?.find(faction => faction.name === enemy.name)?.reputation ?? 0;
         const prospect = {
             giver: enemy,
             mastery: enemy.mastery,

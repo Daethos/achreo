@@ -323,7 +323,7 @@ export default function App() {
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
         try {
             const { title, enemy } = quest;
-            const newQuest = getQuest(title, enemy, reputation(), ascean());
+            const newQuest = getQuest(title, enemy, ascean());
             const newQuestManager: QuestManager = { 
                 ...quests(),
                 quests: quests().quests.length > 0 

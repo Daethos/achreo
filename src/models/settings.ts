@@ -70,7 +70,8 @@ export default class Settings {
     public difficulty: {
         arena: boolean;
         aggression: number; 
-        aim: boolean; 
+        aggressionImmersion: boolean;
+        aim: boolean;
         computer: boolean;
         special: number;
         tidbits: boolean; 
@@ -223,6 +224,7 @@ export default class Settings {
         };
         this.difficulty = {
             arena: true,
+            aggressionImmersion: false,
             aggression: 0.5,
             aim: false,
             computer: false,

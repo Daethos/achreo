@@ -166,10 +166,17 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         EventBus.emit('update-enemy-aggression', e.target.value);
     };
 
-    // async function handleComputerCombat() {
-    //     const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
-    //     await saveSettings(newSettings);
-    // };
+    
+    async function handleAggressionImmersion() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, aggressionImmersion: !settings().difficulty.aggressionImmersion } };
+        EventBus.emit('update-enemy-aggression-immersion', !settings().difficulty.aggressionImmersion);
+        await saveSettings(newSettings);
+    };
+
+    async function handleComputerCombat() {
+        const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
+        await saveSettings(newSettings);
+    };
 
     async function handleArenaCombat() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, arena: !settings().difficulty.arena } };        
@@ -380,11 +387,6 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             </Match>
             <Match when={settings().control === CONTROLS.DIFFICULTY}>
                 <div class='center creature-heading wrap' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                    {/* <div style={font('1em', '#fdf6d8')}>
-                        <h1 style={font('1.25em')}>Computer Combat</h1>
-                        <button class='gold highlight' onClick={() => handleComputerCombat()}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
-                    </div>
-                    <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Combat With Each Other (Not Yet Implemented)]</div> */}
 
                     <h1 onClick={() => resetFrame('combat', !frame().combat)} style={font('1.25em')}>Combat</h1>
                     <Collapse value={frame().combat} class='my-transition'>
@@ -411,13 +413,30 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
 
                         <h1 onClick={() => resetDifficulty('enemyAggression', !difficulty().enemyAggression)} style={font('0.85em')}>Enemy Aggression</h1>
                         <Collapse value={difficulty().enemyAggression} class='my-transition'>
+                        <p>Enemies May Always Attack From Accidental Damage.</p>
+                        <div style={font('0.85em', '#fdf6d8')}>
+                            <h1 style={font('1.25em')}>Computer Combat</h1>
+                            <button class='gold highlight' onClick={() => handleComputerCombat()}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
+                        </div>
+                        <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Casual Combat With Each Other On Awareness / Contact.]</div>
+                            <div style={font('0.85em')}>
+                            <h1 style={font('1.25em')}>Immersion</h1>
+                            <button class="highlight" onClick={handleAggressionImmersion} style={{ color: settings().difficulty.aggressionImmersion ? "red" :  "gold" }}>
+                                {settings().difficulty.aggressionImmersion ? "Enabled" : "Disabled"}
+                            </button>
+                            </div>
+                            <div style={font('0.5em')}>[Aggressive Enemy Immersion: Your disposition and their willingness to attack is influenced by your reputation with that kind of enemy.]</div>
+                        </Collapse> 
+                        
+                        <Collapse value={difficulty().enemyAggression} class='my-transition'>
                             <div style={font('0.85em', '#fdf6d8')}>
+                            <h1 style={font('1.25em')}>Occurrence</h1>
                             <span class='gold'>{settings().difficulty.aggression * 100}%</span> <br />
                             <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
                             </div>
-                            <div style={font('0.5em')}>[Aggressive Enemy Occurrence: 0 - 100%]</div>
-                        </Collapse>
-
+                            <div style={font('0.5em')}>[Aggressive Enemy Occurrence: Determined By Chance If You Are Not Immersed. 0 - 100%]</div>
+                        </Collapse> 
+                        {/* handleAggressionImmersion */}
                         <h1 onClick={() => resetDifficulty('enemyInteractive', !difficulty().enemyInteractive)} style={font('0.85em')}>Enemy Interactive (Combat)</h1>
                         <Collapse value={difficulty().enemyInteractive} class='my-transition'>
                             <div style={font('0.85em', '#fdf6d8')}>

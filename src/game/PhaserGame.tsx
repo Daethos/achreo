@@ -388,13 +388,13 @@ export default function PhaserGame (props: IProps) {
         newReputation.factions.forEach((faction: faction) => {
             if (enemies.includes(faction.name)) {
                 faction.reputation = Math.min(faction.reputation + 1, 50);
-                if (faction.reputation >= 10 && faction.aggressive === true) {
+                if (faction.reputation > 0 && faction.aggressive === true) {
                     faction.aggressive = false;
                 };
             };
             if (faction.name === computer.name) {
-                faction.reputation = Math.max(0, faction.reputation - 3);
-                if (faction.reputation < 10 && !faction.aggressive) {
+                faction.reputation = Math.max(-100, faction.reputation - 3);
+                if (faction.reputation <= 0 && !faction.aggressive) {
                     faction.aggressive = true;
                 };
             };
@@ -409,7 +409,7 @@ export default function PhaserGame (props: IProps) {
             if (faction.name === giver) {
                 faction.reputation = Math.min(faction.reputation + 10, 100);
             };
-            if (faction.aggressive && faction.reputation >= 10) {
+            if (faction.aggressive && faction.reputation > 0) {
                 faction.aggressive = false;
             };
         });

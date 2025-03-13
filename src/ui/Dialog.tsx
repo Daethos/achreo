@@ -479,31 +479,31 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         let playerPersuasion: number = 0;
         let enemyPersuasion: number = 0;
         switch (persuasion) {
-            case 'Arbituous': // Ethos
+            case "Arbituous": // Ethos
                 playerPersuasion = combat()?.player?.constitution as number + (combat()?.player?.achre as number);
                 enemyPersuasion = combat()?.computer?.constitution as number + (combat()?.computer?.achre as number);
                 break;
-            case 'Chiomic': // Humor
+            case "Chiomic": // Humor
                 playerPersuasion = combat()?.player?.achre as number + (combat()?.player?.kyosir as number);
                 enemyPersuasion = combat()?.computer?.achre as number + (combat()?.computer?.kyosir as number);
                 break;
-            case 'Kyr\'naic': // Apathy
+            case "Kyr'naic": // Apathy
                 playerPersuasion = combat()?.player?.constitution as number + (combat()?.player?.kyosir as number);
                 enemyPersuasion = combat()?.computer?.constitution as number + (combat()?.computer?.kyosir as number);
                 break;
-            case 'Lilosian': // Peace
+            case "Lilosian": // Peace
                 playerPersuasion = combat()?.player?.constitution as number + (combat()?.player?.caeren as number);
                 enemyPersuasion = combat()?.computer?.constitution as number + (combat()?.computer?.caeren as number);
                 break;
-            case 'Ilian': // Heroism
+            case "Ilian": // Heroism
                 playerPersuasion = combat()?.player?.constitution as number + (combat()?.player?.strength as number);
                 enemyPersuasion = combat()?.computer?.constitution as number + (combat()?.computer?.strength as number);
                 break;
-            case 'Fyeran': // Seer
+            case "Fyeran": // Seer
                 playerPersuasion = combat()?.player?.achre as number + (combat()?.player?.caeren as number);
                 enemyPersuasion = combat()?.computer?.achre as number + (combat()?.computer?.caeren as number);
                 break;
-            case 'Shaorahi': // Awe
+            case "Shaorahi": // Awe
                 playerPersuasion = combat()?.player?.strength as number + (combat()?.player?.caeren as number);
                 enemyPersuasion = combat()?.computer?.strength as number + (combat()?.computer?.caeren as number);
                 break;
@@ -520,13 +520,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             enemyPersuasion *= 1.1; 
         };
         if (playerPersuasion >= enemyPersuasion) {
-            EventBus.emit('persuasion', { persuasion, persuaded: true });
+            EventBus.emit("persuasion", { persuasion, persuaded: true });
             const num = Math.floor(Math.random() * 2); 
-            setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', combat()?.player?.name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)}`);
+            setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`);
         } else {
             checkingLoot();
-            EventBus.emit('persuasion', { persuasion, persuaded: false });
-            setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', combat()?.player?.name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
+            EventBus.emit("persuasion", { persuasion, persuaded: false });
+            setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
             const timeout = setTimeout(() => {
                 engageCombat(combat()?.enemyID);
                 return () => clearTimeout(timeout);    
@@ -539,19 +539,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         let enemyLuck: number = 0;
         const enemy = combat()?.computer as Ascean;
         switch (luck) {
-            case 'Arbituous': // Rhetoric
+            case "Arbituous": // Rhetoric
                 playerLuck = ascean().constitution + ascean().achre;
                 enemyLuck = enemy.constitution + enemy.achre;
                 break;
-            case 'Chiomic': // Shatter
+            case "Chiomic": // Shatter
                 playerLuck = ascean().achre + ascean().kyosir;
                 enemyLuck = enemy.achre + enemy.kyosir;
                 break;
-            case 'Kyr\'naic': // Apathy
+            case "Kyr'naic": // Apathy
                 playerLuck = ascean().constitution + ascean().kyosir;
                 enemyLuck = enemy.constitution + enemy.kyosir;
                 break;
-            case 'Lilosian': // Peace
+            case "Lilosian": // Peace
                 playerLuck = ascean().constitution + ascean().caeren;
                 enemyLuck = enemy.constitution + enemy.caeren;
                 break;
@@ -576,7 +576,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 (combat()?.playerAttributes?.rawKyosir as number));
             const newState: LevelSheet = { 
                 ...asceanState(), 
-                avarice: combat().prayerData.length > 0 ? combat().prayerData.includes('Avarice') : false, 
+                avarice: combat().prayerData.length > 0 ? combat().prayerData.includes("Avarice") : false, 
                 currency: ascean().currency,
                 firewater: ascean().firewater,
                 currentHealth: combat().newPlayerHealth,
@@ -584,15 +584,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 opponentExp: Math.min(experience, combat()?.player?.level! * 1000),
             };
             const loot = { enemyID: combat().enemyID, level: combat().computer?.level as number };
-            EventBus.emit('gain-experience', newState);
-            EventBus.emit('enemy-loot', loot);
-            EventBus.emit('luckout', { luck, luckout: true });
+            EventBus.emit("gain-experience", newState);
+            EventBus.emit("enemy-loot", loot);
+            EventBus.emit("luckout", { luck, luckout: true });
             const num = Math.floor(Math.random() * 2);
-            setLuckoutString(`${luckoutTrait?.luckout?.success[num].replace('{enemy.name}', enemy.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', ascean().name).replace('{enemy.weaponOne.influences[0]}', enemy.weaponOne.influences?.[0]).replace('{enemy.faith}', enemy.faith).replace('{article}', enemyArticle)}`);
+            setLuckoutString(`${luckoutTrait?.luckout?.success[num].replace("{enemy.name}", enemy.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", ascean().name).replace("{enemy.weaponOne.influences[0]}", enemy.weaponOne.influences?.[0]).replace("{enemy.faith}", enemy.faith).replace("{article}", enemyArticle)}`);
         } else {
-            EventBus.emit('luckout', { luck, luckout: false });
+            EventBus.emit("luckout", { luck, luckout: false });
             checkingLoot();
-            setLuckoutString(`${luckoutTrait?.luckout?.failure.replace('{enemy.name}', enemy.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', ascean().name).replace('{enemy.weaponOne.influences[0]}', enemy.weaponOne.influences?.[0]).replace('{enemy.faith}', enemy.faith).replace('{article}', enemyArticle)} \n\n Prepare for combat, ${ascean().name}, and may your weapon strike surer than your words.`);
+            setLuckoutString(`${luckoutTrait?.luckout?.failure.replace("{enemy.name}", enemy.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", ascean().name).replace("{enemy.weaponOne.influences[0]}", enemy.weaponOne.influences?.[0]).replace("{enemy.faith}", enemy.faith).replace("{article}", enemyArticle)} \n\n Prepare for combat, ${ascean().name}, and may your weapon strike surer than your words.`);
             const timeout = setTimeout(() => {
                 engageCombat(combat()?.enemyID);
                 return () => clearTimeout(timeout);    
@@ -606,7 +606,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             secondary: g?.traits?.secondary,
             tertiary: g?.traits?.tertiary,
         };
-        const lTraits = ['Lilosian', 'Arbituous', "Kyr'naic", 'Chiomic'];
+        const lTraits = ["Lilosian", "Arbituous", "Kyr'naic", "Chiomic"];
         const mTraits = Object.values(traits).filter(trait => lTraits.includes(trait?.name));
         if (mTraits.length === 0) {
             setLuckout(false);
@@ -617,7 +617,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         if (combat().luckoutScenario) {
             const num = Math.floor(Math.random() * 2); 
             const luckoutTrait = luckoutTraits().find((trait: { name: string; }) => trait.name === combat()?.playerTrait);
-            setLuckoutString(`${luckoutTrait?.luckout.success[num].replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', ascean().name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)}`);
+            setLuckoutString(`${luckoutTrait?.luckout.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", ascean().name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`);
         };
     };
 
@@ -627,7 +627,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             secondary: g?.traits?.secondary,
             tertiary: g?.traits?.tertiary,
         };
-        const pTraits = ['Ilian', 'Lilosian', 'Arbituous', "Kyr'naic", 'Chiomic', 'Fyeran', 'Shaorahi', 'Tashaeral'];
+        const pTraits = ["Ilian", "Lilosian", "Arbituous", "Kyr'naic", "Chiomic", "Fyeran", "Shaorahi", "Tashaeral"];
         const mTraits = Object.values(traits).filter(trait => pTraits.includes(trait?.name));
         if (mTraits.length === 0) {
             setPersuasion(false);
@@ -638,7 +638,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         if (combat().persuasionScenario) {
             const num = Math.floor(Math.random() * 2); 
             const persuasionTrait = persuasionTraits().find((trait: { name: string; }) => trait.name === combat()?.playerTrait);
-            setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace('{enemy.name}', combat()?.computer?.name).replace('{ascean.weaponOne.influences[0]}', influence()).replace('{ascean.name}', combat()?.player?.name).replace('{enemy.weaponOne.influences[0]}', combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)}`);
+            setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`);
         };
     }; 
 
@@ -663,28 +663,28 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkingLoot = (): void => {
         if (game().merchantEquipment.length > 0) {
-            EventBus.emit('delete-equipment', { equipment: game().merchantEquipment });
-            EventBus.emit('blend-game', { merchantEquipment: [] });
+            EventBus.emit("delete-equipment", { equipment: game().merchantEquipment });
+            EventBus.emit("blend-game", { merchantEquipment: [] });
         };
     };
 
     const handleIntent = (intent: string): void => {
-        let clean: string = '';
+        let clean: string = "";
         switch (intent) {
-            case 'Local Lore':
-                clean = 'localLore';
+            case "Local Lore":
+                clean = "localLore";
                 break;
-            case 'World Lore':
-                clean = 'worldLore';
+            case "World Lore":
+                clean = "worldLore";
                 break;
-            case 'Local Whispers':
-                clean = 'localWhispers';
+            case "Local Whispers":
+                clean = "localWhispers";
                 break;
             default:
                 clean = intent;
                 break;
         };
-        EventBus.emit('blend-game', { currentIntent: clean });
+        EventBus.emit("blend-game", { currentIntent: clean });
     };
 
     const handleInstitutionalConcept = (con: string) => {
@@ -729,47 +729,47 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     
     const engageCombat = (id: string): void => {
         checkingLoot();
-        EventBus.emit('aggressive-enemy', { id, isAggressive: true });
-        EventBus.emit('blend-game', { showDialog: false });
-        EventBus.emit('update-pause', false);
-        EventBus.emit('action-button-sound');
-        EventBus.emit('engage');
+        EventBus.emit("aggressive-enemy", { id, isAggressive: true });
+        EventBus.emit("blend-game", { showDialog: false });
+        EventBus.emit("update-pause", false);
+        EventBus.emit("action-button-sound");
+        EventBus.emit("engage");
     };
 
     const clearDuel = () => {
-        EventBus.emit('show-dialogue');
-        EventBus.emit('action-button-sound');
-        EventBus.emit('update-pause', false);
+        EventBus.emit("show-dialogue");
+        EventBus.emit("action-button-sound");
+        EventBus.emit("update-pause", false);
     };
 
-    const refillFlask = () => console.log('refilling flask!');
+    const refillFlask = () => console.log("refilling flask!");
 
     const getLoot = async (type: string, armor?: string): Promise<void> => {
         if (game()?.merchantEquipment.length > 0) {
-            EventBus.emit('delete-merchant-equipment', { equipment: game()?.merchantEquipment });
+            EventBus.emit("delete-merchant-equipment", { equipment: game()?.merchantEquipment });
         };
         try {
             let merchantEquipment: any;
-            if (type === 'physical-weapon') {
+            if (type === "physical-weapon") {
                 merchantEquipment = await getPhysicalWeaponEquipment(combat()?.player?.level as number);
-            } else if (type === 'magical-weapon') {
+            } else if (type === "magical-weapon") {
                 merchantEquipment = await getMagicalWeaponEquipment(combat()?.player?.level as number);
-            } else if (type === 'armor') {
+            } else if (type === "armor") {
                 merchantEquipment = await getArmorEquipment(combat()?.player?.level as number);
-            } else if (type === 'jewelry') {
+            } else if (type === "jewelry") {
                 merchantEquipment = await getJewelryEquipment(combat()?.player?.level as number);
-            } else if (type === 'general') {
+            } else if (type === "general") {
                 merchantEquipment = await getMerchantEquipment(combat()?.player?.level as number);
-            } else if (type === 'cloth') {
+            } else if (type === "cloth") {
                 merchantEquipment = await getClothEquipment(combat()?.player?.level as number);
             } else if (armor) {
                 merchantEquipment = await getSpecificArmor(combat()?.player?.level as number, armor);
             };
             setMerchantTable(merchantEquipment);
             setShowBuy(true);
-            EventBus.emit('blend-game', { merchantEquipment });
+            EventBus.emit("blend-game", { merchantEquipment });
         } catch (err) {
-            console.warn(err, '--- Error Getting Loot! ---');
+            console.warn(err, "--- Error Getting Loot! ---");
         };
     };
 
@@ -777,7 +777,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         try {
             const refresh = async () => {
                 const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-                if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
+                if (key === "Kyrisian" || key === "Sedyreal" || key === "Kreceus" || key === "Ashreu'ul") {
                     setSpecialMerchant(true);
                     return;
                 };
@@ -785,7 +785,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
             refresh();
         } catch (err) {
-            console.warn(err, 'Error Refreshing Loot');
+            console.warn(err, "Error Refreshing Loot");
         };
     };
 
@@ -795,7 +795,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         if (game()?.merchantEquipment.length > 0) return;
 
         const key = KEYS[combat().computer?.name as keyof typeof KEYS];
-        if (key === 'Kyrisian' || key === 'Sedyreal' || key === 'Kreceus' || key === "Ashreu'ul") {
+        if (key === "Kyrisian" || key === "Sedyreal" || key === "Kreceus" || key === "Ashreu'ul") {
             setSpecialMerchant(true);
             return;
         };
@@ -810,38 +810,38 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function sellInventory() {
-        EventBus.emit('alert', { header: 'Selling Item In Inventory', body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
-        EventBus.emit('sell-item', sellItem());    
+        EventBus.emit("alert", { header: "Selling Item In Inventory", body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
+        EventBus.emit("sell-item", sellItem());    
     };
 
     async function handleUpgradeItem() {
-        let type = '';
-        if (forge()?.grip) type = 'weaponOne';
-        if (forge()?.name.includes('Hood') || forge()?.name.includes('Helm') || forge()?.name.includes('Mask')) type = 'helmet';
-        if (forge()?.name.includes('Cuirass') || forge()?.name.includes('Robes') || forge()?.name.includes('Armor')) type = 'chest';
-        if (forge()?.name.includes('Greaves') || forge()?.name.includes('Pants') || forge()?.name.includes('Legs')) type = 'legs';
-        if (forge()?.name.includes('Amulet') || forge()?.name.includes('Necklace')) type = 'amulet';
-        if (forge()?.name.includes('Ring')) type = 'ringOne';
-        if (forge()?.name.includes('Trinket')) type = 'trinket';
-        if (forge()?.type.includes('Shield')) type = 'shield';
+        let type = "";
+        if (forge()?.grip) type = "weaponOne";
+        if (forge()?.name.includes("Hood") || forge()?.name.includes("Helm") || forge()?.name.includes("Mask")) type = "helmet";
+        if (forge()?.name.includes("Cuirass") || forge()?.name.includes("Robes") || forge()?.name.includes("Armor")) type = "chest";
+        if (forge()?.name.includes("Greaves") || forge()?.name.includes("Pants") || forge()?.name.includes("Legs")) type = "legs";
+        if (forge()?.name.includes("Amulet") || forge()?.name.includes("Necklace")) type = "amulet";
+        if (forge()?.name.includes("Ring")) type = "ringOne";
+        if (forge()?.name.includes("Trinket")) type = "trinket";
+        if (forge()?.type.includes("Shield")) type = "shield";
 
-        if (forge()?.rarity === 'Common' && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
+        if (forge()?.rarity === "Common" && ascean()?.currency?.gold < GET_FORGE_COST.Common) {
             return;
-        } else if (forge()?.rarity === 'Uncommon' && ascean()?.currency?.gold < 3) {
+        } else if (forge()?.rarity === "Uncommon" && ascean()?.currency?.gold < 3) {
             return;
-        } else if (forge()?.rarity === 'Rare' && ascean()?.currency?.gold < 12) {
+        } else if (forge()?.rarity === "Rare" && ascean()?.currency?.gold < 12) {
             return;
-        } else if (forge()?.rarity === 'Epic' && ascean()?.currency?.gold < 60) {
+        } else if (forge()?.rarity === "Epic" && ascean()?.currency?.gold < 60) {
             return;
-        } else if (forge()?.rarity === 'Legendary' && ascean()?.currency?.gold < 300) {
+        } else if (forge()?.rarity === "Legendary" && ascean()?.currency?.gold < 300) {
             return;
-        // } else if (forge()?.rarity === 'Mythic' && ascean()?.currency?.gold < 1500) {
+        // } else if (forge()?.rarity === "Mythic" && ascean()?.currency?.gold < 1500) {
         //     return;
-        // } else if (forge()?.rarity === 'Divine' && ascean()?.currency?.gold < 7500) {
+        // } else if (forge()?.rarity === "Divine" && ascean()?.currency?.gold < 7500) {
         //     return;
-        // } else if (forge()?.rarity === 'Ascended' && ascean()?.currency?.gold < 37500) {
+        // } else if (forge()?.rarity === "Ascended" && ascean()?.currency?.gold < 37500) {
         //     return;
-        // } else if (forge()?.rarity === 'Godly' && ascean()?.currency?.gold < 225000) {
+        // } else if (forge()?.rarity === "Godly" && ascean()?.currency?.gold < 225000) {
         //     return;
         };
         try {
@@ -856,16 +856,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 inventoryType: type,
                 upgradeMatches: match,
             };
-            EventBus.emit('upgrade-item', data);
-            EventBus.emit('play-equip');
+            EventBus.emit("upgrade-item", data);
+            EventBus.emit("play-equip");
             setForgeModalShow(false);
         } catch (err) {
-            console.warn(err, '<- Error upgrading item');
+            console.warn(err, "<- Error upgrading item");
         };
     };
 
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {border: `0.15em solid ${getRarityColor(rarity)}`, 'background-color': 'transparent'};
+        return {border: `0.15em solid ${getRarityColor(rarity)}`, "background-color": "transparent"};
     };
 
     function itemForge(item: Equipment) {
@@ -882,8 +882,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function specialMerchantStyle(animation: string) {
         return {
-            'font-weight': 700,
-            display: 'block',
+            "font-weight": 700,
+            display: "block",
             margin: "10% auto",
             padding: "5%",
             animation
@@ -891,13 +891,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function changeEnemyToParty() {
-        EventBus.emit('add-party', {name: combat().computer?.name, level: combat().computer?.level});
-        EventBus.emit('despawn-enemy-to-party', combat().enemyID);
-        EventBus.emit('clear-enemy');
-        EventBus.emit('action-button-sound');
-        EventBus.emit('blend-game', { showDialog: false });
-        EventBus.emit('update-pause', false);
-        EventBus.emit('show-dialog-false');
+        EventBus.emit("add-party", {name: combat().computer?.name, level: combat().computer?.level});
+        EventBus.emit("despawn-enemy-to-party", combat().enemyID);
+        EventBus.emit("clear-enemy");
+        EventBus.emit("action-button-sound");
+        EventBus.emit("blend-game", { showDialog: false });
+        EventBus.emit("update-pause", false);
+        EventBus.emit("show-dialog-false");
     };
 
     function checkReward(item: string | Equipment) {
@@ -942,45 +942,45 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <div class="dialog-window" style={{ width: combat().isEnemy && combat().computer ? "55%" : "70%" }}>
             <div class="dialog-tab wrap"> 
             <div style={{ color: "gold", "font-size": "1em", "margin-bottom": "3%" }}>
-                <div style={{ display: 'inline' }}>
-                    <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: '10%', 'border-radius': '50%', border: '0.1em solid #fdf6d8' }} class='origin-pic' />
-                    {' '}<div style={{ display: 'inline' }}>{combat()?.computer?.name} <p style={{ display: 'inline', 'font-size': '0.75em' }}>[Level {combat()?.computer?.level}]</p><br /></div>
+                <div style={{ display: "inline" }}>
+                    <img src={`../assets/images/${combat()?.computer?.origin}-${combat()?.computer?.sex}.jpg`} alt={combat()?.computer?.name} style={{ width: "10%", "border-radius": "50%", border: "0.1em solid #fdf6d8" }} class="origin-pic" />
+                    {" "}<div style={{ display: "inline" }}>{combat()?.computer?.name} <p style={{ display: "inline", "font-size": "0.75em" }}>[Level {combat()?.computer?.level}]</p><br /></div>
                 </div>
             </div>
             { combat().npcType === "Merchant-Smith" ? ( <>
                 <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
                     <br /><br />
                     Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
-                    <p class='greenMarkup'>[Achiom - 1g]</p>
-                    <p class='blueMarkup'>[Senic - 3g]</p>
-                    <p class='purpleMarkup'>[Kyr - 12g]</p>
-                    <p class='darkorangeMarkup'>[Sedyreal - 60g]</p>
-                    <br /><button class='highlight' data-function-name='setForgeSee'>See if any of your equipment can be Forged?</button>
-                    <br /><button class='highlight' data-function-name='getSell'>Sell your equipment to the Traveling Blacksmith?</button>
+                    <p class="greenMarkup">[Achiom - 1g]</p>
+                    <p class="blueMarkup">[Senic - 3g]</p>
+                    <p class="purpleMarkup">[Kyr - 12g]</p>
+                    <p class="darkorangeMarkup">[Sedyreal - 60g]</p>
+                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be Forged?</button>
+                    <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith?</button>
                 `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
-                {forgeSee() && upgradeItems() ? ( <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
+                {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
                     {upgradeItems().map((item: any) => {
                         if (item === undefined || item === undefined) return;
                         return (
-                            <div class='center' onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5%',padding: '0.25em',width: 'auto' }}>
+                            <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
                                 Forge
                             </div>
                         );
                     })}
-                </div> ) : forgeSee() ? ( 'There is nothing in your inventory to be forged.' ) : ( '' )}
+                </div> ) : forgeSee() ? ( "There is nothing in your inventory to be forged." ) : ( "" )}
                 <br />
-                {blacksmithSell() && <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}>
+                {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
                         if (item === undefined || item === undefined) return;
-                        return <div class='center' onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5.5%',padding: '0.25em',width: 'auto' }}>
+                        return <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
                             <img src={item?.imgUrl} alt={item?.name} />
                         </div>;
                     }}</For>
                 </div>}
                 </>
-            ) : combat().npcType === 'Merchant-Alchemy' ? (
+            ) : combat().npcType === "Merchant-Alchemy" ? (
                 <> 
                     { game().player?.firewater?.charges === 5 ? (
                         <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} styling={typewriterStyling} performAction={hollowClick} />
@@ -988,15 +988,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <>
                             <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${game().player?.firewater?.charges} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={typewriterStyling} performAction={hollowClick} />
                             <br />
-                            <button class='highlight dialog-buttons' style={{ color: 'blueviolet' }} onClick={refillFlask}>Walk over and refill your firewater?</button>
+                            <button class="highlight dialog-buttons" style={{ color: "blueviolet" }} onClick={refillFlask}>Walk over and refill your firewater?</button>
                         </>
                     ) }
                 </>
-            ) : ( '' ) }
+            ) : ( "" ) }
             { combat().isEnemy && combat().computer ? (
-                <div style={{ 'font-size': '0.75em', 'overflow-y': 'scroll', 'scrollbar-width': 'none' }}>
-                    <DialogTree game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}} reputation={reputation} />
-                { game().currentIntent === 'challenge' ? (
+                <div style={{ "font-size": "0.75em", "overflow-y": "scroll", "scrollbar-width": "none" }}>
+                    <DialogTree game={game} combat={combat} ascean={ascean() as Ascean} enemy={combat().computer} dialogNodes={getNodesForEnemy(combat()?.computer as Ascean) as DialogNode[]} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{"white-space":"pre-wrap"}} reputation={reputation} />
+                { game().currentIntent === "challenge" ? (
                     <>
                     { combat().persuasionScenario ? (
                         <div style={{ color: "gold" }}>
@@ -1004,12 +1004,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <br />
                             { combat().enemyPersuaded ? (
                                 <>
-                                    <p style={{ color: '#fdf6d8' }}>
-                                    You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
+                                    <p style={{ color: "#fdf6d8" }}>
+                                    You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                     </p>
-                                    <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                    <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                 </>
-                            ) : ( '' ) }
+                            ) : ( "" ) }
                         </div>
                     ) : combat().luckoutScenario ? (
                         <div style={{ color: "gold" }}>
@@ -1017,12 +1017,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <br />
                             { combat().playerLuckout ? (
                                 <>
-                                    <p style={{ color: '#fdf6d8' }}>
-                                    You lucked out against {namedEnemy() ? '' : ` the`} {combat().computer?.name} to forego hostilities. You may now travel freely through this area.
+                                    <p style={{ color: "#fdf6d8" }}>
+                                    You lucked out against {namedEnemy() ? "" : ` the`} {combat().computer?.name} to forego hostilities. You may now travel freely through this area.
                                     </p>
-                                    <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                    <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                 </>
-                            ) : ( '' ) }    
+                            ) : ( "" ) }    
                         </div>   
                     ) : combat().playerWin ? (
                         <div>
@@ -1046,27 +1046,27 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <>
                                     <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} styling={typewriterStyling} performAction={hollowClick} />
                                     <br />
-                                    <button class='highlight' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
+                                    <button class="highlight" style={{ color: "red" }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
                                 </> 
                             ) : ( 
                                 <>
                                     <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} styling={typewriterStyling} performAction={hollowClick} />
                                     <br />
-                                    <button class='highlight' style={{ color: 'red' }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
+                                    <button class="highlight" style={{ color: "red" }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
                                 </> 
                             ) }
                             { luckout() ? ( 
                                 <><br />
-                                    <button class='highlight' onClick={() => setLuckoutShow(!luckoutShow())}>{luckoutShow() ? 'Hide Scenarios' : 'Show Luckout Scenarios'}</button><br />
+                                    <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())}>{luckoutShow() ? "Hide Scenarios" : "Show Luckout Scenarios"}</button><br />
                                     <Show when={luckoutShow()}>
                                         <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 
                                     </Show>
                                 </>
-                            ) : ('') } 
+                            ) : ("") } 
                         </div>
                     ) } 
                     </>
-                ) : game().currentIntent === 'conditions' ? (
+                ) : game().currentIntent === "conditions" ? (
                     <>
                     <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of ${ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].length; console.log(e, "E"); return `${length - 1 === i ? " and " : " "}${e}s`}) }."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
                     <br />
@@ -1086,7 +1086,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <Typewriter stringText={`[The ${combat().computer?.name} is not capable of being recruited to your party. You must reach a higher level of reputation with them in order to recruit for your journey.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
                     </div> )}
                     </>
-                ) : game().currentIntent === 'farewell' ? (
+                ) : game().currentIntent === "farewell" ? (
                     <>
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
@@ -1094,12 +1094,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
-                                        <p style={{ color: '#fdf6d8' }}>
-                                        You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
+                                        <p style={{ color: "#fdf6d8" }}>
+                                        You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
-                                ) : ( '' ) }
+                                ) : ( "" ) }
                             </div>
                         ) : combat().luckoutScenario ? (
                             <div style={{ color: "gold" }}>
@@ -1107,12 +1107,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <br />
                                 { combat().playerLuckout ? (
                                     <>
-                                        <p style={{ color: '#fdf6d8' }}>
-                                        You lucked out against {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
+                                        <p style={{ color: "#fdf6d8" }}>
+                                        You lucked out against {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
-                                ) : ( '' ) }    
+                                ) : ( "" ) }    
                             </div>   
                         ) : combat().playerWin ? (
                             <>
@@ -1122,12 +1122,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                     <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} styling={typewriterStyling} performAction={hollowClick} />
                                 ) }
                                 <br />
-                                <button class='highlight' onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
+                                <button class="highlight" onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
                             </>
                         ) : combat().computerWin ? (
                             <>
                                 <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={typewriterStyling} performAction={hollowClick} />
-                                <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
+                                <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
                         ) : (
                             <>
@@ -1137,38 +1137,38 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} styling={typewriterStyling} performAction={hollowClick} />
                             ) }
                                 <br />
-                                <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Keep moving.</button>
+                                <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Keep moving.</button>
                             </>
                         ) }
                         { checkTraits("Kyn'gian", game().traits) && !combat().playerWin && !combat().computerWin ? (
-                            <button class='highlight' onClick={() => clearDuel()}>You remain at the edges of sight and sound, and before {combat()?.computer?.name} can react, you attempt to flee.</button>
-                        ) : ( '' ) }
+                            <button class="highlight" onClick={() => clearDuel()}>You remain at the edges of sight and sound, and before {combat()?.computer?.name} can react, you attempt to flee.</button>
+                        ) : ( "" ) }
                     </>
-                ) : game().currentIntent === 'institutions' ? (
+                ) : game().currentIntent === "institutions" ? (
                     <>
                         <Typewriter stringText={`"What institution do you wish to understand?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
-                        <div style={{ color: 'gold' }}>
-                            <Typewriter stringText={concept} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={concept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>    
                     </>
-                ) : game().currentIntent === 'localLore' ? (
+                ) : game().currentIntent === "localLore" ? (
                     <>
                         <Typewriter stringText={`"Which province's formation do you wish to understand a little more?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
-                        <div style={{ color: 'gold' }}>
-                            <Typewriter stringText={local} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={local} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>    
                     </>
-                ) : game().currentIntent === 'persuasion' ? (
+                ) : game().currentIntent === "persuasion" ? (
                     <>
                         { combat().playerWin ? (
-                            <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
+                            <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
                         ) : combat().computerWin ? (
-                            <button class='highlight' style={{ color: 'red' }} onClick={() => clearDuel()}>Continue moving along your path, there's nothing left to say now.</button>
+                            <button class="highlight" style={{ color: "red" }} onClick={() => clearDuel()}>Continue moving along your path, there's nothing left to say now.</button>
                         ) : persuasion() && !combat().persuasionScenario ? (
                                 <>
-                                <button class='highlight' onClick={() => setPersuasionShow(!persuasionShow())}>{persuasionShow() ? 'Hide Scenarios' : 'Show Persuasion Scenarios'}</button><br />
+                                <button class="highlight" onClick={() => setPersuasionShow(!persuasionShow())}>{persuasionShow() ? "Hide Scenarios" : "Show Persuasion Scenarios"}</button><br />
                                 <Show when={persuasionShow()}>
                                     <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} /> 
                                 </Show>
@@ -1180,14 +1180,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
-                                        <p style={{ color: '#fdf6d8' }}>
-                                        You persuaded {namedEnemy() ? '' : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
+                                        <p style={{ color: "#fdf6d8" }}>
+                                        You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class='highlight' style={{ color: 'teal' }} onClick={() => clearDuel()}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path.</button>
                                     </>
-                                ) : ( '' ) }
+                                ) : ( "" ) }
                             </div>
-                        ) : ( '' ) }
+                        ) : ( "" ) }
                         <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
                         <Show when={completeQuests().length > 0}>
                             <h1>Completed Quests</h1>
@@ -1204,13 +1204,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             </div>
                         </Show>
                     </>
-                ) : game().currentIntent === 'provinces' ? (
+                ) : game().currentIntent === "provinces" ? (
                     <>
                         {/* { combat().playerWin || combat().enemyPersuaded ? (
                             <> */}
                                 <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={typewriterStyling} performAction={hollowClick} />
                                 <br />
-                                <div style={{ color: 'gold' }}>
+                                <div style={{ color: "gold" }}>
                                     <Typewriter stringText={region} styling={typewriterStyling} performAction={hollowClick} />
                                 </div>
                             {/* </>
@@ -1220,48 +1220,48 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} styling={typewriterStyling} performAction={hollowClick} />                            
                         ) } */}
                     </>
-                ) : game().currentIntent === 'entities' ? (
+                ) : game().currentIntent === "entities" ? (
                     <>
                         <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
-                        <div style={{ color: 'gold' }}>
-                            <Typewriter stringText={entity} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={entity} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
-                ) : game().currentIntent === 'phenomena' ? (
+                ) : game().currentIntent === "phenomena" ? (
                     <>
                         <Typewriter stringText={`"Many notions exist of man extending themselves further than they are readily capable of physically. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
-                        <div style={{ color: 'gold' }}>
-                            <Typewriter stringText={phenomena} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                        <div style={{ color: "gold" }}>
+                            <Typewriter stringText={phenomena} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
-                ) : game().currentIntent === 'worldLore' ? (
+                ) : game().currentIntent === "worldLore" ? (
                     <>
                         <Typewriter stringText={`"What do you wish to know about the history of this world?"`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={world} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                            <Typewriter stringText={world} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
-                ) : game().currentIntent === 'whispers' ? (
+                ) : game().currentIntent === "whispers" ? (
                     <>
                         <Typewriter stringText={`"What do you wish to know of the worship and intrigue on the occult and religiosity around the realm."`} styling={typewriterStyling} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={whisperConcept} styling={{...typewriterStyling, 'white-space': 'pre-wrap'}} performAction={hollowClick} />
+                            <Typewriter stringText={whisperConcept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
-                ) : ( '' ) }
+                ) : ( "" ) }
                 </div>
-            ) : combat().computer && combat().npcType !== 'Merchant-Alchemy' && combat().npcType !== 'Merchant-Smith' ? (
+            ) : combat().computer && combat().npcType !== "Merchant-Alchemy" && combat().npcType !== "Merchant-Smith" ? (
                 <DialogTree 
                     game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} reputation={reputation}
-                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{'white-space':'pre-wrap'}}
+                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{"white-space":"pre-wrap"}}
                 />
-            ) : ( '' ) } 
+            ) : ( "" ) } 
             <Show when={merchantTable()?.length > 0}> 
-                <button class='highlight' style={{ 'color': 'green' }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
+                <button class="highlight" style={{ "color": "green" }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
             </Show>
             </div>
         </div>
@@ -1269,84 +1269,84 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={showBuy() && merchantTable()?.length > 0}>
-            <div class='modal'>
-            <div class='creature-heading' style={{ position: 'absolute', left: '20%', top: '2.5%', height: '95%', width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' }}>
+            <div class="modal">
+            <div class="creature-heading" style={{ position: "absolute", left: "20%", top: "2.5%", height: "95%", width: "60%",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll","text-align": "center", "scrollbar-width":"none" }}>
                 <Currency ascean={ascean} />
                 <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
             </div>
-            <button class='highlight cornerTR' style={{ 'background-color': 'green', color: '#000', 'font-weight': 700 }} onClick={() => refreshLoot()}>Refresh Loot Table</button>
-            <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => setShowSell(true)}>Sell Loot</button>
-            <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setShowBuy(false)}>x</button>
+            <button class="highlight cornerTR" style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={() => refreshLoot()}>Refresh Loot Table</button>
+            <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => setShowSell(true)}>Sell Loot</button>
+            <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setShowBuy(false)}>x</button>
             </div>
         </Show>
         <Show when={specialMerchant()}>
-            <div class='modal'>
-            <div class='superCenter creature-heading' style={{ position: 'absolute',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none', width: '25%' }}>
-                {combat().computer?.name === 'Traveling Kyrisian' && ( <> 
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button></>)}
-                {combat().computer?.name === 'Traveling Sedyreal' && ( <> 
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
+            <div class="modal">
+            <div class="superCenter creature-heading" style={{ position: "absolute",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll","text-align": "center", "scrollbar-width":"none", width: "25%" }}>
+                {combat().computer?.name === "Traveling Kyrisian" && ( <> 
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button></>)}
+                {combat().computer?.name === "Traveling Sedyreal" && ( <> 
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
                 </>)}
                 {combat().computer?.name === "Ashreu'ul" && ( <> 
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor + Shields</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
-                    {/* <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('', 'Plate-Mail'); setSpecialMerchant(false);}}>Plate Armor</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('', 'Chain-Mail'); setSpecialMerchant(false);}}>Chain Armor</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('', 'Leather-Mail'); setSpecialMerchant(false);}}>Leather Mail</button> */}
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
+                    {/* <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button> */}
                 </>)}
-                {combat().computer?.name === 'Kreceus' && ( <> 
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('armor'); setSpecialMerchant(false);}}>Armor + Shields</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('cloth'); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('physical-weapon'); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('magical-weapon'); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('jewelry'); setSpecialMerchant(false);}}>Jewelry</button>
-                    {/* <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('', 'Plate-Mail'); setSpecialMerchant(false);}}>Plate Armor</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 2s ease infinite')} onClick={async () => {await getLoot('', 'Chain-Mail'); setSpecialMerchant(false);}}>Chain Armor</button>
-                    <button class='highlight animate center' style={specialMerchantStyle('gradient 1.5s ease infinite')} onClick={async () => {await getLoot('', 'Leather-Mail'); setSpecialMerchant(false);}}>Leather Mail</button> */}
+                {combat().computer?.name === "Kreceus" && ( <> 
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
+                    {/* <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button> */}
                 </>)}
             </div>
-            <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setSpecialMerchant(false)}>x</button>
+            <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setSpecialMerchant(false)}>x</button>
             </div>
         </Show>
         <Show when={forgeModalShow()}> 
-            <div class='modal'>
-                <div class='border superCenter wrap' style={{ width: '50%' }}>
-                <p class='center wrap' style={{ color: "red", 'font-size': "1.25em", margin: '3%' }}>
+            <div class="modal">
+                <div class="border superCenter wrap" style={{ width: "50%" }}>
+                <p class="center wrap" style={{ color: "red", "font-size": "1.25em", margin: "3%" }}>
                     Do You Wish To Collapse Three {forge()?.name} into one of {GET_NEXT_RARITY[forge()?.rarity as string as keyof typeof GET_NEXT_RARITY]} Quality for {GET_FORGE_COST[forge()?.rarity as string as keyof typeof GET_FORGE_COST]} Gold?
                 </p>
                 <div>
-                    <button class='highlight' style={{ color: 'gold', 'font-weight': 600, 'font-size': "1.5em" }} onClick={() => handleUpgradeItem()}>
+                    <button class="highlight" style={{ color: "gold", "font-weight": 600, "font-size": "1.5em" }} onClick={() => handleUpgradeItem()}>
                         {forge()?.rarity && GET_FORGE_COST[forge()?.rarity as string as keyof typeof GET_FORGE_COST]} Gold Forge
                     </button>    
-                    <div style={{ color: "gold", 'font-weight': 600 }}>
-                        <p style={{ 'font-size': '2em' }}>
+                    <div style={{ color: "gold", "font-weight": 600 }}>
+                        <p style={{ "font-size": "2em" }}>
                             (3) <img src={forge()?.imgUrl} alt={forge()?.name} style={currentItemStyle(forge()?.rarity as string)} /> 
-                            {' => '} <img src={forge()?.imgUrl} alt={forge()?.name} style={currentItemStyle(GET_NEXT_RARITY[forge()?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
+                            {" => "} <img src={forge()?.imgUrl} alt={forge()?.name} style={currentItemStyle(GET_NEXT_RARITY[forge()?.rarity as string as keyof typeof GET_NEXT_RARITY])} />
                             </p> 
                     </div>
-                <button class='highlight cornerBR' style={{ 'background-color': 'red' }} onClick={() => setForgeModalShow(false)}>x</button>
+                <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setForgeModalShow(false)}>x</button>
                 </div>
                 </div>
             </div>
         </Show>
         <Show when={showSell()}>
-            <div class='modal' style={{ background: 'rgba(0, 0, 0, 0.5)' }}>
-                <div class='creature-heading' style={{  position: 'absolute',left: '20%',top: '2.5%',height: '95%',width: '60%',background: '#000',border: '0.1em solid gold','border-radius': '0.25em','box-shadow': '0 0 0.5em #FFC700',overflow: 'scroll', 'scrollbar-width':'none'}}>
-                    <h1 class='center' style={{ 'margin-bottom': '3%' }}>Sell Items</h1>
-                <div class='center'>
+            <div class="modal" style={{ background: "rgba(0, 0, 0, 0.5)" }}>
+                <div class="creature-heading" style={{  position: "absolute",left: "20%",top: "2.5%",height: "95%",width: "60%",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll", "scrollbar-width":"none"}}>
+                    <h1 class="center" style={{ "margin-bottom": "3%" }}>Sell Items</h1>
+                <div class="center">
                 <Currency ascean={ascean} />
                 </div>
-                <div class='playerInventoryBag center' style={{ width: '65%', 'margin-bottom': '5%' }}> 
+                <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
                     <For each={game()?.inventory.inventory}>{(item, _index) => {
                         if (item === undefined || item === undefined) return;
                         return (
-                            <div class='center' onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: '5.5%',padding: '0.25em',width: 'auto' }}>
+                            <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
                             </div>
                         );
@@ -1354,15 +1354,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </div>
                 <br /><br />
                 </div>
-                <button class='highlight cornerTL' style={{ 'background-color': 'gold', color: '#000', 'font-weight': 700 }} onClick={() => switchToBuy()}>Check the Merchant's Wares</button>
-                <button class='cornerBR highlight' onClick={() => setShowSell(false)} style={{ 'background-color': 'red' }}>X</button>
+                <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => switchToBuy()}>Check the Merchant"s Wares</button>
+                <button class="cornerBR highlight" onClick={() => setShowSell(false)} style={{ "background-color": "red" }}>X</button>
             </div>
         </Show>
         <Show when={showItem()}>
-            <div class='modal' onClick={() => setShowItem(false)} style={{ background: 'rgba(0, 0, 0, 0)' }}> 
+            <div class="modal" onClick={() => setShowItem(false)} style={{ background: "rgba(0, 0, 0, 0)" }}> 
                 <ItemModal item={sellItem()} caerenic={false} stalwart={false} />
-                <button class='verticalBottom highlight' onClick={() => sellInventory()} style={{ 
-                    color: 'green', 'font-size': '1em', 'font-weight': 700, padding: '0.5em', 'box-shadow': '0 0 0.75em #00FF00',
+                <button class="verticalBottom highlight" onClick={() => sellInventory()} style={{ 
+                    color: "green", "font-size": "1em", "font-weight": 700, padding: "0.5em", "box-shadow": "0 0 0.75em #00FF00",
                 }}>
                     Sell {sellItem()?.name} for {sellRarity(sellItem()?.rarity as string)}
                 </button>
@@ -1372,52 +1372,52 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             <div class="modal">
                 <div class="creature-heading superCenter" style={{ width: "65%" }}>
                     <div class="border moisten">
-                    <h1 class='center' style={{ margin: '3%', color: showQuestSave() ? "gold" : "#fdf6d8" }}>
+                    <h1 class="center" style={{ margin: "3%", color: showQuestSave() ? "gold" : "#fdf6d8" }}>
                         {showCompleteQuest().title} {showQuestSave() ? "(Completed)" : ""} <br />
                     </h1>
-                    <h2 class='center' style={{ color: 'gold' }}>
+                    <h2 class="center" style={{ color: "gold" }}>
                         Quest Giver: {showCompleteQuest().giver}, Level {showCompleteQuest().level} ({showCompleteQuest()?.mastery.charAt(0).toUpperCase() + showCompleteQuest()?.mastery.slice(1)}) <br />
                     </h2>
-                    <p class='wrap' style={{ 'color':'#fdf6d8', 'font-size':'1em', 'margin': '3%' }}>
+                    <p class="wrap" style={{ "color":"#fdf6d8", "font-size":"1em", "margin": "3%" }}>
                         {showCompleteQuest().description}
                     </p>
-                    <div class='row' style={{ display: 'block' }}>
-                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
+                    <div class="row" style={{ display: "block" }}>
+                    <h4 class="gold" style={{margin: "0", padding: "1% 0", display: "inline-block", width: "40%", "margin-left": "5%"}}>
                         Requirements
                     </h4>
-                    <h4 class="gold" style={{margin: '0', padding: '1% 0', display: 'inline-block', width: '40%', 'margin-left': '5%'}}>
+                    <h4 class="gold" style={{margin: "0", padding: "1% 0", display: "inline-block", width: "40%", "margin-left": "5%"}}>
                         Rewards
                     </h4>
                     <br />
-                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Level: <span class='gold'>{showCompleteQuest()?.requirements.level}</span><br />
-                        Reputation: <span class='gold'>{showCompleteQuest()?.requirements.reputation}</span><br />
+                    <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
+                        Level: <span class="gold">{showCompleteQuest()?.requirements.level}</span><br />
+                        Reputation: <span class="gold">{showCompleteQuest()?.requirements.reputation}</span><br />
                         <span>{showCompleteQuest()?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showCompleteQuest()?.requirements?.technical?.current} / {showCompleteQuest()?.requirements?.technical?.total}</span></> : showCompleteQuest()?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
-                    <p style={{ display: 'inline-block', width: '40%', 'margin-left': '7.5%' }}>
-                        Currency: <span class='gold'>{showCompleteQuest()?.rewards?.currency?.gold}g {showCompleteQuest().rewards?.currency?.silver}s.</span><br />
-                        Experience: <span class='gold'>{showCompleteQuest()?.rewards?.experience}</span><br />
+                    <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
+                        Currency: <span class="gold">{showCompleteQuest()?.rewards?.currency?.gold}g {showCompleteQuest().rewards?.currency?.silver}s.</span><br />
+                        Experience: <span class="gold">{showCompleteQuest()?.rewards?.experience}</span><br />
                         Items: <For each={showCompleteQuest()?.rewards?.items}>{(item, index) => {
                             const length = showCompleteQuest()?.rewards?.items.length;
-                            return <div style={{ display: 'inline-block', color: "gold" }}>
-                                {checkReward(item)}{typeof item === 'string' ? length === 0 || length - 1 === index() ? '' : `,\xa0` : ''}{' '}
+                            return <div style={{ display: "inline-block", color: "gold" }}>
+                                {checkReward(item)}{typeof item === "string" ? length === 0 || length - 1 === index() ? "" : `,\xa0` : ""}{" "}
                             </div>
                         }}</For>
                         {showCompleteQuest()?.special ? <><br /> Special: <span class="gold">{showCompleteQuest()?.special}</span></> : ""}
                     </p>
                     </div>
-                    <h2 style={{ 'text-align':'center', color: "gold" }}>
+                    <h2 style={{ "text-align":"center", color: "gold" }}>
                         {replaceChar(showCompleteQuest()?.requirements.description, showCompleteQuest()?.giver)}
                     </h2>
                     </div>
                 </div>
                     <Show when={!showQuestSave()}>
-                        <button class='highlight cornerTR' style={{ right: '0', 'color': 'green', "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
-                            <p style={font('0.75em')}>Complete Quest</p>
+                        <button class="highlight cornerTR" style={{ right: "0", "color": "green", "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
+                            <p style={font("0.75em")}>Complete Quest</p>
                         </button>
                     </Show>
-                    <button class='highlight cornerBR' style={{ bottom: '0', right: '0', 'color': 'red' }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
-                        <p style={font('0.75em')}>X</p>
+                    <button class="highlight cornerBR" style={{ bottom: "0", right: "0", "color": "red" }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
+                        <p style={font("0.75em")}>X</p>
                     </button>
             </div>
         </Show>

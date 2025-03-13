@@ -4,7 +4,7 @@ import { EventBus } from '../EventBus';
 import LootDrop from '../matter/LootDrop';
 import Equipment from '../../models/equipment';
 import { States } from '../phaser/StateMachine';
-import { Reputation, initReputation } from '../../utility/player';
+import { Reputation, faction, initReputation } from '../../utility/player';
 import Player from '../entities/Player';
 import Enemy from '../entities/Enemy';
 import NPC from '../entities/NPC';
@@ -391,8 +391,20 @@ export class Game extends Scene {
             };
         });
         EventBus.on('update-enemy-aggression', (aggression: number) => {
+            if (this.hud.settings.difficulty.aggressionImmersion) return;
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isAggressive = aggression >= Math.random();
+            };
+        });
+        EventBus.on('update-enemy-aggression-immersion', (aggression: boolean) => {
+            if (aggression) {
+                for (let i = 0; i < this.enemies.length; i++) {
+                    this.enemies[i].isAggressive = this.hud.reputation.factions.find((f: faction) => f.name === this.enemies[i].ascean.name)?.aggressive as boolean;
+                };
+            } else {
+                for (let i = 0; i < this.enemies.length; i++) {
+                    this.enemies[i].isAggressive = this.hud.settings.difficulty.aggression >= Math.random();
+                };
             };
         });
         EventBus.on('update-enemy-special', (special: number) => {

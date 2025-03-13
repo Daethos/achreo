@@ -32,6 +32,7 @@ export const FRAMES = {
     ANIMATION_COMPLETE: "animationcomplete",
     CLIMB: "player_climb",
     CROUCH_IDLE: "player_crouch_idle",
+    DEATH: "player_death",
     IDLE: "player_idle",
     RUNNING: "player_running",
     RUN_DOWN: "run_down",
@@ -63,10 +64,10 @@ export const FRAME_COUNT = {
     THRUST_SUCCESS: 10,
     DISTANCE_CLEAR: 51,
 }; 
+export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
+export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
-export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
-export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
 const DAMAGE_TYPES = { "magic": ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], "physical": ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 

@@ -1,27 +1,28 @@
 import { KVI } from "./CombatMachine";
 import { EventBus } from "../EventBus";
 import StatusEffect from "../../utility/prayer";
-const INITIATE = "initiate-combat"
+const INITIATE = "initiate-combat";
+const UPDATE = "update-combat-state";
 const ActionTypes = {
-    WEAPON: 'Weapon',
-    INSTANT: 'Instant',
-    CONSUME: 'Consume',
-    PRAYER: 'Prayer',
-    TALENT_PRAYER: 'Talent Prayer',
-    PLAYER: 'Player',
-    ENEMY: 'Enemy',
-    INPUT: 'Input',
-    CHIOMIC: 'Chiomic',
-    TSHAERAL: 'Tshaeral',
-    HEALTH: 'Health',
-    SET_HEALTH: 'Set Health',
-    SACRIFICE: 'Sacrifice',
-    SUTURE: 'Suture',
-    ENEMY_CHIOMIC: 'Enemy Chiomic',
-    ENEMY_SACRIFICE: 'Enemy Sacrifice',
-    ENEMY_SUTURE: 'Enemy Suture',
-    ENEMY_TSHAERAL: 'Enemy Tshaeral',
-    REMOVE: 'Remove Enemy',
+    WEAPON: "Weapon",
+    INSTANT: "Instant",
+    CONSUME: "Consume",
+    PRAYER: "Prayer",
+    TALENT_PRAYER: "Talent Prayer",
+    PLAYER: "Player",
+    ENEMY: "Enemy",
+    INPUT: "Input",
+    CHIOMIC: "Chiomic",
+    TSHAERAL: "Tshaeral",
+    HEALTH: "Health",
+    SET_HEALTH: "Set Health",
+    SACRIFICE: "Sacrifice",
+    SUTURE: "Suture",
+    ENEMY_CHIOMIC: "Enemy Chiomic",
+    ENEMY_SACRIFICE: "Enemy Sacrifice",
+    ENEMY_SUTURE: "Enemy Suture",
+    ENEMY_TSHAERAL: "Enemy Tshaeral",
+    REMOVE: "Remove Enemy",
 };
 function weapon(data: KVI): void {
     EventBus.emit(INITIATE, { data, type: ActionTypes.WEAPON });
@@ -39,7 +40,7 @@ function enemy(data: any): void {
     EventBus.emit(INITIATE, { data, type: ActionTypes.ENEMY });
 };
 function actionInput({ key, value }: { key: string, value: string | number | boolean }): void {
-    EventBus.emit('update-combat-state', { key, value });
+    EventBus.emit(UPDATE, { key, value });
 };
 function chiomic(data: number): void {
     EventBus.emit(INITIATE, { data, type: ActionTypes.CHIOMIC });
@@ -75,7 +76,7 @@ function removeEnemy(data: KVI) {
     EventBus.emit(INITIATE, { data, type: ActionTypes.REMOVE })
 };
 function removeEffect(data: StatusEffect) {
-    EventBus.emit(INITIATE, { data, type: 'Remove Tick' });
+    EventBus.emit(INITIATE, { data, type: "Remove Tick" });
 };
 function talentPrayer(data: string) {
     EventBus.emit(INITIATE, { data, type: ActionTypes.TALENT_PRAYER });

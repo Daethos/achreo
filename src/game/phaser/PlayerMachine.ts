@@ -1,7 +1,7 @@
 import Player from '../entities/Player';
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
 import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, staminaCheck } from "../../utility/player";
-import { FRAME_COUNT } from '../entities/Entity';
+import { FRAME_COUNT, FRAMES } from '../entities/Entity';
 import AoE from './AoE';
 import { EventBus } from "../EventBus";
 import { screenShake } from "./ScreenShake";
@@ -560,7 +560,7 @@ export default class PlayerMachine {
     };
 
     onDefeatedEnter = () => {
-        this.player.anims.play('player_death', true);
+        this.player.anims.play(FRAMES.DEATH, true);
         this.player.setVelocity(0);
         this.player.clearEnemies();
         this.player.disengage();
@@ -583,7 +583,7 @@ export default class PlayerMachine {
     onDefeatedUpdate = (dt: number) => {
         this.player.defeatedDuration -= dt;
         if (this.player.defeatedDuration <= 0) {
-            this.player.anims.playReverse('player_death', true).once('animationcomplete', () => this.player.isDefeated = false, this.player);
+            this.player.anims.playReverse(FRAMES.DEATH, true).once('animationcomplete', () => this.player.isDefeated = false, this.player);
         };
         this.player.combatChecker(this.player.isDefeated);
     };

@@ -481,7 +481,7 @@ export default function PhaserGame (props: IProps) {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
                 if (enemies.includes(enemy.name)) {
                     setTimeout(() => {
-                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "close"});
+                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "Close"});
                     }, updateTimer * 3000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);

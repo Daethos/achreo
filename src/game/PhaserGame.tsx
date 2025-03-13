@@ -474,16 +474,18 @@ export default function PhaserGame (props: IProps) {
     function recordQuestUpdate(enemy: Ascean) {
         let quests = JSON.parse(JSON.stringify(props.quests().quests));
         let updated = false;
+        let updateTimer = 0;
         for (let i = 0; i < quests.length; ++i) {
             const quest: Quest = quests[i];
             if (quest.title === "Principles and Principalities") {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
                 if (enemies.includes(enemy.name)) {
-                    console.log(`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities!`);
+                    setTimeout(() => {
+                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "close"});
+                    }, updateTimer * 3000);
+                    updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
                     updated = true;
-                } else {
-                    console.log(`${enemy.name} is NOT an enemy of ${quest.giver}`);
                 };
             };
         };

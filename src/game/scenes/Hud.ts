@@ -55,6 +55,7 @@ export class Hud extends Phaser.Scene {
     create() {
         this.gameEvents();
         this.gameState = this.registry.get('game');
+        this.reputation = this.registry.get('reputation');
         this.settings = this.registry.get('settings');
         this.talents = this.registry.get('talents');
         this.currentZoom = this.settings.positions.camera.zoom;
@@ -295,6 +296,9 @@ export class Hud extends Phaser.Scene {
     gameEvents = (): void => {
         EventBus.on('game', (game: GameState) => {
             this.gameState = game;
+        });
+        EventBus.on('reputation', (reputation: Reputation) => {
+            this.reputation = reputation;
         });
         EventBus.on('talents', (talents: Talents) => {
             this.talents = talents;

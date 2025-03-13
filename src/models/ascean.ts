@@ -251,7 +251,6 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
         });
         const res = await addAscean(ascean);
-        console.log(res, 'Added Ascean to Database');
         return ascean;
     };
 };

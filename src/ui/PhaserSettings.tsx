@@ -185,7 +185,6 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
  
     async function handleComputerFocus() {
         const computerFocus = FOCUS[settings().computerFocus as keyof typeof FOCUS || 'Balanced' as keyof typeof FOCUS];
-        console.log(computerFocus, 'New Computer Focus');
         const newSettings = { ...settings(), computerFocus };        
         await saveSettings(newSettings);
     };

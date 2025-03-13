@@ -251,9 +251,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const createReputationBar = (faction: faction): JSX.Element => {
+        const positive = faction.reputation >= 0;
         return <div class="skill-bar">
-            <p class="skill-bar-text">{faction.name}: {faction.reputation} / 100</p>
-            <div class="skill-bar-fill" style={{"width": `${faction.reputation}%`}}></div>
+            <p class="skill-bar-text">{faction.name}: {positive ? `${faction.reputation} / 100` : `${faction.reputation} / -100`}</p>
+            <div class="skill-bar-fill" style={{"background":`${positive ? "blue" : "red"}`, "width": `${Math.abs(faction.reputation)}%`}}></div>
         </div>;  
     };
 

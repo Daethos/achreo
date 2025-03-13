@@ -766,7 +766,8 @@ export default class Enemy extends Entity {
 
     setAggression = () => {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
-            return this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number > 0 || false;
+            const aggressive = this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number;
+            return aggressive <= 0;
         } else {
             const percent = this.scene.hud.settings.difficulty.aggression;
             return percent >= Math.random() || false;
@@ -822,7 +823,6 @@ export default class Enemy extends Entity {
                         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                         if (this.stateMachine.isCurrentState(States.DEFEATED)) {
                             this.scene.hud.showDialog(true);
-                            console.log("Showing Dialog?");
                         } else {
                             this.stateMachine.setState(States.AWARE);
                         };

@@ -176,6 +176,7 @@ export default function App() {
             setStartGame(true);
             setLoading(false);
             phaserRef.game?.registry.set("party", compiledParty);
+            phaserRef.game?.registry.set("reputation", reputation());
             phaserRef.game?.registry.set("settings", settings());
             phaserRef.game?.registry.set("talents", talents());
             EventBus.emit('preload-ascean', id);

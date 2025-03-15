@@ -1,30 +1,30 @@
-import { Cameras, GameObjects, Scene, Tilemaps, Time } from 'phaser';
-import { Combat, initCombat } from '../../stores/combat';
-import { EventBus } from '../EventBus';
-import LootDrop from '../matter/LootDrop';
-import Equipment from '../../models/equipment';
-import { States } from '../phaser/StateMachine';
-import { Reputation, faction, initReputation } from '../../utility/player';
-import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
-import NPC from '../entities/NPC';
-import { CombatManager } from '../phaser/CombatManager';
-import MiniMap from '../phaser/MiniMap';
-import { screenShake } from '../phaser/ScreenShake';
-import ParticleManager from '../matter/ParticleManager';
-import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from './Hud';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import { ObjectPool } from '../phaser/ObjectPool';
-import Party from '../entities/PartyComputer';
-import Ascean from '../../models/ascean';
-import { getEnemy, populateEnemy } from '../../assets/db/db';
-import { asceanCompiler, Compiler } from '../../utility/ascean';
-// import { WindPipeline } from '../shaders/Wind';
+import { Cameras, GameObjects, Scene, Tilemaps, Time } from "phaser";
+import { Combat, initCombat } from "../../stores/combat";
+import { EventBus } from "../EventBus";
+import LootDrop from "../matter/LootDrop";
+import Equipment from "../../models/equipment";
+import { States } from "../phaser/StateMachine";
+import { Reputation, faction, initReputation } from "../../utility/player";
+import Player from "../entities/Player";
+import Enemy from "../entities/Enemy";
+import NPC from "../entities/NPC";
+import { CombatManager } from "../phaser/CombatManager";
+import MiniMap from "../phaser/MiniMap";
+import { screenShake } from "../phaser/ScreenShake";
+import ParticleManager from "../matter/ParticleManager";
+import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from "./Hud";
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
+import { ObjectPool } from "../phaser/ObjectPool";
+import Party from "../entities/PartyComputer";
+import Ascean from "../../models/ascean";
+import { getEnemy, populateEnemy } from "../../assets/db/db";
+import { asceanCompiler, Compiler } from "../../utility/ascean";
+// import { WindPipeline } from "../shaders/Wind";
 // @ts-ignore
-import { PhaserNavMeshPlugin } from 'phaser-navmesh';
+import { PhaserNavMeshPlugin } from "phaser-navmesh";
 // @ts-ignore
-import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import { PARTY_OFFSET } from '../../utility/party';
+import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
+import { PARTY_OFFSET } from "../../utility/party";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -75,12 +75,12 @@ export class Game extends Scene {
     day: boolean = true;
 
     constructor () {
-        super('Game');
+        super("Game");
     };
 
     preload() {
-        this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
-        // this.load.glsl('windShader', './src/game/shaders/Wind.glsl');
+        this.load.scenePlugin("animatedTiles", AnimatedTiles, "animatedTiles", "animatedTiles");
+        // this.load.glsl("windShader", "./src/game/shaders/Wind.glsl");
     };
 
     create (hud: Hud) {
@@ -89,30 +89,30 @@ export class Game extends Scene {
         this.gameEvent();
         this.state = this.registry.get("combat");
         this.reputation = this.getReputation();
-        const map = this.make.tilemap({ key: 'ascean_test' });
+        const map = this.make.tilemap({ key: "ascean_test" });
         this.map = map;
         const tileSize = 32;
-        const camps = map.addTilesetImage('Camp_Graves', 'Camp_Graves', tileSize, tileSize, 0, 0);
-        const decorations = map.addTilesetImage('AncientForestDecorative', 'AncientForestDecorative', tileSize, tileSize, 0, 0);
-        const tileSet = map.addTilesetImage('AncientForestMain', 'AncientForestMain', tileSize, tileSize, 1, 2);
-        const campfire = map.addTilesetImage('CampFireB', 'CampFireB', tileSize, tileSize, 0, 0);
-        const light = map.addTilesetImage('light1A', 'light1A', tileSize, tileSize, 0, 0);
-        let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Tilemaps.Tileset, 0, 0);
-        let layerC = map.createLayer('Tile Layer - Construction', tileSet as Tilemaps.Tileset, 0, 0);
-        let layer4 = map.createLayer('Tile Layer 4 - Primes', decorations as Tilemaps.Tileset, 0, 0);
-        let layer5 = map.createLayer('Tile Layer 5 - Snags', decorations as Tilemaps.Tileset, 0, 0);
-        let layerT = map.createLayer('Tile Layer - Tree Trunks', decorations as Tilemaps.Tileset, 0, 0);
-        let layerB = map.createLayer('Tile Layer - Camp Base', camps as Tilemaps.Tileset, 0, 0);
-        let layer6 = map.createLayer('Tile Layer 6 - Camps', camps as Tilemaps.Tileset, 0, 0);
+        const camps = map.addTilesetImage("Camp_Graves", "Camp_Graves", tileSize, tileSize, 0, 0);
+        const decorations = map.addTilesetImage("AncientForestDecorative", "AncientForestDecorative", tileSize, tileSize, 0, 0);
+        const tileSet = map.addTilesetImage("AncientForestMain", "AncientForestMain", tileSize, tileSize, 1, 2);
+        const campfire = map.addTilesetImage("CampFireB", "CampFireB", tileSize, tileSize, 0, 0);
+        const light = map.addTilesetImage("light1A", "light1A", tileSize, tileSize, 0, 0);
+        let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Tilemaps.Tileset, 0, 0);
+        let layerC = map.createLayer("Tile Layer - Construction", tileSet as Tilemaps.Tileset, 0, 0);
+        let layer4 = map.createLayer("Tile Layer 4 - Primes", decorations as Tilemaps.Tileset, 0, 0);
+        let layer5 = map.createLayer("Tile Layer 5 - Snags", decorations as Tilemaps.Tileset, 0, 0);
+        let layerT = map.createLayer("Tile Layer - Tree Trunks", decorations as Tilemaps.Tileset, 0, 0);
+        let layerB = map.createLayer("Tile Layer - Camp Base", camps as Tilemaps.Tileset, 0, 0);
+        let layer6 = map.createLayer("Tile Layer 6 - Camps", camps as Tilemaps.Tileset, 0, 0);
         this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
         this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
-        const layer2 =  map.createLayer('Tile Layer 2 - Flowers', decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        const layer3 =  map.createLayer('Tile Layer 3 - Plants', decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
+        const layer2 =  map.createLayer("Tile Layer 2 - Flowers", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
+        const layer3 =  map.createLayer("Tile Layer 3 - Plants", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
         this.flowers = layer2 as Phaser.Tilemaps.TilemapLayer;
         this.plants = layer3 as Phaser.Tilemaps.TilemapLayer;
-        map.createLayer('Tile Layer - Campfire', campfire as Tilemaps.Tileset, 0, 0);
-        map.createLayer('Tile Layer - Lights', light as Tilemaps.Tileset, 0, 0);
+        map.createLayer("Tile Layer - Campfire", campfire as Tilemaps.Tileset, 0, 0);
+        map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
         [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
@@ -153,62 +153,62 @@ export class Game extends Scene {
         // this.navMesh.enableDebug(debugGraphics); 
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
-        this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
-        if (this.hud.prevScene === 'Underground') this.player.setPosition(1410,130);
-        if (this.hud.prevScene === 'Tutorial') this.player.setPosition(38,72);
-        map?.getObjectLayer('Enemies')?.objects.forEach((enemy: any) => {
-            const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+        this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
+        if (this.hud.prevScene === "Underground") this.player.setPosition(1410,130);
+        if (this.hud.prevScene === "Tutorial") this.player.setPosition(38,72);
+        map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
+            const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
             this.enemies.push(e);
             e.setPosition(enemy.x, enemy.y);
         });
         if (this.hud.settings.desktop) {
             for (let i = 0; i < 40; ++i) {
-                const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+                const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
             };
         };
-        map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
-            this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0' })));
+        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
+            this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
         camera.startFollow(this.player, false, 0.1, 0.1);
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-        var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
+        var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys('W,UP'),
-            down: this?.input?.keyboard?.addKeys('S,DOWN'),
-            left: this?.input?.keyboard?.addKeys('A,LEFT'),
-            right: this?.input?.keyboard?.addKeys('D,RIGHT'),
-            action: this?.input?.keyboard?.addKeys('ONE,TWO,THREE,FOUR,FIVE'),
-            strafe: this?.input?.keyboard?.addKeys('E,Q'),
-            shift: this?.input?.keyboard?.addKeys('SHIFT'),
-            firewater: this?.input?.keyboard?.addKeys('T'),
-            tab: this?.input?.keyboard?.addKeys('TAB'),
-            escape: this?.input?.keyboard?.addKeys('ESC'),
+            up: this?.input?.keyboard?.addKeys("W,UP"),
+            down: this?.input?.keyboard?.addKeys("S,DOWN"),
+            left: this?.input?.keyboard?.addKeys("A,LEFT"),
+            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
+            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
+            strafe: this?.input?.keyboard?.addKeys("E,Q"),
+            shift: this?.input?.keyboard?.addKeys("SHIFT"),
+            firewater: this?.input?.keyboard?.addKeys("T"),
+            tab: this?.input?.keyboard?.addKeys("TAB"),
+            escape: this?.input?.keyboard?.addKeys("ESC"),
         }; 
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
-        this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        this.musicDay = this.sound.add('background2', { volume: this?.hud?.settings?.volume / 2, loop: true });
-        this.musicNight = this.sound.add('background', { volume: this?.hud?.settings?.volume / 2, loop: true });
-        this.musicCombat = this.sound.add('combat', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
+        this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+        this.musicDay = this.sound.add("background2", { volume: this?.hud?.settings?.volume / 2, loop: true });
+        this.musicNight = this.sound.add("background", { volume: this?.hud?.settings?.volume / 2, loop: true });
+        this.musicCombat = this.sound.add("combat", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicCombat2 = this.sound.add("combat2", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
 
         const party = this.registry.get("party");
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
-                const p = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                const p = new Party({scene:this,x:200,y:200,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
                 this.party.push(p);
-                if (this.hud.prevScene === 'Underground') p.setPosition(1410, 130);
-                if (this.hud.prevScene === 'Tutorial') p.setPosition(38, 72);
-                if (this.hud.prevScene === '') p.setPosition(200 + PARTY_OFFSET[i].x, 200 + PARTY_OFFSET[i].y);
+                if (this.hud.prevScene === "Underground") p.setPosition(1410, 130);
+                if (this.hud.prevScene === "Tutorial") p.setPosition(38, 72);
+                if (this.hud.prevScene === "") p.setPosition(200 + PARTY_OFFSET[i].x, 200 + PARTY_OFFSET[i].y);
             };
         };
 
@@ -217,7 +217,7 @@ export class Game extends Scene {
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
-        this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+        this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
         this.startDayCycle();
 
@@ -225,7 +225,7 @@ export class Game extends Scene {
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
 
     startDayCycle() {
@@ -245,13 +245,13 @@ export class Game extends Scene {
             };
         };
         this.day = true;
-        this.sound.play('day', { volume: this?.hud?.settings?.volume * 3 });
+        this.sound.play("day", { volume: this?.hud?.settings?.volume * 3 });
         const duration = 80000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0, to: 0.25 },
             duration,
-            ease: 'Sine.easeInOut',
+            ease: "Sine.easeInOut",
             onComplete: () => this.transitionToEvening()
         });
     };
@@ -262,7 +262,7 @@ export class Game extends Scene {
             targets: this.overlay,
             alpha: { from: 0.25, to: 0.5 },
             duration,
-            ease: 'Sine.easeInOut',
+            ease: "Sine.easeInOut",
             onComplete: () => this.transitionToNight()
         });
     };
@@ -284,13 +284,13 @@ export class Game extends Scene {
             };
         };
         this.day = false;
-        this.sound.play('night', { volume: this?.hud?.settings?.volume });
+        this.sound.play("night", { volume: this?.hud?.settings?.volume });
         const duration = 40000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.5, to: 0.65 },
             duration,
-            ease: 'Sine.easeInOut',
+            ease: "Sine.easeInOut",
             onComplete: () => this.transitionToMorning()
         });
     };
@@ -301,7 +301,7 @@ export class Game extends Scene {
             targets: this.overlay,
             alpha: { from: 0.65, to: 0 },
             duration,
-            ease: 'Sine.easeInOut',
+            ease: "Sine.easeInOut",
             onComplete: () => this.startDayCycle()
         });
     };
@@ -313,18 +313,18 @@ export class Game extends Scene {
     };
 
     cleanUp = (): void => {
-        EventBus.off('combat');
-        EventBus.off('reputation');
-        EventBus.off('enemyLootDrop');
-        EventBus.off('minimap');
-        EventBus.off('aggressive-enemy');
-        EventBus.off('update-postfx');
-        EventBus.off('update-camera-zoom');
-        EventBus.off('update-speed');
-        EventBus.off('update-enemy-aggression');
-        EventBus.off('update-enemy-special');
-        EventBus.off('add-to-party');
-        EventBus.off('despawn-enemy');
+        EventBus.off("combat");
+        EventBus.off("reputation");
+        EventBus.off("enemyLootDrop");
+        EventBus.off("minimap");
+        EventBus.off("aggressive-enemy");
+        EventBus.off("update-postfx");
+        EventBus.off("update-camera-zoom");
+        EventBus.off("update-speed");
+        EventBus.off("update-enemy-aggression");
+        EventBus.off("update-enemy-special");
+        EventBus.off("add-to-party");
+        EventBus.off("despawn-enemy");
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
             this.enemies[i].destroy();
@@ -341,13 +341,13 @@ export class Game extends Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== 'Game') return;
+        EventBus.on("combat", (combat: any) => this.state = combat); 
+        EventBus.on("reputation", (reputation: Reputation) => this.reputation = reputation);
+        EventBus.on("enemyLootDrop", (drops: any) => {
+            if (drops.scene !== "Game") return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });
-        EventBus.on('minimap', () => {
+        EventBus.on("minimap", () => {
             if (this.minimap.minimap.visible === true) {
                 this.minimap.minimap.setVisible(false);
                 this.minimap.border.setVisible(false);
@@ -358,7 +358,7 @@ export class Game extends Scene {
                 this.minimap.minimap.startFollow(this.player);
             };
         });
-        EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
+        EventBus.on("aggressive-enemy", (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             if (!enemy) return;
             enemy.isAggressive = e.isAggressive;
@@ -370,19 +370,19 @@ export class Game extends Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-        EventBus.on('check-stealth', (stealth: boolean) => {
+        EventBus.on("check-stealth", (stealth: boolean) => {
             this.stealth = stealth;
         });
-        EventBus.on('update-camera-zoom', (zoom: number) => {
+        EventBus.on("update-camera-zoom", (zoom: number) => {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
+        EventBus.on("update-speed", (data: { speed: number, type: string }) => {
             switch (data.type) {
-                case 'playerSpeed':
+                case "playerSpeed":
                     this.player.adjustSpeed(data.speed);
                     break;
-                case 'enemySpeed':
+                case "enemySpeed":
                     for (let i = 0; i < this.enemies.length; i++) {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
@@ -390,13 +390,13 @@ export class Game extends Scene {
                 default: break;
             };
         });
-        EventBus.on('update-enemy-aggression', (aggression: number) => {
+        EventBus.on("update-enemy-aggression", (aggression: number) => {
             if (this.hud.settings.difficulty.aggressionImmersion) return;
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isAggressive = aggression >= Math.random();
             };
         });
-        EventBus.on('update-enemy-aggression-immersion', (aggression: boolean) => {
+        EventBus.on("update-enemy-aggression-immersion", (aggression: boolean) => {
             if (aggression) {
                 for (let i = 0; i < this.enemies.length; i++) {
                     this.enemies[i].isAggressive = this.hud.reputation.factions.find((f: faction) => f.name === this.enemies[i].ascean.name)?.aggressive as boolean;
@@ -407,14 +407,14 @@ export class Game extends Scene {
                 };
             };
         });
-        EventBus.on('update-enemy-special', (special: number) => {
+        EventBus.on("update-enemy-special", (special: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
-        EventBus.on('add-to-party', this.addToParty);
-        EventBus.on('remove-from-party', this.removeFromParty);
-        EventBus.on('despawn-enemy-to-party', this.despawnEnemyToParty);
+        EventBus.on("add-to-party", this.addToParty);
+        EventBus.on("remove-from-party", this.removeFromParty);
+        EventBus.on("despawn-enemy-to-party", this.despawnEnemyToParty);
     };
 
     resumeScene = () => {
@@ -431,7 +431,7 @@ export class Game extends Scene {
         };
         this.matter.resume();
         this.scene.wake();
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
 
     switchScene = (current: string) => {
@@ -445,62 +445,62 @@ export class Game extends Scene {
         });
     };
 
-    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+    postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
-        if (type === 'threshold') this.postFxPipeline.setBloomThreshold(val);
-        if (type === 'chromatic') {
+        if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
+        if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
+        if (type === "chromatic") {
             if (val === true) {
                 this.postFxPipeline.setChromaticEnable();
             } else {
                 this.postFxPipeline.setChromaticEnable(val);
             };
         };
-        if (type === 'chabIntensity') this.postFxPipeline.setChabIntensity(val);
-        if (type === 'vignetteEnable') {
+        if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
+        if (type === "vignetteEnable") {
             if (val === true) {
                 this.postFxPipeline.setVignetteEnable();
             } else {
                 this.postFxPipeline.setVignetteEnable(val);
             };
         };
-        if (type === 'vignetteStrength') this.postFxPipeline.setVignetteStrength(val);
-        if (type === 'vignetteIntensity') this.postFxPipeline.setVignetteIntensity(val);
-        if (type === 'noiseEnable') {
+        if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
+        if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
+        if (type === "noiseEnable") {
             if (val === true) {
                 this.postFxPipeline.setNoiseEnable();
             } else {
                 this.postFxPipeline.setNoiseEnable(val);
             };
         };
-        if (type === 'noiseSeed') this.postFxPipeline.setNoiseSeed(val);
-        if (type === 'noiseStrength') this.postFxPipeline.setNoiseStrength(val);
-        if (type === 'vhsEnable') {
+        if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
+        if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
+        if (type === "vhsEnable") {
             if (val === true) {
                 this.postFxPipeline.setVHSEnable();
             } else {
                 this.postFxPipeline.setVHSEnable(val);
             };
         };
-        if (type === 'vhsStrength') this.postFxPipeline.setVhsStrength(val);
-        if (type === 'scanlinesEnable') {
+        if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
+        if (type === "scanlinesEnable") {
             if (val === true) {
                 this.postFxPipeline.setScanlinesEnable();
             } else {
                 this.postFxPipeline.setScanlinesEnable(val);
             };
         };
-        if (type === 'scanStrength') this.postFxPipeline.setScanStrength(val);
-        if (type === 'crtEnable') {
+        if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
+        if (type === "crtEnable") {
             if (val === true) {
                 this.postFxPipeline.setCRTEnable();
             } else {
                 this.postFxPipeline.setCRTEnable(val);
             };
         };
-        if (type === 'crtHeight') this.postFxPipeline.crtHeight = val;
-        if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
-        if (type === 'enable') {
+        if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
+        if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
+        if (type === "enable") {
             if (val === true) {
                 this.setPostFx(this.hud.settings?.postFx, true);
             } else {
@@ -537,7 +537,7 @@ export class Game extends Scene {
 
 
     getReputation = (): Reputation => {
-        EventBus.emit('request-reputation');
+        EventBus.emit("request-reputation");
         return this.reputation;
     };
 
@@ -558,7 +558,7 @@ export class Game extends Scene {
                     targets: tween,
                     angle: count * 360,
                     duration: count * 925,
-                    ease: 'Circ.easeInOut',
+                    ease: "Circ.easeInOut",
                     yoyo: false,
                 });
             } else {
@@ -633,7 +633,7 @@ export class Game extends Scene {
             this.stopCombatTimer();    
         };
         this.combat = bool;
-        EventBus.emit('combat-engaged', bool);
+        EventBus.emit("combat-engaged", bool);
     };
 
     stealthEngaged = (bool: boolean) => {
@@ -711,20 +711,20 @@ export class Game extends Scene {
         };
     };
 
-    drinkFlask = (): boolean => EventBus.emit('drink-firewater');
+    drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
     addToParty = (party: Ascean) => {
         const position = this.party.length;
         const ascean = populateEnemy(party);
         const compile = asceanCompiler(ascean) as Compiler;
-        const newParty = new Party({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile, position});
+        const newParty = new Party({scene:this,x:200,y:200,texture:"player_actions",frame:"player_idle_0",data:compile, position});
         this.party.push(newParty);
         newParty.setPosition(this.player.x - 40, this.player.y - 40);
     };
     despawnEnemyToParty = (id: string) => {
         const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
-        enemy.specialCombatText = this.showCombatText(`Excellent! I will not disappoint you, ${this.player.ascean.name}.`, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(`Excellent! I will not disappoint you, ${this.player.ascean.name}.`, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
         const party = getEnemy(enemy.ascean.name, enemy.ascean.level);
         this.player.removeEnemy(enemy);
         this.player.disengage();
@@ -740,7 +740,7 @@ export class Game extends Scene {
         const party = this.party.find((e: Party) => e.playerID === remove._id);
         if (!party) return;
         const prevCoords = new Phaser.Math.Vector2(party.x,party.y);
-        party.specialCombatText = this.showCombatText(`I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, 'bone', false, true, () => party.specialCombatText = undefined);
+        party.specialCombatText = this.showCombatText(`I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, "bone", false, true, () => party.specialCombatText = undefined);
         this.player.disengage();
         this.time.delayedCall(1500, () => {
             this.party = this.party.filter((par: Party) => par.playerID !== remove._id);
@@ -749,7 +749,7 @@ export class Game extends Scene {
             party.destroy();
 
             const compile = asceanCompiler(remove) as Compiler;
-            const enemy = new Enemy({scene:this,x:200,y:200,texture:'player_actions',frame:'player_idle_0',data:compile});
+            const enemy = new Enemy({scene:this,x:200,y:200,texture:"player_actions",frame:"player_idle_0",data:compile});
             this.enemies.push(enemy);
             enemy.setPosition(prevCoords.x, prevCoords.y);
         }, undefined, this);
@@ -821,7 +821,7 @@ export class Game extends Scene {
             callback: () => {
                 if (this.scene.isPaused()) return;
                 this.combatTime += 1;
-                EventBus.emit('update-combat-timer', this.combatTime);
+                EventBus.emit("update-combat-timer", this.combatTime);
             },
             callbackScope: this,
             loop: true
@@ -831,7 +831,7 @@ export class Game extends Scene {
     stopCombatTimer = (): void => {
         if (this.combatTimer) this.combatTimer.destroy();
         this.combatTime = 0;
-        EventBus.emit('update-combat-timer', this.combatTime);
+        EventBus.emit("update-combat-timer", this.combatTime);
     };
 
     update(_time: number, delta: number): void {

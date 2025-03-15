@@ -34,7 +34,7 @@ const GET_FORGE_COST = {
 
 const GET_NEXT_RARITY = {
     Common: "Uncommon",
-    Uncommon: 'Rare',
+    Uncommon: "Rare",
     Rare: "Epic",
     Epic: "Legendary",
 };
@@ -59,7 +59,7 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
             setKeywordResponses((prev) => [...prev, ...option.keywords || []]);
         };
           
-        if (option.action && typeof option.action === 'string') {
+        if (option.action && typeof option.action === "string") {
             const actionName = option.action.trim();
             const actionFunction = actions[actionName];
             if (actionFunction) {
@@ -398,7 +398,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setNamedEnemy(namedNameCheck(enemy.name));
         setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
         setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
-        // console.log(enemyArticle(), "Enemy Name Article", enemyDescriptionArticle(), "Enemy Description Article");
         const rep = reputation().factions.find((f: faction) => f.name === combat().computer?.name) as faction;
         if (rep) setRep(rep);
         checkQuests(enemy, manager().quests);
@@ -526,7 +525,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         } else {
             checkingLoot();
             EventBus.emit("persuasion", { persuasion, persuaded: false });
-            setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace('{enemy.faith}', combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
+            setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
             const timeout = setTimeout(() => {
                 engageCombat(combat()?.enemyID);
                 return () => clearTimeout(timeout);    
@@ -914,7 +913,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     return (
         <Show when={combat().computer}>
         <Show when={combat().isEnemy}>
-            <div class='story-dialog-options'>
+            <div class="story-dialog-options">
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
                 <Show when={game().currentIntent === "institutions"}>
                     <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
@@ -1068,11 +1067,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "conditions" ? (
                     <>
-                    <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of ${ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`}) }."`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                    <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of${ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`}) }."`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                     <br />
                     {rep()?.reputation >= 25 && party() ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                            <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                             <br />
                             <button class="highlight" onClick={changeEnemyToParty}>
                                 <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={typewriterStyling} performAction={hollowClick} />
@@ -1080,10 +1079,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         </div>
                     ) : rep()?.reputation >= 25 && !party() ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={`[You have reached maximum party size. The ${combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                            <Typewriter stringText={`[You have reached maximum party size. The ${combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                         </div>
                     ) : ( <div style={{ color: "gold" }}>
-                        <Typewriter stringText={`[The ${combat().computer?.name} is not capable of being recruited to your party. You must reach a higher level of reputation with them in order to recruit for your journey.]`} styling={{ overflow: 'auto', 'scrollbar-width': 'none', 'white-space': 'pre-wrap' }} performAction={hollowClick} />
+                        <Typewriter stringText={`[The ${combat().computer?.name} is not capable of being recruited to your party. You must reach a higher level of reputation with them in order to recruit for your journey.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                     </div> )}
                     </>
                 ) : game().currentIntent === "farewell" ? (
@@ -1173,7 +1172,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                     <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} /> 
                                 </Show>
                                 </>
-                        ) : ('') }
+                        ) : ("") }
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
                                 <Typewriter stringText={persuasionString} styling={typewriterStyling} performAction={hollowClick} />

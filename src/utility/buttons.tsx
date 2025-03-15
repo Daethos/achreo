@@ -1,35 +1,35 @@
-import { font } from './styling';
-import { SCREENS } from './screens';
-import { Accessor, Setter } from 'solid-js';
-import Equipment from '../models/equipment';
-import { useResizeListener } from './dimensions';
-import StatusEffect from './prayer';
-import { EventBus } from '../game/EventBus';
-const specials = ['Avarice', 'Dispel', 'Denial', 'Insight', 'Silence']; // Slow, Fear, Confuse, Charm
+import { font } from "./styling";
+import { SCREENS } from "./screens";
+import { Accessor, Setter } from "solid-js";
+import Equipment from "../models/equipment";
+import { useResizeListener } from "./dimensions";
+import StatusEffect from "./prayer";
+import { EventBus } from "../game/EventBus";
+const specials = ["Avarice", "Dispel", "Denial", "Insight", "Silence"]; // Slow, Fear, Confuse, Charm
 const specialDescription = {
-    'Avarice': 'Increases the amount of experience and gold gained.',
-    'Dispel': 'Removes the last prayer affecting the enemy.',
-    'Denial': 'Prevents the enemy from killing you.',
-    'Insight': 'The grace required for your next special action is reduced to 0 if above 0.',
-    'Silence': 'Prevents the enemy from praying.'
+    "Avarice": "Increases the amount of experience and gold gained.",
+    "Dispel": "Removes the last prayer affecting the enemy.",
+    "Denial": "Prevents the enemy from killing you.",
+    "Insight": "The grace required for your next special action is reduced to 0 if above 0.",
+    "Silence": "Prevents the enemy from praying."
 };
 
 export function BackForth({ id, left, right, menu, setMenu, createCharacter, newAscean }: { id: string, left: { screen: string, text: string }, right: { screen: string, text: string }, menu: () => any, setMenu: (menu: any) => void, createCharacter: (newAscean: any) => void, newAscean: any }) {
     return (
         <>
-        { (left?.screen !== 'undefined') && 
-            <button class='button cornerBL' onClick={() => setMenu({ ...menu(), screen: left.screen})}>
+        { (left?.screen !== "undefined") && 
+            <button class="button cornerBL" onClick={() => setMenu({ ...menu(), screen: left.screen})}>
                 <div>Back ({left.text})</div>
             </button>
         }
         { right?.screen && 
-            <button class='button cornerBR' onClick={() => setMenu({ ...menu(), screen: right.screen})}>
+            <button class="button cornerBR" onClick={() => setMenu({ ...menu(), screen: right.screen})}>
                 <div>Next ({right.text})</div>
             </button>
         }
         { id === SCREENS.COMPLETE.KEY && 
-            <button class='button cornerBR' onClick={() => createCharacter(newAscean)}>
-                <div>Create {newAscean?.name?.split(' ')[0]}</div>
+            <button class="button cornerBR" onClick={() => createCharacter(newAscean)}>
+                <div>Create {newAscean?.name?.split(" ")[0]}</div>
             </button>
         }
         </>

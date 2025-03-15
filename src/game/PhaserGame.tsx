@@ -384,6 +384,7 @@ export default function PhaserGame (props: IProps) {
     function recordCombatReputation(computer: Ascean) {
         let newReputation = { ...props.reputation() };
         if (!computer?.name) return newReputation;
+        if (instance.scene?.scene.key !== "Game") return;
         const enemies = ENEMY_ENEMIES[computer.name as keyof typeof ENEMY_ENEMIES];
         newReputation.factions.forEach((faction: faction) => {
             if (enemies.includes(faction.name)) {
@@ -482,6 +483,16 @@ export default function PhaserGame (props: IProps) {
                 if (enemies.includes(enemy.name)) {
                     setTimeout(() => {
                         EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "Close"});
+                    }, updateTimer * 3000);
+                    updateTimer++;
+                    quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
+                    updated = true;
+                };
+            };
+            if (quest.title === "Replenish Firewater") {
+                if (enemy.level >= props.ascean().level) {
+                    setTimeout(() => {
+                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 3000, key: "Close"});
                     }, updateTimer * 3000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);

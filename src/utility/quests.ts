@@ -148,7 +148,7 @@ export const QUEST_TEMPLATES = [
         title: "Principles and Principalities",
         description: "The land is becoming profuse with the stain of enemies, please stem the tide and leave this place awash with their blood.",
         requirements: {
-            description: "Kill 10 enemies of the {name} to ingratiate yourself toward their cause.",
+            description: "Kill 5 enemies of the {name} to ingratiate yourself toward their cause.",
             technical: initFetch
         },
         reward: [ARC, CHIOMISM, DESPERATION, FREEZE, HEALING, KYRISIAN, MAIERETH, PURSUIT, RECONSTITUTE, SPRINT, STORM]
@@ -166,7 +166,7 @@ export const QUEST_TEMPLATES = [
         title: "Replenish Firewater",
         description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy",
         requirements: {
-            description: `Kill 10 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.`,
+            description: `Kill 5 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.`,
             technical: initFetch
         },
         reward: [DESPERATION, HEALING, MARK, RECALL, RECONSTITUTE],
@@ -332,7 +332,7 @@ export const QUEST_TEMPLATES = [
         title: "Providence",
         description: "Aid in the proliferation of Daethos across the land",
         requirements: {
-            description: `Proselytize 10 Adherent to the faith of Daethos.`,
+            description: `Proselytize 5 Adherent to the faith of Daethos.`,
             technical: initFetch
         },
         reward: [ABSORB, ENVELOP, MENACE, MEND, PROTECT, RECOVER, REIN, SHIELD, WARD],

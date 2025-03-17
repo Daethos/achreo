@@ -107,12 +107,12 @@ export class Quest {
     };
 
     private getDescription(quest: any) {
-        const article = ["a", "e", "i", "o", "u"].includes(quest.giver.name[0].toLowerCase()) ? "an" : "a";
-        const namelessDescriptors = ["druid", "shaman", "apostle", "jester", "occultist", "stalker", "guard", "knight", "daethic", "bard", "kingsman", "firesword", "shrieker", "northren", "southron", "marauder", "fang", "soldier", "soverain", "rahvrecur", "se'dyrist", "nyren"];
-        const nameParts = quest.giver.name.toLowerCase().split(" ");
-        const hasDescriptor = nameParts.some((part: string) => namelessDescriptors.includes(part));
-        const nameless = hasDescriptor ? true : false;
-        const description = `${quest.description}. You have been tasked with ${quest.title} by ${nameless ? article + " " : ""}${quest.giver.name}.`;
+        // const article = ["a", "e", "i", "o", "u"].includes(quest.giver.name[0].toLowerCase()) ? "an" : "a";
+        // const namelessDescriptors = ["druid", "shaman", "apostle", "jester", "occultist", "stalker", "guard", "knight", "daethic", "bard", "kingsman", "firesword", "shrieker", "northren", "southron", "marauder", "fang", "soldier", "soverain", "rahvrecur", "se'dyrist", "nyren"];
+        // const nameParts = quest.giver.name.toLowerCase().split(" ");
+        // const hasDescriptor = nameParts.some((part: string) => namelessDescriptors.includes(part));
+        // const nameless = hasDescriptor ? true : false;
+        const description = `${quest.description}`; // . You have been tasked with ${quest.title} by ${nameless ? article + " " : ""}${quest.giver.name}.
         return description;
     };
 

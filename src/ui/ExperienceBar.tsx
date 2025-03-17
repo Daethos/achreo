@@ -37,7 +37,7 @@ export default function ExperienceBar({ ascean, game }: {ascean: Accessor<Ascean
         EventBus.emit('blend-game', { healthDisplay: nextView });
         EventBus.emit('insert-settings', { healthViews: nextView });
     };
-    return <div class='healthbar' onClick={changeDisplay} style={{ height: '6.25%' }}>
+    return <div class='healthbar' onClick={changeDisplay} style={{ height: '7.5%' }}>
         <p class='playerPortrait center' style={{ color: '#ffd700' }}>{experienceDisplay()}</p>
         <div style={{ position: 'absolute', bottom: 0, left: 0, top: 0, width: `${experiencePercentage()}%`, 'background': 'linear-gradient(purple, #080080)' }}></div>
     </div>;

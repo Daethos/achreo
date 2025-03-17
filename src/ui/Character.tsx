@@ -639,60 +639,62 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
-                <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden" }}>
-                    <div style={{ "justify-content": "center", "align-items": "center", "text-align": "center" }}>
-                        <p style={{ color: "gold", "font-size": "1.25em" }}>Feedback</p>
-                        <Form class="verticalCenter" style={{ "text-wrap": "balance" }}>
-                            <Form.Text class="text-muted">
-                                If you happen across any bugs, errors, or have any thoughts about the game, please leave an email. It would greatly help understanding my blindspots as a developer and programmer.
-                            </Form.Text>
-                            <br /><br />
-                        <Form.Group class="mb-3" controlId="formBasicEmail">
-                            <Form.Text class="text-muted gold">
-                                Warning: This will prompt your browser to open up a mail service of your choice.
-                            </Form.Text>
-                            <br /><br />
-                            <a href="mailto:ascean@gmx.com">Send Gameplay Feedback</a>
-                            <br /><br />
-                            <Form.Text class="text-muted gold">
-                                [Bugs, Errors, Issues, Suggestions]
-                            </Form.Text>
-                        </Form.Group>
-                        </Form>
+                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden" }}>
+                        <div style={{ "justify-content": "center", "align-items": "center", "text-align": "center" }}>
+                            <p style={{ color: "gold", "font-size": "1.25em" }}>Feedback</p>
+                            <Form class="verticalCenter" style={{ "text-wrap": "balance" }}>
+                                <Form.Text class="text-muted">
+                                    If you happen across any bugs, errors, or have any thoughts about the game, please leave an email. It would greatly help understanding my blindspots as a developer and programmer.
+                                </Form.Text>
+                                <br /><br />
+                            <Form.Group class="mb-3" controlId="formBasicEmail">
+                                <Form.Text class="text-muted gold">
+                                    Warning: This will prompt your browser to open up a mail service of your choice.
+                                </Form.Text>
+                                <br /><br />
+                                <a href="mailto:ascean@gmx.com">Send Gameplay Feedback</a>
+                                <br /><br />
+                                <Form.Text class="text-muted gold">
+                                    [Bugs, Errors, Issues, Suggestions]
+                                </Form.Text>
+                            </Form.Group>
+                            </Form>
+                        </div>
                     </div>
-                </div>
                 </Match>    
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
-                <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll" }}>
-                    { dimensions().ORIENTATION === "landscape" ? ( <>
-                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
-                        <h2 style={{ margin: "2%" }}>{combat()?.player?.description}</h2>
-                    </> ) : ( <>
-                        <h2 style={{ "margin-top": "15%" }}>
-                            <span>
-                                <img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} />
-                            </span>
-                            {combat()?.player?.description}
-                        </h2>
-                    </> ) }
+                    <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll" }}>
+                        { dimensions().ORIENTATION === "landscape" ? ( <>
+                            <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
+                            <h2 style={{ margin: "2%" }}>{combat()?.player?.description}</h2>
+                        </> ) : ( <>
+                            <h2 style={{ "margin-top": "15%" }}>
+                                <span>
+                                    <img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} />
+                                </span>
+                                {combat()?.player?.description}
+                            </h2>
+                        </> ) }
 
-                    <div class="propertyBlock" style={{ "margin-bottom": "0%", "font-size": "0.9em", "font-family": "Cinzel Regular" }}>
-                        <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div>Silver: <span class="gold">{ascean().currency.silver}</span> Gold: <span class="gold">{ascean().currency.gold} {"\n"}</span></div>
-                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
-                        <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
-                        <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
-                        <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
-                        <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+                        <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", 
+                            "margin-top": dimensions().HEIGHT > 420 ? "5%" : "" 
+                         }}>
+                            <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
+                            <div>Silver: <span class="gold">{ascean().currency.silver}</span> Gold: <span class="gold">{ascean().currency.gold} {"\n"}</span></div>
+                            <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
+                            <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
+                            <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
+                            <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
+                            <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
+                            <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+                        </div>
+                        <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                        </div>
                     </div>
-                    <div style={{ transform: "scale(0.9)" }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
-                    </div>
-                </div>
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden" }}>
+                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw" }}>
                         {/* <button class="highlight cornerTL" style={{ "background-color": "blue", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getInventory()}>
                             <p>Get Eqp</p>
                         </button> */}
@@ -702,26 +704,33 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {/* <button class="highlight cornerBR" style={{ "background-color": "gold", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
+                        <div style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         { ascean().experience >= ascean().level * 1000 && (
                             <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em" }}>Level++</p>
                             </button>
                         ) }
+                        {/* margin: 5% auto 2.5% */}
                         <div class="gold" style={dimensions().ORIENTATION === "landscape" ? { "font-size": dimensions().WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
                             {combat()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>
-                            <HealthBar combat={combat} enemy={false} game={game} />
+                            <div style={{  }}>
+                                <HealthBar combat={combat} enemy={false} game={game} />
+                            </div>
                         </Suspense>
-                        <div style={dimensions().ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "35%" : "7.5%", transform: dimensions().WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
+                        {/* margin-top: 7.5% */}
+                        <div style={dimensions().ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "7.5%" : "2.5%", transform: dimensions().WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                             </Suspense>
                         </div>
-                        <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "35%" : "-5%" }}>
+                        {/* margin-top: -5% */}
+                        <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "" : "-5%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <ExperienceBar ascean={ascean} game={game} />
                             </Suspense>
+                        </div>
                         </div>
                     </div>
                 </Match>
@@ -767,7 +776,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div class="propertyBlock" style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "0.9em", "font-family": "Cinzel Regular" }}>
+                    <div  style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div>Silver: <span class="gold">{ascean().currency.silver}</span> Gold: <span class="gold">{ascean().currency.gold} {"\n"}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
@@ -777,7 +786,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
                         <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
                     </div>
-                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
+                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "2.5%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                 </div>

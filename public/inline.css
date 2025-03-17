@@ -251,12 +251,12 @@
         margin: 12px 0 0;
         letter-spacing: 1px;
     }
-    .creature-heading h2{font-size: 1.25em;}
-    .creature-heading p{font-size: 1.25em;}
+    .creature-heading h2{font-size: 1.15em;}
+    .creature-heading p{font-size: 1.15em;}
     .property-line h4,
     .property-line p{
         margin: 0;
-        font-size: 1.25em;
+        font-size: 1.15em;
     }
     .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 12px 0 0}
@@ -265,14 +265,14 @@
         font-size: 1rem;
     }
     .abilities h4 {
-        margin: 12px 0 4px;font-size: 1.25em;
+        margin: 12px 0 4px;font-size: 1.15em;
     }
     .abilities p{
         margin: 0 0 12px;
     }
     .property-block h4,
     .property-block p {
-        font-size: 1.25em;
+        font-size: 1.15em;
     }
     .property-block {padding: 12px 4px 0;}
     .actions h3 {

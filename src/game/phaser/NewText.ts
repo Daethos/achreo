@@ -48,7 +48,7 @@ export default class NewText {
             };
         };
         let style = {
-            fontFamily: 'Cinzel Regular',
+            fontFamily: 'Cinzel-Regular',
             fontSize: 24,
             fontStyle: "",
             color: '#fdf6d8',

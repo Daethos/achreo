@@ -28,7 +28,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
 
         this.text = new Phaser.GameObjects.Text(scene, 0, 0, '', {
             color: '#fff',
-            fontFamily: 'Cinzel',
+            fontFamily: 'Cinzel-Regular',
             fontSize: '20px',
             stroke: 'black',
             strokeThickness: 2,
@@ -102,7 +102,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private release(): void {
         this.active = false;
         this.visible = false;
-        this.setPosition(-500,-500);
+        this.setPosition(-1000,-1000);
         this.text.setAlpha(1).setScale(1);
         this.pool.release(this);
     };

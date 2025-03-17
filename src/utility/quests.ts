@@ -155,7 +155,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [MARAUDER, SOUTHRON_WANDERER, FANG_MERCENARY, QUOREITE_OCCULTIST, QUOREITE_STALKER],
         title: "Lost Temple",
-        description: "Travel deep into the jungle to find a hidden temple and explore its secrets", 
+        description: "Travel deep into the jungle to find a hidden temple and explore its secrets.", 
         requirements: {
             description: `Discover the depths of the lost temple.`,
             technical: initSolve
@@ -164,7 +164,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, ACHREON_DRUID, CAMBIREN_DRUID, SEVA_SHRIEKER, FYERS_OCCULTIST, LIIVI_LEGIONNAIRE],
         title: "Replenish Firewater",
-        description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy",
+        description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy.",
         requirements: {
             description: `Kill 5 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.`,
             technical: initFetch
@@ -173,7 +173,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [NORTHREN_WANDERER, SOUTHRON_WANDERER, NYREN, RAHVREHCUR, SEDYRIST, QUOREITE_STALKER],
         title: "Sunken Cities",
-        description: "Explore the ruins of an ancient city and discover its treasures",
+        description: "Explore the ruins of an ancient city and discover its treasures.",
         requirements: {
             description: `Explore the depths of the sunken city.`,
             technical: initSolve
@@ -182,7 +182,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [FANG_DUELIST, SHRYGEIAN_BARD, CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, RAHVREHCUR],
         title: "The Murder of a Merchant",
-        description: "Aid in the investigation of a murder that occured recently",
+        description: "Aid in the investigation of a murdered merchant that has occured recently. Find the culprit, and bring them to justice.",
         requirements: {
             description: "Solve the murder.",
             technical: initSolve
@@ -200,7 +200,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST, EUGENES, GARRIS],
         title: "Blessed Hunt",
-        description: "Come frolicking with the Ma'ier in the Merriment of the night to the Mother Moon",
+        description: "Come frolicking with the Ma'ier in the Merriment of the night to the Mother Moon.",
         requirements: {
             completed: ["Mist of the Moon"],
             description: `Participate in a Blessed Hunt with the Ma'ier.`,

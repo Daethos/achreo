@@ -11,7 +11,7 @@ export const Attributes = [{
 }, {
     name: 'agility',
     title: "Of Kyn'gi and Se'dyro",
-    description: "The physical clarity you possess, weighing heavily into your abliity to mitigate and perform physical damage with finesse. \n\n While an understood quality, there are many of an othernature who have been known to admire and reward this trait.",
+    description: "The physical clarity you possess, weighing heavily into your abliity to mitigate and perform physical damage with finesse. \n\n While an understood quality, there are many of another nature who have been known to admire and reward this trait.",
     gameplay: "Governs Physical Crit Chance, Physical Damage, Roll, and Stamina. Affects Dual-Wielding One-Hand Physical Weapons"
 }, {
     name: 'achre',

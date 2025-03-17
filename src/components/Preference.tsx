@@ -22,7 +22,7 @@ export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<C
     ];
     const poly = window.innerWidth * 0.55;
     return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%' }}>
-        <h1 class='gold'>Armor</h1> 
+        <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Armor</h1> 
         <For each={preferenceState}>
             {(preference) => (
                 <ArmorCard preference={preference} newAscean={newAscean} setNewAscean={setNewAscean} show={show} setShow={setShow} setArmor={setArmor} />

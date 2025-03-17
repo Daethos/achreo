@@ -12,13 +12,13 @@ body {margin:0; padding:0; max-width: 1920px; max-height: 1080px; color: rgba(25
 .cornerTL {position: absolute; top: 0; left: 0; font-size: 0.8em; border-radius: 5%;}
 .superCenter {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
 .super {font-size: 0.5em;}
-.highlight {color: #fdf6d8; background: #000; border-radius: 0.25em; padding: 0.25em 1rem; margin: 0.5em;}
+.highlight {color: #fdf6d8; background: #000; border-radius: 0.25em; font-family: "Cinzel Regular"; font-size: 1em; font-variant: small-caps; padding: 0.25em 1rem; margin: 0.5em;}
 .highlight:focus {color: gold;}
 .highlight:hover {color: gold;}
 .cinzel {font-family: 'Cinzel Regular', 'Cinzel', 'Cinzel Bold', 'Cinzel-Regular';}
 .enter {font-size:1.5em;}
 .full {width:100%;}
-.title {font-size: 7.5em; margin-bottom: 0.25em; margin-top: -0.25em; color:#fdf6d8; text-shadow: 0em 0em 0.1em #ffd700;}
+.title {font-size: 7.5em; font-variant: small-caps; margin-bottom: 0.25em; margin-top: -0.25em; color:#fdf6d8; text-shadow: 0em 0em 0.1em #ffd700;}
 .animate {animation: gradient 1s ease infinite;}
 .long-animate {animation: power 10s ease infinite;}
 @keyframes gradient {

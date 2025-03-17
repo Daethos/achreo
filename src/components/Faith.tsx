@@ -60,7 +60,7 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
 
 export default function Faith({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {
     return <div class='center creature-heading fadeIn' style={{ 'margin-bottom': '3%' }}>
-        <h1 class='gold'>Faith</h1>
+        <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Faith</h1>
         <div>
             <For each={FAITHS}>
                 {(faith) => (

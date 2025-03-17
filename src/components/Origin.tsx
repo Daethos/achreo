@@ -125,7 +125,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
 export default function Origin({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) { 
     return (
         <div class='center creature-heading fadeIn'>
-            <h1 class='gold'>Origins</h1> 
+            <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Origins</h1> 
             <div>
                 <For each={ORIGINS}> 
                     {((origin) => (

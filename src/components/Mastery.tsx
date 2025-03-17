@@ -17,7 +17,7 @@ const FaithCard = ({ mastery, newAscean, setNewAscean }: { mastery: any; newAsce
 
 export default function Mastery({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) {
     return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%' }}>
-        <h1 class='gold'>Mastery</h1>
+        <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Mastery</h1>
         <div>
             <For each={Attributes}>
                 {(mastery) => (

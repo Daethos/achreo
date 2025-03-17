@@ -36,7 +36,8 @@ export class MainMenu extends Phaser.Scene {
             'Enter Game', 
         {
             fontFamily: 'Cinzel Regular', 
-            fontSize: window.innerWidth > 1200 ? 72 : 36, 
+            fontSize: window.innerWidth > 1200 ? 72 : 36,
+            fontStyle: "small-caps",
             color: '#fdf6d8',
             stroke: '#000000', 
             strokeThickness: 8,

@@ -50,6 +50,7 @@ export default class NewText {
         let style = {
             fontFamily: 'Cinzel Regular',
             fontSize: 24,
+            fontStyle: "",
             color: '#fdf6d8',
             backgroundColor: '#000',
             stroke: '#000',
@@ -67,11 +68,13 @@ export default class NewText {
                 style.fontSize = 172;
                 style.strokeThickness = 8;
                 style.shadow.blur = 20;
+                style.fontStyle = "small-caps";
                 break;
             case 'title':
                 style.fontSize = 112;
                 style.strokeThickness = 6;
                 style.shadow.blur = 15;
+                style.fontStyle = "small-caps";
                 break;
             case 'subtitle':
                 style.fontSize = 72;

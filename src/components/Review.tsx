@@ -35,9 +35,9 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         <div class='creature-heading'>
             <h1>Review Character</h1>
             <h2 class='p-3'>
-                You are <span class='gold'>{newAscean()?.name}</span>, {originArticle} <span class='gold'>{newAscean()?.origin}</span> {newAscean()?.sex === 'Man' ? 'man' : 'woman'} of your homeland, <span class='gold'>{land}</span>, recently matured and venturing to the Ascea. 
+                You are <span class='gold'>{newAscean()?.name}</span>, {originArticle} <span class='gold'>{newAscean()?.origin}</span> {newAscean()?.sex === 'Man' ? 'man' : 'woman'} of <span class='gold'>{land}</span>, recently matured and venturing to the Ascea. 
                 By your own admission, you are {descArticle} <span class='gold'>{newAscean()?.description}</span>.
-                Your armor of choice which keeps you safe is <span class='gold'>{newAscean()?.preference}</span>. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
+                Your armor of choice which keeps you safe is <span class='gold'>{newAscean()?.preference.toLowerCase()}</span>. Your mastery lies in <span class='gold'>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
                 in some sense, that is how one perceives this world. Your faith is <span class='gold'>{newAscean()?.faith}</span>, the worship of <span class='gold'>{name()}</span>. {character()} 
             </h2>
         </div>

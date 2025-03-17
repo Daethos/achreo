@@ -870,7 +870,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <div class="modal" onClick={() => setShowFaith(!showFaith())}>
                 <FaithModal faith={ascean().faith} />
             </div>
-        </Show> 
+        </Show>
         <Show when={(inspectModalShow() && inspectItems())}> 
             <div class="modal">
                 <Modal 

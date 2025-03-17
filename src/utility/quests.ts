@@ -1,7 +1,7 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ABSORB, ACHIRE, ARC, ASTRAVE, BLINK, CHIOMIC, CHIOMISM, CONFUSE, DESPERATION, DISEASE, DISPEL, ENVELOP, FREEZE, FYERUS, HEALING, HOOK, HOWL, ILIRECH, KYNISOS, KYRISIAN, KYRNAICISM, LEAP, LIKYR, MAIERETH, MALICE, MARK, MENACE, MEND, MODERATE, MULTIFARIOUS, MYSTIFY, NETHERSWAP, PARALYZE, POLYMORPH, PROTECT, PURSUIT, QUOR, RECALL, RECONSTITUTE, RECOVER, REIN, RENEWAL, ROOT, RUSH, SACRIFICE, SCREAM, SHADOW, SHIELD, SHIMMER, SHIRK, SPECIAL, SPRINT, STORM, SUTURE, TETHER, WARD, WRITHE } from "./abilities";
-import { ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "./player";
+import { ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, Reputation, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "./player";
 import { v4 as uuidv4 } from 'uuid';
 const QUESTING = {
     PLAYER_THRESHOLD_ONE: 4,
@@ -112,8 +112,8 @@ export class Quest {
         // const nameParts = quest.giver.name.toLowerCase().split(" ");
         // const hasDescriptor = nameParts.some((part: string) => namelessDescriptors.includes(part));
         // const nameless = hasDescriptor ? true : false;
-        const description = `${quest.description}`; // . You have been tasked with ${quest.title} by ${nameless ? article + " " : ""}${quest.giver.name}.
-        return description;
+        // const description = `${quest.description}`; // . You have been tasked with ${quest.title} by ${nameless ? article + " " : ""}${quest.giver.name}.
+        return quest.description;
     };
 
     private getExperience(level: number) {
@@ -148,7 +148,7 @@ export const QUEST_TEMPLATES = [
         title: "Principles and Principalities",
         description: "The land is becoming profuse with the stain of enemies, please stem the tide and leave this place awash with their blood.",
         requirements: {
-            description: "Kill 5 enemies of the {name} to ingratiate yourself toward their cause.",
+            description: "Defeat 5 enemies of the {name}, ingratiating yourself toward their cause.",
             technical: initFetch
         },
         reward: [ARC, CHIOMISM, DESPERATION, FREEZE, HEALING, KYRISIAN, MAIERETH, PURSUIT, RECONSTITUTE, SPRINT, STORM]
@@ -157,7 +157,7 @@ export const QUEST_TEMPLATES = [
         title: "Lost Temple",
         description: "Travel deep into the jungle to find a hidden temple and explore its secrets.", 
         requirements: {
-            description: `Discover the depths of the lost temple.`,
+            description: "Discover the depths of the lost temple.",
             technical: initSolve
         },
         reward: [MARK, RECALL],
@@ -166,16 +166,16 @@ export const QUEST_TEMPLATES = [
         title: "Replenish Firewater",
         description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy.",
         requirements: {
-            description: `Kill 5 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.`,
+            description: "Defeat 5 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.",
             technical: initFetch
         },
         reward: [DESPERATION, HEALING, MARK, RECALL, RECONSTITUTE],
     }, {
         name: [NORTHREN_WANDERER, SOUTHRON_WANDERER, NYREN, RAHVREHCUR, SEDYRIST, QUOREITE_STALKER],
         title: "Sunken Cities",
-        description: "Explore the ruins of an ancient city and discover its treasures.",
+        description: "Explore the ruins of an ancient city, discovering and recovering its treasures.",
         requirements: {
-            description: `Explore the depths of the sunken city.`,
+            description: "Explore the depths of the sunken city.",
             technical: initSolve
         },
         reward: [MARK, RECALL],
@@ -193,7 +193,7 @@ export const QUEST_TEMPLATES = [
         title: "Mist of the Moon",
         description: "Ingratiate yourself with the Ma'ier, occultists of the Ma'anreic Moon, and gain their trust to understand the Blood Moon Prophecy.",
         requirements: {
-            description: `Discover the Blood Moon Prophecy.`,
+            description: "Discover the Blood Moon Prophecy.",
             technical: initSolve
         },
         reward: [BLINK, HOOK, MAIERETH, MALICE, PURSUIT, RUSH, SACRIFICE, SHIMMER], // Con, Str, Agi, Caer, Kyo
@@ -203,35 +203,35 @@ export const QUEST_TEMPLATES = [
         description: "Come frolicking with the Ma'ier in the Merriment of the night to the Mother Moon.",
         requirements: {
             completed: ["Mist of the Moon"],
-            description: `Participate in a Blessed Hunt with the Ma'ier.`,
+            description: "Participate in a Blessed Hunt with the Ma'ier.",
             technical: initSolve
         },
-        reward: [BLINK, HOOK, MAIERETH, MALICE, PURSUIT, RUSH, SACRIFICE, SHIMMER], // Con, Str, Agi, Caer, Kyo
+        reward: [BLINK, HOOK, MAIERETH, MALICE, PURSUIT, RUSH, SACRIFICE, SHIMMER, SPRINT], // Con, Str, Agi, Caer, Kyo
     }, {
         name: [ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST],
         title: "Sheath of the Sun",
         description: "Ingratiate yourself with the Ilire, occultists of the Ilian Sun, and gain their trust to understand the Black Sun Prophecy.",
         requirements: {
-            description: `Discover the Black Sun Prophecy.`,
+            description: "Discover the Black Sun Prophecy.",
             technical: initSolve
         },
-        reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER],
+        reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER, STORM],
     }, {
         name: [ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST],
         title: "Blinding Hunt",
         description: "Steel yourself into the savage tshaering of the Ilire.",
         requirements: {
             completed: ["Mist of the Moon"],
-            description: `Participate in a Blind Hunt with the Ilire.`,
+            description: "Participate in a Blind Hunt with the Ilire.",
             technical: initSolve
         },
-        reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER],
+        reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER, STORM],
     }, {
         name: [ACHREON_DRUID, CAMBIREN_DRUID, LEAF, VINCERE, DORIEN],
         title: "The Cerchre",
         description: "Ingratiate yourself with the Cerchre, a loose collection of occult worshipers in the Northren provinces, and gain their trust to understand the Wild.",
         requirements: {
-            description: `Discover and ingratiate yourself to the Cerchre and their adherence to the Wild.`,
+            description: "Discover and ingratiate yourself to the Cerchre and their adherence to the Wild.",
             technical: initSolve
         },
         reward: [ACHIRE, BLINK, HOWL, LEAP, MODERATE, MULTIFARIOUS, POLYMORPH, REIN, RUSH, WRITHE],
@@ -241,16 +241,26 @@ export const QUEST_TEMPLATES = [
         description: "Find the way one can become more; adhere their caer to the bond of wild nature, and instantiate.",
         requirements: {
             completed: ["The Cerchre"],
-            description: `Discover the ritual of the Cerchre and initiate.`,
+            description: "Discover the ritual of the Cerchre and initiate.",
             technical: initSolve
         },
         reward: [ACHIRE, BLINK, HOWL, LEAP, MODERATE, MULTIFARIOUS, POLYMORPH, REIN, RUSH, WRITHE],
+    }, {
+        name: [ANASHTRE, ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, FYERS_OCCULTIST, TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, DORIEN, MIRIO, QUOREITE_OCCULTIST, RAHVREHCUR, OLD_LIIVI_OCCULTIST, FIEROUS],
+        title: "The Otherland", // Vildivor (The Vast WIlderness), Blutlache (Blood Pool), the Ascean, the Necropolitan, the Hushland, Tonaltzin (The Land of Sunsets), Tlalcaxiuh (The Land of the Sun Setting Moon), Vildevaor (The Black Lake), Tho'nasine, La'zolteal, Cho'mir Liesto (Lies to Eat)
+        description: "Learn all the names of the Land of Hush and Tendril.",
+        requirements: {
+            description: "Discover all the terms of the otherland.",
+            technical: initSolve 
+        },
+        reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
     }, {
         name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, DORIEN, MIRIO, RAHVREHCUR, OLD_LIIVI_OCCULTIST, FIEROUS],
         title: "The Land of Hush and Tendril",
         description: "Peer into this. Spoken as though not of this world, yet all the same it wraps. Do you wish this?",
         requirements: {
-            description: `Discover a way to enter the Land of Hush and Tendril.`,
+            completed: ["The Otherland"],
+            description: "Discover a way to enter the Land of Hush and Tendril.",
             technical: initSolve
         },
         reward: [DISPEL, ENVELOP, NETHERSWAP, QUOR, RECOVER, SHIRK],
@@ -259,7 +269,8 @@ export const QUEST_TEMPLATES = [
         title: "Shatter",
         description: "Are you ready to relax yourself, and give into the yearning other?",
         requirements: {
-            description: `Enter the Land of Hush and Tendril, and experience your wild caer.`,
+            completed: ["The Land of Hush and Tendril"],
+            description: "Enter the Land of Hush and Tendril, and experience your wild caer.",
             technical: initSolve
         },
         reward: [DISPEL, ENVELOP, NETHERSWAP, QUOR, RECOVER, SHIRK],
@@ -267,54 +278,54 @@ export const QUEST_TEMPLATES = [
         
         name: [TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, DORIEN, MIRIO, RAHVREHCUR, OLD_LIIVI_OCCULTIST, FIEROUS],
         title: "Sleep",
-        description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland",
+        description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland.",
         requirements: {
-            description: `Experience the otherland in your slumber.`,
+            description: "Experience the otherland in your slumber.",
             technical: initSolve
         },
         reward: [ACHIRE, HOOK, PURSUIT, RUSH, SHADOW, SHIMMER, TETHER],
     }, {
         name: [FYERS_OCCULTIST, FIRESWORN, TORREOUS, FIEROUS],
         title: "The Phoenix",
-        description: "Learn more about the Phoenix and its origin of rebirth",
+        description: "Learn more about the Phoenix and its origin of rebirth.",
         requirements: {
-            description: `Discover the ritual of the Phoenix.`,
+            description: "Discover the ritual of the Phoenix.",
             technical: initSolve
         },
         reward: [ABSORB, ACHIRE, FYERUS, QUOR, REIN, SACRIFICE],
     }, {
         name: [AHNARE_APOSTLE, SYNAETHI, KRECEUS],
         title: "The Ahn'are",
-        description: "Learn more about the Ahn'are, the soaring angels of Ahn've, and their origin of flight",
+        description: "Learn more about the Ahn'are, the soaring angels of Ahn've, and their origin of flight.",
         requirements: {
-            description: `Discover the ritual Ahn'are ascension.`,
+            description: "Discover the ritual Ahn'are ascension.",
             technical: initSolve
         },
         reward: [ACHIRE, ASTRAVE, BLINK],
     }, {
         name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SERA, LIIVI_LEGIONNAIRE],
         title: "Seek Devotion",
-        description: "Become initiated into the faith of Daethos",
+        description: "Become initiated into the faith of Daethos.",
         requirements: {
-            description: `Become Devoted to Daethos.`,
+            description: "Become Devoted to Daethos.",
             technical: initSolve
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
         name: [ANASHTRE, AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
         title: "Anashtre Ascension",
-        description: "Seek information about the Anashtre and the ritual of the past to form the lightning wing of Astra",
+        description: "Seek information about the Anashtre and the ritual of the past to form the lightning wing of Astra.",
         requirements: {
-            description: `Discover the ritual to ascend to an Anashtre.`,
+            description: "Discover the ritual to ascend to an Anashtre.",
             technical: initSolve
         },
         reward: [ASTRAVE, BLINK, DISPEL, KYNISOS, PARALYZE, ROOT, RUSH, SHADOW, SHIRK, SPRINT],
     }, {
         name: [ANASHTRE, AHNARE_APOSTLE, "Astral Apostle", KRECEUS],
         title: "Astrification",
-        description: "Seek information about Astrification and the ritual of the past to form the lightning spear of Astra",
+        description: "Seek information about Astrification and the ritual of the past to form the lightning spear of Astra.",
         requirements: {
-            description: `Discover the ritual of Astrification.`,
+            description: "Discover the ritual of Astrification.",
             technical: initSolve
         },
         reward: [ASTRAVE, BLINK, DISPEL, KYNISOS, PARALYZE, ROOT, RUSH, SHADOW, SHIRK, SPRINT],
@@ -323,19 +334,37 @@ export const QUEST_TEMPLATES = [
         title: "Curse of the Ky'myr",
         description: "Track down the mystery behind the Ky'myr and its curse of ceaselessness.",
         requirements: {
-            description: `Discover the source of the Ky'myr curse.`,
+            description: "Discover the source of the Ky'myr curse. Perhaps you will be allured by its thwarting of death itself, and seek means to become one.",
             technical: initSolve
         },
         reward: [DISEASE, HOOK, KYRISIAN, KYRNAICISM, LIKYR, RENEWAL, SACRIFICE, SUTURE],
     }, {
+        name: [ANASHTRE, ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, FYERS_OCCULTIST, TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, OLD_LIIVI_OCCULTIST],
+        title: "Primal Nature",
+        description: "Come over to the primal nature of your being and become Adherent.",
+        requirements: {
+            description: "Become Adherent to the Ancients.",
+            technical: initSolve 
+        },
+        reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
+    }, {
+        name: [ANASHTRE, ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, FYERS_OCCULTIST, TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, OLD_LIIVI_OCCULTIST],
+        title: "Adherence",
+        description: "Bring back the devoted across the land toward the ancient worship.",
+        requirements: {
+            description: "Convert 5 Devoted to the worship of the Ancients.",
+            technical: initSolve 
+        },
+        reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
+    }, {
         name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SERA, LIIVI_LEGIONNAIRE],
         title: "Providence",
-        description: "Aid in the proliferation of Daethos across the land",
+        description: "Aid in the proliferation of Daethos across the land.",
         requirements: {
-            description: `Proselytize 5 Adherent to the faith of Daethos.`,
+            description: "Proselytize 5 Adherent to the faith of Daethos.",
             technical: initFetch
         },
-        reward: [ABSORB, ENVELOP, MENACE, MEND, PROTECT, RECOVER, REIN, SHIELD, WARD],
+        reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
     }
 ]
 export const getQuests = (name: string) => {

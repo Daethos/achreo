@@ -271,7 +271,7 @@ export class Hud extends Phaser.Scene {
             health: enemy.health, 
             isAggressive: enemy.isAggressive, 
             startedAggressive: enemy.startedAggressive, 
-            isDefeated: enemy.isDefeated, 
+            isDefeated: enemy.defeatedByPlayer, 
             isTriumphant: enemy.isTriumphant,
             isLuckout: enemy.isLuckout, 
             isPersuaded: enemy.isPersuaded, 

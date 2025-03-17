@@ -110,6 +110,7 @@ export default class Enemy extends Entity {
     specialConfuse: boolean = false;
     confuseCount: number = 0;
     specialFear: boolean = false;
+    defeatedByPlayer: boolean = false;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -246,6 +247,7 @@ export default class Enemy extends Entity {
         this.isSpecial = this.setSpecial();
         this.slowDuration = DURATION.SLOWED;
         this.isDefeated = false;
+        this.defeatedByPlayer = false;
         this.isLuckout = false;
         this.isPersuaded = false;
         this.playerTrait = '';
@@ -1065,6 +1067,7 @@ export default class Enemy extends Entity {
         this.enemies = [];
         this.clearStatuses();
         this.currentAction = "";
+        this.defeatedByPlayer = true;
     };
     
     clearCombatWin = () => { 
@@ -1430,6 +1433,7 @@ export default class Enemy extends Entity {
         EventBus.emit(BROADCAST_DEATH, this.enemyID);
         const party = this.scene.party.find((e: Party) => e.enemyID === this.killingBlow);
         if (party) { // A Party Member Got the Killing Blow
+            this.defeatedByPlayer = true;
             EventBus.emit('killing-blow', {e:this.ascean, enemyID:this.enemyID});
         };
         this.killingBlow = '';

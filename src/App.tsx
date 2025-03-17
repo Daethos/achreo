@@ -353,7 +353,7 @@ export default function App() {
     };
     const removeQuest = async (quest: Quest) => {
         try {
-            const newQuests = quests().quests.filter(q => q.title !== quest.title);
+            const newQuests = quests().quests.filter(q => q._id !== quest._id);
             const newQuestManager: QuestManager = {
                 ...quests(),
                 quests: newQuests

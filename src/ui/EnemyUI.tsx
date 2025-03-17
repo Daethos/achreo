@@ -28,6 +28,10 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     const dimensions = useResizeListener(); 
     createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
+        if (state().combatEngaged) {
+            setShow(!show());
+            return;
+        };
         EventBus.emit('disengage');
         EventBus.emit('remove-enemy', id);
         setShow(!show());
@@ -84,13 +88,13 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
                     <HealthBar combat={state} enemy={true} game={game} />
                 </div>
                 </Suspense>
-                <div style={{ color: '#fdf6d8', 'margin-top': dimensions().WIDTH > 1200 ? '13.5%' : '9.5%', 'font-size': dimensions().WIDTH > 1200 ? '1.25em' : '0.875em' }}>
+                <div style={{ color: '#fdf6d8', 'margin-top': dimensions().WIDTH > 1200 ? '13.5%' : '10%', 'font-size': dimensions().WIDTH > 1200 ? '1.25em' : '0.875em' }}>
                     Level <span class='gold'>{state().computer?.level}</span> | Mastery <span class='gold'>{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                 </div>
                 <div class='' style={{ transform: 'scale(0.875)', 'margin-top': dimensions().WIDTH > 1200 ? '2.5%' : '1%', 'z-index': 1, 'margin-bottom': dimensions().WIDTH > 1200 ? '7.5%' : '3%' }}>
                     <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                 </div>
-                <div style={{ 'margin-left': '0', 'margin-top': dimensions().WIDTH > 1200 ? '' : '-7.5%', transform: `scale(${transformScale()})`, 'z-index': 1 }}>
+                <div style={{ 'margin-left': '0', 'margin-top': dimensions().WIDTH > 1200 ? '' : dimensions().HEIGHT > 420 ? '-5%' : '-7.5%', transform: `scale(${transformScale()})`, 'z-index': 1 }}>
                     <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
                 <Show when={itemShow()}>

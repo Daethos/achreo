@@ -81,12 +81,13 @@ const ORIGINS = [{
 export const OriginModal = ({ origin }: { origin: string }) => {
     const dimensions = useResizeListener();
     const race = ORIGINS.find((o) => o.name === origin);
-    return <div class='border verticalCenter' style={{ position: 'absolute',
-        width: dimensions().ORIENTATION === 'landscape' ? '85%' : '', 
-        left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '',
+    return <div class="border verticalCenter" style={{ position: "absolute",
+        top: "48%",
+        width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
+        left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
     }}>
-        <div class="border creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
-            <p class='super wrap'>
+        <div class="border creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
+            <p class="super wrap">
                 {race?.bio}<br /><br />{race?.bioTwo}
             </p>
             <p class="gold small mb-3">Bonuses: {race?.bonus}</p>
@@ -103,16 +104,16 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
     }; 
     const dimensions = useResizeListener();
 
-    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? 'gold' : '#fdf6d8' }}>{origin.name}</button>}>
-        <div class='modal' onClick={handleShow} style={{ 'text-wrap': 'balance' }}>
-        <div class="border verticalCenter" style={{ position: 'absolute',
-            width: dimensions().ORIENTATION === 'landscape' ? '85%' : '', 
-            left: dimensions().ORIENTATION === 'landscape' ? '7.5%' : '',
-            // height: dimensions().ORIENTATION === 'landscape' ? '' : '75%',
-            // top: dimensions().ORIENTATION === 'landscape' ? '' : '0%',
+    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8" }}>{origin.name}</button>}>
+        <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance" }}>
+        <div class="border verticalCenter" style={{ position: "absolute",
+            width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
+            left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
+            // height: dimensions().ORIENTATION === "landscape" ? "" : "75%",
+            // top: dimensions().ORIENTATION === "landscape" ? "" : "0%",
         }}>
-            <div class="creature-heading" style={{ height: '100%', 'text-wrap': 'balance' }}><br />
-                <p class='super wrap'>
+            <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
+                <p class="super wrap">
                     {origin.bio}<br /><br />{origin.bioTwo}
                 </p>
                 <p class="gold small mb-3">Bonuses: {origin.bonus}</p>
@@ -124,8 +125,8 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
 
 export default function Origin({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) { 
     return (
-        <div class='center creature-heading fadeIn'>
-            <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Origins</h1> 
+        <div class="center creature-heading fadeIn">
+            <h1 class="gold" style={{ "margin-bottom": "1.5%" }}>Origins</h1> 
             <div>
                 <For each={ORIGINS}> 
                     {((origin) => (

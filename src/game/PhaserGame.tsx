@@ -1,38 +1,38 @@
-import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from 'solid-js';
-import { createStore } from 'solid-js/store';
-import Ascean from '../models/ascean';
-import Equipment, { getOneRandom, upgradeEquipment } from '../models/equipment';
-import Settings from '../models/settings';
-import Statistics from '../utility/statistics';
-import StartGame from './main';
-import { EventBus } from './EventBus';
-import { Menu } from '../utility/screens';
-import { Combat, initCombat } from '../stores/combat';
-import { EnemySheet, fetchEnemy } from '../utility/enemy';
-import { GameState, initGame } from '../stores/game';
-import { Compiler, LevelSheet, asceanCompiler } from '../utility/ascean';
-import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from '../assets/db/db';
-import { getNpcDialog } from '../utility/dialog';
-import { getAsceanTraits } from '../utility/traits';
-import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from '../utility/DialogNode';
-import { fetchNpc } from '../utility/npc';
-import { checkDeificConcerns } from '../utility/deities';
-import { STARTING_SPECIALS } from '../utility/abilities';
-import { ENEMY_ENEMIES, Inventory, Reputation, faction } from '../utility/player';
-import { Puff } from 'solid-spinner';
-import Talents from '../utility/talents';
-import QuestManager, { Quest } from '../utility/quests';
-const BaseUI = lazy(async () => await import('../ui/BaseUI'));
+import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from "solid-js";
+import { createStore } from "solid-js/store";
+import Ascean from "../models/ascean";
+import Equipment, { getOneRandom, upgradeEquipment } from "../models/equipment";
+import Settings from "../models/settings";
+import Statistics from "../utility/statistics";
+import StartGame from "./main";
+import { EventBus } from "./EventBus";
+import { Menu } from "../utility/screens";
+import { Combat, initCombat } from "../stores/combat";
+import { EnemySheet, fetchEnemy } from "../utility/enemy";
+import { GameState, initGame } from "../stores/game";
+import { Compiler, LevelSheet, asceanCompiler } from "../utility/ascean";
+import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from "../assets/db/db";
+import { getNpcDialog } from "../utility/dialog";
+import { getAsceanTraits } from "../utility/traits";
+import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
+import { fetchNpc } from "../utility/npc";
+import { checkDeificConcerns } from "../utility/deities";
+import { STARTING_SPECIALS } from "../utility/abilities";
+import { ENEMY_ENEMIES, Inventory, Reputation, faction } from "../utility/player";
+import { Puff } from "solid-spinner";
+import Talents from "../utility/talents";
+import QuestManager, { Quest } from "../utility/quests";
+const BaseUI = lazy(async () => await import("../ui/BaseUI"));
 const rarityGoldMap = {
-    'Uncommon': 1,
-    'Rare': 3,
-    'Epic': 12,
-    'Legendary': 60
+    "Uncommon": 1,
+    "Rare": 3,
+    "Epic": 12,
+    "Legendary": 60
 };
 export function rebalanceCurrency(currency: { silver: number; gold: number; }): { silver: number; gold: number; } {
     let { silver, gold } = currency;
     if (isFloat(gold)) {
-        let extraSilver = Number(`0.${String(gold).split('.')[1]}`);
+        let extraSilver = Number(`0.${String(gold).split(".")[1]}`);
         extraSilver *= 100;
         silver += extraSilver;
     };
@@ -80,12 +80,12 @@ interface IProps {
 export default function PhaserGame (props: IProps) {
     let gameContainer: HTMLDivElement | undefined;
     const [instance, setInstance] = createStore<IRefPhaserGame>({ game: null, scene: null });
-    const [combat, setCombat] = createSignal<Combat>({ ...initCombat, playerBlessing: props.settings().prayer || 'Buff' });
+    const [combat, setCombat] = createSignal<Combat>({ ...initCombat, playerBlessing: props.settings().prayer || "Buff" });
     const [game, setGame] = createSignal<GameState>(initGame);
     const [stamina, setStamina] = createSignal(0);
     const [grace, setGrace] = createSignal(0);
     const [live, setLive] = createSignal(false);
-    const [tutorial, setTutorial] = createSignal<string>('');
+    const [tutorial, setTutorial] = createSignal<string>("");
     const [showTutorial, setShowTutorial] = createSignal<boolean>(false);
     const [showDeity, setShowDeity] = createSignal<boolean>(false);
 
@@ -95,7 +95,7 @@ export default function PhaserGame (props: IProps) {
             game().merchantEquipment.forEach(async (eqp) => await deleteEquipment(eqp._id));
             setGame({ ...game(), merchantEquipment: [] });
         } catch (err: any) {
-            console.warn(err, 'Error Deleting Merchant Equipment');
+            console.warn(err, "Error Deleting Merchant Equipment");
         };
     };
 
@@ -106,9 +106,9 @@ export default function PhaserGame (props: IProps) {
             let lootDrops = JSON.parse(JSON.stringify(game().lootDrops));
             lootDrops.push(res[0]);
             setGame({ ...game(), lootDrops }); // : [ ...game().lootDrops, res[0] ]
-            EventBus.emit('enemyLootDrop',{ enemyID, drops: res, scene: props.scene() });
+            EventBus.emit("enemyLootDrop",{ enemyID, drops: res, scene: props.scene() });
         } catch (err: any) {
-            console.warn(err, 'Error Dropping Loot');
+            console.warn(err, "Error Dropping Loot");
         };
     };
 
@@ -125,12 +125,12 @@ export default function PhaserGame (props: IProps) {
                 ...props.ascean(),
                 level: state().ascean.level + 1,
                 experience: 0,
-                constitution: Math.round((state().ascean.constitution + constitution) * masteryCheck('constitution', newMastery)), // 1.04 = +1 stat once the stat is 13 as it rounds up from .52 (1.04 * 13 = 13.52)
-                strength: Math.round((state().ascean.strength + strength) * masteryCheck('strength', newMastery)), // 1.07 = +1 stat always, even at base 8. Requires 22 Stat points to increase by 2 / level. 22 * 1.07 = 23.54, rounded up to 24 
-                agility: Math.round((state().ascean.agility + agility) * masteryCheck('agility', newMastery)),
-                achre: Math.round((state().ascean.achre + achre) * masteryCheck('achre', newMastery)),
-                caeren: Math.round((state().ascean.caeren + caeren) * masteryCheck('caeren', newMastery)),
-                kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck('kyosir', newMastery)),
+                constitution: Math.round((state().ascean.constitution + constitution) * masteryCheck("constitution", newMastery)), // 1.04 = +1 stat once the stat is 13 as it rounds up from .52 (1.04 * 13 = 13.52)
+                strength: Math.round((state().ascean.strength + strength) * masteryCheck("strength", newMastery)), // 1.07 = +1 stat always, even at base 8. Requires 22 Stat points to increase by 2 / level. 22 * 1.07 = 23.54, rounded up to 24 
+                agility: Math.round((state().ascean.agility + agility) * masteryCheck("agility", newMastery)),
+                achre: Math.round((state().ascean.achre + achre) * masteryCheck("achre", newMastery)),
+                caeren: Math.round((state().ascean.caeren + caeren) * masteryCheck("caeren", newMastery)),
+                kyosir: Math.round((state().ascean.kyosir + kyosir) * masteryCheck("kyosir", newMastery)),
                 mastery: newMastery, 
                 faith: state().faith,
             };
@@ -147,9 +147,9 @@ export default function PhaserGame (props: IProps) {
                 const settings = { ...props.settings(), specials: STARTING_SPECIALS[newMastery as keyof typeof STARTING_SPECIALS] };
                 props.setSettings(settings);
                 await updateSettings(settings);
-                EventBus.emit('fetch-button-reorder');
+                EventBus.emit("fetch-button-reorder");
             };
-            EventBus.emit('update-ascean-state', {
+            EventBus.emit("update-ascean-state", {
                 ...state(),
                 ascean: save,
                 experience: 0,
@@ -164,7 +164,7 @@ export default function PhaserGame (props: IProps) {
                 mastery: save.mastery,
                 faith: save.faith,
             });                
-            EventBus.emit('update-ascean', save);
+            EventBus.emit("update-ascean", save);
 
             let newStats = {
                 ...props.statistics(),
@@ -173,7 +173,7 @@ export default function PhaserGame (props: IProps) {
                     [newMastery]: (props.statistics() as any).mastery[newMastery] + 1,
                 }
             };
-            EventBus.emit('update-statistics', newStats);
+            EventBus.emit("update-statistics", newStats);
             let newTalents = JSON.parse(JSON.stringify(props.talents()));
             newTalents = {
                 ...newTalents,
@@ -182,9 +182,9 @@ export default function PhaserGame (props: IProps) {
                     total: newTalents.points.total + 1    
                 }
             };
-            EventBus.emit('update-talents', newTalents);
+            EventBus.emit("update-talents", newTalents);
         } catch (err: any) {
-            console.warn(err, '<- Error in the Controller Updating the Level!')
+            console.warn(err, "<- Error in the Controller Updating the Level!")
         };
     };
 
@@ -207,11 +207,11 @@ export default function PhaserGame (props: IProps) {
             // let merchantEquipment = [ ...game().merchantEquipment ];
             merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== purchase.item._id);
             setGame({ ...game(), inventory: clean, merchantEquipment });
-            EventBus.emit('update-ascean', update);
-            EventBus.emit('update-inventory', clean);
-            EventBus.emit('purchase-sound');
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-inventory", clean);
+            EventBus.emit("purchase-sound");
         } catch (err: any) {
-            console.warn('Error Purchasing Item', err.message);
+            console.warn("Error Purchasing Item", err.message);
         };
     };
 
@@ -235,9 +235,9 @@ export default function PhaserGame (props: IProps) {
                 let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
                 merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), inventory: clean, merchantEquipment });
-                EventBus.emit('update-inventory', clean);
-                EventBus.emit('update-statistics', newStats);
-                EventBus.emit('stealth-sound');
+                EventBus.emit("update-inventory", clean);
+                EventBus.emit("update-statistics", newStats);
+                EventBus.emit("stealth-sound");
             } else {
                 const newStats = {
                     ...props.statistics(),
@@ -252,11 +252,11 @@ export default function PhaserGame (props: IProps) {
                 // let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), merchantEquipment });
-                EventBus.emit('update-statistics', newStats);
-                EventBus.emit('death-sound');
+                EventBus.emit("update-statistics", newStats);
+                EventBus.emit("death-sound");
             };
         } catch (err) {
-            console.warn(err, 'Error Stealing Item');
+            console.warn(err, "Error Stealing Item");
         };
     };
 
@@ -267,11 +267,11 @@ export default function PhaserGame (props: IProps) {
             const clean = { ...game().inventory, inventory };
             let gold: number = 0, silver: number = 0;
             switch (item.rarity) {
-                case 'Common': silver = 10; break;
-                case 'Uncommon': gold = 1; break;
-                case 'Rare': gold = 3; break;
-                case 'Epic': gold = 12; break;
-                case 'Legendary': gold = 50; break;
+                case "Common": silver = 10; break;
+                case "Uncommon": gold = 1; break;
+                case "Rare": gold = 3; break;
+                case "Epic": gold = 12; break;
+                case "Legendary": gold = 50; break;
                 default: break;
             };
             let currency = { 
@@ -294,11 +294,11 @@ export default function PhaserGame (props: IProps) {
                 inventory: clean,
                 merchantEquipment // : [ ...game().merchantEquipment, item ]
             });
-            EventBus.emit('update-ascean', update);
-            EventBus.emit('update-inventory', clean);
-            EventBus.emit('purchase-sound');
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-inventory", clean);
+            EventBus.emit("purchase-sound");
         } catch(err: any) {
-            console.warn(err, 'Error Selling Item');
+            console.warn(err, "Error Selling Item");
         };
     };
 
@@ -308,74 +308,74 @@ export default function PhaserGame (props: IProps) {
         statistic.wins += wins;
         statistic.losses += losses;
         statistic.total += total;
-        statistic.actions.attacks += actionData.reduce((count: number, action: string) => action === 'attack' ? count + 1 : count, 0);
-        statistic.actions.parries += actionData.reduce((count: number, action: string) => action === 'parry' ? count + 1 : count, 0);
-        statistic.actions.dodges += actionData.reduce((count: number, action: string) => action === 'dodge' ? count + 1 : count, 0);
-        statistic.actions.postures += actionData.reduce((count: number, action: string) => action === 'posture' ? count + 1 : count, 0);
-        statistic.actions.rolls += actionData.reduce((count: number, action: string) => action === 'roll' ? count + 1 : count, 0);
-        statistic.actions.invokes += actionData.reduce((count: number, action: string) => action === 'invoke' ? count + 1 : count, 0);
-        statistic.actions.prayers += actionData.reduce((count: number, action: string) => action === 'prayer' ? count + 1 : count, 0);
-        statistic.actions.consumes += actionData.reduce((count: number, action: string) => action === 'consume' ? count + 1 : count, 0);
+        statistic.actions.attacks += actionData.reduce((count: number, action: string) => action === "attack" ? count + 1 : count, 0);
+        statistic.actions.parries += actionData.reduce((count: number, action: string) => action === "parry" ? count + 1 : count, 0);
+        statistic.actions.dodges += actionData.reduce((count: number, action: string) => action === "dodge" ? count + 1 : count, 0);
+        statistic.actions.postures += actionData.reduce((count: number, action: string) => action === "posture" ? count + 1 : count, 0);
+        statistic.actions.rolls += actionData.reduce((count: number, action: string) => action === "roll" ? count + 1 : count, 0);
+        statistic.actions.thrusts += actionData.reduce((count: number, action: string) => action === "thrust" ? count + 1 : count, 0);
+        statistic.actions.invokes += actionData.reduce((count: number, action: string) => action === "invoke" ? count + 1 : count, 0);
+        statistic.actions.prayers += actionData.reduce((count: number, action: string) => action === "prayer" ? count + 1 : count, 0);
+        statistic.actions.consumes += actionData.reduce((count: number, action: string) => action === "consume" ? count + 1 : count, 0);
         
-        statistic.actions.thrusts += actionData.reduce((count: number, action: string) => action === 'thrust' ? count + 1 : count, 0);
-        statistic.actions.arcs += actionData.reduce((count: number, action: string) => action === 'arc' ? count + 1 : count, 0);
-        statistic.actions.leaps += actionData.reduce((count: number, action: string) => action === 'leap' ? count + 1 : count, 0);
-        statistic.actions.rushes += actionData.reduce((count: number, action: string) => action === 'rush' ? count + 1 : count, 0);
-        statistic.actions.storms += actionData.reduce((count: number, action: string) => action === 'storm' ? count + 1 : count, 0);
-        statistic.actions.achires += actionData.reduce((count: number, action: string) => action === 'achire' ? count + 1 : count, 0);
-        statistic.actions.quors += actionData.reduce((count: number, action: string) => action === 'quor' ? count + 1 : count, 0);
-        statistic.actions.writhes += actionData.reduce((count: number, action: string) => action === 'writhe' ? count + 1 : count, 0);
+        statistic.actions.arcs += actionData.reduce((count: number, action: string) => action === "arc" ? count + 1 : count, 0);
+        statistic.actions.leaps += actionData.reduce((count: number, action: string) => action === "leap" ? count + 1 : count, 0);
+        statistic.actions.rushes += actionData.reduce((count: number, action: string) => action === "rush" ? count + 1 : count, 0);
+        statistic.actions.storms += actionData.reduce((count: number, action: string) => action === "storm" ? count + 1 : count, 0);
+        statistic.actions.achires += actionData.reduce((count: number, action: string) => action === "achire" ? count + 1 : count, 0);
+        statistic.actions.quors += actionData.reduce((count: number, action: string) => action === "quor" ? count + 1 : count, 0);
+        statistic.actions.writhes += actionData.reduce((count: number, action: string) => action === "writhe" ? count + 1 : count, 0);
 
         
-        statistic.prayers.buff += prayerData.reduce((count: number, prayer: string) => prayer === 'Buff' ? count + 1 : count, 0);
-        statistic.prayers.heal += prayerData.reduce((count: number, prayer: string) => prayer === 'Heal' ? count + 1 : count, 0);
-        statistic.prayers.damage += prayerData.reduce((count: number, prayer: string) => prayer === 'Damage' ? count + 1 : count, 0);
-        statistic.prayers.debuff += prayerData.reduce((count: number, prayer: string) => prayer === 'Debuff' ? count + 1 : count, 0);
-        statistic.prayers.avarice += prayerData.reduce((count: number, prayer: string) => prayer === 'Avarice' ? count + 1 : count, 0);
-        statistic.prayers.denial += prayerData.reduce((count: number, prayer: string) => prayer === 'Denial' ? count + 1 : count, 0);
-        statistic.prayers.dispel += prayerData.reduce((count: number, prayer: string) => prayer === 'Dispel' ? count + 1 : count, 0);
-        statistic.prayers.silence += prayerData.reduce((count: number, prayer: string) => prayer === 'Silence' ? count + 1 : count, 0);
+        statistic.prayers.buff += prayerData.reduce((count: number, prayer: string) => prayer === "Buff" ? count + 1 : count, 0);
+        statistic.prayers.heal += prayerData.reduce((count: number, prayer: string) => prayer === "Heal" ? count + 1 : count, 0);
+        statistic.prayers.damage += prayerData.reduce((count: number, prayer: string) => prayer === "Damage" ? count + 1 : count, 0);
+        statistic.prayers.debuff += prayerData.reduce((count: number, prayer: string) => prayer === "Debuff" ? count + 1 : count, 0);
+        statistic.prayers.avarice += prayerData.reduce((count: number, prayer: string) => prayer === "Avarice" ? count + 1 : count, 0);
+        statistic.prayers.denial += prayerData.reduce((count: number, prayer: string) => prayer === "Denial" ? count + 1 : count, 0);
+        statistic.prayers.dispel += prayerData.reduce((count: number, prayer: string) => prayer === "Dispel" ? count + 1 : count, 0);
+        statistic.prayers.silence += prayerData.reduce((count: number, prayer: string) => prayer === "Silence" ? count + 1 : count, 0);
 
-        statistic.attacks.magical += typeAttackData.reduce((count: number, type: string) => type === 'Magic' ? count + 1 : count, 0);
-        statistic.attacks.physical += typeAttackData.reduce((count: number, type: string) => type === 'Physical' ? count + 1 : count, 0);
-        statistic.attacks.blunt += typeDamageData.reduce((count: number, type: string) => type === 'Blunt' ? count + 1 : count, 0);
-        statistic.attacks.pierce += typeDamageData.reduce((count: number, type: string) => type === 'Pierce' ? count + 1 : count, 0);
-        statistic.attacks.slash += typeDamageData.reduce((count: number, type: string) => type === 'Slash' ? count + 1 : count, 0);
-        statistic.attacks.earth += typeDamageData.reduce((count: number, type: string) => type === 'Earth' ? count + 1 : count, 0);
-        statistic.attacks.fire += typeDamageData.reduce((count: number, type: string) => type === 'Fire' ? count + 1 : count, 0);
-        statistic.attacks.frost += typeDamageData.reduce((count: number, type: string) => type === 'Frost' ? count + 1 : count, 0);
-        statistic.attacks.lightning += typeDamageData.reduce((count: number, type: string) => type === 'Lightning' ? count + 1 : count, 0);
-        statistic.attacks.righteous += typeDamageData.reduce((count: number, type: string) => type === 'Righteous' ? count + 1 : count, 0);
-        statistic.attacks.spooky += typeDamageData.reduce((count: number, type: string) => type === 'Spooky' ? count + 1 : count, 0);
-        statistic.attacks.sorcery += typeDamageData.reduce((count: number, type: string) => type === 'Sorcery' ? count + 1 : count, 0);
-        statistic.attacks.wild += typeDamageData.reduce((count: number, type: string) => type === 'Wild' ? count + 1 : count, 0);
-        statistic.attacks.wind += typeDamageData.reduce((count: number, type: string) => type === 'Wind' ? count + 1 : count, 0);
+        statistic.attacks.magical += typeAttackData.reduce((count: number, type: string) => type === "Magic" ? count + 1 : count, 0);
+        statistic.attacks.physical += typeAttackData.reduce((count: number, type: string) => type === "Physical" ? count + 1 : count, 0);
+        statistic.attacks.blunt += typeDamageData.reduce((count: number, type: string) => type === "Blunt" ? count + 1 : count, 0);
+        statistic.attacks.pierce += typeDamageData.reduce((count: number, type: string) => type === "Pierce" ? count + 1 : count, 0);
+        statistic.attacks.slash += typeDamageData.reduce((count: number, type: string) => type === "Slash" ? count + 1 : count, 0);
+        statistic.attacks.earth += typeDamageData.reduce((count: number, type: string) => type === "Earth" ? count + 1 : count, 0);
+        statistic.attacks.fire += typeDamageData.reduce((count: number, type: string) => type === "Fire" ? count + 1 : count, 0);
+        statistic.attacks.frost += typeDamageData.reduce((count: number, type: string) => type === "Frost" ? count + 1 : count, 0);
+        statistic.attacks.lightning += typeDamageData.reduce((count: number, type: string) => type === "Lightning" ? count + 1 : count, 0);
+        statistic.attacks.righteous += typeDamageData.reduce((count: number, type: string) => type === "Righteous" ? count + 1 : count, 0);
+        statistic.attacks.spooky += typeDamageData.reduce((count: number, type: string) => type === "Spooky" ? count + 1 : count, 0);
+        statistic.attacks.sorcery += typeDamageData.reduce((count: number, type: string) => type === "Sorcery" ? count + 1 : count, 0);
+        statistic.attacks.wild += typeDamageData.reduce((count: number, type: string) => type === "Wild" ? count + 1 : count, 0);
+        statistic.attacks.wind += typeDamageData.reduce((count: number, type: string) => type === "Wind" ? count + 1 : count, 0);
         statistic.attacks.total = Math.max(totalDamageData, statistic.attacks.total); 
-        statistic.deities.Daethos += deityData.reduce((count: number, deity: string) => deity === 'Daethos' ? count + 1 : count, 0);
-        statistic.deities.Achreo += deityData.reduce((count: number, deity: string) => deity === 'Achreo' ? count + 1 : count, 0);
+        statistic.deities.Daethos += deityData.reduce((count: number, deity: string) => deity === "Daethos" ? count + 1 : count, 0);
+        statistic.deities.Achreo += deityData.reduce((count: number, deity: string) => deity === "Achreo" ? count + 1 : count, 0);
         statistic.deities.Ahnve += deityData.reduce((count: number, deity: string) => deity === "Ahn've" ? count + 1 : count, 0);
-        statistic.deities.Astra += deityData.reduce((count: number, deity: string) => deity === 'Astra' ? count + 1 : count, 0);
-        statistic.deities.Cambire += deityData.reduce((count: number, deity: string) => deity === 'Cambire' ? count + 1 : count, 0);
-        statistic.deities.Chiomyr += deityData.reduce((count: number, deity: string) => deity === 'Chiomyr' ? count + 1 : count, 0);
-        statistic.deities.Fyer += deityData.reduce((count: number, deity: string) => deity === 'Fyer' ? count + 1 : count, 0);
-        statistic.deities.Ilios += deityData.reduce((count: number, deity: string) => deity === 'Ilios' ? count + 1 : count, 0);
+        statistic.deities.Astra += deityData.reduce((count: number, deity: string) => deity === "Astra" ? count + 1 : count, 0);
+        statistic.deities.Cambire += deityData.reduce((count: number, deity: string) => deity === "Cambire" ? count + 1 : count, 0);
+        statistic.deities.Chiomyr += deityData.reduce((count: number, deity: string) => deity === "Chiomyr" ? count + 1 : count, 0);
+        statistic.deities.Fyer += deityData.reduce((count: number, deity: string) => deity === "Fyer" ? count + 1 : count, 0);
+        statistic.deities.Ilios += deityData.reduce((count: number, deity: string) => deity === "Ilios" ? count + 1 : count, 0);
         statistic.deities.Kyngi += deityData.reduce((count: number, deity: string) => deity === "Kyn'gi" ? count + 1 : count, 0);
-        statistic.deities.Kyrisos += deityData.reduce((count: number, deity: string) => deity === 'Kyrisos' ? count + 1 : count, 0);
+        statistic.deities.Kyrisos += deityData.reduce((count: number, deity: string) => deity === "Kyrisos" ? count + 1 : count, 0);
         statistic.deities.Kyrna += deityData.reduce((count: number, deity: string) => deity === "Kyr'na" ? count + 1 : count, 0);
-        statistic.deities.Lilos += deityData.reduce((count: number, deity: string) => deity === 'Lilos' ? count + 1 : count, 0);
+        statistic.deities.Lilos += deityData.reduce((count: number, deity: string) => deity === "Lilos" ? count + 1 : count, 0);
         statistic.deities.Maanre += deityData.reduce((count: number, deity: string) => deity === "Ma'anre" ? count + 1 : count, 0);
-        statistic.deities.Nyrolus += deityData.reduce((count: number, deity: string) => deity === 'Nyrolus' ? count + 1 : count, 0);
+        statistic.deities.Nyrolus += deityData.reduce((count: number, deity: string) => deity === "Nyrolus" ? count + 1 : count, 0);
         statistic.deities.Quorei += deityData.reduce((count: number, deity: string) => deity === "Quor'ei" ? count + 1 : count, 0);
-        statistic.deities.Rahvre += deityData.reduce((count: number, deity: string) => deity === 'Rahvre' ? count + 1 : count, 0);
-        statistic.deities.Senari += deityData.reduce((count: number, deity: string) => deity === 'Senari' ? count + 1 : count, 0);
+        statistic.deities.Rahvre += deityData.reduce((count: number, deity: string) => deity === "Rahvre" ? count + 1 : count, 0);
+        statistic.deities.Senari += deityData.reduce((count: number, deity: string) => deity === "Senari" ? count + 1 : count, 0);
         statistic.deities.Sedyro += deityData.reduce((count: number, deity: string) => deity === "Se'dyro" ? count + 1 : count, 0);
         statistic.deities.Sevas += deityData.reduce((count: number, deity: string) => deity === "Se'vas" ? count + 1 : count, 0);
         statistic.deities.Shrygei += deityData.reduce((count: number, deity: string) => deity === "Shrygei" ? count + 1 : count, 0);
-        statistic.deities.Tshaer += deityData.reduce((count: number, deity: string) => deity === 'Tshaer' ? count + 1 : count, 0);
+        statistic.deities.Tshaer += deityData.reduce((count: number, deity: string) => deity === "Tshaer" ? count + 1 : count, 0);
 
         let newStatistics: Statistics = { ...props.statistics(), combat: statistic };
-        if (wins > losses && props.statistics().relationships.deity.name !== '') {
-            newStatistics = checkDeificConcerns(props.statistics(), props.statistics().relationships.deity.name, 'combat', 'value') as Statistics;
+        if (wins > losses && props.statistics().relationships.deity.name !== "") {
+            newStatistics = checkDeificConcerns(props.statistics(), props.statistics().relationships.deity.name, "combat", "value") as Statistics;
         };
 
         return newStatistics;
@@ -442,18 +442,18 @@ export default function PhaserGame (props: IProps) {
             prayerData: [],
             deityData: [],
             skillData: [],
-            playerStartDescription: '',
-            computerStartDescription: '',
-            playerSpecialDescription: '',
-            computerSpecialDescription: '',
-            playerActionDescription: '',
-            computerActionDescription: '',
-            playerInfluenceDescription: '',
-            computerInfluenceDescription: '',
-            playerInfluenceDescriptionTwo: '',
-            computerInfluenceDescriptionTwo: '',
-            playerDeathDescription: '',
-            computerDeathDescription: '',            
+            playerStartDescription: "",
+            computerStartDescription: "",
+            playerSpecialDescription: "",
+            computerSpecialDescription: "",
+            playerActionDescription: "",
+            computerActionDescription: "",
+            playerInfluenceDescription: "",
+            computerInfluenceDescription: "",
+            playerInfluenceDescriptionTwo: "",
+            computerInfluenceDescriptionTwo: "",
+            playerDeathDescription: "",
+            computerDeathDescription: "",            
             playerWin: false,
             computerWin: false,
             combatEngaged: false,
@@ -465,11 +465,11 @@ export default function PhaserGame (props: IProps) {
             health: { ...props.ascean().health, current: data.newPlayerHealth },
         };
         if (!props.settings().tutorial.death) {
-            setTutorial('death');
+            setTutorial("death");
             setShowTutorial(true);
         };
-        EventBus.emit('update-ascean', update);
-        EventBus.emit('update-statistics', newStats);    
+        EventBus.emit("update-ascean", update);
+        EventBus.emit("update-statistics", newStats);    
     };
 
     function recordQuestUpdate(enemy: Ascean) {
@@ -480,7 +480,7 @@ export default function PhaserGame (props: IProps) {
             const quest: Quest = quests[i];
             if (quest.title === "Principles and Principalities") {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
-                if (enemies.includes(enemy.name)) {
+                if (enemies.includes(enemy.name) && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
                         EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "Close"});
                     }, updateTimer * 3000);
@@ -490,7 +490,7 @@ export default function PhaserGame (props: IProps) {
                 };
             };
             if (quest.title === "Replenish Firewater") {
-                if (enemy.level >= props.ascean().level) {
+                if (enemy.level >= props.ascean().level && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
                         EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 3000, key: "Close"});
                     }, updateTimer * 3000);
@@ -517,7 +517,7 @@ export default function PhaserGame (props: IProps) {
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
             if (newSkills[skill as keyof typeof newSkills] % 10 === 0) {
-                EventBus.emit('alert', {header: 'Skill Up!', body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 3000, key: 'Close'});    
+                EventBus.emit("alert", {header: "Skill Up!", body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 3000, key: "Close"});    
             };
         });
         return newSkills;
@@ -540,7 +540,6 @@ export default function PhaserGame (props: IProps) {
         const newSkills = recordSkills(record.skillData);
         recordQuestUpdate(record.computer as Ascean);
         let silver: number = 0, gold: number = 0, experience: number = levelSheet.opponentExp, firewater = { ...props.ascean().firewater };
-        // levelSheet.currency.silver | levelSheet.currency.gold
         let computerLevel: number = levelSheet.opponent;
         if (levelSheet.avarice === true) experience *= 1.2;
         let health = levelSheet.currentHealth > props.ascean().health.max ? props.ascean().health.max : levelSheet.currentHealth;
@@ -580,18 +579,18 @@ export default function PhaserGame (props: IProps) {
             prayerData: [],
             deityData: [],
             skillData: [],
-            playerStartDescription: '',
-            computerStartDescription: '',
-            playerSpecialDescription: '',
-            computerSpecialDescription: '',
-            playerActionDescription: '',
-            computerActionDescription: '',
-            playerInfluenceDescription: '',
-            computerInfluenceDescription: '',
-            playerInfluenceDescriptionTwo: '',
-            computerInfluenceDescriptionTwo: '',
-            playerDeathDescription: '',
-            computerDeathDescription: '',            
+            playerStartDescription: "",
+            computerStartDescription: "",
+            playerSpecialDescription: "",
+            computerSpecialDescription: "",
+            playerActionDescription: "",
+            computerActionDescription: "",
+            playerInfluenceDescription: "",
+            computerInfluenceDescription: "",
+            playerInfluenceDescriptionTwo: "",
+            computerInfluenceDescriptionTwo: "",
+            playerDeathDescription: "",
+            computerDeathDescription: "",            
             playerWin: false,
             computerWin: false,
         });
@@ -605,26 +604,26 @@ export default function PhaserGame (props: IProps) {
         };
         if (!props.settings().tutorial.deity) {
             if (update.experience >= 750 && update.level >= 1) {
-                setTutorial('deity');
+                setTutorial("deity");
                 setShowTutorial(true);  
                 if (game().pauseState === false) {
-                    EventBus.emit('update-pause', true);
-                    EventBus.emit('toggle-bar', true);    
-                    EventBus.emit('update-small-hud');
+                    EventBus.emit("update-pause", true);
+                    EventBus.emit("toggle-bar", true);    
+                    EventBus.emit("update-small-hud");
                 };
             };
         };
         if (checkDeificInteractions(update)) {
             setShowDeity(true);
             if (game().pauseState === false) {
-                EventBus.emit('update-pause', true);
-                EventBus.emit('toggle-bar', true);    
-                EventBus.emit('update-small-hud');
+                EventBus.emit("update-pause", true);
+                EventBus.emit("toggle-bar", true);    
+                EventBus.emit("update-small-hud");
             };
         };
-        EventBus.emit('update-ascean', update);
-        EventBus.emit('update-reputation', newReputation);
-        EventBus.emit('update-statistics', newStats);
+        EventBus.emit("update-ascean", update);
+        EventBus.emit("update-reputation", newReputation);
+        EventBus.emit("update-statistics", newStats);
     };
 
     function saveChanges(state: any) {
@@ -665,9 +664,9 @@ export default function PhaserGame (props: IProps) {
                 currency: currency,
                 firewater: firewater,
             };
-            EventBus.emit('update-ascean', newAscean);
+            EventBus.emit("update-ascean", newAscean);
         } catch (err: any) {
-            console.warn(err, 'Error Saving Experience');
+            console.warn(err, "Error Saving Experience");
         };
     };
 
@@ -679,7 +678,7 @@ export default function PhaserGame (props: IProps) {
                 current: health
             },
         };
-        EventBus.emit('silent-save', update);
+        EventBus.emit("silent-save", update);
     };
 
     function saveQuest(quest: Quest) {
@@ -708,7 +707,7 @@ export default function PhaserGame (props: IProps) {
         
         EventBus.emit("update-ascean", update);
         EventBus.emit("update-inventory", clean);
-        EventBus.emit('update-reputation', newReputation);
+        EventBus.emit("update-reputation", newReputation);
     };
 
     function checkDeificInteractions(ascean: Ascean): boolean {
@@ -722,16 +721,16 @@ export default function PhaserGame (props: IProps) {
         let newAscean = {...props.ascean(), [type]: newEquipment, health: { current: combat().newPlayerHealth, max: combat().playerHealth }};
         let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
         inventory = inventory.filter((inv: any) => inv._id !== newEquipment._id);
-        if (!oldEquipment.name.includes('Empty') && !oldEquipment.name.includes('Starter')) {
+        if (!oldEquipment.name.includes("Empty") && !oldEquipment.name.includes("Starter")) {
             inventory.push(oldEquipment);
         } else {
             await deleteEquipment(oldEquipment?._id as string);
         };
         const clean = { ...game().inventory, inventory };
-        EventBus.emit('update-inventory', clean);
-        EventBus.emit('equip-sound');
-        EventBus.emit('speed', newAscean);
-        EventBus.emit('update-ascean', newAscean);
+        EventBus.emit("update-inventory", clean);
+        EventBus.emit("equip-sound");
+        EventBus.emit("speed", newAscean);
+        EventBus.emit("update-ascean", newAscean);
     };
 
     function setPlayer(stats: Compiler) {
@@ -756,8 +755,8 @@ export default function PhaserGame (props: IProps) {
         instance.game?.registry.set("ascean", stats.ascean);
         instance.game?.registry.set("combat", combat());
         instance.game?.registry.set("game", game());
-        EventBus.emit('update-total-stamina', stats.attributes.stamina as number);    
-        EventBus.emit('update-total-grace', stats.attributes.grace as number);    
+        EventBus.emit("update-total-stamina", stats.attributes.stamina as number);    
+        EventBus.emit("update-total-grace", stats.attributes.grace as number);    
     };
 
     async function upgradeItem(data: any): Promise<void> {
@@ -783,15 +782,15 @@ export default function PhaserGame (props: IProps) {
                 ...combat(),
                 player: { ...combat().player as Ascean, ...update }
             });
-            EventBus.emit('update-ascean', update);
-            EventBus.emit('update-inventory', clean);
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-inventory", clean);
         } catch (err: any) {
-            console.warn(err, 'Error Upgrading Item');
+            console.warn(err, "Error Upgrading Item");
         };
     };
 
     function checkUi(): boolean {
-        return props.scene() === 'Game' || props.scene() === 'Underground' || props.scene() === 'Arena' || props.scene() === 'Tutorial';
+        return props.scene() === "Game" || props.scene() === "Underground" || props.scene() === "Arena" || props.scene() === "Tutorial";
     };
     
     async function createUi(id: string): Promise<void> {
@@ -814,7 +813,7 @@ export default function PhaserGame (props: IProps) {
             playerBlessing: props.settings().prayer,
         };
         setCombat(cleanCombat);
-        EventBus.emit('combat', cleanCombat);
+        EventBus.emit("combat", cleanCombat);
         instance.game?.registry.set("ascean", res?.ascean);
         instance.game?.registry.set("combat", cleanCombat);
         instance.game?.registry.set("settings", props.settings());
@@ -823,16 +822,16 @@ export default function PhaserGame (props: IProps) {
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
-        EventBus.emit('update-total-stamina', res?.attributes.stamina as number);    
+        EventBus.emit("update-total-stamina", res?.attributes.stamina as number);    
     };
 
     function bootTutorial(): void {
-        setTutorial('boot');
+        setTutorial("boot");
         setShowTutorial(true);
     };
 
     function enterGame(): void {
-        if (!props.settings()?.tutorial?.intro) EventBus.emit('intro');
+        if (!props.settings()?.tutorial?.intro) EventBus.emit("intro");
         setLive(!live());
     };
 
@@ -842,8 +841,8 @@ export default function PhaserGame (props: IProps) {
         if (props.ref) {
             props.ref({ game: gameInstance, scene: null });
         };
-        EventBus.on('boot-tutorial', bootTutorial);
-        EventBus.on('current-scene-ready', (sceneInstance: Phaser.Scene) => {
+        EventBus.on("boot-tutorial", bootTutorial);
+        EventBus.on("current-scene-ready", (sceneInstance: Phaser.Scene) => {
             if (props.currentActiveScene) {
                 props.currentActiveScene(sceneInstance);
                 setInstance("scene", sceneInstance);
@@ -852,20 +851,20 @@ export default function PhaserGame (props: IProps) {
                 props.ref({ game: gameInstance, scene: sceneInstance });
             };
         });
-        EventBus.on('main-menu', (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
-        EventBus.on('enter-game', enterGame);
-        EventBus.on('preload-ascean', createUi);
-        EventBus.on('check-stealth', () => EventBus.emit('stealth-check', combat().isStealth));
-        EventBus.on('set-player', setPlayer);
-        EventBus.on('add-item', (e: Equipment[]) => {
+        EventBus.on("main-menu", (_sceneInstance: Phaser.Scene) => props.setMenu({ ...props?.menu, gameRunning: false }));
+        EventBus.on("enter-game", enterGame);
+        EventBus.on("preload-ascean", createUi);
+        EventBus.on("check-stealth", () => EventBus.emit("stealth-check", combat().isStealth));
+        EventBus.on("set-player", setPlayer);
+        EventBus.on("add-item", (e: Equipment[]) => {
             const inv = JSON.parse(JSON.stringify(game().inventory.inventory));
             const inventory = inv.length > 0 ? [...inv, ...e] : e;
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });
-            EventBus.emit('update-inventory', clean);
+            EventBus.emit("update-inventory", clean);
         });
-        EventBus.on('upgrade-item', (data: any) => upgradeItem(data));
-        EventBus.on('clear-enemy', () => {
+        EventBus.on("upgrade-item", (data: any) => upgradeItem(data));
+        EventBus.on("clear-enemy", () => {
             setCombat({
                 ...combat(),
                 computer: undefined,
@@ -874,9 +873,9 @@ export default function PhaserGame (props: IProps) {
                 computerWeapons: [],
                 computerAttributes: undefined,
                 computerDefense: undefined,
-                computerDamageType: '',
+                computerDamageType: "",
                 isEnemy: false,
-                npcType: '',
+                npcType: "",
                 enemyPersuaded: false,
                 playerLuckout: false,
                 combatEngaged: false,
@@ -884,13 +883,13 @@ export default function PhaserGame (props: IProps) {
                 startedAggressive: false,
                 persuasionScenario: false,
                 luckoutScenario: false,
-                playerTrait: '',
+                playerTrait: "",
                 playerWin: false,
                 computerWin: false,
-                enemyID: ''
+                enemyID: ""
             });
         });
-        EventBus.on('clear-npc', async () => {
+        EventBus.on("clear-npc", async () => {
             setCombat({
                 ...combat(),
                 computer: undefined,
@@ -899,9 +898,9 @@ export default function PhaserGame (props: IProps) {
                 computerWeapons: [],
                 computerAttributes: undefined,
                 computerDefense: undefined,
-                computerDamageType: '',
+                computerDamageType: "",
                 isEnemy: false,
-                npcType: '',
+                npcType: "",
                 enemyPersuaded: false,
                 playerLuckout: false,
                 combatEngaged: false,
@@ -909,22 +908,22 @@ export default function PhaserGame (props: IProps) {
                 startedAggressive: false,
                 persuasionScenario: false,
                 luckoutScenario: false,
-                playerTrait: '',
+                playerTrait: "",
                 playerWin: false,
                 computerWin: false,
-                enemyID: ''
+                enemyID: ""
             });
             await deleteMerchantEquipment();
             setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
         });
-        EventBus.on('fetch-tutorial-enemy', fetchTutorialEnemy);
-        EventBus.on('fetch-enemy', fetchEnemy);
-        EventBus.on('fetch-npc', fetchNpc);
-        EventBus.on('fetch-dm', fetchDm);
-        EventBus.on('request-ascean', () => EventBus.emit('ascean', props.ascean()));
-        EventBus.on('request-combat', () => EventBus.emit('request-combat-ready', combat()));
-        EventBus.on('request-game', () => EventBus.emit('game', game()));
-        EventBus.on('setup-enemy', (e: EnemySheet) => {
+        EventBus.on("fetch-tutorial-enemy", fetchTutorialEnemy);
+        EventBus.on("fetch-enemy", fetchEnemy);
+        EventBus.on("fetch-npc", fetchNpc);
+        EventBus.on("fetch-dm", fetchDm);
+        EventBus.on("request-ascean", () => EventBus.emit("ascean", props.ascean()));
+        EventBus.on("request-combat", () => EventBus.emit("request-combat-ready", combat()));
+        EventBus.on("request-game", () => EventBus.emit("game", game()));
+        EventBus.on("setup-enemy", (e: EnemySheet) => {
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -938,8 +937,8 @@ export default function PhaserGame (props: IProps) {
                 computerDefense: e.enemy.defense,
                 computerDefenseDefault: e.enemy.defense,
                 computerDamageType: e.weapons[0].damageType?.[0] as string, //e.enemy.combatWeaponOne.damageType[0],
-                isEnemy: e.name === 'enemy', // true
-                npcType: '',
+                isEnemy: e.name === "enemy", // true
+                npcType: "",
                 isAggressive: e.isAggressive,
                 startedAggressive: e.startedAggressive,
                 persuasionScenario: e.isPersuaded,
@@ -955,7 +954,7 @@ export default function PhaserGame (props: IProps) {
             const dialog = getNpcDialog();
             setGame({ ...game(), dialog: dialog });
         });
-        EventBus.on('setup-npc', (e: any) => {
+        EventBus.on("setup-npc", (e: any) => {
             setCombat({
                 ...combat(),
                 computer: e.game,
@@ -975,7 +974,7 @@ export default function PhaserGame (props: IProps) {
                 persuasionScenario: false,
                 luckoutScenario: false,
                 playerLuckout: false,
-                playerTrait: '',
+                playerTrait: "",
                 playerWin: false,
                 computerWin: false,
                 enemyID: e.id,
@@ -984,37 +983,37 @@ export default function PhaserGame (props: IProps) {
             const dialog = getNodesForNPC(npcIds[e.type]);
                 setGame({ ...game(), dialog: dialog, interactCount: e.interactCount });    
         });
-        EventBus.on('changeDamageType', (e: string) => setCombat({ ...combat(), playerDamageType: e }));
-        EventBus.on('changePrayer', (e: string) => {
+        EventBus.on("changeDamageType", (e: string) => setCombat({ ...combat(), playerDamageType: e }));
+        EventBus.on("changePrayer", (e: string) => {
             setCombat({ ...combat(), playerBlessing: e });
             const settings = { ...props.settings(), prayer: e };
-            EventBus.emit('save-settings', settings);
+            EventBus.emit("save-settings", settings);
         });
-        EventBus.on('changeWeapon', (e: [Equipment, Equipment, Equipment]) => {
+        EventBus.on("changeWeapon", (e: [Equipment, Equipment, Equipment]) => {
             setCombat({ ...combat(), weapons: e, weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], playerDamageType: e[0].damageType?.[0] as string});
             const update = { ...props.ascean(), weaponOne: e[0], weaponTwo: e[1], weaponThree: e[2], health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
-            EventBus.emit('update-ascean', update);
+            EventBus.emit("update-ascean", update);
         });
-        EventBus.on('combat-engaged', (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
-        EventBus.on('delete-merchant-equipment', deleteMerchantEquipment);
-        EventBus.on('drink-firewater', () => {
+        EventBus.on("combat-engaged", (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
+        EventBus.on("delete-merchant-equipment", deleteMerchantEquipment);
+        EventBus.on("drink-firewater", () => {
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
             setCombat({...combat(), newPlayerHealth: props.ascean().health.max, player: {...combat().player as Ascean, health: {...props.ascean().health, current: props.ascean().health.max}}});
             const newAscean = {...props.ascean(), firewater: {...props.ascean().firewater, current: newCharges}, health: {...props.ascean().health, current: props.ascean().health.max}};
-            EventBus.emit('update-ascean', newAscean);
+            EventBus.emit("update-ascean", newAscean);
         });
-        EventBus.on('gain-experience', (e: { state: any; }) => saveChanges(e));
-        EventBus.on('level-up', (e: any) => levelUp(e));
-        EventBus.on('add-loot', (e: Equipment[]) => {
+        EventBus.on("gain-experience", (e: { state: any; }) => saveChanges(e));
+        EventBus.on("level-up", (e: any) => levelUp(e));
+        EventBus.on("add-loot", (e: Equipment[]) => {
             let newInventory = game().inventory.inventory.length > 0 ? [...JSON.parse(JSON.stringify(game().inventory.inventory)), ...e] : e;
             const newClean = { ...game().inventory, inventory: newInventory };
             setGame({ ...game(), inventory: newClean });
-            EventBus.emit('update-inventory', newClean);
+            EventBus.emit("update-inventory", newClean);
         });
-        EventBus.on('clear-loot', () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
-        EventBus.on('enemy-loot', (e: { enemyID: string; level: number }) => lootDrop(e));
+        EventBus.on("clear-loot", () => setGame({ ...game(), lootDrops: [], showLoot: false, showLootIds: [] }));
+        EventBus.on("enemy-loot", (e: { enemyID: string; level: number }) => lootDrop(e));
         EventBus.on("save-quest-to-player", saveQuest);
-        EventBus.on('interacting-loot', (e: { interacting: boolean; loot: string }) => {
+        EventBus.on("interacting-loot", (e: { interacting: boolean; loot: string }) => {
             if (e.interacting === true) {
                 setGame({ ...game(), showLootIds: [...game().showLootIds, e.loot], lootTag: true });
             } else {
@@ -1027,77 +1026,77 @@ export default function PhaserGame (props: IProps) {
                 });
             };
         });
-        EventBus.on('initiate-input', (e: { key: string; value: string; }) =>  setCombat({ ...combat(), [e.key]: e.value }));
-        EventBus.on('refresh-inventory', async (e: Equipment[]) => {
+        EventBus.on("initiate-input", (e: { key: string; value: string; }) =>  setCombat({ ...combat(), [e.key]: e.value }));
+        EventBus.on("refresh-inventory", async (e: Equipment[]) => {
             const clean = {...game().inventory, inventory: e};
             setGame({ ...game(), inventory: clean });
-            EventBus.emit('update-inventory', clean);
+            EventBus.emit("update-inventory", clean);
         });
-        EventBus.on('selectPrayer', (e: any) => setGame({ ...game(), selectedPrayerIndex: e.index, selectedHighlight: e.highlight }));
-        EventBus.on('selectDamageType', (e: any) => setGame({ ...game(), selectedDamageTypeIndex: e.index, selectedHighlight: e.highlight }));
-        EventBus.on('selectWeapon', (e: any) => setGame({ ...game(), selectedWeaponIndex: e.index, selectedHighlight: e.highlight }));
-        EventBus.on('set-equipper', (e: any) => swapEquipment(e));
-        EventBus.on('show-combat', () => {
+        EventBus.on("selectPrayer", (e: any) => setGame({ ...game(), selectedPrayerIndex: e.index, selectedHighlight: e.highlight }));
+        EventBus.on("selectDamageType", (e: any) => setGame({ ...game(), selectedDamageTypeIndex: e.index, selectedHighlight: e.highlight }));
+        EventBus.on("selectWeapon", (e: any) => setGame({ ...game(), selectedWeaponIndex: e.index, selectedHighlight: e.highlight }));
+        EventBus.on("set-equipper", (e: any) => swapEquipment(e));
+        EventBus.on("show-combat", () => {
             if (game().scrollEnabled === false && game().showDialog === false && game().showPlayer === false) {
-                EventBus.emit('update-pause', !game().showCombat);
+                EventBus.emit("update-pause", !game().showCombat);
             };
             setGame({ 
                 ...game(), showCombat: !game().showCombat, 
                 smallHud: (!game().showCombat || game().scrollEnabled || game().showDialog || game().showPlayer) 
             });
         });
-        EventBus.on('show-deity', (e: boolean) => setShowDeity(e));
-        EventBus.on('show-dialogue', () => {
+        EventBus.on("show-deity", (e: boolean) => setShowDeity(e));
+        EventBus.on("show-dialogue", () => {
             if (game().scrollEnabled === false && game().showPlayer === false && game().showCombat === false) {
-                EventBus.emit('update-pause', !game().showDialog);
+                EventBus.emit("update-pause", !game().showDialog);
             };
             setGame({ 
                 ...game(), showDialog: !game().showDialog, 
                 smallHud: (!game().showDialog || game().scrollEnabled || game().showPlayer || game().showCombat) 
             });
         });
-        EventBus.on('show-player', () => {
+        EventBus.on("show-player", () => {
             if (game().scrollEnabled === false && game().showDialog === false && game().showCombat === false) {
-                EventBus.emit('update-pause', !game().showPlayer);
+                EventBus.emit("update-pause", !game().showPlayer);
             };
             setGame({ 
                 ...game(), showPlayer: !game().showPlayer, 
                 smallHud: (!game().showPlayer || game().scrollEnabled || game().showDialog || game().showCombat) 
             });
         });
-        EventBus.on('toggle-pause', (e: boolean) => setGame({ ...game(), pauseState: e, smallHud: e }));
-        EventBus.on('blend-combat', (e: any) => setCombat({ ...combat(), ...e }));
-        EventBus.on('blend-game', (e: any) => setGame({ ...game(), ...e }));
-        EventBus.on('update-combat-player', (e: any) => setCombat({ ...combat(), player: { ...e.ascean }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
-        EventBus.on('update-combat-state', (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
-        EventBus.on('update-combat-timer', (e: number) => setCombat({ ...combat(), combatTimer: e }));
-        EventBus.on('update-caerenic', () => setCombat({ ...combat(), isCaerenic: !combat().isCaerenic }));
-        EventBus.on('update-stalwart', () => setCombat({ ...combat(), isStalwart: !combat().isStalwart }));      
-        EventBus.on('update-stealth', () => {setCombat({ ...combat(), isStealth: !combat().isStealth }); EventBus.emit('stealth-sound');});
-        EventBus.on('update-health', (e: number) => {
+        EventBus.on("toggle-pause", (e: boolean) => setGame({ ...game(), pauseState: e, smallHud: e }));
+        EventBus.on("blend-combat", (e: any) => setCombat({ ...combat(), ...e }));
+        EventBus.on("blend-game", (e: any) => setGame({ ...game(), ...e }));
+        EventBus.on("update-combat-player", (e: any) => setCombat({ ...combat(), player: { ...e.ascean }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
+        EventBus.on("update-combat-state", (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
+        EventBus.on("update-combat-timer", (e: number) => setCombat({ ...combat(), combatTimer: e }));
+        EventBus.on("update-caerenic", () => setCombat({ ...combat(), isCaerenic: !combat().isCaerenic }));
+        EventBus.on("update-stalwart", () => setCombat({ ...combat(), isStalwart: !combat().isStalwart }));      
+        EventBus.on("update-stealth", () => {setCombat({ ...combat(), isStealth: !combat().isStealth }); EventBus.emit("stealth-sound");});
+        EventBus.on("update-health", (e: number) => {
             const update = {
                 ...props.ascean(),
                 health: { ...props.ascean().health, current: e },
             };
-            EventBus.emit('update-ascean', update);
+            EventBus.emit("update-ascean", update);
         });
-        EventBus.on('add-lootdrop', (e: Equipment[]) => {
+        EventBus.on("add-lootdrop", (e: Equipment[]) => {
             const newLootDrops = game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e;
             const newLootIds = game().showLootIds.length > 0 ? [...game().showLootIds, ...e.map((loot) => loot._id)] : e.map((loot) => loot._id);
             let inv = JSON.parse(JSON.stringify(game().inventory.inventory));
             const newInv = inv.length > 0 ? [...inv, ...e] : e;
             const newClean = { ...game().inventory, inventory: newInv };
             setGame({ ...game(), inventory: newClean,lootDrops: newLootDrops, showLoot: newLootIds.length > 0,lootTag: newLootIds.length > 0,showLootIds: newLootIds });
-            EventBus.emit('update-inventory', newClean);
+            EventBus.emit("update-inventory", newClean);
         });
-        EventBus.on('remove-lootdrop', (e: string) => {
+        EventBus.on("remove-lootdrop", (e: string) => {
             let updatedLootIds = [...game().showLootIds];
             updatedLootIds = updatedLootIds.filter(id => id !== e);
             let updatedLootDrops = [...game().lootDrops];
             updatedLootDrops = updatedLootDrops.filter((loot) => loot._id !== e);
             setGame({ ...game(), lootDrops: updatedLootDrops, showLoot: updatedLootIds.length > 0, lootTag: updatedLootIds.length > 0, showLootIds: updatedLootIds });
         });
-        EventBus.on('update-lootdrops', (e: Equipment[]) => 
+        EventBus.on("update-lootdrops", (e: Equipment[]) => 
             setGame({ 
                 ...game(), 
                 lootDrops: game().lootDrops.length > 0 ? [...game().lootDrops, ...e] : e,
@@ -1105,37 +1104,37 @@ export default function PhaserGame (props: IProps) {
                 lootTag: e.length > 0,
                 showLootIds: e.map((loot) => loot._id)
         }));
-        EventBus.on('useHighlight', (e: string) => setGame({ ...game(), selectedHighlight: e }));
-        EventBus.on('useScroll', () => {
+        EventBus.on("useHighlight", (e: string) => setGame({ ...game(), selectedHighlight: e }));
+        EventBus.on("useScroll", () => {
             if (game().showPlayer === false && game().showDialog === false && game().showCombat === false) {
-                EventBus.emit('update-pause', !game().scrollEnabled);
+                EventBus.emit("update-pause", !game().scrollEnabled);
             };
             setGame({ 
                 ...game(), scrollEnabled: !game().scrollEnabled, 
                 smallHud: (!game().scrollEnabled || game().showPlayer || game().showDialog || game().showCombat) 
             });
         }); 
-        EventBus.on('create-prayer', (e: any) => setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] }));
-        EventBus.on('create-enemy-prayer', (e: any) => setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] }));
-        EventBus.on('purchase-item', purchaseItem);
-        EventBus.on('sell-item', sellItem);
-        EventBus.on('steal-item', stealItem);
-        EventBus.on('luckout', (e: { luck: string, luckout: boolean }) => {
+        EventBus.on("create-prayer", (e: any) => setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] }));
+        EventBus.on("create-enemy-prayer", (e: any) => setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] }));
+        EventBus.on("purchase-item", purchaseItem);
+        EventBus.on("sell-item", sellItem);
+        EventBus.on("steal-item", stealItem);
+        EventBus.on("luckout", (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
-            EventBus.emit('enemy-luckout', { enemy: combat().enemyID, luckout, luck });
+            EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });
             setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
         });
-        EventBus.on('persuasion', (e: { persuasion: string, persuaded: boolean }) => {
+        EventBus.on("persuasion", (e: { persuasion: string, persuaded: boolean }) => {
             const { persuasion, persuaded } = e;
-            EventBus.emit('enemy-persuasion', { enemy: combat().enemyID, persuaded, persuasion });
+            EventBus.emit("enemy-persuasion", { enemy: combat().enemyID, persuaded, persuasion });
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
         }); 
-        EventBus.on('record-loss', (e:Combat) => recordLoss(e));
-        EventBus.on('record-win', (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));
-        EventBus.on('save-health', saveHealth);
-        EventBus.on('enemy-combat-text', (e: { computerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), computerActionDescription: e.computerSpecialDescription }));
-        EventBus.on('special-combat-text', (e: { playerSpecialDescription: string; }) => EventBus.emit('add-combat-logs', { ...combat(), playerActionDescription: e.playerSpecialDescription }));
-        EventBus.on('update-currency', (currency: { silver: number; gold: number; }) => {
+        EventBus.on("record-loss", (e:Combat) => recordLoss(e));
+        EventBus.on("record-win", (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));
+        EventBus.on("save-health", saveHealth);
+        EventBus.on("enemy-combat-text", (e: { computerSpecialDescription: string; }) => EventBus.emit("add-combat-logs", { ...combat(), computerActionDescription: e.computerSpecialDescription }));
+        EventBus.on("special-combat-text", (e: { playerSpecialDescription: string; }) => EventBus.emit("add-combat-logs", { ...combat(), playerActionDescription: e.playerSpecialDescription }));
+        EventBus.on("update-currency", (currency: { silver: number; gold: number; }) => {
             const update = {
                 ...props.ascean(),
                 currency,
@@ -1144,7 +1143,7 @@ export default function PhaserGame (props: IProps) {
                     max: combat().playerHealth
                 }
             };
-            EventBus.emit('update-ascean', update);
+            EventBus.emit("update-ascean", update);
         });
 
         onCleanup(() => {
@@ -1153,79 +1152,79 @@ export default function PhaserGame (props: IProps) {
                 setInstance({ game: null, scene: null });
             };
             
-            EventBus.removeListener('boot-tutorial');
-            EventBus.removeListener('current-scene-ready');
-            EventBus.removeListener('main-menu');
-            EventBus.removeListener('enter-game');
+            EventBus.removeListener("boot-tutorial");
+            EventBus.removeListener("current-scene-ready");
+            EventBus.removeListener("main-menu");
+            EventBus.removeListener("enter-game");
             
-            EventBus.removeListener('add-item');
-            EventBus.removeListener('add-lootdrop');
-            EventBus.removeListener('blend-combat');
-            EventBus.removeListener('blend-game');
+            EventBus.removeListener("add-item");
+            EventBus.removeListener("add-lootdrop");
+            EventBus.removeListener("blend-combat");
+            EventBus.removeListener("blend-game");
             
-            EventBus.removeListener('changeDamageType');
-            EventBus.removeListener('changePrayer');
-            EventBus.removeListener('changeWeapon');
-            EventBus.removeListener('clear-enemy');
-            EventBus.removeListener('clear-loot');
-            EventBus.removeListener('clear-npc');
-            EventBus.removeListener('combat-engaged');  
-            EventBus.removeListener('create-prayer');
-            EventBus.removeListener('create-enemy-prayer');
+            EventBus.removeListener("changeDamageType");
+            EventBus.removeListener("changePrayer");
+            EventBus.removeListener("changeWeapon");
+            EventBus.removeListener("clear-enemy");
+            EventBus.removeListener("clear-loot");
+            EventBus.removeListener("clear-npc");
+            EventBus.removeListener("combat-engaged");  
+            EventBus.removeListener("create-prayer");
+            EventBus.removeListener("create-enemy-prayer");
             
-            EventBus.removeListener('delete-merchant-equipment');
-            EventBus.removeListener('drink-firewater'); 
-            EventBus.removeListener('enemy-loot');
-            EventBus.removeListener('fetch-enemy');
-            EventBus.removeListener('fetch-tutorial-enemy');
-            EventBus.removeListener('fetch-npc');
-            EventBus.removeListener('gain-experience');
-            EventBus.removeListener('interacting-loot');
-            EventBus.removeListener('initiate-input');
-            EventBus.removeListener('luckout');
+            EventBus.removeListener("delete-merchant-equipment");
+            EventBus.removeListener("drink-firewater"); 
+            EventBus.removeListener("enemy-loot");
+            EventBus.removeListener("fetch-enemy");
+            EventBus.removeListener("fetch-tutorial-enemy");
+            EventBus.removeListener("fetch-npc");
+            EventBus.removeListener("gain-experience");
+            EventBus.removeListener("interacting-loot");
+            EventBus.removeListener("initiate-input");
+            EventBus.removeListener("luckout");
             
-            EventBus.removeListener('purchase-item');
-            EventBus.removeListener('persuasion');
+            EventBus.removeListener("purchase-item");
+            EventBus.removeListener("persuasion");
             
-            EventBus.removeListener('record-statistics');
-            EventBus.removeListener('record-loss');
-            EventBus.removeListener('record-win');
-            EventBus.removeListener('request-game');
-            EventBus.removeListener('request-ascean');    
-            EventBus.removeListener('request-combat');  
+            EventBus.removeListener("record-statistics");
+            EventBus.removeListener("record-loss");
+            EventBus.removeListener("record-win");
+            EventBus.removeListener("request-game");
+            EventBus.removeListener("request-ascean");    
+            EventBus.removeListener("request-combat");  
             
-            EventBus.removeListener('save-health');
-            EventBus.removeListener('sell-item');
-            EventBus.removeListener('steal-item');
-            EventBus.removeListener('selectPrayer');
-            EventBus.removeListener('selectDamageType');
-            EventBus.removeListener('selectWeapon');
-            EventBus.removeListener('set-equipper');
-            EventBus.removeListener('setup-enemy');  
-            EventBus.removeListener('setup-npc');
-            EventBus.removeListener('show-combat');
-            EventBus.removeListener('show-deity');
-            EventBus.removeListener('show-dialogue');
-            EventBus.removeListener('show-player');
-            EventBus.removeListener('set-player');
-            EventBus.removeListener('save-quest-to-player');
+            EventBus.removeListener("save-health");
+            EventBus.removeListener("sell-item");
+            EventBus.removeListener("steal-item");
+            EventBus.removeListener("selectPrayer");
+            EventBus.removeListener("selectDamageType");
+            EventBus.removeListener("selectWeapon");
+            EventBus.removeListener("set-equipper");
+            EventBus.removeListener("setup-enemy");  
+            EventBus.removeListener("setup-npc");
+            EventBus.removeListener("show-combat");
+            EventBus.removeListener("show-deity");
+            EventBus.removeListener("show-dialogue");
+            EventBus.removeListener("show-player");
+            EventBus.removeListener("set-player");
+            EventBus.removeListener("save-quest-to-player");
             
-            EventBus.removeListener('toggle-pause');
-            EventBus.removeListener('update-combat-player');
-            EventBus.removeListener('update-combat-state');
-            EventBus.removeListener('update-combat-timer');
-            EventBus.removeListener('update-currency');
-            EventBus.removeListener('update-health');
-            EventBus.removeListener('update-lootdrops');
-            EventBus.removeListener('update-caerenic');
-            EventBus.removeListener('update-stalwart');
-            EventBus.removeListener('update-stealth');
-            EventBus.removeListener('useHighlight');
-            EventBus.removeListener('useScroll');
-            EventBus.removeListener('upgrade-item');
+            EventBus.removeListener("toggle-pause");
+            EventBus.removeListener("update-combat-player");
+            EventBus.removeListener("update-combat-state");
+            EventBus.removeListener("update-combat-timer");
+            EventBus.removeListener("update-currency");
+            EventBus.removeListener("update-health");
+            EventBus.removeListener("update-lootdrops");
+            EventBus.removeListener("update-caerenic");
+            EventBus.removeListener("update-stalwart");
+            EventBus.removeListener("update-stealth");
+            EventBus.removeListener("useHighlight");
+            EventBus.removeListener("useScroll");
+            EventBus.removeListener("upgrade-item");
 
-            EventBus.removeListener('special-combat-text');
-            EventBus.removeListener('enemy-combat-text');
+            EventBus.removeListener("special-combat-text");
+            EventBus.removeListener("enemy-combat-text");
         });
     });
     return <>

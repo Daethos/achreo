@@ -248,7 +248,7 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
         };
         return (
             <div style={{ margin: "5%" }}>
-                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "0.5em" }}>{o}</button>
+                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "0.75em" }}>{o}</button>
             </div>
         );
     });

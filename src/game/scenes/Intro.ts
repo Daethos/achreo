@@ -24,7 +24,7 @@ export class Intro extends Scene {
     create() {
         const height = dimensions()?.HEIGHT;
         const width = dimensions()?.WIDTH;
-        const fontSize = width > 1024 ? '32px' : width > 886 ? '28px' : width > 768 ? '24px' : '20px';
+        const fontSize = width > 1024 ? '32px' : width > 768 ? '24px' : '20px';
         
         this.scene.sleep('Hud');
         // this.scene.sleep('Game');

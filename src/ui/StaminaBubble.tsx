@@ -50,6 +50,6 @@ export default function StaminaBubble({ stamina, show, setShow, settings }: {sta
     return <div class='staminaBubble' onClick={() => setShow(!show())}>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background': 'conic-gradient(#ffd700, #fdf6d8, #ffd700)', height: `${usedStamina() + staminaPercentage()}%` }}></div>
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background': 'conic-gradient(#006000, #00ff00, #006000)', height: `${staminaPercentage()}%` }}></div>
-        <p class='stamina' style={{ 'color': '#fdf6d8', 'font-weight': 'bold', 'text-shadow': '0.1em 0.1em 0.1em #000', ...setText(settings().stamina) }}>{settings().stamina === 'NUMBER' ? newStamina() : settings().stamina === 'PERCENTAGE' ? `${Math.round(staminaPercentage())}` : ''}{settings().stamina === 'PERCENTAGE' && <span class='super' style={{ 'font-size': '0.5em' }}>%</span>}</p>
+        <p class='stamina' style={{ 'color': '#fdf6d8', 'font-weight': 'bold', 'text-shadow': '0.1em 0.1em 0.1em #000', ...setText(settings().stamina)}}>{settings().stamina === 'NUMBER' ? newStamina() : settings().stamina === 'PERCENTAGE' ? `${Math.round(staminaPercentage())}` : ''}{settings().stamina === 'PERCENTAGE' && <span class='super' style={{ 'font-size': '0.5em' }}>%</span>}</p>
     </div>;
 };

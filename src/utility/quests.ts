@@ -191,7 +191,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST, EUGENES, GARRIS],
         title: "Mist of the Moon",
-        description: "Ingratiate yourself with the Ma'ier and gain their trust to understand the Blood Moon Prophecy",
+        description: "Ingratiate yourself with the Ma'ier, occultists of the Ma'anreic Moon, and gain their trust to understand the Blood Moon Prophecy.",
         requirements: {
             description: `Discover the Blood Moon Prophecy.`,
             technical: initSolve
@@ -210,7 +210,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST],
         title: "Sheath of the Sun",
-        description: "Ingratiate yourself with the Ilire and gain their trust to understand the Black Sun Prophecy",
+        description: "Ingratiate yourself with the Ilire, occultists of the Ilian Sun, and gain their trust to understand the Black Sun Prophecy.",
         requirements: {
             description: `Discover the Black Sun Prophecy.`,
             technical: initSolve
@@ -229,7 +229,7 @@ export const QUEST_TEMPLATES = [
     }, {
         name: [ACHREON_DRUID, CAMBIREN_DRUID, LEAF, VINCERE, DORIEN],
         title: "The Cerchre",
-        description: "Ingratiate yourself with the Cerchre, a loose collection of occult worshipers in the Northren provinces, and gain their trust to understand the Wild",
+        description: "Ingratiate yourself with the Cerchre, a loose collection of occult worshipers in the Northren provinces, and gain their trust to understand the Wild.",
         requirements: {
             description: `Discover and ingratiate yourself to the Cerchre and their adherence to the Wild.`,
             technical: initSolve

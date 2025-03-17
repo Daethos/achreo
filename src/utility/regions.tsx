@@ -328,7 +328,7 @@ export const institutions: Institutions = {
 export const IntstitutionalButtons = ({ current, options, handleConcept, handleInstitution }: { current: any, options: any, handleConcept: any, handleInstitution: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleInstitution(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleInstitution(o)}>{o}</button>
             <Show when={current() === o}>
                 <SubConceptButtons options={institutions[o as keyof typeof institutions]} handleConcept={handleConcept} />
             </Show>
@@ -340,7 +340,7 @@ export const SubConceptButtons = ({ options, handleConcept }: { options: any, ha
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceConcept' style={{ "font-size": "0.5em" }} onClick={() => handleConcept(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceConcept' style={{ "font-size": "0.65em" }} onClick={() => handleConcept(o)}>{text}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -630,7 +630,7 @@ export const SupernaturalEntityButtons = ({ options, handleEntity }: { options: 
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleEntity(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleEntity(o)}>{text}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -676,7 +676,7 @@ export const SupernaturalPhenomenaLore: SupernaturalPhenomena = {
 export const SupernaturalPhenomenaButtons = ({ options, handlePhenomena }: { options: any, handlePhenomena: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handlePhenomena(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handlePhenomena(o)}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -759,7 +759,7 @@ export const localLore: Region = { // Localized, Smaller Concerned Knowledge of 
 export const LocalLoreButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleRegion(o)}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -774,7 +774,7 @@ export const whispers: Whispers = { // Localized Provincial Lore
             "The Last Rites of the Ancients saw the last of the first generation's interaction with the Ancients, those who stood before and besieged the primal beings, eventually forsaken and adrift in a cold, uncaring world without the guidance they’d always sought and relied upon."`,
         belief: `"Still heavily worshiped throughout the Soverains, in parts of Sedyrus, The Alluring Isles, The Spine, and places Touched. Not entirely uncommon in certain houses of the Achreon Kingdom, though it is not the most adhered to. During the Achreon Kingdom vs. Licivitas Wars, an appeasement was made when drawing truce agreements, and the First Fox adopted the Daethos, establishing a two-strike delineation; the recognized coronation of the King in the Northren realm (First Fox), and recognition of the new faith. Scholars argue who gave whom the decree of power, with believers on both sides arguing to this day."`,
         worship: `"Those truly devout, faithful in worship, or perhaps just lucky for varying reasons, had certain gifts or rewards bestowed to them, said to augment and grant a peculiar nature about them. Colloquially, if you were of the faith, the term used for such individuals was to say that they were Favored. If one were not so inclined to believe, or had chosen to honor the New Faith, you were seen as heretical, and Touched. \n
-            "Touched or Favored [These are the colloquial terms for people, one disparaging the other a sign of heralding their superiority] by the Ancients."`
+            "Touched or Favored by the Ancients, these words are the colloquial terms for people, one disparaging the other a sign of heralding their superiority, depending on one's disposition and concerns of another nature."`
     },
     Blood_Moon: {
         history: `"The Blood Moon Reborn is a legend of the cataclysmic Last Rites of the Ancients, specifically tailored to Laetrois Ath'Shaorah. It was orated that a hero, Laetrois Ath’Shaorah, united the human’s during the tumultuous events, and saved the lands from sundering and coming apart against the conspiracy of Mavros Ilios and his followers bringing about the end of the world. He’s reborn and eventually rends the world, purifying it from Mavros Ilios."`,
@@ -783,20 +783,22 @@ export const whispers: Whispers = { // Localized Provincial Lore
             Bathed in Blood and Element
             Under one of the foretold natural disasters
             Under an engorged Blood Moon \n
-            And when recognized:
+        And when recognized:
             Will be heralded as a savior and a slaughterer
             Blessed Savant
             Mastery an Element
             Mastery of Warfare \n
-            Crush in Earth, Drown in Water, Clarify in Windshear, Swathe in Fire"`
+        ‘Crushed in Earth, Drowned in Water, Clarified in Windshear, Swathed in Fire’"`
     }, 
     Black_Sun: {
-        history: `"Black Sun Awakens as foretold in the Blood Moon Prophecy, heralded when the Red Moon is Reborn. It is said that their timelines will rival each other, invariably intertwined at several points throughout their tempering. However, there doesn’t appear to be as many documents surviving throughout time, and it’s uncertain what exactly will hail the Black Sun’s return, though scholars have written observations based on the movements of the Sun and stars. As his role in the Last Rites of the Ancients, he will bring about the end of the world along with his followers."`,
+        history: `"Black Sun Awakens as foretold in the Blood Moon Prophecy, heralded when the Red Moon is Reborn. It is said that their timelines will rival each other, invariably intertwined at several points throughout their tempering. \n
+            There does not appear to be as many documents surviving throughout time, and it is uncertain what exactly will hail the Black Sun’s return, though scholars have written observations based on the movements of the Sun and stars. As was his role in the Last Rites of the Ancients, he will bring about the end of the world along with his followers."`,
         prophecy: `"Commonly associated as the champion of Ilios (Sun). It is written, “The Black Sun will be dawned when the Moon surrenders its Light.”"`,
-        belief: `"Mavros is an outlawed name in some cultures and parts of the realm. However, this person is said to have similar affections to the original:
-            Highly charismatic, potentially possessing Charm?
-            Rivals Laetrois Ath’Shaorah in warfare and accomplishments, in addition to the subsequent coming of the Blood Moon
-            “Crushed in Sunlight, Entombed in Sunset, Renewed in Starlight, Conquers in Twilight”"`
+        belief: `"Mavros is an outlawed name in some cultures and parts of the realm. However, this person is said to have similar affections to the original Ilios:
+            Highly charismatic, thought to enchant others with their conversation and manner;
+            Rivals Laetrois Ath’Shaorah in accomplishments and warfare; 
+            Is heralded in alignment with the Black Sun, which follows the Blood Moon \n
+        ‘Crushed in Sunlight, Entombed in Sunset, Renewed in Starlight, Conquers in Twilight’"`
     },   
     Ilire: {
         history:`"During the initial Northren Wars, an indeterminate band of soldiers on either what is now the Daethic Kingdom or what is claimed as Soverain land, was routed from an ambush in the dead of night and attempted to scatter but were mercilessly stalked and led out of a forest onto a field of open clearing, drab gray-green brush carrying on far past what sight any man held. These horseless men were stranded, cut off from each other, and sank down to the height of the crops in prayer of Ilios to help, and began tearing at their armor, removing it with haste as they became afflicted with exposure to the moon coming out behind the clouds and through the clearing. These soldiers so resolute in their worship of the Sun Ancient, transformed in rebuke of the moon, turning to wild bestial monsters of more Ancient times, and tore at the horses the skirmishing men were corralling the monstrous footpads, felling them and bringing the fight down amongst the quiet clearing. Tears of flesh and entrail, blood and bone laid along the greet the morning dew, and cheering sun, ready to wash away the tears of cold and night, and instill a fervor and warmth in his adherents to renew their spirits and carry on, living Wild along the lands of the North."`,
@@ -872,7 +874,7 @@ export const WhispersButtons = ({ current, options, handleConcept, handleWhisper
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleWhisper(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleWhisper(o)}>{text}</button>
             <Show when={current() === o}>
                 <SubConceptButtons options={whispers[o as keyof typeof whispers]} handleConcept={handleConcept} />
             </Show>
@@ -961,7 +963,7 @@ export const WorldLoreButtons = ({ options, handleWorld }: { options: any, handl
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleWorld(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleWorld(o)}>{text}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -980,7 +982,7 @@ export const provincialInformation: Region = { // Current Provincial Knowledge
 export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.5em" }} onClick={() => handleRegion(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleRegion(o)}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;

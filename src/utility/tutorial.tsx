@@ -148,9 +148,6 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
             console.log(tut, 'Tutorial type being saved');
             const update = { ...settings(), tutorial: { ...settings().tutorial, [tut]: true} };
             EventBus.emit('save-settings', update);
-            // const save = await saveTutorial(id, tutorial());
-            // console.log(save, 'Saved!');
-            // EventBus.emit('fetch-ascean', id);
             setShow(!show());
         } catch (err: any) {
             console.warn(err.message);
@@ -209,8 +206,11 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                 <p class='cornerTR gold highlight' style={{ right: '12.5%', 'font-size': '1em', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>
                     Cycle between character information {arrows.right}  <br />
                     <span class='super' style={{ color: '#fdf6d8' }}>[(Reputation) Your standing with other enemy factions, enabling other interactions, <br />
+                        (Quests) A log of your current quests you have accumulated from the various peoples of this world, <br />
+                        (Reputation) Your current standing with the various factions and peoples of this world that you may encounter along your journey, <br />
                         (Skills) Your ability to wield a type of weapon, affecting crit, glance, and blind attacks, <br />
                         (Statistics) display your combat history, like which prayer you hope for the most, and to whom,<br /> 
+                        (Talents) display the enhancement of your mastery's special actions, and how they may have been optimized,<br /> 
                         (Traits) display percularities of your character, e.g. who you embody of the Ancients or Daethos]</span>
                 </p>
                 <p class='verticalBottom gold highlight' style={{ bottom: '0', left: '49%', 'font-weight': 700, border: '0.1em solid #fdf6d8' }}>

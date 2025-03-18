@@ -45,12 +45,14 @@ export default class Settings {
     public grace: string;
     public stamina: string;
     public combatText: { 
+        size: string;
         left: string; 
         top: string; 
         height: string; 
         width: string; 
     };
     public combatSettings: { 
+        size: string;
         left: string; 
         top: string; 
         height: string; 
@@ -209,8 +211,8 @@ export default class Settings {
         this.healthViews = "FULL";
         this.grace = "NUMBER";
         this.stamina = "NUMBER";
-        this.combatText = { left: "20vw", top: "40vh", height: "50vh", width: "60vw" };
-        this.combatSettings = { left: "20%", top: "40%", height: "50%", width: "60%" };
+        this.combatText = { size: "1.25em", left: "20vw", top: "40vh", height: "50vh", width: "60vw" };
+        this.combatSettings = { size: "1.25em", left: "20%", top: "40%", height: "50%", width: "60%" };
         this.control = "Buttons";
         this.desktop = window.innerWidth > 1200;
         this.computerFocus = "Balanced";

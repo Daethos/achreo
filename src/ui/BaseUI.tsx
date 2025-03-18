@@ -490,7 +490,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             </Suspense>
             <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
             <Suspense fallback={<Puff color="gold" />}>
-                <EnemyUI state={combat} game={game} enemies={enemies} />
+                <EnemyUI state={combat} game={game} enemies={enemies} instance={instance} />
             </Suspense>
             </Show>
         </div>}>

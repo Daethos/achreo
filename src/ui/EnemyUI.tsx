@@ -1,5 +1,7 @@
 import { Accessor, For, Setter, Show, Suspense, createEffect, createSignal, lazy } from 'solid-js'
 import ItemModal from '../components/ItemModal';
+import { IRefPhaserGame } from '../game/PhaserGame';
+import { Store } from 'solid-js/store';
 import AttributeModal, { AttributeCompiler, AttributeNumberModal } from '../components/Attributes';
 import AsceanImageCard from '../components/AsceanImageCard';
 import { itemStyle } from '../utility/styling';
@@ -18,7 +20,7 @@ import { Puff } from 'solid-spinner';
 import { createHealthDisplay } from '../utility/health';
 const HealthBar = lazy(async () => await import('./HealthBar'));
 
-function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState> }) {
+function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState>, instance: Store<IRefPhaserGame> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(state().computerWeapons[0]);
@@ -28,7 +30,8 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     const dimensions = useResizeListener(); 
     createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
-        if (state().combatEngaged) {
+        const combat = instance.game?.registry.get("inCombat");
+        if (combat) {
             setShow(!show());
             return;
         };
@@ -117,7 +120,7 @@ function EnemyModal({ state, show, setShow, game }: { state: Accessor<Combat>, s
     </div>;
 };
 
-export default function EnemyUI({ state, game, enemies }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]> }) {
+export default function EnemyUI({ state, game, enemies, instance }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]>, instance: Store<IRefPhaserGame> }) {
     const dimensions = useResizeListener();
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
@@ -217,7 +220,7 @@ export default function EnemyUI({ state, game, enemies }: { state: Accessor<Comb
                     </Show> 
             )})}
             <Show when={showModal()}>
-                <EnemyModal state={state} show={showModal} setShow={setShowModal} game={game} /> 
+                <EnemyModal state={state} show={showModal} setShow={setShowModal} game={game} instance={instance} /> 
             </Show>
             <Show when={itemShow() && state().computerWeapons?.[0]}>
                 <div class='modal' onClick={() => setItemShow(!itemShow)}>

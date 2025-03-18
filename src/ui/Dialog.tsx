@@ -1028,7 +1028,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             { namedEnemy() ? (
                                 <Typewriter stringText={`"Congratulations ${combat()?.player?.name}, you were fated this win. This is all I have to offer, if it pleases you."`} styling={typewriterStyling} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. Take this if it suits you, I've no need."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. By the way, did you happen to find any equipment I may have dropped in the fall? Must have left it somewhere else, I imagine."`} styling={typewriterStyling} performAction={hollowClick} />
                             ) } 
                         </div> 
                     ) : combat().computerWin ? (

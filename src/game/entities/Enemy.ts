@@ -815,7 +815,7 @@ export default class Enemy extends Entity {
                     this.scene.player.touching.push(this);
                     if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
                         this.createCombat(other, "start");
-                    } else if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive && !this.inComputerCombat) {
+                    } else if (this.playerStatusCheck(other.gameObjectB) && (!this.isAggressive || this.defeatedByPlayer) && !this.inComputerCombat) {
                         const newEnemy = this.isNewEnemy(other.gameObjectB);
                         if (newEnemy) {
                             other.gameObjectB.targets.push(this);

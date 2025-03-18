@@ -613,6 +613,7 @@ export class Game extends Scene {
             if (this.musicNight.isPlaying) this.musicNight.pause();
             if (this.musicStealth.isPlaying) this.musicStealth.stop();
             this.startCombatTimer();
+            this.registry.set("inCombat", true);
         } else if (bool === false) {
             this.clearAggression();
             this.musicCombat.stop();
@@ -631,6 +632,7 @@ export class Game extends Scene {
                 };
             };
             this.stopCombatTimer();    
+            this.registry.set("inCombat", false);
         };
         this.combat = bool;
         EventBus.emit("combat-engaged", bool);

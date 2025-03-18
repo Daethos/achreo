@@ -23,6 +23,7 @@ import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { ArenaView } from "../scenes/ArenaCvC";
 import StatusEffect from "../../utility/prayer";
 import Party from "./PartyComputer";
+import { Weapons } from "../../assets/db/weaponry";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
@@ -327,6 +328,7 @@ export default class Enemy extends Entity {
         EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.off("personal-update", this.personalUpdate);    
         EventBus.off("enemy-persuasion", this.persuasionUpdate);
+        EventBus.off("convert-enemy", this.enemyConversion);
         EventBus.off("enemy-luckout", this.luckoutUpdate);
         EventBus.off("update-enemy-health", this.healthUpdate);
         if (this.isGlowing) this.checkCaerenic(false);
@@ -352,6 +354,7 @@ export default class Enemy extends Entity {
         EventBus.on("personal-update", this.personalUpdate);
         EventBus.on("enemy-persuasion", this.persuasionUpdate);
         EventBus.on("enemy-luckout", this.luckoutUpdate);
+        EventBus.on("convert-enemy", this.enemyConversion);
         EventBus.on("update-enemy-health", this.healthUpdate);
     };
 
@@ -769,7 +772,7 @@ export default class Enemy extends Entity {
     setAggression = () => {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
             const aggressive = this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number;
-            return aggressive <= 0;
+            return aggressive <= -10;
         } else {
             const percent = this.scene.hud.settings.difficulty.aggression;
             return percent >= Math.random() || false;
@@ -795,8 +798,10 @@ export default class Enemy extends Entity {
     
     immersionCheck = (enemy: Enemy): boolean => {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
-            const enemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
-            return enemies.includes(enemy?.ascean?.name);
+            const name = this.ascean.name.split("(Converted)")[0].trim();
+            const enemies = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES];
+            const enemyName = enemy.ascean.name.split("(Converted)")[0].trim();
+            return enemies.includes(enemyName);
         } else if (this.scene.hud.settings.difficulty.computer) {
             return true;
         } else {
@@ -979,6 +984,27 @@ export default class Enemy extends Entity {
     computerEnemyAttacker = () => {
         const enemy = this.scene.enemies.find((e: Enemy) => e.currentTarget?.enemyID === this.enemyID) || this.scene.party?.find((e: Party) => e.currentTarget?.enemyID === this.enemyID);
         return enemy;
+    };
+
+    enemyConversion = (data: { _id: string; faith: string; }) => {
+        const { _id, faith } = data;
+        if (this.enemyID !== _id) return;
+        this.ascean = {
+            ...this.ascean,
+            faith,
+            name: `${this.ascean.name} (Converted)`,
+        };
+        this.combatStats = {
+            ...this.combatStats,
+            ascean: this.ascean
+        };
+        this.computerCombatSheet = {
+            ...this.computerCombatSheet,
+            computer: this.ascean
+        };
+        if (this.scene.state.computer !== undefined) {
+            this.scene.hud.setupEnemy(this);
+        };
     };
 
     enemyFetchedOn = (e: any) => {

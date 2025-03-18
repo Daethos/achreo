@@ -952,7 +952,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
                         Level: <span class="gold">{showQuest()?.quest?.requirements.level}</span><br />
                         Reputation: <span class="gold">{showQuest()?.quest?.requirements.reputation}</span><br />
-                        <span>{showQuest()?.quest?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showQuest()?.quest?.requirements?.technical?.current} / {showQuest()?.quest?.requirements?.technical?.total}</span></> : showQuest()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
+                        <span>{showQuest()?.quest?.requirements?.technical?.id === "fetch" ? <>Task: <span class="gold">{showQuest()?.quest?.requirements?.technical?.current} / {showQuest()?.quest?.requirements?.technical?.total}</span></> : showQuest()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
                     <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
                         Currency: <span class="gold">{showQuest()?.quest?.rewards?.currency?.gold}g {showQuest()?.quest.rewards?.currency?.silver}s.</span><br />

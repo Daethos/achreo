@@ -364,10 +364,10 @@ export default function App() {
             console.warn(err, 'Error Removing Quest');
         };
     };
-    const updateQuest = async (quests: QuestManager) => {
+    const updateQuest = async (q: QuestManager) => {
         try {
-            await updateQuests(quests);
-            setQuests(quests);
+            await updateQuests(q);
+            setQuests(q);
         } catch (err) {
             console.warn(err, "Error Updating Quests");
         };

@@ -413,6 +413,10 @@ export function getEnemy(name: string, level: number) {
     return enemy;
 };
 
+export function getOneComputerReset() {
+
+};
+
 export function nonRandomEnemy(level: number, mastery: string): Ascean {
     const roster = Asceans.filter(ascean => ascean.level === level && ascean.mastery === mastery);
     const enemy = roster[Math.floor(Math.random() * roster.length)];

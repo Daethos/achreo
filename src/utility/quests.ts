@@ -71,6 +71,8 @@ export class Quest {
         level: number,
         reputation: number,
         description: string,
+        dialog?: string,
+        action: { name: string, key: string, value: string },
         technical: FETCH | SOLVE,
     };
     public rewards: {
@@ -158,7 +160,8 @@ export const QUEST_TEMPLATES = [
         description: "Travel deep into the jungle to find a hidden temple and explore its secrets.", 
         requirements: {
             description: "Discover the depths of the lost temple.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [MARK, RECALL],
     }, {
@@ -176,7 +179,8 @@ export const QUEST_TEMPLATES = [
         description: "Explore the ruins of an ancient city, discovering and recovering its treasures.",
         requirements: {
             description: "Explore the depths of the sunken city.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [MARK, RECALL],
     }, {
@@ -185,7 +189,8 @@ export const QUEST_TEMPLATES = [
         description: "Aid in the investigation of a murdered merchant that has occured recently. Find the culprit, and bring them to justice.",
         requirements: {
             description: "Solve the murder.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [BLINK, CHIOMIC, CHIOMISM, CONFUSE, ILIRECH, KYRISIAN, KYRNAICISM, LIKYR, MAIERETH, MYSTIFY, SHADOW],
     }, {
@@ -194,7 +199,8 @@ export const QUEST_TEMPLATES = [
         description: "Ingratiate yourself with the Ma'ier, occultists of the Ma'anreic Moon, and gain their trust to understand the Blood Moon Prophecy.",
         requirements: {
             description: "Discover the Blood Moon Prophecy.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [BLINK, HOOK, MAIERETH, MALICE, PURSUIT, RUSH, SACRIFICE, SHIMMER], // Con, Str, Agi, Caer, Kyo
     }, {
@@ -204,7 +210,8 @@ export const QUEST_TEMPLATES = [
         requirements: {
             completed: ["Mist of the Moon"],
             description: "Participate in a Blessed Hunt with the Ma'ier.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [BLINK, HOOK, MAIERETH, MALICE, PURSUIT, RUSH, SACRIFICE, SHIMMER, SPRINT], // Con, Str, Agi, Caer, Kyo
     }, {
@@ -213,7 +220,8 @@ export const QUEST_TEMPLATES = [
         description: "Ingratiate yourself with the Ilire, occultists of the Ilian Sun, and gain their trust to understand the Black Sun Prophecy.",
         requirements: {
             description: "Discover the Black Sun Prophecy.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER, STORM],
     }, {
@@ -223,7 +231,8 @@ export const QUEST_TEMPLATES = [
         requirements: {
             completed: ["Mist of the Moon"],
             description: "Participate in a Blind Hunt with the Ilire.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ARC, HOOK, HOWL, ILIRECH, LEAP, MYSTIFY, SACRIFICE, SHIMMER, STORM],
     }, {
@@ -232,7 +241,8 @@ export const QUEST_TEMPLATES = [
         description: "Ingratiate yourself with the Cerchre, a loose collection of occult worshipers in the Northren provinces, and gain their trust to understand the Wild.",
         requirements: {
             description: "Discover and ingratiate yourself to the Cerchre and their adherence to the Wild.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ACHIRE, BLINK, HOWL, LEAP, MODERATE, MULTIFARIOUS, POLYMORPH, REIN, RUSH, WRITHE],
     }, {
@@ -242,7 +252,8 @@ export const QUEST_TEMPLATES = [
         requirements: {
             completed: ["The Cerchre"],
             description: "Discover the ritual of the Cerchre and initiate.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ACHIRE, BLINK, HOWL, LEAP, MODERATE, MULTIFARIOUS, POLYMORPH, REIN, RUSH, WRITHE],
     }, {
@@ -251,7 +262,8 @@ export const QUEST_TEMPLATES = [
         description: "Learn all the names of the Land of Hush and Tendril.",
         requirements: {
             description: "Discover all the terms of the otherland.",
-            technical: initSolve 
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
     }, {
@@ -261,7 +273,8 @@ export const QUEST_TEMPLATES = [
         requirements: {
             completed: ["The Otherland"],
             description: "Discover a way to enter the Land of Hush and Tendril.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [DISPEL, ENVELOP, NETHERSWAP, QUOR, RECOVER, SHIRK],
     }, {
@@ -271,7 +284,8 @@ export const QUEST_TEMPLATES = [
         requirements: {
             completed: ["The Land of Hush and Tendril"],
             description: "Enter the Land of Hush and Tendril, and experience your wild caer.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [DISPEL, ENVELOP, NETHERSWAP, QUOR, RECOVER, SHIRK],
     }, {
@@ -281,7 +295,8 @@ export const QUEST_TEMPLATES = [
         description: "Take the poultice and drink deeply, allow us to entwine our minds and step into the otherland.",
         requirements: {
             description: "Experience the otherland in your slumber.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ACHIRE, HOOK, PURSUIT, RUSH, SHADOW, SHIMMER, TETHER],
     }, {
@@ -290,7 +305,8 @@ export const QUEST_TEMPLATES = [
         description: "Learn more about the Phoenix and its origin of rebirth.",
         requirements: {
             description: "Discover the ritual of the Phoenix.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ABSORB, ACHIRE, FYERUS, QUOR, REIN, SACRIFICE],
     }, {
@@ -299,7 +315,8 @@ export const QUEST_TEMPLATES = [
         description: "Learn more about the Ahn'are, the soaring angels of Ahn've, and their origin of flight.",
         requirements: {
             description: "Discover the ritual Ahn'are ascension.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ACHIRE, ASTRAVE, BLINK],
     }, {
@@ -308,7 +325,8 @@ export const QUEST_TEMPLATES = [
         description: "Become initiated into the faith of Daethos.",
         requirements: {
             description: "Become Devoted to Daethos.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
@@ -317,7 +335,8 @@ export const QUEST_TEMPLATES = [
         description: "Seek information about the Anashtre and the ritual of the past to form the lightning wing of Astra.",
         requirements: {
             description: "Discover the ritual to ascend to an Anashtre.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ASTRAVE, BLINK, DISPEL, KYNISOS, PARALYZE, ROOT, RUSH, SHADOW, SHIRK, SPRINT],
     }, {
@@ -326,7 +345,8 @@ export const QUEST_TEMPLATES = [
         description: "Seek information about Astrification and the ritual of the past to form the lightning spear of Astra.",
         requirements: {
             description: "Discover the ritual of Astrification.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [ASTRAVE, BLINK, DISPEL, KYNISOS, PARALYZE, ROOT, RUSH, SHADOW, SHIRK, SPRINT],
     }, {
@@ -335,7 +355,8 @@ export const QUEST_TEMPLATES = [
         description: "Track down the mystery behind the Ky'myr and its curse of ceaselessness.",
         requirements: {
             description: "Discover the source of the Ky'myr curse. Perhaps you will be allured by its thwarting of death itself, and seek means to become one.",
-            technical: initSolve
+            technical: initSolve,
+            dialog: "",
         },
         reward: [DISEASE, HOOK, KYRISIAN, KYRNAICISM, LIKYR, RENEWAL, SACRIFICE, SUTURE],
     }, {
@@ -344,7 +365,8 @@ export const QUEST_TEMPLATES = [
         description: "Come over to the primal nature of your being and become Adherent.",
         requirements: {
             description: "Become Adherent to the Ancients.",
-            technical: initSolve 
+            technical: initSolve,
+            dialog: "",
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
@@ -353,7 +375,13 @@ export const QUEST_TEMPLATES = [
         description: "Bring back the devoted across the land toward the ancient worship.",
         requirements: {
             description: "Convert 5 Devoted to the worship of the Ancients.",
-            technical: initSolve 
+            technical: initFetch,
+            dialog: "I'm convinced! I give myself to the Ancients and their ways.",
+            action: {
+                key: "_id",
+                name: "convert",
+                value: "Adherent"
+            }
         },
         reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
     }, {
@@ -362,7 +390,13 @@ export const QUEST_TEMPLATES = [
         description: "Aid in the proliferation of Daethos across the land.",
         requirements: {
             description: "Proselytize 5 Adherent to the faith of Daethos.",
-            technical: initFetch
+            technical: initFetch,
+            dialog: "I'm convinced! I give myself to Daethos.",
+            action: {
+                key: "_id",
+                name: "convert",
+                value: "Devoted"
+            }
         },
         reward: [ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MYSTIFY, PROTECT, RECOVER, REIN, SHIELD, WARD],
     }
@@ -384,7 +418,9 @@ export const getQuest = (title: string, enemy: Ascean, ascean: Ascean): Quest | 
                 level: enemy.level,
                 reputation: enemy.level * 5,
                 description: template.requirements.description,
-                technical: template.requirements.technical
+                technical: template.requirements.technical,
+                action: template.requirements?.action,
+                dialog: template.requirements?.dialog
             },
             rewards    
         };

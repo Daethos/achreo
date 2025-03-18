@@ -16,6 +16,7 @@ import { Arena } from "./Arena";
 import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
 import Talents from "../../utility/talents";
+import { Player_Scene } from "../entities/Entity";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
@@ -37,8 +38,11 @@ export class Hud extends Phaser.Scene {
     logger!: Logger;
     currentZoom: number;
     currentX: number;
+    currentX2: number;
     evCache: any[] = [];
+    evCache2: any[] = [];
     prevDiff: number = -1;
+    prevDiff2: number = -1;
     prevScene: string = '';
     currScene: string = '';
     talents: Talents;
@@ -116,6 +120,9 @@ export class Hud extends Phaser.Scene {
         
         const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
         swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125);
+        
+        const swipe2 = this.add.rectangle(0, 0, this.gameWidth * 0.1125, this.gameHeight * 0.1, 0x000000, 0);
+        swipe2.setPosition(this.gameWidth * 0.75, this.gameHeight * 0.2125);
 
         swipe.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
@@ -148,7 +155,28 @@ export class Hud extends Phaser.Scene {
                 }
             };
             EventBus.emit('save-settings', newSettings);
+        });
 
+        
+        swipe2.setInteractive().on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.evCache.push(pointer);
+            this.currentX2 = pointer.x;
+        })
+        .on('pointermove', (pointer: Phaser.Input.Pointer) => {
+            var curDiff = Math.abs(this.currentX2 - pointer.x);
+            if ((curDiff > 25 || this.prevDiff2 > 25)) {
+                const scene = this.scene.get(this.currScene);
+                if (scene && (scene as Player_Scene).state.computer !== undefined && !(scene as Player_Scene).player.inCombat) {
+                    (scene as Player_Scene).player.disengage();
+                };
+            };
+            this.prevDiff2 = curDiff;
+        })
+        .on('pointerup', (pointer: Phaser.Input.Pointer) => {
+            this.removeEvent(pointer);
+            
+            this.prevDiff2 = -1;
+            this.currentX2 = 0;
         });
         // this.arenaButton = this.add.image(this.cameras.main.width - 20, this.cameras.main.height - 50, 'toggleButton').setDepth(10).setInteractive(); 
         // this.arenaButton.on('pointerdown', this.toggleArenaView, this);

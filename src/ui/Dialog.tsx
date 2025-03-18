@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX } from "solid-js"
+import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX, Switch, Match } from "solid-js"
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 import Ascean from "../models/ascean";
@@ -305,6 +305,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [completeQuests, setCompleteQuests] = createSignal<any[]>([]);
     const [prospectiveQuests, setProspectiveQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
+    const [fetchQuests, setFetchQuests] = createSignal<any>([]);
     const [showQuestComplete, setShowQuestComplete] = createSignal<any>(false);
     const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
@@ -412,14 +413,20 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkQuests = (enemy: Ascean, quest: Quest[]) => {
         const completedQuests = [];
+        const fetch = [];
         for (const q of quest) {
             const completed = q.requirements.technical.id === "fetch" ? q.requirements.technical.current === q.requirements.technical.total : q.requirements.technical.solved;
             const qRep = rep().reputation >= q.requirements.reputation;
             if (q.giver === enemy.name && completed && qRep) { // Quest The Enemy of One of the Faction Has Given the Player
                 completedQuests.push(q);
             };
+
+            if (q.requirements.technical.id === "fetch") {
+                fetch.push(q);
+            };
         };
         setCompleteQuests(completedQuests);
+        setFetchQuests(fetch);
 
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
@@ -879,6 +886,38 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
+    function convertEnemy(quest: Quest) {
+        const newQuests = quests().quests.map((q: Quest) => {
+            const newQ = q._id === quest._id 
+                ? {
+                    ...q, 
+                    requirements: {
+                        ...q.requirements,
+                        technical: {
+                            ...q.requirements.technical,
+                            current: Math.min(q.requirements.technical.current as number + 1, q.requirements.technical.total as number)
+                        }
+                    },
+                } 
+                : q;
+            // if (q._id === quest._id) console.log(newQ.requirements, "newQ requirements");
+            return newQ;
+        });
+        const newQuestManager = {
+            ...quests(),
+            quests: newQuests
+        };
+        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted ${enemyArticle()} ${combat().computer?.name} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
+        EventBus.emit("update-quests", newQuestManager);
+        EventBus.emit("convert-enemy", { _id: combat().enemyID, faith: quest.requirements.action.value });
+        // const newEnemy = {
+        //     ...combat().computer,
+        //     weaponOne: {...combat().weapons[0], rarity: combat().weapons[0]?.name.includes("Default") ? "Default" :  combat().computerWeapons[0].rarity},
+        //     weaponTwo: {...combat().weapons[1], rarity: combat().weapons[1]?.name.includes("Default") ? "Default" :  combat().computerWeapons[1].rarity},
+        //     weaponThree: {...combat().weapons[2], rarity: combat().weapons[2]?.name.includes("Default") ? "Default" :  combat().computerWeapons[2].rarity},
+        // };
+    };
+
     function specialMerchantStyle(animation: string) {
         return {
             "font-weight": 700,
@@ -1202,6 +1241,22 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             }}</For>
                             </div>
                         </Show>
+                        <Show when={fetchQuests().length > 0}>
+                            <div class="creature-heading">
+                                <For each={fetchQuests()}>{(quest) => {
+                                    if (!quest.requirements.dialog) return;
+                                    return <Switch>
+                                        <Match when={(quest.title === "Adherence" || quest.title === "Providence") && (combat().playerWin || rep().reputation >= 25) && !combat().computer?.name.includes("(Converted)") && quest.requirements.action.value.toLowerCase() !== combat().computer?.faith}>
+                                            <div class="wrap">
+                                                <button class="highlight" onClick={() => convertEnemy(quest)}>
+                                                    <Typewriter stringText={`${combat().computer?.name}: "${quest.requirements.dialog as string}"`} styling={typewriterStyling} performAction={hollowClick} />
+                                                </button>
+                                            </div>
+                                        </Match> 
+                                    </Switch>
+                                }}</For>
+                            </div>
+                        </Show>
                     </>
                 ) : game().currentIntent === "provinces" ? (
                     <>
@@ -1391,7 +1446,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
                         Level: <span class="gold">{showCompleteQuest()?.requirements.level}</span><br />
                         Reputation: <span class="gold">{showCompleteQuest()?.requirements.reputation}</span><br />
-                        <span>{showCompleteQuest()?.requirements?.technical?.id === "fetch" ? <>Kills: <span class="gold">{showCompleteQuest()?.requirements?.technical?.current} / {showCompleteQuest()?.requirements?.technical?.total}</span></> : showCompleteQuest()?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
+                        <span>{showCompleteQuest()?.requirements?.technical?.id === "fetch" ? <>Task: <span class="gold">{showCompleteQuest()?.requirements?.technical?.current} / {showCompleteQuest()?.requirements?.technical?.total}</span></> : showCompleteQuest()?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
                     <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
                         Currency: <span class="gold">{showCompleteQuest()?.rewards?.currency?.gold}g {showCompleteQuest().rewards?.currency?.silver}s.</span><br />

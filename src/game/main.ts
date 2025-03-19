@@ -20,10 +20,10 @@ export type Play = Arena | ArenaCvC | Game | Tutorial | Underground;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    height: Math.min(dimensions().HEIGHT, 1080),
-    width: Math.min(dimensions().WIDTH, 1920),
+    height: dimensions().HEIGHT,
+    width: dimensions().WIDTH,
     scale: {
-        mode: Phaser.Scale.RESIZE, // FIT
+        mode: Phaser.Scale.FIT, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH
     },
     parent: 'game-container',

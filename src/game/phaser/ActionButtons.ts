@@ -109,7 +109,7 @@ class Tooltip {
                 this.container.x = pointer.worldX - (WIDTH / 2);
                 this.container.y = pointer.worldY - (this.height + 25);
             } else {
-                const point = scene.cameras.main.getWorldPoint(scene.cameras.main.centerX - (WIDTH / 2), scene.cameras.main.height - (this.height + 10));
+                const point = scene.cameras.main.getWorldPoint(scene.cameras.main.centerX - (WIDTH / 2), scene.cameras.main.height - (this.height + 25));
                 this.container.x = point.x;
                 this.container.y = point.y;
             };
@@ -1033,7 +1033,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 textX = pointer.worldX - (WIDTH / 2);
                 textY = pointer.worldY - (totalHeight + 25);
             } else {
-                const point = this.scene.cameras.main.getWorldPoint(this.scene.cameras.main.centerX - (WIDTH / 2), this.scene.cameras.main.height - (totalHeight + 10)); // + 25
+                const point = this.scene.cameras.main.getWorldPoint(this.scene.cameras.main.centerX - (WIDTH / 2), this.scene.cameras.main.height - (totalHeight + 25)); // + 25
                 textX = point.x;
                 textY = point.y;
             };

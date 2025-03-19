@@ -4,7 +4,6 @@ import { EventBus } from "../EventBus";
 import LootDrop from "../matter/LootDrop";
 import Equipment from "../../models/equipment";
 import { States } from "../phaser/StateMachine";
-import { Reputation, faction, initReputation } from "../../utility/player";
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
 import NPC from "../entities/NPC";
@@ -25,6 +24,7 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 // @ts-ignore
 import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
 import { PARTY_OFFSET } from "../../utility/party";
+import { faction } from "../../utility/player";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -32,7 +32,6 @@ export class Game extends Scene {
     offsetX: number = 0;
     offsetY: number = 0;
     state: Combat = initCombat;
-    reputation: Reputation = initReputation;
     player: Player;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -88,7 +87,6 @@ export class Game extends Scene {
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        this.reputation = this.getReputation();
         const map = this.make.tilemap({ key: "ascean_test" });
         this.map = map;
         const tileSize = 32;
@@ -121,7 +119,7 @@ export class Game extends Scene {
         });
         [layer2, layer3].forEach((layer) => { // Flowers, Plants
             this.matter.world.convertTilemapLayer(layer!);
-            layer?.setDepth(3);
+            layer?.setDepth(2);
         });
         // this.matter.world.createDebugGraphic();
         const objectLayer = map.getObjectLayer('navmesh');
@@ -176,9 +174,6 @@ export class Game extends Scene {
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-        // var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
-        // this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        // this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys("W,UP"),
@@ -212,7 +207,6 @@ export class Game extends Scene {
             };
         };
 
-        // this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
@@ -315,7 +309,6 @@ export class Game extends Scene {
 
     cleanUp = (): void => {
         EventBus.off("combat");
-        EventBus.off("reputation");
         EventBus.off("enemyLootDrop");
         EventBus.off("minimap");
         EventBus.off("aggressive-enemy");
@@ -343,7 +336,6 @@ export class Game extends Scene {
 
     gameEvent = (): void => {
         EventBus.on("combat", (combat: any) => this.state = combat); 
-        EventBus.on("reputation", (reputation: Reputation) => this.reputation = reputation);
         EventBus.on("enemyLootDrop", (drops: any) => {
             if (drops.scene !== "Game") return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
@@ -444,102 +436,6 @@ export class Game extends Scene {
             this.matter.pause();
             this.scene.sleep(current);
         });
-    };
-
-    // postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
-    //     const { type, val } = data;
-    //     if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
-    //     if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
-    //     if (type === "chromatic") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setChromaticEnable();
-    //         } else {
-    //             this.postFxPipeline.setChromaticEnable(val);
-    //         };
-    //     };
-    //     if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
-    //     if (type === "vignetteEnable") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setVignetteEnable();
-    //         } else {
-    //             this.postFxPipeline.setVignetteEnable(val);
-    //         };
-    //     };
-    //     if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
-    //     if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
-    //     if (type === "noiseEnable") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setNoiseEnable();
-    //         } else {
-    //             this.postFxPipeline.setNoiseEnable(val);
-    //         };
-    //     };
-    //     if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
-    //     if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
-    //     if (type === "vhsEnable") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setVHSEnable();
-    //         } else {
-    //             this.postFxPipeline.setVHSEnable(val);
-    //         };
-    //     };
-    //     if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
-    //     if (type === "scanlinesEnable") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setScanlinesEnable();
-    //         } else {
-    //             this.postFxPipeline.setScanlinesEnable(val);
-    //         };
-    //     };
-    //     if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
-    //     if (type === "crtEnable") {
-    //         if (val === true) {
-    //             this.postFxPipeline.setCRTEnable();
-    //         } else {
-    //             this.postFxPipeline.setCRTEnable(val);
-    //         };
-    //     };
-    //     if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
-    //     if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
-    //     if (type === "enable") {
-    //         if (val === true) {
-    //             this.setPostFx(this.hud.settings?.postFx, true);
-    //         } else {
-    //             this.postFxPipeline.setEnable(false);
-    //         };
-    //     };
-    // });
-
-    // setPostFx = (settings: any, enable: boolean): void => { 
-    //     if (enable === true) {
-    //         this.postFxPipeline.setEnable();
-    //     } else {
-    //         this.postFxPipeline.setEnable(false);
-    //         return;    
-    //     };
-    //     this.postFxPipeline.setBloomRadius(25);
-    //     this.postFxPipeline.setBloomIntensity(0.5);
-    //     this.postFxPipeline.setBloomThreshold(0.5);
-    //     this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
-    //     this.postFxPipeline.setChabIntensity(settings.chabIntensity);
-    //     this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
-    //     this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
-    //     this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
-    //     this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
-    //     this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
-    //     this.postFxPipeline.setVHSEnable(settings.vhsEnable);
-    //     this.postFxPipeline.setVhsStrength(settings.vhsStrength);
-    //     this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
-    //     this.postFxPipeline.setScanStrength(settings.scanStrength);
-    //     this.postFxPipeline.setCRTEnable(settings.crtEnable);
-    //     this.postFxPipeline.crtHeight = settings.crtHeight;
-    //     this.postFxPipeline.crtWidth = settings.crtWidth;
-    // };
-
-
-    getReputation = (): Reputation => {
-        EventBus.emit("request-reputation");
-        return this.reputation;
     };
 
     getEnemy = (id: string): Enemy | undefined => {
@@ -781,17 +677,17 @@ export class Game extends Scene {
         const flower = this.flowers.getTileAt(x as number, y as number);
         if (flower) {
             if (flower.pixelY > player.y - 12) {
-                player.setDepth(2);
+                player.setDepth(1);
             } else {
-                player.setDepth(4);
+                player.setDepth(3);
             };
         };
         const plant = this.plants.getTileAt(x as number, y as number);
         if (plant) {
             if (plant.pixelY > player.y - 12) {
-                player.setDepth(2);
+                player.setDepth(1);
             } else {
-                player.setDepth(4);
+                player.setDepth(3);
             };
         };
     };

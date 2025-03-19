@@ -10,79 +10,6 @@ export interface RacialRegion {
     "Sedyreal": ["Sedyrus", "Isles"];
 };
 
-// Info Based on Race
-export interface RegionInformation {
-    Astralands: {
-        Entity: {
-            "Ahn'are": string;
-            Cerchre: string;
-            Chioba: string;
-            Dwarves: string;
-            Gatshyr: string;
-            Quoros: string;
-            Tavore: string;
-            Anashtre: string;
-            Sinacyn: string;
-            Tshiathail_Kon: string; // Skeleton Knight King
-            
-            Carrier_Birds: string;
-            "Rana'vas": string;
-        };
-        Phenomena: {
-            Insight: string;
-            Dreamshivers: string;
-            Keening: string;
-        };
-    };
-    Kingdom: {
-        Entity: {
-            "Ahn'are": string;
-            Cerchre: string;
-            Chioba: string;
-            Cragore: string;
-            Dwarves: string;
-            Gatshyr: string;
-            Ilire: string;
-            "Ma'ier": string;
-            Morath: string;
-            "Re'vas": string;
-            Shyr: string;
-            Tshios: string;
-            Aphyero: string;
-            Chyrolus: string;
-            Draochre: string;
-            Sinacyn: string;
-            Tshiathail_Kon: string; // Skeleton Knight King
-
-            Carrier_Birds: string;
-            "Rana'vas": string;
-        };
-        Phenomena: {
-            Shifting: string;
-            Vielo: string;
-            Insight: string;
-        };
-    };
-    Soverains: {
-
-    };
-    Fangs: {
-
-    };
-    Licivitas: {
-
-    };
-    Firelands: {
-
-    };
-    Sedyrus: {
-
-    };
-    Isles: {
-
-    };
-};
-
 export interface Institutions {
     Ascea: {
         preamble: string;
@@ -111,8 +38,7 @@ export interface Institutions {
     };
 };
 
-export interface Whispers { 
-    // TODO: Create {} of keys for more specific information.
+export interface Whispers {
     // Work on other Occult eventually
     Ancients: {
         history: string;
@@ -217,6 +143,7 @@ export interface SupernaturalPhenomena {
     Scrying: string;
     Insight: string;
 };
+
 
 export const institutions: Institutions = {
     Ascea:  {
@@ -816,7 +743,7 @@ export const whispers: Whispers = { // Localized Provincial Lore
             Must not share wives and mates.
             Must not abandon a sheathed hunt.
             Must not abandon the Ilire. \n
-            Committing any of the above is a signifier of working on behalf of The Blood Moon Prophecy, and are stained to the worship of the Sun Ancient."`,
+            "Committing any of the above is a signifier of working on behalf of The Blood Moon Prophecy, and are stained to the worship of the Sun Ancient."`,
         worship: `"The worshippers have to birth or awaken their savior, however, until then, they must scour the land for resources, and mates, as these men were not accustomed to an agricultural lifestyle. Partake in Sheathed Hunts, raiding towns, or villages during a full moon, taking stores of grain, animals, wagons, carts, anything necessary for provisions and stockpiling or switching out clothes, armor, weapons, and goods. \n
             "These Sheathed Hunts occur silently, with little to no communication between the Ilire during the event, to maintain secrecy and quiet. No survivors may be left that stumble upon the ceremony, though if left slumbering, may be kept undisturbed through the Ilire’s discretion. Penance for violating one of the central tenets of the Ilire is possible under the strictest settings, and all is possible to be forgiven except for becoming an apostate. It is rumored that those who become apostate’s are hunted down as traitors to the cause, and is the harshest crime one can be sentenced to in the Ilire. \n
             "The Ilire were forged under the sunlight’s watchful gaze down field from the dense Wild of the Eye, closing in on the mountainous ranges that guarded well-kept secrets of the Cragore. They tend to move around the various parts of both Northren lands of the Daethic Kingdom and the Soverains, bouncing from one to the other when their Sheathed Hunts become less fruitful, but returning once every summer solstice to the original river that their ancestors first discovered the still alluring power and care of the Sun Ancient. \n
@@ -840,7 +767,7 @@ export const whispers: Whispers = { // Localized Provincial Lore
             Must not share wives and mates.
             Must not abandon a blessed hunt.
             Must not abandon the Ma'ier. \n 
-            Committing any of the above is a signifier of working on behalf of The Black Sun Prophecy, and are stained to the worship of the Moon Ancient"`,
+            "Committing any of the above is a signifier of working on behalf of The Black Sun Prophecy, and are stained to the worship of the Moon Ancient"`,
         worship: `"The worshippers have to birth or awaken their savior, however, until then, they must scour the land for resources, and mates, as these men were not accustomed to an agricultural lifestyle. Partake in Blessed Hunts, raiding towns, or villages during a full moon, taking stores of grain, animals, wagons, carts, anything necessary for provisions and stockpiling or switching out clothes, armor, weapons, and goods. \n
             "These Blessed Hunts occur silently, with little to no communication between the Ma'ier during the event, to maintain secrecy and quiet. No survivors may be left that stumble upon the ceremony, though if left slumbering, may be kept undisturbed through the Ma'ier’s discretion. Penance for violating one of the central tenets of the Ma'ier is possible under the strictest settings, and all is possible to be forgiven except for becoming an apostate. It is rumored that those who become apostate’s are hunted down as traitors to the cause, and is the harshest crime one can be sentenced to in the Ma'ier. \n
             "the Ma'ier were forged under the moonlight’s watchful gaze down river from the freer cities of Licivitas, closing in on the mountainous ranges that guarded well-kept secrets bleeding into Sedyrus, and the Firelands. They tend to move around the various parts of both lands, bouncing from one to the other when their Blessed Hunts become less fruitful, but returning once in a Blue Moon to the original river where their ancestors first discovered the still alluring power and care of the Moon Ancient. \n
@@ -865,10 +792,10 @@ export const whispers: Whispers = { // Localized Provincial Lore
             One’s body must be as open, flexible, and strong as his mind, training with their hands, legs, and natural weapons; daggers, axes, clubs, spears, bows, and nets. Nothing may be mastered, but all must be known. Colloquially these members are also called Seedlings, for their youth, and ability to grow rapidly over time.`,
         tenets: `Central Tenets of the Draochre \n
             "Must not take up arms against each other, for violation is a signifier of losing your rational spirit and giving into unbridled passions. \n
-            Must not take wives and mates, for violation is a signifier of losing your priorities toward keeping nature at peace, and can lessen your communion with the spirits. \n
-            Must not abandon the fruitful lands in favor of manmade structures and societies, for violation is a signifier of losing your adherence to nature. \n
-            Must not abandon the Dachreon, for violation revealing one as an apostate stains worship of the reverence and beauty of nature, and is a signifier of losing sight of your connection to it and Achreo or Cambire, cutting yourself off from their gentle guidance. \n
-            Violation of these tenets was not to be taken lightly, and depending on the severity or frequency could result in being sacrificed to nature and the Ancients."`,
+            "Must not take wives and mates, for violation is a signifier of losing your priorities toward keeping nature at peace, and can lessen your communion with the spirits. \n
+            "Must not abandon the fruitful lands in favor of manmade structures and societies, for violation is a signifier of losing your adherence to nature. \n
+            "Must not abandon the Dachreon, for violation revealing one as an apostate stains worship of the reverence and beauty of nature, and is a signifier of losing sight of your connection to it and Achreo or Cambire, cutting yourself off from their gentle guidance. \n
+            "Violation of these tenets was not to be taken lightly, and depending on the severity or frequency could result in being sacrificed to nature and the Ancients."`,
         worship: `"Multiple shrines were built throughout the land (including man-shaped braziers that entombed a human sacrifice) in homage, currying the Ancient’s favor, keeping the surrounding areas undisturbed as recompense for the resources used in building said monuments, marked as places of worship, though scholars are unsure if this was the best measure to showcase their faithfulness to Achreo or Cambire, renowned to be absent and capricious Ancients. These forms of worship even went so far as to take place in human sacrifice. The Dachreon of Druids clamored to his favor as well, as most orations and written scrolls tend to adhere to this perception. \n
             "The reckless abandon of any gifts offered never deterred those who remained vigilant in their worship and endless attempts of appeasement to make their lives better for it. Achreo and Cambire are associated with Shattering, and lead some to speculate on the abilities of some Druids henceforth on their proclivities toward the supernatural phenomena. In addition Shattering, it’s also believed that Druids were capable of Scrying (Divination), reading the flight patterns of birds, the arrangement of the stars in the night sky, as well as the formations of branches in a Snag, the bones found of a decomposed animal, the twitches and convulsions of a sacrificial human to the Ancients, so on and so forth. \n
             "One disturbing practice of the Druids of old was to sacrifice a human and input his soul into the desired animal companion. The following hunt, it would show itself to the recipient and become his Familiar henceforth, sharing a bond with the animal and torturing the sacrificed as penance for his crimes, till the animal itself were put to rest."`,
@@ -930,25 +857,25 @@ export const worldLore: World_Events = { // Old World Lore of each Province
     Purification_Trials: `Purification Trials \n
         "The trials of Purification are not the terminology regarding literal trials entirely, though those had taken place as well. These were a sort of crusade, the faith’s face for snuffing out those who were afflicted or Touched by the Ancients, perhaps in an attempt to aid in stabilizing the dominance of the new faith. There is also some skepticism involved as to the specific targets, and the issues surrounding their demonizing and accusations. \n
         "Some had the effect of warding humanity against those who were perceived as having special abilities, or who were perverse abominations of nature. The beliefs in the sincerity of such trials remains a mystery and point of contention depending on the sources being read, by whom, in which realms, and to what ends. \n
-        "In total, there have been five purification trials, each changing in scope and direction of the realm: 
+        "In total, there have been five purification trials, each changing in scope and direction of the realm: \n
         First Purification 1100 - 1099 AD, 
-            Trial I - I 1100 - 1099 AD, 
-            Trial I - II 1099 AD; \n  
+            Trial I - I   1100 - 1099 AD, 
+            Trial I - II   1099 AD; \n  
         Second Purification 1098 - 1097 AD, 
-            Trial II - I 1098 AD, 
-            Trial II - II 1097 AD; \n
+            Trial II - I   1098 AD, 
+            Trial II - II   1097 AD; \n
         Third Purification 403 - 387 AD, 
-            Trial III - I 403 - 397 AD, 
-            Trial III - II 395 - 393 AD, 
-            Trial III - III 392 - 387 AD; \n 
+            Trial III - I   403 - 397 AD, 
+            Trial III - II   395 - 393 AD, 
+            Trial III - III   392 - 387 AD; \n 
         Fourth Purification 342 - 328 AD, 
-            Trial IV - I 342 - 338 AD, 
-            Trial IV - II 335 - 332 AD, 
-            Trial IV - III 330 - 328 AD; \n 
+            Trial IV - I   342 - 338 AD, 
+            Trial IV - II   335 - 332 AD, 
+            Trial IV - III   330 - 328 AD; \n 
         Fifth Purification 291 - 280 AD, 
-            Trial V - I 291 - 288 AD, 
-            Trial V - II 286 - 284 AD, 
-            Trial V - III 283 - 280 AD"`,
+            Trial V - I   291 - 288 AD, 
+            Trial V - II   286 - 284 AD, 
+            Trial V - III   283 - 280 AD"`,
     
         False_Prophecy_Wars: `"Over the centuries following the Last Rites, once Laetrois Ath'Shaorah had passed away and gave rise to the Seyr, there have been times when an uprising occurred, upholding the belief of the rebirth of the savior during the great Sundering. Or worse yet, the prominence and conquest of Mavros Ilios reborn, his greatest rival championed on the other side of the war, that which had been manifested from the rage and death echoes of the Ancients who had perished. These two have had much speculation written about them coming from various sources, be it oral stories passed down till the possibility of quill put to parchment came to being, in addition to first person narratives and encounters in the war, and of those who followed and worshiped the cherished and infamous men. \n
         "Due to the circumstances regarding conjecture based on their upbringings, of whether they were of noble birth disguised as normal folk, a true commoner who forged his legend through being made of some greater substance--perhaps Favored by the Ancients themselves, or even some that hold it having been an Ancient possessing or becoming a mortal, tasked with vanquishing the opposing side and stopping the world from tearing apart. \n
@@ -990,4 +917,86 @@ export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: 
         </div>;
     });
     return <>{buttons}</>;
+};
+
+// Info Based on Race
+export interface RegionInformation {
+    Astralands: {
+        SupernaturalEntity: {
+            "Ahn'are": string;
+            Cerchre: string;
+            Chioba: string;
+            Dwarves: string;
+            Gatshyr: string;
+            Quoros: string;
+            Tavore: string;
+            Anashtre: string;
+            Sinacyn: string;
+            Tshiathail_Kon: string; // Skeleton Knight King
+            
+            Carrier_Birds: string;
+            "Rana'vas": string;
+        };
+        SupernaturalPhenomena: {
+            Insight: string;
+            Dreamshivers: string;
+            Keening: string;
+        };
+        Institutions: {
+            Ascea: {};
+        };
+        Region:{
+
+        };
+        World_Events: {
+
+        };
+    };
+    Kingdom: {
+        Entity: {
+            "Ahn'are": string;
+            Cerchre: string;
+            Chioba: string;
+            Cragore: string;
+            Dwarves: string;
+            Gatshyr: string;
+            Ilire: string;
+            "Ma'ier": string;
+            Morath: string;
+            "Re'vas": string;
+            Shyr: string;
+            Tshios: string;
+            Aphyero: string;
+            Chyrolus: string;
+            Draochre: string;
+            Sinacyn: string;
+            Tshiathail_Kon: string; // Skeleton Knight King
+
+            Carrier_Birds: string;
+            "Rana'vas": string;
+        };
+        Phenomena: {
+            Shifting: string;
+            Vielo: string;
+            Insight: string;
+        };
+    };
+    Soverains: {
+
+    };
+    Fangs: {
+
+    };
+    Licivitas: {
+
+    };
+    Firelands: {
+
+    };
+    Sedyrus: {
+
+    };
+    Isles: {
+
+    };
 };

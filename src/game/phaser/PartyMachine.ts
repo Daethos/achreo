@@ -1,14 +1,15 @@
-import Party from '../entities/PartyComputer';
+import Party from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAME_COUNT } from '../entities/Entity';
-import AoE from './AoE';
+import { FRAME_COUNT } from "../entities/Entity";
+import AoE from "./AoE";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
 import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { Play } from "../main";
-import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from '../../utility/party';
-import { PLAYER } from '../../utility/player';
+import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from "../../utility/party";
+import { PLAYER } from "../../utility/player";
+import { BONE, CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -26,11 +27,12 @@ const DURATION = {
     SPECIAL: 5000,
 };
 const MOVEMENT = {
-    'up': { x: 0, y: -5 },
-    'down': { x: 0, y: 5 },
-    'left': { x: -5, y: 0 },
-    'right': { x: 5, y: 0 },
+    "up": { x: 0, y: -5 },
+    "down": { x: 0, y: 5 },
+    "left": { x: -5, y: 0 },
+    "right": { x: 5, y: 0 },
 };
+const PARTY_COMBAT_TEXT = "party-combat-text";
 export default class PlayerMachine {
     scene: Play;
     player: Party;
@@ -41,7 +43,7 @@ export default class PlayerMachine {
     constructor(scene: Play, player: Party) {
         this.scene = scene;
         this.player = player;
-        this.stateMachine = new StateMachine(this, 'party');
+        this.stateMachine = new StateMachine(this, "party");
         this.stateMachine
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate })
             .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
@@ -100,7 +102,7 @@ export default class PlayerMachine {
             .addState(States.POLYMORPHED, { onEnter: this.onPolymorphedEnter, onUpdate: this.onPolymorphedUpdate, onExit: this.onPolymorphedExit });
         this.stateMachine.setState(States.IDLE);
 
-        this.positiveMachine = new StateMachine(this, 'party');
+        this.positiveMachine = new StateMachine(this, "party");
         this.positiveMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
             .addState(States.ABSORB, { onEnter: this.onAbsorbEnter, onUpdate: this.onAbsorbUpdate })
@@ -136,7 +138,7 @@ export default class PlayerMachine {
             .addState(States.TETHER, { onEnter: this.onTetherEnter, onExit: this.onTetherExit })
             .addState(States.DISPEL, { onEnter: this.onDispelEnter, onExit: this.onDispelExit })
             
-        this.negativeMachine = new StateMachine(this, 'party');
+        this.negativeMachine = new StateMachine(this, "party");
         this.negativeMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
             .addState(States.FROZEN, { onEnter: this.onFrozenEnter, onExit: this.onFrozenExit })
@@ -253,7 +255,7 @@ export default class PlayerMachine {
     onLeashEnter = () => {
         this.player.inComputerCombat = false;
         this.player.healthbar.setVisible(false);
-        this.player.specialCombatText = this.scene.showCombatText('Leashing', 1500, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Leashing", 1500, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
             this.player.chaseTimer.destroy();
@@ -319,21 +321,21 @@ export default class PlayerMachine {
     };
 
     onDefeatedEnter = () => {
-        this.player.anims.play('player_death', true);
+        this.player.anims.play("player_death", true);
         this.player.setVelocity(0);
         this.player.disengage();
         this.player.health = 0;
         this.player.isDefeated = true;
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
-        this.player.specialCombatText = this.scene.showCombatText('Defeated', 3000, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Defeated", 3000, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED * 3;
         this.player.setCollisionCategory(0);
     };
     onDefeatedUpdate = (dt: number) => {
         this.player.defeatedDuration -= dt;
         if (this.player.defeatedDuration <= 0 || this.player.health > 0) {
-            this.player.anims.playReverse('player_death', true).once('animationcomplete', () => this.player.isDefeated = false, this.player);
+            this.player.anims.playReverse("player_death", true).once("animationcomplete", () => this.player.isDefeated = false, this.player);
         };
         this.player.combatChecker(this.player.isDefeated);
     };
@@ -490,7 +492,7 @@ export default class PlayerMachine {
     };
     onContemplateExit = () => {
         this.player.isContemplating = false;
-        this.player.currentAction = '';
+        this.player.currentAction = "";
         this.instincts();
     };
 
@@ -510,19 +512,19 @@ export default class PlayerMachine {
             };
         };
         const ratios = [
-            { type: 'player', ratio: playerRatio },
-            { type: 'current', ratio: personalRatio },
-            { type: 'other', ratio: otherRatio }
+            { type: "player", ratio: playerRatio },
+            { type: "current", ratio: personalRatio },
+            { type: "other", ratio: otherRatio }
         ];
         const mostInjured = ratios.reduce((min, entry) => (entry.ratio < min.ratio ? entry: min));
         switch (mostInjured.type) {
-            case 'player':
-                this.scene.combatManager.combatMachine.action({ data: { key: 'player', value: power * 100, id: this.scene.player.playerID }, type: 'Health' });
+            case "player":
+                this.scene.combatManager.combatMachine.action({ data: { key: "player", value: power * 100, id: this.scene.player.playerID }, type: "Health" });
                 break;
-            case 'current':
+            case "current":
                 this.heal(power);
                 break;
-            case 'other':
+            case "other":
                 (otherParty as Party).playerMachine.heal(power);
                 break;
             default:
@@ -604,7 +606,7 @@ export default class PlayerMachine {
 
         let final = finals[Math.floor(Math.random() * finals.length)];
 
-        if (final === typeof 'string') {
+        if (final === typeof "string") {
             if (specialStateMachines.includes(final)) { // State Machine
                 key = "stateMachine";
                 value = final;
@@ -614,11 +616,11 @@ export default class PlayerMachine {
             };
         };
 
-        this.player.specialCombatText = this.scene.showCombatText('Instinct', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-        this.scene.hud.logger.log(`${this.player.ascean.name}'s instinct leads them to ${value}.`);
+        this.player.specialCombatText = this.scene.showCombatText("Instinct", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.hud.logger.log(`${this.player.ascean.name}"s instinct leads them to ${value}.`);
         this.player.prevInstinct = instinct;
         (this as any)[key].setState(value);
-        if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+        if (key === "positiveMachine") this.stateMachine.setState(States.CHASE);
     };
 
     onIdleEnter = () => {
@@ -677,16 +679,16 @@ export default class PlayerMachine {
     };
     onComputerAttackExit = () => {
         this.player.frameCount = 0;
-        this.player.currentAction = '';
+        this.player.currentAction = "";
         this.player.computerAction = false;    
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play("player_idle", true);
     };
 
     onComputerParryEnter = () => {
         this.player.isParrying = true;
         this.player.frameCount = 0;
         if (this.player.hasMagic === true) {
-            this.player.specialCombatText = this.scene.showCombatText('Counter Spell', 1000, 'hush', false, true, () => this.player.specialCombatText = undefined);
+            this.player.specialCombatText = this.scene.showCombatText("Counter Spell", 1000, HUSH, false, true, () => this.player.specialCombatText = undefined);
             this.player.isCounterSpelling = true;
             this.player.flickerCaerenic(1000); 
             this.scene.time.delayedCall(1000, () => {
@@ -702,9 +704,9 @@ export default class PlayerMachine {
     onComputerParryExit = () => {
         this.player.isParrying = false;
         this.player.frameCount = 0;
-        this.player.currentAction = '';
+        this.player.currentAction = "";
         this.player.computerAction = false;    
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play("player_idle", true);
     };
 
     onComputerPostureEnter = () => {
@@ -719,9 +721,9 @@ export default class PlayerMachine {
     onComputerPostureExit = () => {
         this.player.spriteShield.setVisible(this.player.isStalwart);
         this.player.frameCount = 0;
-        this.player.currentAction = '';
+        this.player.currentAction = "";
         this.player.computerAction = false;
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        if (!this.player.isRanged) this.player.anims.play("player_idle", true);
     };
 
     onComputerThrustEnter = () => {
@@ -735,14 +737,14 @@ export default class PlayerMachine {
     onComputerThrustExit = () => {
         this.player.frameCount = 0;
         this.player.computerAction = false;
-        this.player.currentAction = '';
-        if (!this.player.isRanged) this.player.anims.play('player_idle', true);
+        this.player.currentAction = "";
+        if (!this.player.isRanged) this.player.anims.play("player_idle", true);
     };
 
     onDodgeEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isRolling) return;
         this.player.isDodging = true;
-        this.player.enemySound('dodge', true);
+        this.player.enemySound("dodge", true);
         this.player.wasFlipped = this.player.flipX; 
         (this.player.body as any).parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.player.body as any).parts[2].circleRadius = PLAYER.SENSOR.EVADE;
@@ -774,7 +776,7 @@ export default class PlayerMachine {
     onRollEnter = () => {
         if (this.player.isStalwart || this.player.isStorming || this.player.isDodging) return;
         this.player.isRolling = true;
-        this.player.enemySound('roll', true);
+        this.player.enemySound("roll", true);
         (this.player.body as any).parts[2].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.player.body as any).parts[2].circleRadius = PLAYER.SENSOR.EVADE;
         (this.player.body as any).parts[1].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -787,11 +789,11 @@ export default class PlayerMachine {
     };
     onRollExit = () => {
         if (this.player.isStalwart || this.player.isStorming) return;
-        this.player.currentAction = '';
+        this.player.currentAction = "";
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
-        if (this.scene.state.action !== '') {
-            this.scene.combatManager.combatMachine.input('action', '');
+        if (this.scene.state.action !== "") {
+            this.scene.combatManager.combatMachine.input("action", "");
         };
         this.player.computerAction = false;
         (this.player.body as any).parts[2].position.y -= PLAYER.SENSOR.DISPLACEMENT;
@@ -801,7 +803,7 @@ export default class PlayerMachine {
     };
 
     onAchireEnter = () => {
-        this.player.startCasting('Achire', PLAYER.DURATIONS.ACHIRE, 'cast');
+        this.player.startCasting("Achire", PLAYER.DURATIONS.ACHIRE, CAST);
     };
     onAchireUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -810,16 +812,16 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onAchireExit = () => {
         if (this.player.castingSuccess === true) { 
-            this.player.particleEffect =  this.scene.particleManager.addEffect('achire', this.player, 'achire', true);
-            EventBus.emit('party-combat-text', {
+            this.player.particleEffect =  this.scene.particleManager.addEffect("achire", this.player, "achire", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name}'s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('wild', true);
+            this.player.enemySound("wild", true);
         };
         this.player.stopCasting();
     };
@@ -827,7 +829,7 @@ export default class PlayerMachine {
     onAstraveEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.startCasting('Astrave', PLAYER.DURATIONS.ASTRAVE, 'cast');
+        this.player.startCasting("Astrave", PLAYER.DURATIONS.ASTRAVE, CAST);
     };
     onAstraveUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -837,31 +839,31 @@ export default class PlayerMachine {
             this.player.isCasting = false;
         };
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'cast');
+            this.player.castbar.update(dt, CAST);
         };
     };
     onAstraveExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.aoe = new AoE(this.scene, 'astrave', 1, false, this.player, false, this.player.currentTarget);    
-            EventBus.emit('party-combat-text', {
+            this.player.aoe = new AoE(this.scene, "astrave", 1, false, this.player, false, this.player.currentTarget);    
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} unearths the winds and lightning from the land of hush and tendril.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('combat-round', true);
+            this.player.enemySound("combat-round", true);
         };
         this.player.stopCasting();
     };
 
     onArcEnter = () => {
         this.player.isArcing = true;
-        this.player.enemySound('combat-round', true);
-        this.player.specialCombatText = this.scene.showCombatText('Arcing', PLAYER.DURATIONS.ARCING / 2, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("combat-round", true);
+        this.player.specialCombatText = this.scene.showCombatText("Arcing", PLAYER.DURATIONS.ARCING / 2, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
         this.player.castbar.setup(this.player.x, this.player.y);
         this.player.flickerCaerenic(3000); 
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} begins arcing with their ${this.scene.state.weapons[0]?.name}.`
         });
         this.scene.tweens.add({
@@ -874,7 +876,7 @@ export default class PlayerMachine {
     };
     onArcUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isArcing);
-        if (this.player.isArcing) this.player.castbar.update(dt, 'channel', 'damage');
+        if (this.player.isArcing) this.player.castbar.update(dt, "channel", DAMAGE);
         if (this.player.castbar.time >= PLAYER.DURATIONS.ARCING * 0.25 && this.player.castbar.time <= PLAYER.DURATIONS.ARCING * 0.26) {
             this.player.isAttacking = true;
         };
@@ -888,7 +890,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             if (this.player.touching.length > 0) {
                 for (let i = 0; i < this.player.touching.length; ++i) {
-                    this.scene.combatManager.partyAction({enemyID: this.player.touching[i].enemyID, action: 'arc', origin: this.player.enemyID});
+                    this.scene.combatManager.partyAction({enemyID: this.player.touching[i].enemyID, action: "arc", origin: this.player.enemyID});
                 };
             };
         };
@@ -898,7 +900,7 @@ export default class PlayerMachine {
     };
 
     onBlinkEnter = () => {
-        this.player.enemySound('caerenic', true);
+        this.player.enemySound("caerenic", true);
         if (this.player.velocity?.x as number > 0) {
             this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
         } else if (this.player.velocity?.x as number < 0) {
@@ -925,7 +927,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.startCasting('Chiomism', PLAYER.DURATIONS.CHIOMISM, 'effect');    
+        this.player.startCasting("Chiomism", PLAYER.DURATIONS.CHIOMISM, EFFECT);    
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.CHIOMISM);                          
     };
     onChiomismUpdate = (dt: number) => {
@@ -935,7 +937,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onChiomismExit = () => {
         if (this.player.castingSuccess === true) {
@@ -944,11 +946,11 @@ export default class PlayerMachine {
             if (chance > 75) {
                 this.scene.combatManager.confuse(this.player.spellTarget);
             };
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} bleeds and laugh at ${this.player.spellName} with tendrils of Chiomyr.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('death', true);
+            this.player.enemySound("death", true);
         };
         this.player.stopCasting();
     };
@@ -956,7 +958,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.startCasting('Confusing', PLAYER.DURATIONS.CONFUSE, 'cast');
+        this.player.startCasting("Confusing", PLAYER.DURATIONS.CONFUSE, CAST);
     };
     onConfuseUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -965,14 +967,14 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onConfuseExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.confuse(this.player.spellTarget);
             this.player.castingSuccess = false;
-            this.player.enemySound('death', true);
-            EventBus.emit('party-combat-text', {
+            this.player.enemySound("death", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} confuses ${this.player.spellName}, causing them to stumble in a daze.`
             });
         };
@@ -980,25 +982,25 @@ export default class PlayerMachine {
     };
 
     onDesperationEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Desperation', PLAYER.DURATIONS.HEALING / 2, 'heal', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Desperation", PLAYER.DURATIONS.HEALING / 2, HEAL, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(PLAYER.DURATIONS.HEALING); 
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes their body.`
         });
     };
     onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
     onDesperationExit = () => {
         this.checkHeal(0.5);
-        this.player.enemySound('phenomena', true);
+        this.player.enemySound("phenomena", true);
     };
 
     onDevourEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return; 
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.currentTarget.isConsumed = true;
-        this.player.enemySound('absorb', true);
+        this.player.enemySound("absorb", true);
         this.player.flickerCaerenic(2000); 
-        this.player.startCasting('Devouring', PLAYER.DURATIONS.DEVOUR, 'damage', true);
+        this.player.startCasting("Devouring", PLAYER.DURATIONS.DEVOUR, DAMAGE, true);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.DEVOUR);
         this.player.devourTimer = this.scene.time.addEvent({
             delay: 400,
@@ -1019,7 +1021,7 @@ export default class PlayerMachine {
     onDevourUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'channel', 'tendril');
+            this.player.castbar.update(dt, "channel", TENDRIL);
         };
     };
     onDevourExit = () => {
@@ -1034,7 +1036,7 @@ export default class PlayerMachine {
     onFearingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.startCasting('Fearing', PLAYER.DURATIONS.FEAR, 'cast');
+        this.player.startCasting("Fearing", PLAYER.DURATIONS.FEAR, CAST);
     };
     onFearingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1043,14 +1045,14 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onFearingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.fear(this.player.spellTarget);
             this.player.castingSuccess = false;
-            this.player.enemySound('combat-round', true);
-            EventBus.emit('party-combat-text', {
+            this.player.enemySound("combat-round", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} strikes fear into ${this.scene.state.computer?.name}!`
             });
         };
@@ -1060,7 +1062,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.startCasting('Frost', PLAYER.DURATIONS.FROST, 'cast');
+        this.player.startCasting("Frost", PLAYER.DURATIONS.FROST, CAST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.FROST);
     };
     onFrostUpdate = (dt: number) => {
@@ -1070,17 +1072,17 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onFrostExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} seizes into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
             });
             this.chiomism(this.player.spellTarget, 75);
             this.scene.combatManager.slow(this.player.spellTarget, 3000);
             this.player.castingSuccess = false;
-            this.player.enemySound('frost', true);
+            this.player.enemySound("frost", true);
         };
         this.player.stopCasting();
     };
@@ -1088,11 +1090,11 @@ export default class PlayerMachine {
         this.player.isCasting = true;
         this.player.setStatic(true);
         this.player.isMoving = false;
-        this.player.startCasting('Fyerus', PLAYER.DURATIONS.FYERUS, 'cast', true);
+        this.player.startCasting("Fyerus", PLAYER.DURATIONS.FYERUS, CAST, true);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
-        this.player.aoe = new AoE(this.scene, 'fyerus', 6, false, this.player, false, this.player.currentTarget);    
-        this.player.enemySound('combat-round', true);
-        EventBus.emit('party-combat-text', {
+        this.player.aoe = new AoE(this.scene, "fyerus", 6, false, this.player, false, this.player.currentTarget);    
+        this.player.enemySound("combat-round", true);
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} unearths the fires and water from the land of hush and tendril.`
         });
     };
@@ -1103,7 +1105,7 @@ export default class PlayerMachine {
         };
         this.player.combatChecker(this.player.isCasting);
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'channel', 'fyerus');
+            this.player.castbar.update(dt, "channel", "fyerus");
         };
     };
     onFyerusExit = () => {
@@ -1112,7 +1114,7 @@ export default class PlayerMachine {
         this.player.setStatic(false);
     };
 
-    onHealingEnter = () => this.player.startCasting('Healing', PLAYER.DURATIONS.HEALING, 'heal');
+    onHealingEnter = () => this.player.startCasting("Healing", PLAYER.DURATIONS.HEALING, HEAL);
     
     onHealingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1121,13 +1123,13 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast', 'HEAL');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST, "HEAL");
     };
     onHealingExit = () => {
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
             this.checkHeal(0.25);
-            this.player.enemySound('phenomena', true);
+            this.player.enemySound("phenomena", true);
         };
         this.player.stopCasting();
     };
@@ -1135,7 +1137,7 @@ export default class PlayerMachine {
     onIlirechEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.startCasting('Ilirech', PLAYER.DURATIONS.ILIRECH, 'cast');
+        this.player.startCasting("Ilirech", PLAYER.DURATIONS.ILIRECH, CAST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ILIRECH);
     };
     onIlirechUpdate = (dt: number) => {
@@ -1145,21 +1147,21 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onIlirechExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} rips into this world with Ilian tendrils entwining.`
             });
             this.chiomism(this.player.spellTarget, 100);
             this.player.castingSuccess = false;
-            this.player.enemySound('fire', true);
+            this.player.enemySound("fire", true);
         };
         this.player.stopCasting();
     };
 
-    onKynisosEnter = () => this.player.startCasting('Kynisos', PLAYER.DURATIONS.KYNISOS, 'cast');
+    onKynisosEnter = () => this.player.startCasting("Kynisos", PLAYER.DURATIONS.KYNISOS, CAST);
     
     onKynisosUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1169,17 +1171,17 @@ export default class PlayerMachine {
             this.player.isCasting = false;
         };
         if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, 'cast');
+            this.player.castbar.update(dt, CAST);
         };
     };
     onKynisosExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.aoe = new AoE(this.scene, 'kynisos', 3, false, this.player, false, this.player.currentTarget);    
-            EventBus.emit('party-combat-text', {
+            this.player.aoe = new AoE(this.scene, "kynisos", 3, false, this.player, false, this.player.currentTarget);    
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} unearths the netting of the golden hunt.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('combat-round', true);
+            this.player.enemySound("combat-round", true);
         };
         this.player.stopCasting();
     };
@@ -1187,7 +1189,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.startCasting('Kyrisian', PLAYER.DURATIONS.KYRISIAN, 'effect');    
+        this.player.startCasting("Kyrisian", PLAYER.DURATIONS.KYRISIAN, EFFECT);    
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRISIAN);                          
     };
     onKyrisianUpdate = (dt: number) => {
@@ -1197,7 +1199,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onKyrisianExit = () => {
         if (this.player.castingSuccess === true) {
@@ -1206,19 +1208,19 @@ export default class PlayerMachine {
             if (chance > 75) {
                 this.scene.combatManager.paralyze(this.player.spellTarget);
             };
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} bleeds and bewitches ${this.player.spellName} with tendrils of Kyrisos.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('spooky', true);
+            this.player.enemySound("spooky", true);
         };
         this.player.stopCasting();
     };
     onKyrnaicismEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.startCasting('Kyrnaicism', PLAYER.DURATIONS.KYRNAICISM, 'damage', true);
-        this.player.enemySound('absorb', true);
+        this.player.startCasting("Kyrnaicism", PLAYER.DURATIONS.KYRNAICISM, DAMAGE, true);
+        this.player.enemySound("absorb", true);
         this.player.flickerCaerenic(3000); 
         this.player.currentTarget.isConsumed = true;
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRNAICISM);
@@ -1241,7 +1243,7 @@ export default class PlayerMachine {
     };
     onKyrnaicismUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isCasting);
-        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'tendril');
+        if (this.player.isCasting) this.player.castbar.update(dt, "channel", TENDRIL);
     };
     onKyrnaicismExit = () => {
         this.player.stopCasting();
@@ -1261,8 +1263,8 @@ export default class PlayerMachine {
         const damage = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
         const text = `${this.player.ascean.name}'s hush flays ${damage} health from ${enemy.ascean?.name}.`;
-        EventBus.emit('party-combat-text', { text });
-        this.player.enemySound('absorb', true);
+        EventBus.emit(PARTY_COMBAT_TEXT, { text });
+        this.player.enemySound("absorb", true);
     };
     heal = (pow: number) => {
         const heal = this.player.computerCombatSheet.computerHealth * pow;
@@ -1287,7 +1289,7 @@ export default class PlayerMachine {
         EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
         const text = `${this.player.ascean.name} tshaers and devours ${damage} health from ${enemy.ascean?.name}.`;
-        EventBus.emit('party-combat-text', { text });
+        EventBus.emit(PARTY_COMBAT_TEXT, { text });
     };
     sacrifice = (id: string, power: number) => {
         this.player.entropicMultiplier(power);
@@ -1300,7 +1302,7 @@ export default class PlayerMachine {
         EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
         const text = `${this.player.ascean.name} sacrifices ${Math.round(damage) / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${Math.round(damage)} from ${enemy.ascean?.name}.`;
-        EventBus.emit('party-combat-text', { text });
+        EventBus.emit(PARTY_COMBAT_TEXT, { text });
         enemy.flickerCaerenic(750);
     };
     suture = (id: string, power: number) => {
@@ -1315,7 +1317,7 @@ export default class PlayerMachine {
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
 
         const text = `${this.player.ascean.name}'s suture ${enemy.ascean?.name}'s caeren into them, absorbing and healing for ${damage}.`;
-        EventBus.emit('party-combat-text', { text });
+        EventBus.emit(PARTY_COMBAT_TEXT, { text });
         enemy.flickerCaerenic(750);
     };
 
@@ -1325,7 +1327,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.startCasting('Likyr', PLAYER.DURATIONS.LIKYR, 'cast');
+        this.player.startCasting("Likyr", PLAYER.DURATIONS.LIKYR, CAST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.LIKYR);
     };
     onLikyrUpdate = (dt: number) => {
@@ -1335,23 +1337,23 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onLikyrExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} blends caeren into this world with Likyrish tendrils entwining ${this.player.spellName}.`
             });
             this.suture(this.player.spellTarget, 20);
             this.player.castingSuccess = false;
-            this.player.enemySound('debuff', true);
+            this.player.enemySound("debuff", true);
         };
         this.player.stopCasting();
     };
     onMaierethEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.startCasting('Maiereth', PLAYER.DURATIONS.MAIERETH, 'effect');    
+        this.player.startCasting("Maiereth", PLAYER.DURATIONS.MAIERETH, EFFECT);    
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);                          
     };
     onMaierethUpdate = (dt: number) => {
@@ -1361,7 +1363,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onMaierethExit = () => {
         if (this.player.castingSuccess === true) {
@@ -1370,19 +1372,19 @@ export default class PlayerMachine {
             if (chance > 75) {
                 this.scene.combatManager.fear(this.player.spellTarget);
             };
-            EventBus.emit('party-combat-text', {
-                text: `${this.player.ascean.name} bleeds and strike ${this.scene.state.computer?.name} with tendrils of Ma'anre.`
+            EventBus.emit(PARTY_COMBAT_TEXT, {
+                text: `${this.player.ascean.name} bleeds and strike ${this.scene.state.computer?.name} with tendrils of Ma"anre.`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('spooky', true);
+            this.player.enemySound("spooky", true);
         };
         this.player.stopCasting();
     };
 
     onHookEnter = () => {
-        this.player.particleEffect = this.scene.particleManager.addEffect('hook', this.player, 'hook', true);
-        this.player.specialCombatText = this.scene.showCombatText('Hook', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.enemySound('dungeon', true);
+        this.player.particleEffect = this.scene.particleManager.addEffect("hook", this.player, "hook", true);
+        this.player.specialCombatText = this.scene.showCombatText("Hook", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("dungeon", true);
         this.player.flickerCaerenic(750);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
@@ -1398,7 +1400,7 @@ export default class PlayerMachine {
     onMarkEnter = () => {
         this.player.setStatic(true);
         this.player.isPraying = true;
-        this.player.specialCombatText = this.scene.showCombatText('Marking', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Marking", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(1000);
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
@@ -1407,7 +1409,7 @@ export default class PlayerMachine {
         this.player.mark.setVisible(true);
         this.player.animateMark();
         this.player.animateMark();
-        this.player.enemySound('phenomena', true);
+        this.player.enemySound("phenomena", true);
         this.player.setStatic(false);
     };
 
@@ -1425,25 +1427,25 @@ export default class PlayerMachine {
         this.player.isNetherswapping = false;
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
-        this.player.specialCombatText = this.scene.showCombatText('Netherswap', DURATION.TEXT / 2, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Netherswap", DURATION.TEXT / 2, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         const player = new Phaser.Math.Vector2(this.player.x, this.player.y);
         const enemy = new Phaser.Math.Vector2(this.player.netherswapTarget.x, this.player.netherswapTarget.y);
         this.player.setPosition(enemy.x, enemy.y);
         this.player.netherswapTarget.setPosition(player.x, player.y);
         this.player.netherswapTarget = undefined;
-        this.player.enemySound('caerenic', true);
+        this.player.enemySound("caerenic", true);
     };
 
     onRecallEnter = () => {
         this.player.setStatic(true);
         this.player.isPraying = true;
-        this.player.specialCombatText = this.scene.showCombatText('Recalling', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Recalling", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(1000);
     };
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onRecallExit = () => {
         this.player.setPosition(this.player.mark.x, this.player.mark.y - 24);
-        this.player.enemySound('phenomena', true);
+        this.player.enemySound("phenomena", true);
         this.player.animateMark();
         this.player.setStatic(false);
     };
@@ -1452,7 +1454,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.startCasting('Paralyzing', PLAYER.DURATIONS.PARALYZE, 'cast');
+        this.player.startCasting("Paralyzing", PLAYER.DURATIONS.PARALYZE, CAST);
     };
     onParalyzeUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1461,14 +1463,14 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onParalyzeExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.paralyze(this.player.spellTarget);
             this.player.castingSuccess = false;
-            this.player.enemySound('combat-round', true);
-            EventBus.emit('party-combat-text', {
+            this.player.enemySound("combat-round", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} paralyzes ${this.player.spellName} for several seconds!`
             });
         };
@@ -1479,7 +1481,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.startCasting('Polymorphing', PLAYER.DURATIONS.POLYMORPH, 'cast');
+        this.player.startCasting("Polymorphing", PLAYER.DURATIONS.POLYMORPH, CAST);
     };
     onPolymorphingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1488,23 +1490,23 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onPolymorphingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.polymorph(this.player.spellTarget);
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} ensorcels ${this.player.spellName}, polymorphing them!`
             });
             this.player.castingSuccess = false;
-            this.player.enemySound('combat-round', true);
+            this.player.enemySound("combat-round", true);
         };
         this.player.stopCasting();
     };
 
     onPursuitEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG)) return; 
-        this.player.enemySound('wild', true);
+        this.player.enemySound("wild", true);
         if (this.player.currentTarget) {
             if (this.player.currentTarget.flipX) {
                 this.player.setPosition(this.player.currentTarget.x + 16, this.player.currentTarget.y);
@@ -1516,7 +1518,7 @@ export default class PlayerMachine {
     };
     onPursuitUpdate = (_dt: number) => this.player.combatChecker(this.player.isPursuing);
 
-    onQuorEnter = () => this.player.startCasting('Quor', PLAYER.DURATIONS.QUOR, 'cast');
+    onQuorEnter = () => this.player.startCasting("Quor", PLAYER.DURATIONS.QUOR, CAST);
     onQuorUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
@@ -1524,12 +1526,12 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onQuorExit = () => {
         if (this.player.castingSuccess === true) {
-            this.player.particleEffect =  this.scene.particleManager.addEffect('quor', this.player, 'quor', true);
-            EventBus.emit('party-combat-text', {
+            this.player.particleEffect =  this.scene.particleManager.addEffect("quor", this.player, "quor", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name}'s Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.player.castingSuccess = false;
@@ -1541,7 +1543,7 @@ export default class PlayerMachine {
     onReconstituteEnter = () => {
         this.player.setStatic(true);
         this.player.isMoving = false;
-        this.player.startCasting('Reconstituting', PLAYER.DURATIONS.RECONSTITUTE, 'heal', true);
+        this.player.startCasting("Reconstituting", PLAYER.DURATIONS.RECONSTITUTE, HEAL, true);
         this.player.beam.startEmitter(this, PLAYER.DURATIONS.RECONSTITUTE);
         this.player.reconTimer = this.scene.time.addEvent({
             delay: 1000,
@@ -1559,7 +1561,7 @@ export default class PlayerMachine {
     onReconstituteUpdate = (dt: number) => {
         if (this.player.isMoving) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
-        if (this.player.isCasting) this.player.castbar.update(dt, 'channel', 'heal');
+        if (this.player.isCasting) this.player.castbar.update(dt, "channel", HEAL);
     };
     onReconstituteExit = () => {
         this.player.setStatic(false);
@@ -1577,14 +1579,14 @@ export default class PlayerMachine {
             return;
         };
         this.checkHeal(0.15);
-        this.player.enemySound('phenomena', true);
+        this.player.enemySound("phenomena", true);
     };
 
     onRootingEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.startCasting('Rooting', PLAYER.DURATIONS.ROOTING, 'cast');
+        this.player.startCasting("Rooting", PLAYER.DURATIONS.ROOTING, CAST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ROOTING);
     };
     onRootingUpdate = (dt: number) => {
@@ -1594,13 +1596,13 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onRootingExit = () => { 
         if (this.player.castingSuccess === true) {
             this.player.castingSuccess = false;
             this.scene.combatManager.root(this.player.spellTarget);
-            EventBus.emit('party-combat-text', {
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} ensorcels ${this.player.spellName}, rooting them!`
             });
         };
@@ -1621,36 +1623,36 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSlowing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Slow', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.enemySound('debuff', true);
+        this.player.specialCombatText = this.scene.showCombatText("Slow", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("debuff", true);
         this.scene.combatManager.slow(this.player.spellTarget, 3000);
         this.player.flickerCaerenic(500); 
         this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} ensorcels ${this.player.currentTarget.ascean?.name}, slowing them!`
         });
     };
     onSlowUpdate = (_dt: number) => this.player.combatChecker(this.player.isSlowing);
-    onSlowExit = () => this.player.spellTarget = '';
+    onSlowExit = () => this.player.spellTarget = "";
 
     onSacrificeEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSacrificing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Sacrifice', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.enemySound('combat-round', true);
+        this.player.specialCombatText = this.scene.showCombatText("Sacrifice", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("combat-round", true);
         this.sacrifice(this.player.spellTarget, 10);
         this.player.flickerCaerenic(500);  
         this.scene.time.delayedCall(500, () => this.player.isSacrificing = false, undefined, this);
     };
     onSacrificeUpdate = (_dt: number) => this.player.combatChecker(this.player.isSacrificing);
-    onSacrificeExit = () => this.player.spellTarget = '';
+    onSacrificeExit = () => this.player.spellTarget = "";
 
     onSnaringEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.startCasting('Snaring', PLAYER.DURATIONS.SNARE, 'cast');
+        this.player.startCasting("Snaring", PLAYER.DURATIONS.SNARE, CAST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.SNARE);
     };
     onSnaringUpdate = (dt: number) => {
@@ -1660,14 +1662,14 @@ export default class PlayerMachine {
             this.player.castingSuccess = true;
             this.player.isCasting = false;
         };
-        if (this.player.isCasting === true) this.player.castbar.update(dt, 'cast');
+        if (this.player.isCasting === true) this.player.castbar.update(dt, CAST);
     };
     onSnaringExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.snare(this.player.spellTarget);
             this.player.castingSuccess = false;
-            this.player.enemySound('debuff', true);
-            EventBus.emit('party-combat-text', {
+            this.player.enemySound("debuff", true);
+            EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} ensorcels ${this.player.spellName}, snaring them!`
             });
         };
@@ -1681,8 +1683,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSuturing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Suture', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.enemySound('debuff', true);
+        this.player.specialCombatText = this.scene.showCombatText("Suture", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("debuff", true);
         this.suture(this.player.spellTarget, 10);
         this.player.flickerCaerenic(500); 
         this.scene.time.delayedCall(500, () => {
@@ -1690,7 +1692,7 @@ export default class PlayerMachine {
         }, undefined, this);
     };
     onSutureUpdate = (_dt: number) => this.player.combatChecker(this.player.isSuturing);
-    onSutureExit = () => this.player.spellTarget = '';
+    onSutureExit = () => this.player.spellTarget = "";
 
     // ================= META MACHINE STATES ================= \\
     onCleanEnter = () => {};
@@ -1703,32 +1705,32 @@ export default class PlayerMachine {
         };
         this.player.isAbsorbing = true;
         this.player.negationName = States.ABSORB;
-        this.player.enemySound('absorb', true);
-        this.player.specialCombatText = this.scene.showCombatText('Absorbing', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'aqua', PLAYER.DURATIONS.ABSORB);
+        this.player.enemySound("absorb", true);
+        this.player.specialCombatText = this.scene.showCombatText("Absorbing", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "aqua", PLAYER.DURATIONS.ABSORB);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.player.isAbsorbing = false;    
             if (this.player.negationBubble) {
                 this.player.negationBubble.destroy();
                 this.player.negationBubble = undefined;
-                if (this.player.negationName === States.ABSORB) this.player.negationName = '';
+                if (this.player.negationName === States.ABSORB) this.player.negationName = "";
             };    
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} warps oncoming damage into grace.`
         });
     };
     onAbsorbUpdate = (_dt: number) => {if (!this.player.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
     onChiomicEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'chiomic', 1, false, this.player);    
-        this.player.enemySound('death', true);
-        this.player.specialCombatText = this.scene.showCombatText('Hah! Hah! Hah!', PLAYER.DURATIONS.CHIOMIC, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "chiomic", 1, false, this.player);    
+        this.player.enemySound("death", true);
+        this.player.specialCombatText = this.scene.showCombatText("Hah! Hah! Hah!", PLAYER.DURATIONS.CHIOMIC, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} mocks and confuse their surrounding foes.`
         });
     };
@@ -1736,13 +1738,13 @@ export default class PlayerMachine {
 
     onDiseaseEnter = () => {
         this.player.isDiseasing = true;
-        this.player.aoe = new AoE(this.scene, 'tendril', 6, false, this.player);    
-        this.player.enemySound('dungeon', true);
-        this.player.specialCombatText = this.scene.showCombatText('Tendrils Swirl', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, TENDRIL, 6, false, this.player);    
+        this.player.enemySound("dungeon", true);
+        this.player.specialCombatText = this.scene.showCombatText("Tendrils Swirl", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.player.isDiseasing = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} swirls such sweet tendrils which wrap round and reach to writhe.`
         });
     };
@@ -1750,14 +1752,14 @@ export default class PlayerMachine {
     onDiseaseExit = () => this.player.aoe.cleanAnimation(this.scene);
 
     onHowlEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'howl', 1, false, this.player);    
-        this.player.enemySound('howl', true);
-        this.player.specialCombatText = this.scene.showCombatText('Howling', PLAYER.DURATIONS.HOWL, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "howl", 1, false, this.player);    
+        this.player.enemySound("howl", true);
+        this.player.specialCombatText = this.scene.showCombatText("Howling", PLAYER.DURATIONS.HOWL, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.isHowling = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.player.isHowling = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} howls, it's otherworldly nature stunning nearby foes.`
         });
     };
@@ -1770,33 +1772,33 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.isEnveloping = true;
-        this.player.enemySound('caerenic', true);
-        this.player.specialCombatText = this.scene.showCombatText('Enveloping', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'blue', PLAYER.DURATIONS.ENVELOP);
+        this.player.enemySound("caerenic", true);
+        this.player.specialCombatText = this.scene.showCombatText("Enveloping", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "blue", PLAYER.DURATIONS.ENVELOP);
         this.player.reactiveName = States.ENVELOP;
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
             this.player.isEnveloping = false;    
             if (this.player.reactiveBubble !== undefined && this.player.reactiveName === States.ENVELOP) {
                 this.player.reactiveBubble.destroy();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };    
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} envelops themself, shirking oncoming attacks.`
         });
     };
     onEnvelopUpdate = (_dt: number) => {if (!this.player.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
 
     onFreezeEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'freeze', 1, false, this.player);
-        this.player.enemySound('freeze', true);
-        this.player.specialCombatText = this.scene.showCombatText('Freezing', PLAYER.DURATIONS.FREEZE, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "freeze", 1, false, this.player);
+        this.player.enemySound("freeze", true);
+        this.player.specialCombatText = this.scene.showCombatText("Freezing", PLAYER.DURATIONS.FREEZE, CAST, false, true, () => this.player.specialCombatText = undefined);
         this.player.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.player.isFreezing = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} freezes nearby foes.`
         });
     };
@@ -1808,19 +1810,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MALICE;
-        this.player.enemySound('debuff', true);
+        this.player.enemySound("debuff", true);
         this.player.isMalicing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Malicing', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MALICE);
+        this.player.specialCombatText = this.scene.showCombatText("Malicing", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "purple", PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.player.isMalicing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MALICE) {
                 this.player.reactiveBubble.destroy();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} wracks malicious foes with the hush of their own attack.`
         });
     };
@@ -1832,19 +1834,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MEND;
-        this.player.enemySound('caerenic', true);
+        this.player.enemySound("caerenic", true);
         this.player.isMending = true;
-        this.player.specialCombatText = this.scene.showCombatText('Mending', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'purple', PLAYER.DURATIONS.MEND);
+        this.player.specialCombatText = this.scene.showCombatText("Mending", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "purple", PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.player.isMending = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MEND) {
                 this.player.reactiveBubble.destroy();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} seeks to mend oncoming attacks.`
         });
     };
@@ -1856,19 +1858,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MENACE;
-        this.player.enemySound('scream', true);
+        this.player.enemySound("scream", true);
         this.player.isMenacing = true;
-        this.player.specialCombatText = this.scene.showCombatText('Menacing', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'dread', PLAYER.DURATIONS.MENACE);
+        this.player.specialCombatText = this.scene.showCombatText("Menacing", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "dread", PLAYER.DURATIONS.MENACE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MENACE, () => {
             this.player.isMenacing = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MENACE) {
                 this.player.reactiveBubble.cleanUp();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} seeks to menace oncoming attacks.`
         });
     };
@@ -1880,19 +1882,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MODERATE;
-        this.player.enemySound('debuff', true);
+        this.player.enemySound("debuff", true);
         this.player.isModerating = true;
-        this.player.specialCombatText = this.scene.showCombatText('Moderating', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'sapphire', PLAYER.DURATIONS.MODERATE);
+        this.player.specialCombatText = this.scene.showCombatText("Moderating", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "sapphire", PLAYER.DURATIONS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
             this.player.isModerating = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MODERATE) {
                 this.player.reactiveBubble.cleanUp();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} seeks to moderate oncoming attacks.`
         });
     };
@@ -1904,19 +1906,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MULTIFARIOUS;
-        this.player.enemySound('combat-round', true);
+        this.player.enemySound("combat-round", true);
         this.player.isMultifaring = true;
-        this.player.specialCombatText = this.scene.showCombatText('Multifaring', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'ultramarine', PLAYER.DURATIONS.MULTIFARIOUS);
+        this.player.specialCombatText = this.scene.showCombatText("Multifaring", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "ultramarine", PLAYER.DURATIONS.MULTIFARIOUS);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
             this.player.isMultifaring = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MULTIFARIOUS) {
                 this.player.reactiveBubble.cleanUp();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} seeks to multifare oncoming attacks.`
         });
     };
@@ -1928,19 +1930,19 @@ export default class PlayerMachine {
             this.player.reactiveBubble = undefined;
         };
         this.player.reactiveName = States.MYSTIFY;
-        this.player.enemySound('debuff', true);
+        this.player.enemySound("debuff", true);
         this.player.isMystifying = true;
-        this.player.specialCombatText = this.scene.showCombatText('Mystifying', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, 'chartreuse', PLAYER.DURATIONS.MYSTIFY);
+        this.player.specialCombatText = this.scene.showCombatText("Mystifying", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "chartreuse", PLAYER.DURATIONS.MYSTIFY);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
             this.player.isMystifying = false;    
             if (this.player.reactiveBubble && this.player.reactiveName === States.MYSTIFY) {
                 this.player.reactiveBubble.cleanUp();
                 this.player.reactiveBubble = undefined;
-                this.player.reactiveName = '';
+                this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} seeks to mystify enemies when struck.`
         });
     };
@@ -1952,9 +1954,9 @@ export default class PlayerMachine {
             this.player.negationBubble = undefined;
         };
         this.player.isProtecting = true;
-        this.player.enemySound('shield', true);
-        this.player.specialCombatText = this.scene.showCombatText('Protecting', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'gold', PLAYER.DURATIONS.PROTECT);
+        this.player.enemySound("shield", true);
+        this.player.specialCombatText = this.scene.showCombatText("Protecting", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "gold", PLAYER.DURATIONS.PROTECT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.player.isProtecting = false;    
             if (this.player.negationBubble) {
@@ -1962,7 +1964,7 @@ export default class PlayerMachine {
                 this.player.negationBubble = undefined;
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} protects themself from oncoming attacks.`
         });
     };
@@ -1970,27 +1972,27 @@ export default class PlayerMachine {
 
     onRenewalEnter = () => {
         this.player.isRenewing = true;
-        this.player.aoe = new AoE(this.scene, 'renewal', 6, true, this.player);    
-        this.player.enemySound('shield', true);
-        this.player.specialCombatText = this.scene.showCombatText('Hush Tears', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "renewal", 6, true, this.player);    
+        this.player.enemySound("shield", true);
+        this.player.specialCombatText = this.scene.showCombatText("Hush Tears", 750, BONE, false, true, () => this.player.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.player.isRenewing = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `Tears of a Hush proliferate and heal old wounds.`
         });
     };
     onRenewalUpdate = (_dt: number) => {if (!this.player.isRenewing) this.positiveMachine.setState(States.CLEAN);};
 
     onScreamEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'scream', 1, false, this.player);    
-        this.player.enemySound('scream', true);
-        this.player.specialCombatText = this.scene.showCombatText('Screaming', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "scream", 1, false, this.player);    
+        this.player.enemySound("scream", true);
+        this.player.specialCombatText = this.scene.showCombatText("Screaming", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
         this.player.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.player.isScreaming = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} screams, fearing nearby foes.`
         });
     };
@@ -2001,20 +2003,20 @@ export default class PlayerMachine {
             this.player.negationBubble.cleanUp();
             this.player.negationBubble = undefined;
         };
-        this.player.enemySound('shield', true);
+        this.player.enemySound("shield", true);
         this.player.isShielding = true;
-        this.player.specialCombatText = this.scene.showCombatText('Shielding', 750, 'bone', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'bone', PLAYER.DURATIONS.SHIELD);
+        this.player.specialCombatText = this.scene.showCombatText("Shielding", 750, BONE, false, true, () => this.player.specialCombatText = undefined);
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, BONE, PLAYER.DURATIONS.SHIELD);
         this.player.negationName = States.SHIELD;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
             this.player.isShielding = false;    
             if (this.player.negationBubble && this.player.negationName === States.SHIELD) {
                 this.player.negationBubble.cleanUp();
                 this.player.negationBubble = undefined;
-                this.player.negationName = '';
+                this.player.negationName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} shields themself from oncoming attacks.`
         });
     };
@@ -2022,7 +2024,7 @@ export default class PlayerMachine {
 
     onShimmerEnter = () => {
         this.player.isShimmering = true; 
-        this.player.enemySound('stealth', true);
+        this.player.enemySound("stealth", true);
         this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
         if (!this.player.isStealthing) this.stealthEffect(true);    
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIMMER, () => {
@@ -2030,7 +2032,7 @@ export default class PlayerMachine {
             this.stealthEffect(false);
             this.player.adjustSpeed(-PLAYER.SPEED.STEALTH);
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} shimmers, fading in and out of this world.`
         });
     };
@@ -2038,14 +2040,14 @@ export default class PlayerMachine {
 
     onSprintEnter = () => {
         this.player.isSprinting = true;
-        this.player.enemySound('blink', true);
+        this.player.enemySound("blink", true);
         this.player.adjustSpeed(PLAYER.SPEED.SPRINT);
         this.player.flickerCaerenic(PLAYER.DURATIONS.SPRINT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.player.isSprinting = false;
             this.player.adjustSpeed(-PLAYER.SPEED.SPRINT);    
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} taps into their caeren, bursting into an otherworldly sprint.`
         });
     };
@@ -2054,7 +2056,7 @@ export default class PlayerMachine {
     onStealthEnter = () => {
         if (!this.player.isShimmering) this.player.isStealthing = true; 
         this.stealthEffect(true);    
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} steps halfway into the land of hush and tendril.`
         });
     };
@@ -2094,7 +2096,7 @@ export default class PlayerMachine {
             clearStealth(this.player.spriteShield);
             this.player.setTint(0x00FF00);
         };
-        this.player.enemySound('stealth', true);
+        this.player.enemySound("stealth", true);
     };
 
     onWardEnter = () => {
@@ -2103,33 +2105,33 @@ export default class PlayerMachine {
             this.player.negationBubble = undefined;
         };
         this.player.isWarding = true;
-        this.player.enemySound('combat-round', true);
-        this.player.specialCombatText = this.scene.showCombatText('Warding', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
-        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, 'red', PLAYER.DURATIONS.WARD);
+        this.player.enemySound("combat-round", true);
+        this.player.specialCombatText = this.scene.showCombatText("Warding", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "red", PLAYER.DURATIONS.WARD);
         this.player.negationName = States.WARD;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
             this.player.isWarding = false;    
             if (this.player.negationBubble && this.player.negationName === States.WARD) {
                 this.player.negationBubble.cleanUp();
                 this.player.negationBubble = undefined;
-                this.player.negationName = '';
+                this.player.negationName = "";
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} wards themself from oncoming attacks.`
         });
     };
     onWardUpdate = (_dt: number) => {if (!this.player.isWarding) this.positiveMachine.setState(States.CLEAN);};
 
     onWritheEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'writhe', 1, false, this.player);    
-        this.player.enemySound('spooky', true);
-        this.player.specialCombatText = this.scene.showCombatText('Writhing', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "writhe", 1, false, this.player);    
+        this.player.enemySound("spooky", true);
+        this.player.specialCombatText = this.scene.showCombatText("Writhing", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
         this.player.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.player.isWrithing = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren grips their body and contorts, writhing around them.`
         });
     };
@@ -2141,46 +2143,46 @@ export default class PlayerMachine {
     // ==================== TRAITS ==================== \\
     onAstricationEnter = () => {
         if (this.player.isAstrifying === true) return;
-        this.scene.combatManager.combatMachine.input('astrication', {active:true,charges:0});
-        this.player.enemySound('lightning', true);
-        this.player.specialCombatText = this.scene.showCombatText('Astrication', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.scene.combatManager.combatMachine.input("astrication", {active:true,charges:0});
+        this.player.enemySound("lightning", true);
+        this.player.specialCombatText = this.scene.showCombatText("Astrication", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.isAstrifying = true;
         this.player.flickerCaerenic(PLAYER.DURATIONS.ASTRICATION); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.ASTRICATION, () => {
-            // this.scene.combatManager.combatMachine.input('astrication', {active:false,charges:0});
+            // this.scene.combatManager.combatMachine.input("astrication", {active:false,charges:0});
             this.player.isAstrifying = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
-            text: `${this.player.ascean.name}'s caeren astrifies, wrapping round their attacks.`
+        EventBus.emit(PARTY_COMBAT_TEXT, {
+            text: `${this.player.ascean.name}"s caeren astrifies, wrapping round their attacks.`
         });
     };
     onAstricationUpdate = (_dt: number) => {if (!this.player.isAstrifying) this.positiveMachine.setState(States.CLEAN);};
 
     onBerserkEnter = () => {
         if (this.player.isBerserking === true) return;
-        this.player.enemySound('howl', true);
-        this.scene.combatManager.combatMachine.input('berserk', {active:true,charges:1});
-        this.player.specialCombatText = this.scene.showCombatText('Berserking', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("howl", true);
+        this.scene.combatManager.combatMachine.input("berserk", {active:true,charges:1});
+        this.player.specialCombatText = this.scene.showCombatText("Berserking", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.isBerserking = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
-            // this.scene.combatManager.combatMachine.input('berserk', {active:false,charges:0});
+            // this.scene.combatManager.combatMachine.input("berserk", {active:false,charges:0});
             this.player.isBerserking = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
-            text: `${this.player.ascean.name}'s caeren feeds off the pain, its hush shrieking forth.`
+        EventBus.emit(PARTY_COMBAT_TEXT, {
+            text: `${this.player.ascean.name}"s caeren feeds off the pain, its hush shrieking forth.`
         });
     };
     onBerserkUpdate = (_dt: number) => {if (!this.player.isBerserking) this.positiveMachine.setState(States.CLEAN);};
 
     onBlindEnter = () => {
-        this.player.aoe = new AoE(this.scene, 'blind', 1, false, this.player);
-        this.player.enemySound('righteous', true);
-        this.player.specialCombatText = this.scene.showCombatText('Brilliance', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "blind", 1, false, this.player);
+        this.player.enemySound("righteous", true);
+        this.player.specialCombatText = this.scene.showCombatText("Brilliance", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.isBlinding = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BLIND, () => {
             this.player.isBlinding = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren shines with brilliance, blinding those around them.`
         });
     };
@@ -2188,14 +2190,14 @@ export default class PlayerMachine {
 
     onCaerenesisEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
-        this.player.aoe = new AoE(this.scene, 'caerenesis', 1, false, this.player, false, this.player.currentTarget);    
-        this.player.enemySound('blink', true);
-        this.player.specialCombatText = this.scene.showCombatText('Caerenesis', 750, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.aoe = new AoE(this.scene, "caerenesis", 1, false, this.player, false, this.player.currentTarget);    
+        this.player.enemySound("blink", true);
+        this.player.specialCombatText = this.scene.showCombatText("Caerenesis", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
         this.player.isCaerenesis = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
             this.player.isCaerenesis = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren grips their body and contorts, writhing around them.`
         });
     };
@@ -2203,15 +2205,15 @@ export default class PlayerMachine {
 
     onConvictionEnter = () => {
         if (this.player.isConvicted === true) return;
-        this.scene.combatManager.combatMachine.input('conviction', {active:true,charges:0});
-        this.player.enemySound('spooky', true);
-        this.player.specialCombatText = this.scene.showCombatText('Conviction', 750, 'tendril', false, true, () => this.player.specialCombatText = undefined);
+        this.scene.combatManager.combatMachine.input("conviction", {active:true,charges:0});
+        this.player.enemySound("spooky", true);
+        this.player.specialCombatText = this.scene.showCombatText("Conviction", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
         this.player.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
-            // this.scene.combatManager.combatMachine.input('conviction', {active:false,charges:0});
+            // this.scene.combatManager.combatMachine.input("conviction", {active:false,charges:0});
             this.player.isConvicted = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren steels itself in admiration of their physical form.`
         });
     };
@@ -2219,14 +2221,14 @@ export default class PlayerMachine {
 
     onImpermanenceEnter = () => {
         if (this.player.isImpermanent === true) return;
-        this.player.enemySound('spooky', true);
-        this.player.specialCombatText = this.scene.showCombatText('Impermanence', 750, 'hush', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("spooky", true);
+        this.player.specialCombatText = this.scene.showCombatText("Impermanence", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
         this.player.isImpermanent = true;
         this.player.flickerCaerenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.IMPERMANENCE, () => {
             this.player.isImpermanent = false;
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren grips their body and fades, its hush concealing.`
         });
     };
@@ -2234,18 +2236,18 @@ export default class PlayerMachine {
 
     onSeerEnter = () => {
         if (this.player.isSeering === true) return;
-        this.player.enemySound('fire', true);
-        this.scene.combatManager.combatMachine.input('isSeering', true);
-        this.player.specialCombatText = this.scene.showCombatText('Seer', 750, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("fire", true);
+        this.scene.combatManager.combatMachine.input("isSeering", true);
+        this.player.specialCombatText = this.scene.showCombatText("Seer", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.isSeering = true;
         this.player.flickerCaerenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
             this.player.isSeering = false;
             if (this.scene.state.isSeering === true) {
-                // this.scene.combatManager.combatMachine.input('isSeering', false);
+                // this.scene.combatManager.combatMachine.input("isSeering", false);
             };
         }, undefined, this);
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren calms their body to focus, its hush bleeding into them.`
         });
     };
@@ -2253,8 +2255,8 @@ export default class PlayerMachine {
 
     onDispelEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
-        this.player.enemySound('debuff', true);
-        this.player.specialCombatText = this.scene.showCombatText('Dispelling', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("debuff", true);
+        this.player.specialCombatText = this.scene.showCombatText("Dispelling", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(1000); 
         this.player.currentTarget.clearBubbles();
         // this.player.currentTarget.clearPositiveEffects();
@@ -2263,8 +2265,8 @@ export default class PlayerMachine {
 
     onShirkEnter = () => {
         this.player.isShirking = true;
-        this.player.enemySound('blink', true);
-        this.player.specialCombatText = this.scene.showCombatText('Shirking', 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("blink", true);
+        this.player.specialCombatText = this.scene.showCombatText("Shirking", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.isConfused = false;
         this.player.isFeared = false;
         this.player.isParalyzed = false;
@@ -2282,7 +2284,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(6000, () => {
             this.player.isShirking = false;
         }, undefined, this); 
-        EventBus.emit('party-combat-text', {
+        EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren's hush grants reprieve, freeing them.`
         });
     };
@@ -2290,8 +2292,8 @@ export default class PlayerMachine {
 
     onShadowEnter = () => {
         this.player.isShadowing = true;
-        this.player.enemySound('wild', true);
-        this.player.specialCombatText = this.scene.showCombatText('Shadowing', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("wild", true);
+        this.player.specialCombatText = this.scene.showCombatText("Shadowing", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isShadowing = false;
@@ -2301,8 +2303,8 @@ export default class PlayerMachine {
     
     onTetherEnter = () => {
         this.player.isTethering = true;
-        this.player.enemySound('dungeon', true);
-        this.player.specialCombatText = this.scene.showCombatText('Tethering', DURATION.TEXT, 'damage', false, true, () => this.player.specialCombatText = undefined);
+        this.player.enemySound("dungeon", true);
+        this.player.specialCombatText = this.scene.showCombatText("Tethering", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isTethering = false;
@@ -2312,22 +2314,22 @@ export default class PlayerMachine {
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('?c .on-f-u`SeD~', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("?c .on-f-u`SeD~", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
-        this.player.confuseDirection = 'down';
+        this.player.confuseDirection = "down";
         this.player.confuseVelocity = { x: 0, y: 0 };
         this.player.isAttacking = false;
         this.player.isParrying = false;
         this.player.isPosturing = false;
         this.player.isRolling = false;
-        this.player.currentAction = ''; 
+        this.player.currentAction = ""; 
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
         let iteration = 0;
         const randomDirection = () => {  
             const move = Math.random() * 101;
             const dir = Math.floor(Math.random() * 4);
-            const directions = ['up', 'down', 'left', 'right'];
+            const directions = ["up", "down", "left", "right"];
             const direction = directions[dir];
             if (move >= 20) {
                 this.player.confuseVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
@@ -2339,7 +2341,7 @@ export default class PlayerMachine {
             this.player.playerVelocity.y = this.player.confuseVelocity.y;
             this.player.confuseDirection = direction;
         };
-        const confusions = ['~?  ? ?!', 'Hhwat?', 'Wh-wor; -e ma i?', 'Woh `re ewe?', '...'];
+        const confusions = ["~?  ? ?!", "Hhwat?", "Wh-wor; -e ma i?", "Woh `re ewe?", "..."];
         this.player.confuseTimer = this.scene.time.addEvent({
             delay: 1250,
             callback: () => {
@@ -2349,7 +2351,7 @@ export default class PlayerMachine {
                     this.player.isConfused = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText(confusions[Math.floor(Math.random() * 5)], 750, 'effect', false, true, () => this.player.specialCombatText = undefined);
+                    this.player.specialCombatText = this.scene.showCombatText(confusions[Math.floor(Math.random() * 5)], 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
                 };
             },
             callbackScope: this,
@@ -2372,7 +2374,7 @@ export default class PlayerMachine {
     };
 
     onFearedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('F̶e̷a̴r̷e̵d̴', DURATION.TEXT, 'damage', false, false, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, false, () => this.player.specialCombatText = undefined);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.fearVelocity = { x: 0, y: 0 };
@@ -2380,13 +2382,13 @@ export default class PlayerMachine {
         this.player.isParrying = false;
         this.player.isPosturing = false;
         this.player.isRolling = false;
-        this.player.currentAction = ''; 
+        this.player.currentAction = ""; 
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
         let iteration = 0;
-        const fears = ['...ahhh!', 'c̶o̷m̷e̷ ̴h̴e̵r̶e̶', 'Stay Away!', 'Somebody HELP ME', 'g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓'];
+        const fears = ["...ahhh!", "c̶o̷m̷e̷ ̴h̴e̵r̶e̶", "Stay Away!", "Somebody HELP ME", "g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓"];
         const randomDirection = () => {  
             const move = Math.random() * 101;
-            const directions = ['up', 'down', 'left', 'right'];
+            const directions = ["up", "down", "left", "right"];
             const direction = directions[Math.floor(Math.random() * 4)];
             if (move >= 20) {
                 this.player.fearVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
@@ -2406,7 +2408,7 @@ export default class PlayerMachine {
                     this.player.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText(fears[Math.floor(Math.random() * 5)], 750, 'damage', false, false, () => this.player.specialCombatText = undefined);
+                    this.player.specialCombatText = this.scene.showCombatText(fears[Math.floor(Math.random() * 5)], 750, DAMAGE, false, false, () => this.player.specialCombatText = undefined);
                 };
             },
             callbackScope: this,
@@ -2430,9 +2432,9 @@ export default class PlayerMachine {
     };
 
     onFrozenEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Frozen', DURATION.TEXT, 'cast', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Frozen", DURATION.TEXT, CAST, false, true, () => this.player.specialCombatText = undefined);
         this.player.clearAnimations();
-        this.player.anims.play('player_idle', true);
+        this.player.anims.play("player_idle", true);
         this.player.setStatic(true);
         this.scene.time.addEvent({
             delay: DURATION.FROZEN,
@@ -2447,14 +2449,14 @@ export default class PlayerMachine {
     onFrozenExit = () => this.player.setStatic(false);
 
     onParalyzedEnter = () => {
-        this.player.specialCombatText = this.player.scene.showCombatText('Paralyzed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.player.scene.showCombatText("Paralyzed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.paralyzeDuration = DURATION.PARALYZED;
         this.player.isAttacking = false;
         this.player.isParrying = false;
         this.player.isPosturing = false;
         this.player.isRolling = false;
         this.player.isDodging = false;
-        this.player.currentAction = ''; 
+        this.player.currentAction = ""; 
         this.player.anims.pause();
         this.player.setTint(0x888888); // 0x888888
         this.player.setStatic(true);
@@ -2474,33 +2476,33 @@ export default class PlayerMachine {
     };
     onPolymorphedEnter = () => {
         this.player.isPolymorphed = true;
-        this.player.specialCombatText = this.scene.showCombatText('Polymorphed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Polymorphed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.clearAnimations();
         this.player.clearTint();
         this.player.anims.pause();
-        this.player.anims.play('rabbit_idle_down', true);
+        this.player.anims.play("rabbit_idle_down", true);
         this.player.anims.resume();
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
-        this.player.polymorphDirection = 'down';
-        this.player.polymorphMovement = 'idle';
+        this.player.polymorphDirection = "down";
+        this.player.polymorphMovement = "idle";
         this.player.polymorphVelocity = { x: 0, y: 0 };
         this.player.isAttacking = false;
         this.player.isParrying = false;
         this.player.isPosturing = false;
         this.player.isRolling = false;
-        this.player.currentAction = ''; 
+        this.player.currentAction = ""; 
         let iteration = 0;
         const randomDirection = () => {  
             const move = Math.random() * 101;
-            const directions = ['up', 'down', 'left', 'right'];
+            const directions = ["up", "down", "left", "right"];
             const dir = Math.floor(Math.random() * directions.length);
             const direction = directions[dir];
             if (move >= 20) {
-                this.player.polymorphMovement = 'move';
+                this.player.polymorphMovement = "move";
                 this.player.polymorphVelocity = MOVEMENT[direction as keyof typeof MOVEMENT]; 
             } else {
-                this.player.polymorphMovement = 'idle';                
+                this.player.polymorphMovement = "idle";                
                 this.player.polymorphVelocity = { x: 0, y: 0 };
             };
             this.player.flipX = this.player.polymorphVelocity.x < 0;
@@ -2517,7 +2519,7 @@ export default class PlayerMachine {
                     this.player.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText('...thump', 1000, 'effect', false, false, () => this.player.specialCombatText = undefined);        
+                    this.player.specialCombatText = this.scene.showCombatText("...thump", 1000, EFFECT, false, false, () => this.player.specialCombatText = undefined);        
                     this.heal(0.2);
                 };
             },
@@ -2542,7 +2544,7 @@ export default class PlayerMachine {
     };
 
     onSlowedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Slowed', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Slowed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.setTint(0xFFC700);
         this.player.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
         this.scene.time.delayedCall(this.player.slowDuration, () =>{
@@ -2558,7 +2560,7 @@ export default class PlayerMachine {
     };
 
     onSnaredEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText('Snared', DURATION.TEXT, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Snared", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.snareDuration = DURATION.SNARED;
         this.player.setTint(0x0000FF);
         this.player.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
@@ -2575,13 +2577,13 @@ export default class PlayerMachine {
 
     onStunnedEnter = () => {
         this.player.isStunned = true;
-        this.player.specialCombatText = this.scene.showCombatText('Stunned', PLAYER.DURATIONS.STUNNED, 'effect', false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.scene.showCombatText("Stunned", PLAYER.DURATIONS.STUNNED, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000);
         this.player.setStatic(true);
         this.player.anims.pause();
-        EventBus.emit('party-combat-text', {
-            text: `${this.player.ascean.name}'s been stunned.`
+        EventBus.emit(PARTY_COMBAT_TEXT, {
+            text: `${this.player.ascean.name} has been stunned.`
         });
     };
     onStunnedUpdate = (dt: number) => {

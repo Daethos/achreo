@@ -1,29 +1,27 @@
-import { Combat, initCombat } from '../../stores/combat';
-import { EventBus } from '../EventBus';
-import LootDrop from '../matter/LootDrop';
-import Equipment from '../../models/equipment';
-import { States } from '../phaser/StateMachine';
-import { Reputation, initReputation } from '../../utility/player';
-import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
-import { CombatManager } from '../phaser/CombatManager';
-import { screenShake } from '../phaser/ScreenShake';
-import ParticleManager from '../matter/ParticleManager';
-import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from './Hud';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import { ObjectPool } from '../phaser/ObjectPool';
-import { Compiler } from '../../utility/ascean';
-import DM from '../entities/DM';
+import { Combat, initCombat } from "../../stores/combat";
+import { EventBus } from "../EventBus";
+import LootDrop from "../matter/LootDrop";
+import Equipment from "../../models/equipment";
+import { States } from "../phaser/StateMachine";
+import Player from "../entities/Player";
+import Enemy from "../entities/Enemy";
+import { CombatManager } from "../phaser/CombatManager";
+import { screenShake } from "../phaser/ScreenShake";
+import ParticleManager from "../matter/ParticleManager";
+import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from "./Hud";
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
+import { ObjectPool } from "../phaser/ObjectPool";
+import { Compiler } from "../../utility/ascean";
+import DM from "../entities/DM";
 // @ts-ignore
-import { PhaserNavMeshPlugin } from 'phaser-navmesh';
-import Party from '../entities/PartyComputer';
+import { PhaserNavMeshPlugin } from "phaser-navmesh";
+import Party from "../entities/PartyComputer";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 export class Tutorial extends Phaser.Scene {
     offsetX: number = 0;
     offsetY: number = 0;
     state: Combat = initCombat;
-    reputation: Reputation = initReputation;
     player: Player;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -43,7 +41,6 @@ export class Tutorial extends Phaser.Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     navMesh: any;
     navMeshPlugin: PhaserNavMeshPlugin;
-    postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
@@ -56,7 +53,7 @@ export class Tutorial extends Phaser.Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
     constructor () {
-        super('Tutorial');
+        super("Tutorial");
     };
 
     preload() {};
@@ -66,54 +63,53 @@ export class Tutorial extends Phaser.Scene {
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        this.reputation = this.getReputation();
-        const map = this.make.tilemap({ key: 'tutorial' });
+        const map = this.make.tilemap({ key: "tutorial" });
         this.map = map;
         const tileSize = 32;
-        const tileSet = map.addTilesetImage('GrasslandMainLev2.0', 'GrasslandMainLev2.0', tileSize, tileSize, 1, 2);
-        let layer0 = map.createLayer('Tile Layer 0 - Base', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer('Tile Layer 1 - Top', tileSet as Phaser.Tilemaps.Tileset, 0, 0);
+        const tileSet = map.addTilesetImage("GrasslandMainLev2.0", "GrasslandMainLev2.0", tileSize, tileSize, 1, 2);
+        let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Phaser.Tilemaps.Tileset, 0, 0);
         [layer0, layer1].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
         });
-        const objectLayer = map.getObjectLayer('navmesh');
+        const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
-        if (this.hud.prevScene === 'Game') this.player.setPosition(415,697);
-        map?.getObjectLayer('Npcs')?.objects.forEach((npc: any) => 
-            this.dms.push(new DM({ scene: this, x: npc.x, y: npc.y, texture: 'player_actions', frame: 'player_idle_0', npcType: "Tutorial Teacher", id: 12 })));
+        this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
+        if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
+        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
+            this.dms.push(new DM({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0", npcType: "Tutorial Teacher", id: 12 })));
 
-        map?.getObjectLayer('pillars')?.objects.forEach((pillar: any) => {
+        map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => {
             const type = pillar.properties?.[0].value;
-            const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, 'beam');
+            const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
             const sensor = Bodies.circle(pillar.x, pillar.y, 16, { isSensor: true, label: `${type}PillarSensor` });
             graphics.setExistingBody(sensor);
             const body = 
-                type === 'game' ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy, and trade with local merchants to yield better equipment and improve yourself.` :
-                type === 'movement' ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
-                type === 'combat' ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
-                type === 'settings' ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
-                type === 'improvement' ? `Defeated enemies drop loot, and chances are that it may be an improvement of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
+                type === "game" ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy, and trade with local merchants to yield better equipment and improve yourself.` :
+                type === "movement" ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
+                type === "combat" ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
+                type === "settings" ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
+                type === "improvement" ? `Defeated enemies drop loot, and chances are that it may be an improvement of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
                 type === "exit" ? "If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!" : "";
             const extra = 
-                type === 'movement' ? "Movement" :
-                type === 'combat' ? "Combat" :
-                type === 'settings' ? "Settings" :
-                type === 'exit' ? "Enter World" : "";
+                type === "movement" ? "Movement" :
+                type === "combat" ? "Combat" :
+                type === "settings" ? "Settings" :
+                type === "exit" ? "Enter World" : "";
             this.matterCollision.addOnCollideStart({
                 objectA: [sensor],
                 callback: (other: any) => {
-                    if (other.gameObjectB?.name !== 'player') return;
-                    EventBus.emit('alert', { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: 'Close', extra });
+                    if (other.gameObjectB?.name !== "player") return;
+                    EventBus.emit("alert", { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: "Close", extra });
                 },
                 context: this
             });
         });
         // for (let i = 0; i < 12; i++) {
-        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: undefined });
+        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
         //     this.enemies.push(e);
         //     e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
         // };
@@ -124,41 +120,37 @@ export class Tutorial extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-        var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
-        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys('W,UP'),
-            down: this?.input?.keyboard?.addKeys('S,DOWN'),
-            left: this?.input?.keyboard?.addKeys('A,LEFT'),
-            right: this?.input?.keyboard?.addKeys('D,RIGHT'),
-            action: this?.input?.keyboard?.addKeys('ONE,TWO,THREE,FOUR,FIVE'),
-            strafe: this?.input?.keyboard?.addKeys('E,Q'),
-            shift: this?.input?.keyboard?.addKeys('SHIFT'),
-            firewater: this?.input?.keyboard?.addKeys('T'),
-            tab: this?.input?.keyboard?.addKeys('TAB'),
-            escape: this?.input?.keyboard?.addKeys('ESC'),
+            up: this?.input?.keyboard?.addKeys("W,UP"),
+            down: this?.input?.keyboard?.addKeys("S,DOWN"),
+            left: this?.input?.keyboard?.addKeys("A,LEFT"),
+            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
+            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
+            strafe: this?.input?.keyboard?.addKeys("E,Q"),
+            shift: this?.input?.keyboard?.addKeys("SHIFT"),
+            firewater: this?.input?.keyboard?.addKeys("T"),
+            tab: this?.input?.keyboard?.addKeys("TAB"),
+            escape: this?.input?.keyboard?.addKeys("ESC"),
         }; 
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
-        this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-        this.musicBackground = this.sound.add(Math.random() > 0.5 ? 'background' : 'background2', { volume: this?.hud?.settings?.volume / 2 || 0.1, loop: true });
-        this.musicCombat = this.sound.add('combat', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
+        this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+        this.musicBackground = this.sound.add(Math.random() > 0.5 ? "background" : "background2", { volume: this?.hud?.settings?.volume / 2 || 0.1, loop: true });
+        this.musicCombat = this.sound.add("combat", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicCombat2 = this.sound.add("combat2", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
-        this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+        this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
-
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("add-postfx", this);
+        EventBus.emit("current-scene-ready", this);
     };
 
     showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
@@ -168,19 +160,18 @@ export class Tutorial extends Phaser.Scene {
     };
 
     cleanUp = (): void => {
-        EventBus.off('combat');
-        EventBus.off('reputation');
-        EventBus.off('enemyLootDrop');
-        EventBus.off('aggressive-enemy');
-        EventBus.off('update-postfx');
-        EventBus.off('music');
-        EventBus.off('game-map-load');
-        EventBus.off('update-current-fps');
-        EventBus.off('update-camera-zoom');
-        EventBus.off('update-speed');
-        EventBus.off('update-enemy-aggression');
-        EventBus.off('update-enemy-special');
-        EventBus.off('resetting-game');
+        EventBus.off("combat");
+        EventBus.off("enemyLootDrop");
+        EventBus.off("aggressive-enemy");
+        EventBus.off("update-postfx");
+        EventBus.off("music");
+        EventBus.off("game-map-load");
+        EventBus.off("update-current-fps");
+        EventBus.off("update-camera-zoom");
+        EventBus.off("update-speed");
+        EventBus.off("update-enemy-aggression");
+        EventBus.off("update-enemy-special");
+        EventBus.off("resetting-game");
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
@@ -191,14 +182,13 @@ export class Tutorial extends Phaser.Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
-        EventBus.on('enemyLootDrop', (drops: any) => {
-            if (drops.scene !== 'Tutorial') return;
+        EventBus.on("combat", (combat: any) => this.state = combat); 
+        EventBus.on("game-map-load", (data: { camera: any, map: any }) => {this.map = data.map;});
+        EventBus.on("enemyLootDrop", (drops: any) => {
+            if (drops.scene !== "Tutorial") return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });
-        EventBus.on('aggressive-enemy', (e: {id: string, isAggressive: boolean}) => {
+        EventBus.on("aggressive-enemy", (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             if (!enemy) return;
             enemy.isAggressive = e.isAggressive;
@@ -210,19 +200,19 @@ export class Tutorial extends Phaser.Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-        EventBus.on('check-stealth', (stealth: boolean) => {
+        EventBus.on("check-stealth", (stealth: boolean) => {
             this.stealth = stealth;
         });
-        EventBus.on('update-camera-zoom', (zoom: number) => {
+        EventBus.on("update-camera-zoom", (zoom: number) => {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
+        EventBus.on("update-speed", (data: { speed: number, type: string }) => {
             switch (data.type) {
-                case 'playerSpeed':
+                case "playerSpeed":
                     this.player.adjustSpeed(data.speed);
                     break;
-                case 'enemySpeed':
+                case "enemySpeed":
                     for (let i = 0; i < this.enemies.length; i++) {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
@@ -230,18 +220,18 @@ export class Tutorial extends Phaser.Scene {
                 default: break;
             };
         });
-        EventBus.on('update-enemy-aggression', (aggression: number) => {
+        EventBus.on("update-enemy-aggression", (aggression: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isAggressive = aggression >= Math.random();
             };
         });
-        EventBus.on('update-enemy-special', (special: number) => {
+        EventBus.on("update-enemy-special", (special: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
-        EventBus.on('create-tutorial-enemy', this.createTutorialEnemy);
-        EventBus.on('resetting-game', this.resetting);
+        EventBus.on("create-tutorial-enemy", this.createTutorialEnemy);
+        EventBus.on("resetting-game", this.resetting);
     };
 
     resumeScene = () => {
@@ -258,7 +248,7 @@ export class Tutorial extends Phaser.Scene {
         };
         this.matter.resume();
         this.scene.wake();
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
@@ -271,115 +261,25 @@ export class Tutorial extends Phaser.Scene {
         });
     };
 
-    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
-        const { type, val } = data;
-        if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
-        if (type === 'threshold') this.postFxPipeline.setBloomThreshold(val);
-        if (type === 'chromatic') {
-            if (val === true) {
-                this.postFxPipeline.setChromaticEnable();
-            } else {
-                this.postFxPipeline.setChromaticEnable(val);
-            };
-        };
-        if (type === 'chabIntensity') this.postFxPipeline.setChabIntensity(val);
-        if (type === 'vignetteEnable') {
-            if (val === true) {
-                this.postFxPipeline.setVignetteEnable();
-            } else {
-                this.postFxPipeline.setVignetteEnable(val);
-            };
-        };
-        if (type === 'vignetteStrength') this.postFxPipeline.setVignetteStrength(val);
-        if (type === 'vignetteIntensity') this.postFxPipeline.setVignetteIntensity(val);
-        if (type === 'noiseEnable') {
-            if (val === true) {
-                this.postFxPipeline.setNoiseEnable();
-            } else {
-                this.postFxPipeline.setNoiseEnable(val);
-            };
-        };
-        if (type === 'noiseSeed') this.postFxPipeline.setNoiseSeed(val);
-        if (type === 'noiseStrength') this.postFxPipeline.setNoiseStrength(val);
-        if (type === 'vhsEnable') {
-            if (val === true) {
-                this.postFxPipeline.setVHSEnable();
-            } else {
-                this.postFxPipeline.setVHSEnable(val);
-            };
-        };
-        if (type === 'vhsStrength') this.postFxPipeline.setVhsStrength(val);
-        if (type === 'scanlinesEnable') {
-            if (val === true) {
-                this.postFxPipeline.setScanlinesEnable();
-            } else {
-                this.postFxPipeline.setScanlinesEnable(val);
-            };
-        };
-        if (type === 'scanStrength') this.postFxPipeline.setScanStrength(val);
-        if (type === 'crtEnable') {
-            if (val === true) {
-                this.postFxPipeline.setCRTEnable();
-            } else {
-                this.postFxPipeline.setCRTEnable(val);
-            };
-        };
-        if (type === 'crtHeight') this.postFxPipeline.crtHeight = val;
-        if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
-        if (type === 'enable') {
-            if (val === true) {
-                this.setPostFx(this.hud.settings?.postFx, true);
-            } else {
-                this.postFxPipeline.setEnable(false);
-            };
-        };
-    });
-    setPostFx = (settings: any, enable: boolean): void => { 
-        if (enable === true) {
-            this.postFxPipeline.setEnable();
-        } else {
-            this.postFxPipeline.setEnable(false);
-            return;    
-        };
-        this.postFxPipeline.setBloomRadius(25);
-        this.postFxPipeline.setBloomIntensity(0.5);
-        this.postFxPipeline.setBloomThreshold(0.5);
-        this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
-        this.postFxPipeline.setChabIntensity(settings.chabIntensity);
-        this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
-        this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
-        this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
-        this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
-        this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
-        this.postFxPipeline.setVHSEnable(settings.vhsEnable);
-        this.postFxPipeline.setVhsStrength(settings.vhsStrength);
-        this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
-        this.postFxPipeline.setScanStrength(settings.scanStrength);
-        this.postFxPipeline.setCRTEnable(settings.crtEnable);
-        this.postFxPipeline.crtHeight = settings.crtHeight;
-        this.postFxPipeline.crtWidth = settings.crtWidth;
-
-    };
     resetting = (): void => {
-        this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
+        this.sound.play("TV_Button_Press", { volume: this?.hud?.settings?.volume * 2 });
         this.cameras.main.fadeOut();
         this.pause();
         this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
-            EventBus.emit('reset-game');
+            EventBus.emit("reset-game");
         });
     };
-    getReputation = (): Reputation => {
-        EventBus.emit('request-reputation');
-        return this.reputation;
-    };
+
     getEnemy = (id: string): Enemy | undefined => {
         return this.enemies.find((enemy: any) => enemy.enemyID === id);
     };
+
     getWorldPointer = () => {
         const pointer = this.hud.rightJoystick.pointer;
         let point = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         return point;
     };
+
     rotateTween = (tween: any, count: number, active: boolean) => {
         if (active === true) {
             if (tween && tween.name) {
@@ -387,7 +287,7 @@ export class Tutorial extends Phaser.Scene {
                     targets: tween,
                     angle: count * 360,
                     duration: count * 925,
-                    ease: 'Circ.easeInOut',
+                    ease: "Circ.easeInOut",
                     yoyo: false,
                 });
             } else {
@@ -401,7 +301,9 @@ export class Tutorial extends Phaser.Scene {
             };
         };
     };
+
     isStateEnemy = (id: string): boolean => id === this.state.enemyID;
+
     quickCombat = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -410,6 +312,7 @@ export class Tutorial extends Phaser.Scene {
             };
         };
     };
+
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
@@ -421,6 +324,7 @@ export class Tutorial extends Phaser.Scene {
             };
         };
     };
+
     combatEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool === true) {
@@ -453,8 +357,9 @@ export class Tutorial extends Phaser.Scene {
             this.stopCombatTimer();    
         };
         this.combat = bool;
-        EventBus.emit('combat-engaged', bool);
+        EventBus.emit("combat-engaged", bool);
     };
+
     stealthEngaged = (bool: boolean) => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (bool) {
@@ -479,6 +384,7 @@ export class Tutorial extends Phaser.Scene {
             };
         };
     };
+
     pauseMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.musicBackground.isPlaying) this.musicBackground.pause();
@@ -486,6 +392,7 @@ export class Tutorial extends Phaser.Scene {
         if (this.musicCombat2.isPlaying) this.musicCombat2.pause();
         if (this.musicStealth.isPlaying) this.musicStealth.pause();
     };
+
     resumeMusic = (): void => {
         if (this.scene.isSleeping(this.scene.key)) return;
         if (this.hud.settings?.music === false) return;
@@ -509,14 +416,15 @@ export class Tutorial extends Phaser.Scene {
             };
         };
     };
-    drinkFlask = (): boolean => EventBus.emit('drink-firewater');
+
+    drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
     createTutorialEnemy = () => {
-        EventBus.emit('alert', { header: "Tutorial", body: "The tutorial enemy is being summoned.", key: "Close" });
+        EventBus.emit("alert", { header: "Tutorial", body: "The tutorial enemy is being summoned.", key: "Close" });
         this.time.delayedCall(1500, () => {
             let data: Compiler[] = this.registry.get("enemies");
             for (let j = 0; j < data.length; j++) {
-                const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+                const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
                 enemy.setPosition(this.player.x - 50, this.player.y);
                 this.enemies.push(enemy);
                 this.time.delayedCall(1500, () => {
@@ -527,6 +435,7 @@ export class Tutorial extends Phaser.Scene {
             };
         }, undefined, this);
     };
+
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
@@ -549,6 +458,7 @@ export class Tutorial extends Phaser.Scene {
         this.setCameraOffset();
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
+
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
@@ -563,6 +473,7 @@ export class Tutorial extends Phaser.Scene {
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
+
     startCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -578,6 +489,7 @@ export class Tutorial extends Phaser.Scene {
             loop: true
         });
     };
+
     stopCombatTimer = (): void => {
         if (this.combatTimer) {
             this.combatTimer.destroy();
@@ -585,6 +497,7 @@ export class Tutorial extends Phaser.Scene {
         this.combatTime = 0;
         EventBus.emit('update-combat-timer', this.combatTime);
     };
+
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
@@ -595,11 +508,13 @@ export class Tutorial extends Phaser.Scene {
             this.dms[i].update(delta);
         };
     };
+
     pause(): void {
         this.scene.pause();
         this.matter.pause();
         this.pauseMusic();
     };
+    
     resume(): void {
         this.scene.resume();
         this.matter.resume();

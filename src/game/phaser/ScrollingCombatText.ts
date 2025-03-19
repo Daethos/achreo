@@ -79,19 +79,19 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
 
     private setColor = (context: string) => {
         switch (context) {
-            case "bone":
+            case BONE:
                 return "#fdf6d8";
-            case "cast":
+            case CAST:
                 return "blue";
-            case "damage":
+            case DAMAGE:
                 return "red";
-            case "effect":
+            case EFFECT:
                 return "gold";
-            case "heal":
+            case HEAL:
                 return "green";
-            case "hush":
+            case HUSH:
                 return "fuchsia";
-            case "tendril":
+            case TENDRIL:
                 return "purple";
             default:
                 return "red";

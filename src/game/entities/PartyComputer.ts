@@ -14,7 +14,7 @@ import CastingBar from "../phaser/CastingBar";
 import HealthBar from "../phaser/HealthBar";
 import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
-import { DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
+import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
@@ -983,7 +983,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("debuff", true);
-        this.specialCombatText = this.scene.showCombatText("Maliced", 750, "hush", false, true, () => this.specialCombatText = undefined);
+        this.specialCombatText = this.scene.showCombatText("Maliced", 750, HUSH, false, true, () => this.specialCombatText = undefined);
         this.playerMachine.chiomism(id, 10);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
@@ -1003,7 +1003,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.fear(id);
         this.enemySound("caerenic", true);
-        this.specialCombatText = this.scene.showCombatText("Menaced", 500, "tendril", false, true, () => this.specialCombatText = undefined);
+        this.specialCombatText = this.scene.showCombatText("Menaced", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMenacing = false;
@@ -1020,7 +1020,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("caerenic", true);
-        this.specialCombatText = this.scene.showCombatText("Mended", 500, "tendril", false, true, () => this.specialCombatText = undefined);
+        this.specialCombatText = this.scene.showCombatText("Mended", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
         this.playerMachine.heal(0.15);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
@@ -1040,7 +1040,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.slow(id);
         this.enemySound("debuff", true);
-        this.specialCombatText = this.scene.showCombatText("Moderated", 500, "tendril", false, true, () => this.specialCombatText = undefined);
+        this.specialCombatText = this.scene.showCombatText("Moderated", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
             this.isModerating = false;
@@ -1059,7 +1059,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.polymorph(id);
         this.enemySound("combat-round", true);
-        this.specialCombatText = this.scene.showCombatText("Multifarious`d", 500, "cast", false, true, () => this.specialCombatText = undefined);
+        this.specialCombatText = this.scene.showCombatText("Multifarious`d", 500, CAST, false, true, () => this.specialCombatText = undefined);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMultifaring = false;

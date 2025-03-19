@@ -176,9 +176,9 @@ export class Game extends Scene {
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
-        var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
-        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
+        // var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
+        // this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
+        // this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys("W,UP"),
@@ -212,7 +212,7 @@ export class Game extends Scene {
             };
         };
 
-        this.postFxEvent();
+        // this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
@@ -225,6 +225,7 @@ export class Game extends Scene {
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+        EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
     };
 
@@ -445,95 +446,95 @@ export class Game extends Scene {
         });
     };
 
-    postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
-        const { type, val } = data;
-        if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
-        if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
-        if (type === "chromatic") {
-            if (val === true) {
-                this.postFxPipeline.setChromaticEnable();
-            } else {
-                this.postFxPipeline.setChromaticEnable(val);
-            };
-        };
-        if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
-        if (type === "vignetteEnable") {
-            if (val === true) {
-                this.postFxPipeline.setVignetteEnable();
-            } else {
-                this.postFxPipeline.setVignetteEnable(val);
-            };
-        };
-        if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
-        if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
-        if (type === "noiseEnable") {
-            if (val === true) {
-                this.postFxPipeline.setNoiseEnable();
-            } else {
-                this.postFxPipeline.setNoiseEnable(val);
-            };
-        };
-        if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
-        if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
-        if (type === "vhsEnable") {
-            if (val === true) {
-                this.postFxPipeline.setVHSEnable();
-            } else {
-                this.postFxPipeline.setVHSEnable(val);
-            };
-        };
-        if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
-        if (type === "scanlinesEnable") {
-            if (val === true) {
-                this.postFxPipeline.setScanlinesEnable();
-            } else {
-                this.postFxPipeline.setScanlinesEnable(val);
-            };
-        };
-        if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
-        if (type === "crtEnable") {
-            if (val === true) {
-                this.postFxPipeline.setCRTEnable();
-            } else {
-                this.postFxPipeline.setCRTEnable(val);
-            };
-        };
-        if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
-        if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
-        if (type === "enable") {
-            if (val === true) {
-                this.setPostFx(this.hud.settings?.postFx, true);
-            } else {
-                this.postFxPipeline.setEnable(false);
-            };
-        };
-    });
+    // postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
+    //     const { type, val } = data;
+    //     if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
+    //     if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
+    //     if (type === "chromatic") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setChromaticEnable();
+    //         } else {
+    //             this.postFxPipeline.setChromaticEnable(val);
+    //         };
+    //     };
+    //     if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
+    //     if (type === "vignetteEnable") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setVignetteEnable();
+    //         } else {
+    //             this.postFxPipeline.setVignetteEnable(val);
+    //         };
+    //     };
+    //     if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
+    //     if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
+    //     if (type === "noiseEnable") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setNoiseEnable();
+    //         } else {
+    //             this.postFxPipeline.setNoiseEnable(val);
+    //         };
+    //     };
+    //     if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
+    //     if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
+    //     if (type === "vhsEnable") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setVHSEnable();
+    //         } else {
+    //             this.postFxPipeline.setVHSEnable(val);
+    //         };
+    //     };
+    //     if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
+    //     if (type === "scanlinesEnable") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setScanlinesEnable();
+    //         } else {
+    //             this.postFxPipeline.setScanlinesEnable(val);
+    //         };
+    //     };
+    //     if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
+    //     if (type === "crtEnable") {
+    //         if (val === true) {
+    //             this.postFxPipeline.setCRTEnable();
+    //         } else {
+    //             this.postFxPipeline.setCRTEnable(val);
+    //         };
+    //     };
+    //     if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
+    //     if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
+    //     if (type === "enable") {
+    //         if (val === true) {
+    //             this.setPostFx(this.hud.settings?.postFx, true);
+    //         } else {
+    //             this.postFxPipeline.setEnable(false);
+    //         };
+    //     };
+    // });
 
-    setPostFx = (settings: any, enable: boolean): void => { 
-        if (enable === true) {
-            this.postFxPipeline.setEnable();
-        } else {
-            this.postFxPipeline.setEnable(false);
-            return;    
-        };
-        this.postFxPipeline.setBloomRadius(25);
-        this.postFxPipeline.setBloomIntensity(0.5);
-        this.postFxPipeline.setBloomThreshold(0.5);
-        this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
-        this.postFxPipeline.setChabIntensity(settings.chabIntensity);
-        this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
-        this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
-        this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
-        this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
-        this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
-        this.postFxPipeline.setVHSEnable(settings.vhsEnable);
-        this.postFxPipeline.setVhsStrength(settings.vhsStrength);
-        this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
-        this.postFxPipeline.setScanStrength(settings.scanStrength);
-        this.postFxPipeline.setCRTEnable(settings.crtEnable);
-        this.postFxPipeline.crtHeight = settings.crtHeight;
-        this.postFxPipeline.crtWidth = settings.crtWidth;
-    };
+    // setPostFx = (settings: any, enable: boolean): void => { 
+    //     if (enable === true) {
+    //         this.postFxPipeline.setEnable();
+    //     } else {
+    //         this.postFxPipeline.setEnable(false);
+    //         return;    
+    //     };
+    //     this.postFxPipeline.setBloomRadius(25);
+    //     this.postFxPipeline.setBloomIntensity(0.5);
+    //     this.postFxPipeline.setBloomThreshold(0.5);
+    //     this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
+    //     this.postFxPipeline.setChabIntensity(settings.chabIntensity);
+    //     this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
+    //     this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
+    //     this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
+    //     this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
+    //     this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
+    //     this.postFxPipeline.setVHSEnable(settings.vhsEnable);
+    //     this.postFxPipeline.setVhsStrength(settings.vhsStrength);
+    //     this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
+    //     this.postFxPipeline.setScanStrength(settings.scanStrength);
+    //     this.postFxPipeline.setCRTEnable(settings.crtEnable);
+    //     this.postFxPipeline.crtHeight = settings.crtHeight;
+    //     this.postFxPipeline.crtWidth = settings.crtWidth;
+    // };
 
 
     getReputation = (): Reputation => {
@@ -723,6 +724,7 @@ export class Game extends Scene {
         this.party.push(newParty);
         newParty.setPosition(this.player.x - 40, this.player.y - 40);
     };
+    
     despawnEnemyToParty = (id: string) => {
         const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
@@ -738,6 +740,7 @@ export class Game extends Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
     removeFromParty = (remove: Ascean) => {
         const party = this.party.find((e: Party) => e.playerID === remove._id);
         if (!party) return;
@@ -757,6 +760,7 @@ export class Game extends Scene {
         }, undefined, this);
         
     };
+
     checkEnvironment = (player: Player | Enemy | Party) => {
         const x = this.map.worldToTileX(player.x || 0);
         const y = this.map.worldToTileY(player.y || 0);

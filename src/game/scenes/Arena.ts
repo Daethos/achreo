@@ -5,7 +5,6 @@ import { GameState } from "../../stores/game";
 import Equipment from "../../models/equipment";
 import { States } from "../phaser/StateMachine";
 import Fov from "../phaser/Fov";
-import { Reputation, initReputation } from "../../utility/player";
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
 // @ts-ignore
@@ -31,7 +30,6 @@ export class Arena extends Phaser.Scene {
     offsetY: number;
     gameState: GameState | undefined;
     state: Combat = initCombat;
-    reputation: Reputation = initReputation;
     player: any;
     centerX: number = window.innerWidth / 2;
     centerY: number = window.innerHeight / 2;
@@ -54,7 +52,6 @@ export class Arena extends Phaser.Scene {
     minimap: MiniMap;
     navMesh: any;
     navMeshPlugin: any;
-    postFxPipeline: any;
     musicBackground: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
@@ -95,7 +92,6 @@ export class Arena extends Phaser.Scene {
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        this.reputation = this.getReputation();
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
@@ -155,9 +151,6 @@ export class Arena extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
-        var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
-        this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
 
@@ -194,7 +187,7 @@ export class Arena extends Phaser.Scene {
         // this.platform3.setAngle(90);
         // this.platform3.horizontal(0, 1440, 12000);
         
-        this.postFxEvent();
+        // this.postFxEvent();
         if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor("url(assets/images/cursor.png), pointer");
         };
@@ -209,6 +202,7 @@ export class Arena extends Phaser.Scene {
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+        EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
     };
 
@@ -220,7 +214,6 @@ export class Arena extends Phaser.Scene {
 
     cleanUp = (): void => {
         EventBus.off("combat");
-        EventBus.off("reputation");
         EventBus.off("enemyLootDrop");
         EventBus.off("minimap");
         EventBus.off("update-postfx");
@@ -237,7 +230,6 @@ export class Arena extends Phaser.Scene {
 
     gameEvent = (): void => {
         EventBus.on("combat", (combat: any) => this.state = combat); 
-        EventBus.on("reputation", (reputation: Reputation) => this.reputation = reputation);
         EventBus.on("game-map-load", (data: { camera: any, map: any }) => {this.map = data.map;});
         EventBus.on("enemyLootDrop", (drops: any) => {
             if (drops.scene !== this.sceneKey) return;
@@ -328,102 +320,6 @@ export class Arena extends Phaser.Scene {
             this.matter.pause();
             this.scene.sleep(current);
         });
-    };
-
-    postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
-        const { type, val } = data;
-        if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
-        if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
-        if (type === "chromatic") {
-            if (val === true) {
-                this.postFxPipeline.setChromaticEnable();
-            } else {
-                this.postFxPipeline.setChromaticEnable(val);
-            };
-        };
-        if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
-        if (type === "vignetteEnable") {
-            if (val === true) {
-                this.postFxPipeline.setVignetteEnable();
-            } else {
-                this.postFxPipeline.setVignetteEnable(val);
-            };
-        };
-        if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
-        if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
-        if (type === "noiseEnable") {
-            if (val === true) {
-                this.postFxPipeline.setNoiseEnable();
-            } else {
-                this.postFxPipeline.setNoiseEnable(val);
-            };
-        };
-        if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
-        if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
-        if (type === "vhsEnable") {
-            if (val === true) {
-                this.postFxPipeline.setVHSEnable();
-            } else {
-                this.postFxPipeline.setVHSEnable(val);
-            };
-        };
-        if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
-        if (type === "scanlinesEnable") {
-            if (val === true) {
-                this.postFxPipeline.setScanlinesEnable();
-            } else {
-                this.postFxPipeline.setScanlinesEnable(val);
-            };
-        };
-        if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
-        if (type === "crtEnable") {
-            if (val === true) {
-                this.postFxPipeline.setCRTEnable();
-            } else {
-                this.postFxPipeline.setCRTEnable(val);
-            };
-        };
-        if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
-        if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
-        if (type === "enable") {
-            if (val === true) {
-                this.setPostFx(this.hud.settings?.postFx, true);
-            } else {
-                this.postFxPipeline.setEnable(false);
-            };
-        };
-    });
-
-    setPostFx = (settings: any, enable: boolean): void => { 
-        if (enable === true) {
-            this.postFxPipeline.setEnable();
-        } else {
-            this.postFxPipeline.setEnable(false);
-            return;    
-        };
-        this.postFxPipeline.setBloomRadius(25);
-        this.postFxPipeline.setBloomIntensity(0.5);
-        this.postFxPipeline.setBloomThreshold(0.5);
-        this.postFxPipeline.setChromaticEnable(settings.chromaticEnable);
-        this.postFxPipeline.setChabIntensity(settings.chabIntensity);
-        this.postFxPipeline.setVignetteEnable(settings.vignetteEnable);
-        this.postFxPipeline.setVignetteStrength(settings.vignetteStrength);
-        this.postFxPipeline.setVignetteIntensity(settings.vignetteIntensity);
-        this.postFxPipeline.setNoiseEnable(settings.noiseEnable);
-        this.postFxPipeline.setNoiseStrength(settings.noiseStrength);
-        this.postFxPipeline.setVHSEnable(settings.vhsEnable);
-        this.postFxPipeline.setVhsStrength(settings.vhsStrength);
-        this.postFxPipeline.setScanlinesEnable(settings.scanlinesEnable);
-        this.postFxPipeline.setScanStrength(settings.scanStrength);
-        this.postFxPipeline.setCRTEnable(settings.crtEnable);
-        this.postFxPipeline.crtHeight = settings.crtHeight;
-        this.postFxPipeline.crtWidth = settings.crtWidth;
-
-    };
-
-    getReputation = (): Reputation => {
-        EventBus.emit("request-reputation");
-        return this.reputation;
     };
 
     getEnemy = (id: string): Enemy => {
@@ -704,6 +600,7 @@ export class Arena extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
     partyDestroy = (party: Party) => {
         party.isDeleting = true;
         this.time.delayedCall(1000, () => {
@@ -712,6 +609,7 @@ export class Arena extends Phaser.Scene {
             party.destroy();
         }, undefined, this);
     };
+
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();
@@ -719,6 +617,7 @@ export class Arena extends Phaser.Scene {
         this.setCameraOffset();
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
     };
+
     setCameraOffset = () => {
         const { width, height } = this.cameras.main.worldView;
         if (this.player.flipX === true) {
@@ -733,6 +632,7 @@ export class Arena extends Phaser.Scene {
         };
         this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
+
     startCombatTimer = (): void => {
         if (this.combatTimer) this.combatTimer.destroy();
         this.combatTimer = this.time.addEvent({
@@ -746,11 +646,13 @@ export class Arena extends Phaser.Scene {
             loop: true
         });
     };
+
     stopCombatTimer = (): void => {
         if (this.combatTimer) this.combatTimer.destroy();
         this.combatTime = 0;
         EventBus.emit("update-combat-timer", this.combatTime);
     };
+
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
@@ -775,11 +677,13 @@ export class Arena extends Phaser.Scene {
         });
         this.fov!.update(player, bounds, delta);
     };
+
     pause(): void {
         this.scene.pause();
         this.matter.pause();
         this.pauseMusic();
     };
+    
     resume(): void {
         this.scene.resume();
         this.matter.resume();

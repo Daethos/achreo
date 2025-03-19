@@ -46,6 +46,8 @@ export class Hud extends Phaser.Scene {
     prevScene: string = "";
     currScene: string = "";
     talents: Talents;
+    postFxPipeline: any;
+    pipelines: any = {};
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -83,8 +85,7 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.createPointer(this); 
         this.joystickKeys = this.joystick.createCursorKeys();    
-
-        // [this.smallHud, this.actionBar, this.joystick, this.rightJoystick].forEach(container => this.containers.main.add(container));
+        this.postFxPipeline = this.plugins.get("rexHorrifiPipeline");
 
         this.logger = new Logger();
         this.logger.add("console", new ConsoleLogger());
@@ -121,9 +122,6 @@ export class Hud extends Phaser.Scene {
         const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
         swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125);
         
-        const swipe2 = this.add.rectangle(0, 0, this.gameWidth * 0.1125, this.gameHeight * 0.1, 0x000000, 0);
-        swipe2.setPosition(this.gameWidth * 0.75, this.gameHeight * 0.2125);
-
         swipe.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
             this.currentX = pointer.x;
@@ -157,6 +155,8 @@ export class Hud extends Phaser.Scene {
             EventBus.emit("save-settings", newSettings);
         });
 
+        const swipe2 = this.add.rectangle(0, 0, this.gameWidth * 0.1125, this.gameHeight * 0.1, 0x000000, 0);
+        swipe2.setPosition(this.gameWidth * 0.75, this.gameHeight * 0.2125);
         
         swipe2.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
             this.evCache.push(pointer);
@@ -215,6 +215,7 @@ export class Hud extends Phaser.Scene {
         //     };
         // };
         // this.game.scale.on("resize", this.resize, this);
+        // this.postFxEvent();
         this.startGameScene();
     };
     // toggleArenaView() { 
@@ -250,6 +251,101 @@ export class Hud extends Phaser.Scene {
         this.rightJoystick.destroy();
         this.smallHud.cleanUp();
         this.smallHud.destroy();
+    };    
+    
+    postFxEvent = (data: {type: string, val: boolean | number}) => {
+        const { type, val } = data;
+        if (type === "bloom") this.pipelines[this.currScene].setBloomRadius(val);
+        if (type === "threshold") this.pipelines[this.currScene].setBloomThreshold(val);
+        if (type === "chromatic") {
+            if (val === true) {
+                this.pipelines[this.currScene].setChromaticEnable();
+            } else {
+                this.pipelines[this.currScene].setChromaticEnable(val);
+            };
+        };
+        if (type === "chabIntensity") this.pipelines[this.currScene].setChabIntensity(val);
+        if (type === "vignetteEnable") {
+            if (val === true) {
+                this.pipelines[this.currScene].setVignetteEnable();
+            } else {
+                this.pipelines[this.currScene].setVignetteEnable(val);
+            };
+        };
+        if (type === "vignetteStrength") this.pipelines[this.currScene].setVignetteStrength(val);
+        if (type === "vignetteIntensity") this.pipelines[this.currScene].setVignetteIntensity(val);
+        if (type === "noiseEnable") {
+            if (val === true) {
+                this.pipelines[this.currScene].setNoiseEnable();
+            } else {
+                this.pipelines[this.currScene].setNoiseEnable(val);
+            };
+        };
+        if (type === "noiseSeed") this.pipelines[this.currScene].setNoiseSeed(val);
+        if (type === "noiseStrength") this.pipelines[this.currScene].setNoiseStrength(val);
+        if (type === "vhsEnable") {
+            if (val === true) {
+                this.pipelines[this.currScene].setVHSEnable();
+            } else {
+                this.pipelines[this.currScene].setVHSEnable(val);
+            };
+        };
+        if (type === "vhsStrength") this.pipelines[this.currScene].setVhsStrength(val);
+        if (type === "scanlinesEnable") {
+            if (val === true) {
+                this.pipelines[this.currScene].setScanlinesEnable();
+            } else {
+                this.pipelines[this.currScene].setScanlinesEnable(val);
+            };
+        };
+        if (type === "scanStrength") this.pipelines[this.currScene].setScanStrength(val);
+        if (type === "crtEnable") {
+            if (val === true) {
+                this.pipelines[this.currScene].setCRTEnable();
+            } else {
+                this.pipelines[this.currScene].setCRTEnable(val);
+            };
+        };
+        if (type === "crtHeight") this.pipelines[this.currScene].crtHeight = val;
+        if (type === "crtWidth") this.pipelines[this.currScene].crtWidth = val;
+        if (type === "enable") {
+            if (val === true) {
+                this.setPostFx(true);
+            } else {
+                this.pipelines[this.currScene].setEnable(false);
+            };
+        };
+    };
+
+    setPostFx = (enable: boolean): void => { 
+        if (enable === true) {
+            this.pipelines[this.currScene].setEnable();
+        } else {
+            this.pipelines[this.currScene].setEnable(false);
+            return;    
+        };
+        this.pipelines[this.currScene].setBloomRadius(25);
+        this.pipelines[this.currScene].setBloomIntensity(0.5);
+        this.pipelines[this.currScene].setBloomThreshold(0.5);
+        this.pipelines[this.currScene].setChromaticEnable(this.settings.postFx.chromaticEnable);
+        this.pipelines[this.currScene].setChabIntensity(this.settings.postFx.chabIntensity);
+        this.pipelines[this.currScene].setVignetteEnable(this.settings.postFx.vignetteEnable);
+        this.pipelines[this.currScene].setVignetteStrength(this.settings.postFx.vignetteStrength);
+        this.pipelines[this.currScene].setVignetteIntensity(this.settings.postFx.vignetteIntensity);
+        this.pipelines[this.currScene].setNoiseEnable(this.settings.postFx.noiseEnable);
+        this.pipelines[this.currScene].setNoiseStrength(this.settings.postFx.noiseStrength);
+        this.pipelines[this.currScene].setVHSEnable(this.settings.postFx.vhsEnable);
+        this.pipelines[this.currScene].setVhsStrength(this.settings.postFx.vhsStrength);
+        this.pipelines[this.currScene].setScanlinesEnable(this.settings.postFx.scanlinesEnable);
+        this.pipelines[this.currScene].setScanStrength(this.settings.postFx.scanStrength);
+        this.pipelines[this.currScene].setCRTEnable(this.settings.postFx.crtEnable);
+        this.pipelines[this.currScene].crtHeight = this.settings.postFx.crtHeight;
+        this.pipelines[this.currScene].crtWidth = this.settings.postFx.crtWidth;
+    };
+
+    addPostFxPipeline = (scene: Phaser.Scene) => {
+        this.pipelines[scene.scene.key] = this.postFxPipeline.add(scene.cameras.main);
+        this.setPostFx(this.settings.postFx.enable);
     };
 
     resize(_gameSize: Phaser.Structs.Size, _: Phaser.Structs.Size, displaySize: Phaser.Structs.Size, previousWidth: number, previousHeight: number) {
@@ -288,8 +384,10 @@ export class Hud extends Phaser.Scene {
         );
         this.evCache.splice(index, 1);
     };
+
     clearNonAggressiveEnemy = () => EventBus.emit("remove-non-aggressive-enemy"); // this.combatManager.combatMachine.action({ data: { key: "player", value: 0, id: 0 }, type: "Remove Enemy" });
     clearNPC = (): boolean => EventBus.emit("clear-npc");
+
     setupEnemy = (enemy: any): void => {
         const data: EnemySheet = { 
             id: enemy.enemyID, 
@@ -392,6 +490,7 @@ export class Hud extends Phaser.Scene {
                 };
             };
         });
+        EventBus.on("add-postfx", this.addPostFxPipeline);
         EventBus.on("switch-scene", (data: {current: string, next: string}) => {
             const { current, next } = data;
             this.prevScene = current;
@@ -406,6 +505,7 @@ export class Hud extends Phaser.Scene {
                 const active = this.scene.isActive(next);
                 if (active || asleep || paused) {
                     nextScene.resumeScene();
+                    this.setPostFx(this.settings.postFx.enable);
                 } else {
                     this.scene.launch(next, this);
                 };
@@ -489,6 +589,7 @@ export class Hud extends Phaser.Scene {
             };
         });
         EventBus.on("show-dialog-false", () => this.showDialog(false));
+        EventBus.on("update-postfx", this.postFxEvent);
     };
     
     highlightElements(type: string) {

@@ -34,7 +34,7 @@
 .right {position: absolute; left: 51%;}
 .fade-in {opacity: 1; transition: opacity 2s ease-in;}
 .fade-out {opacity: 0; transition: opacity 2s ease-in;}
-.header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: 'Cinzel-Regular'; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
+.header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: "Cinzel-Regular"; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 
 .moisten {animation: moist 0.5s ease;}
 .juice, .juiceNB, .juiceConcept, .juiceSmall, .juiceSub {
@@ -158,35 +158,35 @@
 }
 .healthbarPosition {position: absolute; bottom: 0; left: 0; top: 0; z-index: -1;}
 .playerInventoryBag {height: 100%;width: 100%;z-index: 1;background-color: #000;display: grid;grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(7, 1fr);}
-.playerName {position:absolute;left: 4.5vw;font-family: 'Cinzel Regular';font-weight: 600;margin:auto;max-height:40px;z-index:1;}
-.playerPortrait {font-family: 'Cinzel Regular';font-size:1.15em;font-weight: 700;margin:auto;text-align: center;z-index: 1;justify-content: center;align-items: center;}
+.playerName {position:absolute;left: 4.5vw;font-family: "Cinzel Regular";font-weight: 600;margin:auto;max-height:40px;z-index:1;}
+.playerPortrait {font-family: "Cinzel Regular";font-size:1.15em;font-weight: 700;margin:auto;text-align: center;z-index: 1;justify-content: center;align-items: center;}
 .playerHealthBar {position: absolute;top: 7.5vh;left: 4%;width: 20.75vw;height: 5vh;max-height:24px;overflow: hidden;border: 0.1rem solid purple;z-index:0;}
 #playerHealthbarBorder {position: absolute;top: 4vh;left: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 0;}
 .combatEffects {display: grid;position: fixed;grid-template-columns: repeat(5, 1fr);width: 100%;transform: scale(1);z-index: 1;}
 .combatSettings {position: fixed;background-color: transparent;}
 .disengage {position: absolute;left: 10vw;top: 5vh;}
-.menuButton {font-family: 'Cinzel-Regular';font-size:0.85em;}
-.lootDropWindow {position: absolute;font-family: 'Cinzel-Regular';background-color: #000;height: 35%;width: 35%;top: 55%;left: 50%;transform: translateX(-50%);padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
+.menuButton {font-family: "Cinzel-Regular";font-size:0.85em;}
+.lootDropWindow {position: absolute;font-family: "Cinzel-Regular";background-color: #000;height: 35%;width: 35%;top: 55%;left: 50%;transform: translateX(-50%);padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
 .menuHeader { font-size: 1.1em; margin-left: 4%; margin-top: 3%; }
 .insideMenu { margin: 0.5em 0.25em 0 0; }
-.playerMenuHeading {font-family: 'Cinzel-Regular';font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;}
+.playerMenuHeading {font-family: "Cinzel-Regular";font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;}
 .playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15rem solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
-.stamina { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
-.grace { text-align: center;color: #fdf6d8;font-family: 'Cinzel Regular';font-size: 1rem;z-index: 3; }
+.stamina { text-align: center;color: #fdf6d8;font-family: "Cinzel Regular";font-size: 1rem;z-index: 3; }
+.grace { text-align: center;color: #fdf6d8;font-family: "Cinzel Regular";font-size: 1rem;z-index: 3; }
 .staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
 .graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 2.5vh;right: 25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.05);}
 .enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;max-height:24px;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 0.5rem;}
-.enemyName {position: absolute;right: 5vw;font-family: 'Cinzel Regular';font-size: 1rem;color: red;font-weight: 600;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
-.enemyPortrait {font-family: 'Cinzel Regular';font-size:1.1em;font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
+.enemyName {position: absolute;right: 5vw;font-family: "Cinzel Regular";font-size: 1rem;color: red;font-weight: 600;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
+.enemyPortrait {font-family: "Cinzel Regular";font-size:1.1em;font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
 .enemyHealthBar {position: fixed;top: 7.5vh;right: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.1rem solid red;}
 #enemyHealthbarBorder {position: fixed;top: 4vh;right: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 1;}
 .enemyPreview {position: absolute;color: #fdf6d8; border-color: #fdf6d8; text-align: center; width: 25vw;border-radius: 25%;top: 10vh;right: 5vw;}
 .smallHudButtons {position: fixed;bottom: 1%;background-color: black;}
-.cell {padding: 0.5rem;border: 0.1rem solid #fdf6d8;height: 100%;max-width: 50%;font-family: 'Cinzel Regular';align-items: center;justify-content: center;text-align: center;font-size: 1rem;font-weight: 600;color: #fdf6d8;}
+.cell {padding: 0.5rem;border: 0.1rem solid #fdf6d8;height: 100%;max-width: 50%;font-family: "Cinzel Regular";align-items: center;justify-content: center;text-align: center;font-size: 1rem;font-weight: 600;color: #fdf6d8;}
 .row {display: flex;flex-direction: row;align-items: center;justify-content: center;}
 .table {display: flex;}
 .ascean-builder {border: 0.25em solid #fdf6d8;width: 90%;margin: 0 auto;}
@@ -207,7 +207,7 @@
 .stat-block.wide .section-right {margin-left: 1.5%; }
 .orange-border.bottom {width: 95%; border-radius: 25%;}
 .tapered-rule{display: block;width: 100%;height: 5px;border: none;color: #5a0043;fill: #5a0043;stroke: #5a0043;}
-.creature-heading h1{font-family: 'Cinzel Regular', 'Libre Baskerville', 'Lora', 'Calisto MT', 'Bookman Old Style', Bookman, 'Goudy Old Style', Garamond, 'Hoefler Text', 'Bitstream Charter', Georgia, serif;font-size: 1.5rem;color: gold;margin: 10px 0 0;letter-spacing: 1px;font-variant: small-caps;font-weight: bold;text-wrap: calc(100% - 2rem);}
+.creature-heading h1{font-family: "Cinzel Regular", "Libre Baskerville", "Lora", "Calisto MT", "Bookman Old Style", Bookman, "Goudy Old Style", Garamond, "Hoefler Text", "Bitstream Charter", Georgia, serif;font-size: 1.5rem;color: gold;margin: 10px 0 0;letter-spacing: 1px;font-variant: small-caps;font-weight: bold;text-wrap: calc(100% - 2rem);}
 .creature-heading h2{font-family: "Cinzel Regular";font-weight: normal;color: #fdf6d8;font-style: oblique;font-size: 1rem;}
 .creature-heading p{font-family: "Cinzel Regular";font-size: 1rem;}
 .property-line h4,

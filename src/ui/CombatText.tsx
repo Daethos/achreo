@@ -1,41 +1,7 @@
 import { Accessor, createEffect, createSignal, Setter, Show } from "solid-js";
-import { Form } from 'solid-bootstrap';
 import { Combat } from "../stores/combat";
 import Settings from "../models/settings";
 import { EventBus } from "../game/EventBus";
-const SIZES = {
-    "EXTRA SMALL": {
-        PREV: "EXTRA SMALL",
-        NEXT: "0.75em",
-        SIZE: "MEDIUM",
-    },
-    SMALL: {
-        PREV: "EXTRA SMALL",
-        NEXT: "1em",
-        SIZE: "MEDIUM",
-    },
-    MEDIUM: {
-        PREV: "EXTRA SMALL",
-        NEXT: "1.25em",
-        SIZE: "MEDIUM",
-    },
-    LARGE: {
-        PREV: "EXTRA SMALL",
-        NEXT: "1.5em",
-        SIZE: "MEDIUM",
-    },
-    "EXTRA LARGE": {
-        PREV: "EXTRA SMALL",
-        NEXT: "1.75em",
-        SIZE: "HUGE",
-    },
-    "HUGE": {
-        PREV: "EXTRA SMALL",
-        NEXT: "2em",
-        SIZE: "MEDIUM",
-    },
-
-};
 export default function CombatText({ settings, combat, combatHistory, partyHistory, partyShow, editShow, setEditShow }: { settings: Accessor<Settings>; combat: Accessor<Combat>, combatHistory: Accessor<string>, partyHistory: Accessor<string>, partyShow: Accessor<boolean>, editShow: Accessor<boolean>, setEditShow: Setter<boolean> }) {
     const [edit, setEdit] = createSignal({
         size: settings()?.combatText?.size || "1em",

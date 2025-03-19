@@ -1,20 +1,20 @@
-import { EventBus } from '../game/EventBus';
-import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from 'solid-js';
-import { GameState } from '../stores/game';
-import { Combat } from '../stores/combat';
-import ExperienceToast from './ExperienceToast';
-import Ascean from '../models/ascean';
-import CombatSettings from './CombatSettings';
-import LootDropUI from './LootDropUI';
-import CombatText from './CombatText';
-import Dialog from './Dialog';
-import { LevelSheet } from '../utility/ascean';
-import Settings from '../models/settings';
-import { partyText, text } from '../utility/text';
-import { svg } from '../utility/settings';
-import QuestManager from '../utility/quests';
-import { Reputation } from '../utility/player';
-import { IRefPhaserGame } from '../game/PhaserGame';
+import { EventBus } from "../game/EventBus";
+import { Accessor, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js";
+import { GameState } from "../stores/game";
+import { Combat } from "../stores/combat";
+import ExperienceToast from "./ExperienceToast";
+import Ascean from "../models/ascean";
+import CombatSettings from "./CombatSettings";
+import LootDropUI from "./LootDropUI";
+import CombatText from "./CombatText";
+import Dialog from "./Dialog";
+import { LevelSheet } from "../utility/ascean";
+import Settings from "../models/settings";
+import { partyText, text } from "../utility/text";
+import { svg } from "../utility/settings";
+import QuestManager from "../utility/quests";
+import { Reputation } from "../utility/player";
+import { IRefPhaserGame } from "../game/PhaserGame";
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -41,8 +41,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         if (ascean()?.experience as number > experience()) {
             setToastShow(true);
             setAlert({
-                header: 'Experience Gain',
-                body: `You've Gained ${ascean().experience as number - experience()} Experience!`,
+                header: "Experience Gain",
+                body: `You"ve Gained ${ascean().experience as number - experience()} Experience!`,
             });
         } else if (ascean()?.experience !== 0 && ascean()?.experience as number < experience()) {
             setAlert(undefined);    
@@ -51,7 +51,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         setExperience(ascean().experience as number);
     });
     onMount(() => { 
-        EventBus.on('update-small-hud', () => {
+        EventBus.on("update-small-hud", () => {
             setClicked({
                 ...clicked(),
                 caerenic: combat().isCaerenic,
@@ -63,63 +63,63 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
                 pause: game().pauseState,
             });
         });
-        EventBus.on('add-combat-logs', (data: Combat) => {
+        EventBus.on("add-combat-logs", (data: Combat) => {
             const newText = text(combatHistory(), data);
             setCombatHistory(newText);
-            EventBus.emit('blend-combat', {
-                playerStartDescription: '',
-                computerStartDescription: '',
-                playerSpecialDescription: '',
-                computerSpecialDescription: '',
-                playerActionDescription: '',
-                computerActionDescription: '',
-                playerInfluenceDescription: '',
-                computerInfluenceDescription: '',
-                playerInfluenceDescriptionTwo: '',
-                computerInfluenceDescriptionTwo: '',
-                playerDeathDescription: '',
-                computerDeathDescription: '',   
+            EventBus.emit("blend-combat", {
+                playerStartDescription: "",
+                computerStartDescription: "",
+                playerSpecialDescription: "",
+                computerSpecialDescription: "",
+                playerActionDescription: "",
+                computerActionDescription: "",
+                playerInfluenceDescription: "",
+                computerInfluenceDescription: "",
+                playerInfluenceDescriptionTwo: "",
+                computerInfluenceDescriptionTwo: "",
+                playerDeathDescription: "",
+                computerDeathDescription: "",   
             });
         });
-        EventBus.on('set-show-player', () => {
+        EventBus.on("set-show-player", () => {
             showPlayer();
         });
-        EventBus.on('party-combat-text', (e: { text: string; }) => {
+        EventBus.on("party-combat-text", (e: { text: string; }) => {
             const newText = partyText(partyHistory(), e);
             setPartyHistory(newText);
         });
     });
     onCleanup(() => {
-        EventBus.off('update-small-hud');
-        EventBus.off('add-combat-logs');
-        EventBus.off('set-show-player');    
+        EventBus.off("update-small-hud");
+        EventBus.off("add-combat-logs");
+        EventBus.off("set-show-player");    
     });
 
     const showPlayer = () => {
-        EventBus.emit('show-player');
-        EventBus.emit('action-button-sound');
+        EventBus.emit("show-player");
+        EventBus.emit("action-button-sound");
         const setShow = !clicked().showPlayer;
         
-        if (!combat().combatEngaged) EventBus.emit('show-castbar', setShow);
+        if (!combat().combatEngaged) EventBus.emit("show-castbar", setShow);
         setClicked({ ...clicked(), showPlayer: setShow });
     };
 
     return <>
         <Show when={toastShow()}>
-            <div class='verticalBottom realize' style={{ width: '30%' }}>
+            <div class="verticalBottom realize" style={{ width: "30%" }}>
                 <ExperienceToast show={toastShow} setShow={setToastShow} alert={alert} setAlert={setAlert} />
             </div>
         </Show>
         <Show when={game().scrollEnabled}>
-            <button class='highlight' onClick={() => setEditSettingsShow(!editSettingsShow())} style={{ top: `${Number(settings()?.combatSettings?.top.split('%')[0]) - 12.5}%`, left: `${Number(settings()?.combatSettings?.left.split('%')[0]) - 1.25}%`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
+            <button class="highlight" onClick={() => setEditSettingsShow(!editSettingsShow())} style={{ top: `${Number(settings()?.combatSettings?.top.split("%")[0]) - 12.5}%`, left: `${Number(settings()?.combatSettings?.left.split("%")[0]) - 1.25}%`, position: "absolute", color: "gold", transform: "scale(0.75)" }}>{svg("UI")}</button>
             <CombatSettings combat={combat} game={game} settings={settings} editShow={editSettingsShow} setEditShow={setEditSettingsShow} />
         </Show>
         <Show when={game().lootDrops.length > 0 && game().showLoot}>
             <LootDropUI ascean={ascean} game={game} settings={settings} />
         </Show>
        <Show when={game().showCombat}>
-            <button class='highlight' onClick={() => setEditTextShow(!editTextShow())} style={{ top: `${Number(settings().combatText.top.split('vh')[0]) - 12.5}vh`, left: `${Number(settings().combatText.left.split('vw')[0]) - 1.25}vw`, position: 'absolute', color: 'gold', transform: 'scale(0.75)' }}>{svg('UI')}</button>
-            <button class='highlight' onClick={() => setPartyShow(!partyShow())} style={{ top: `${Number(settings().combatText.top.split('vh')[0]) - 11.5}vh`, right: `${Number(settings().combatText.left.split('vw')[0]) - 1.25}vw`, position: 'absolute', color: 'gold', transform: 'scale(0.8)' }}>{svg('INSPECT')}</button>
+            <button class="highlight" onClick={() => setEditTextShow(!editTextShow())} style={{ top: `${Number(settings().combatText.top.split("vh")[0]) - 12.5}vh`, left: `${Number(settings().combatText.left.split("vw")[0]) - 1.25}vw`, position: "absolute", color: "gold", transform: "scale(0.75)" }}>{svg("UI")}</button>
+            <button class="highlight" onClick={() => setPartyShow(!partyShow())} style={{ top: `${Number(settings().combatText.top.split("vh")[0]) - 11.5}vh`, right: `${Number(settings().combatText.left.split("vw")[0]) - 1.25}vw`, position: "absolute", color: "gold", transform: "scale(0.8)" }}>{svg("INSPECT")}</button>
             <CombatText settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
         </Show>
         <Show when={game().showDialog}>

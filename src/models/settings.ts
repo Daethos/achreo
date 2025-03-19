@@ -286,7 +286,7 @@ export default class Settings {
             actionButtons: {
                 border: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].actionButtons.border,
                 color: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].actionButtons.color,
-                display: 'arc',
+                display: "arc",
                 opacity: 0.75,
                 spacing: 4,
                 x: 0.75,
@@ -296,7 +296,7 @@ export default class Settings {
             specialButtons: {
                 border: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].specialButtons.border,
                 color: STARTING_MASTERY_UI[mastery as keyof typeof STARTING_MASTERY_UI].specialButtons.color,
-                display: 'arc',
+                display: "arc",
                 opacity: 0.75,
                 spacing: 4,
                 x: 0.7,

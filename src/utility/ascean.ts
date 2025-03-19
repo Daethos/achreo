@@ -1104,9 +1104,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
 
 function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: Setter<any>) {
     setPlayerTraitWrapper({
-        'primary': fetchTrait(game().traits.primary.name),
-        'secondary': fetchTrait(game().traits.secondary.name),
-        'tertiary': fetchTrait(game().traits.tertiary.name)
+        "primary": fetchTrait(game().traits.primary.name),
+        "secondary": fetchTrait(game().traits.secondary.name),
+        "tertiary": fetchTrait(game().traits.tertiary.name)
     });
 };
 

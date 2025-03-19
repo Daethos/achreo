@@ -376,7 +376,7 @@ export const QUEST_TEMPLATES = [
         requirements: {
             description: "Convert 5 Devoted to the worship of the Ancients.",
             technical: initFetch,
-            dialog: "I'm convinced! I give myself to the Ancients and their ways.",
+            dialog: "I am stricken with the ancient and the primal, I give myself to the Ancients and their ways.",
             action: {
                 key: "_id",
                 name: "convert",
@@ -391,7 +391,7 @@ export const QUEST_TEMPLATES = [
         requirements: {
             description: "Proselytize 5 Adherent to the faith of Daethos.",
             technical: initFetch,
-            dialog: "I'm convinced! I give myself to Daethos.",
+            dialog: "I am stricken by the mercy of Laetrois, I give myself over to Daethos. I am no longer adherent to the past and primal, I am fully Devoted.",
             action: {
                 key: "_id",
                 name: "convert",

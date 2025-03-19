@@ -444,7 +444,7 @@ export class Underground extends Scene {
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
-                if (this.player.health <= 0) {
+                if (this.player.health <= 0 || this.state.newPlayerHealth <= 0) {
                     this.enemies[i].clearArenaWin();
                 } else {
                     this.enemies[i].clearArenaLoss();

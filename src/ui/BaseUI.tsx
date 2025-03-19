@@ -1,31 +1,31 @@
-import { Accessor, Setter, Show, createEffect, createSignal, lazy, Suspense } from 'solid-js';
-import Ascean from '../models/ascean';
-import Settings from '../models/settings';
+import { Accessor, Setter, Show, createEffect, createSignal, lazy, Suspense } from "solid-js";
+import Ascean from "../models/ascean";
+import Settings from "../models/settings";
 import { Combat } from "../stores/combat";
-import { ARENA_ENEMY, EnemySheet } from '../utility/enemy';
+import { ARENA_ENEMY, EnemySheet } from "../utility/enemy";
 import { EventBus } from "../game/EventBus";
-import { GameState } from '../stores/game';
-import { Compiler, LevelSheet } from '../utility/ascean';
-import { usePhaserEvent } from '../utility/hooks';
-import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from '../utility/combat';
-import { screenShake } from '../game/phaser/ScreenShake';
-import { Reputation } from '../utility/player';
-import { Puff } from 'solid-spinner';
-import Statistics from '../utility/statistics';
-import { validateHealth, validateLevel, validateMastery } from '../utility/validators';
-import { adjustTime } from './Timer';
-import { Store } from 'solid-js/store';
-import { IRefPhaserGame } from '../game/PhaserGame';
-import Talents from '../utility/talents';
-import QuestManager from '../utility/quests';
-const Roster = lazy(async () => await import('./Roster'));
-const Character = lazy(async () => await import('./Character'));
-const CombatUI = lazy(async () => await import('./CombatUI'));
-const Deity = lazy(async () => await import('./Deity'));
-const EnemyPreview = lazy(async () => await import('./EnemyPreview'));
-const EnemyUI = lazy(async () => await import('./EnemyUI'));
-const SmallHud = lazy(async () => await import('./SmallHud'));
-const TutorialOverlay = lazy(async () => await import('../utility/tutorial'));
+import { GameState } from "../stores/game";
+import { Compiler, LevelSheet } from "../utility/ascean";
+import { usePhaserEvent } from "../utility/hooks";
+import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from "../utility/combat";
+import { screenShake } from "../game/phaser/ScreenShake";
+import { Reputation } from "../utility/player";
+import { Puff } from "solid-spinner";
+import Statistics from "../utility/statistics";
+import { validateHealth, validateLevel, validateMastery } from "../utility/validators";
+import { adjustTime } from "./Timer";
+import { Store } from "solid-js/store";
+import { IRefPhaserGame } from "../game/PhaserGame";
+import Talents from "../utility/talents";
+import QuestManager from "../utility/quests";
+const Roster = lazy(async () => await import("./Roster"));
+const Character = lazy(async () => await import("./Character"));
+const CombatUI = lazy(async () => await import("./CombatUI"));
+const Deity = lazy(async () => await import("./Deity"));
+const EnemyPreview = lazy(async () => await import("./EnemyPreview"));
+const EnemyUI = lazy(async () => await import("./EnemyUI"));
+const SmallHud = lazy(async () => await import("./SmallHud"));
+const TutorialOverlay = lazy(async () => await import("../utility/tutorial"));
 export type ArenaRoster = {
     show: boolean;
     enemies: ARENA_ENEMY[] | [];
@@ -74,24 +74,24 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         kyosir: 0,
     });
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
-    createEffect(() => EventBus.emit('combat', combat()));  
-    createEffect(() => EventBus.emit('game', game()));  
-    createEffect(() => EventBus.emit('reputation', reputation()));
+    createEffect(() => EventBus.emit("combat", combat()));  
+    createEffect(() => EventBus.emit("game", game()));  
+    createEffect(() => EventBus.emit("reputation", reputation()));
     createEffect(() => {
         // instance.game?.registry.set("settings", settings());
-        EventBus.emit('settings', settings());
+        EventBus.emit("settings", settings());
     });
     createEffect(() => {
-        EventBus.emit('talents', talents());
+        EventBus.emit("talents", talents());
     });
-    const sendEnemyData = () => EventBus.emit('get-enemy', combat().computer);
+    const sendEnemyData = () => EventBus.emit("get-enemy", combat().computer);
     function initiateCombat(data: any, type: string) {
         try {    
             let res: Combat | undefined | any = undefined,
                 playerWin: boolean = false,
                 computerWin: boolean = false,
-                playerActionDescription: string = '', 
-                computerActionDescription: string = '',
+                playerActionDescription: string = "", 
+                computerActionDescription: string = "",
                 computerHealth: number = validateHealth(combat().computerHealth),
                 newComputerHealth: number = validateHealth(combat().newComputerHealth),
                 newPlayerHealth: number = validateHealth(combat().newPlayerHealth),
@@ -105,63 +105,63 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 caerenicVulnerable: number = combat().isCaerenic ? 1.25 : 1,
                 stalwart: number = combat().isStalwart ? 0.85 : 1;
             switch (type) {
-                case 'Weapon': // Targeted Weapon Action by Enemy or Player
+                case "Weapon": // Targeted Weapon Action by Enemy or Player
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const weapon = { ...combat(), [data.key]: data.value };
                     res = weaponActionCompiler(weapon) as Combat;
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
-                    EventBus.emit('blend-combat', res);
+                    EventBus.emit("blend-combat", res);
                     break;
-                case 'Consume': // Consuming Prayer
+                case "Consume": // Consuming Prayer
                     if (newComputerHealth === 0) return;    
                     let consume = { ...combat(), prayerSacrificeId: data.prayerSacrificeId };
                     consume = consumePrayer(consume) as Combat;
                     res = { ...combat(), ...consume };
                     playerWin = res.playerWin;
-                    EventBus.emit('blend-combat', { newComputerHealth: res.newComputerHealth,newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
+                    EventBus.emit("blend-combat", { newComputerHealth: res.newComputerHealth,newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
                     break;
-                case 'Talent Prayer':
+                case "Talent Prayer":
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     let talent = talentPrayerCompiler(combat(), data) as Combat;
                     playerWin = talent.playerWin;
                     res = { ...combat(), ...talent };
-                    EventBus.emit('blend-combat', talent);
+                    EventBus.emit("blend-combat", talent);
                     break;
-                case 'Prayer': // Consuming Prayer
+                case "Prayer": // Consuming Prayer
                     let prayer = { ...combat(), playerEffects: data };
                     prayer = consumePrayer(prayer) as Combat;
                     res = { ...combat(), ...prayer };
                     playerWin = res.playerWin;
-                    EventBus.emit('blend-combat', { newComputerHealth: res.newComputerHealth, newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
+                    EventBus.emit("blend-combat", { newComputerHealth: res.newComputerHealth, newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
                     break;
-                case 'Instant': // Invoking Prayer
+                case "Instant": // Invoking Prayer
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     let insta = { ...combat(), playerBlessing: data };
                     insta = instantActionCompiler(insta) as Combat;
                     playerWin = insta.playerWin;
                     res = { ...combat(), ...insta };
-                    EventBus.emit('blend-combat', insta);
+                    EventBus.emit("blend-combat", insta);
                     break;
-                case 'Tick': // Prayer Tick
+                case "Tick": // Prayer Tick
                     if (newComputerHealth === 0) break;
                     const { effect, effectTimer } = data;
                     const tick = prayerEffectTick({ combat: combat(), effect, effectTimer });
                     res = { ...combat(), ...tick };
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
-                    EventBus.emit('blend-combat', tick);
+                    EventBus.emit("blend-combat", tick);
                     break;
-                case 'Remove Tick': // Removing Prayer
+                case "Remove Tick": // Removing Prayer
                     const remove = prayerRemoveTick(combat(), data);
 
-                    playerActionDescription = `${data.playerName === combat().player?.name ? 'Your' : `${combat().computer?.name}'s`} ${data.name} prayer has expired.`;
+                    playerActionDescription = `${data.playerName === combat().player?.name ? "Your" : `${combat().computer?.name}"s`} ${data.name} prayer has expired.`;
                     res = { ...combat(), ...remove, playerActionDescription };
-                    EventBus.emit('blend-combat', remove);
+                    EventBus.emit("blend-combat", remove);
                     affectsHealth = false;
                     affectsStealth = false;
                     break;
-                case 'Player': // Blind Player Attack i.e. hitting a non targeted enemy
+                case "Player": // Blind Player Attack i.e. hitting a non targeted enemy
                     const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
                     if (ascean === undefined || health === 0) return;
                     let playerData = {
@@ -181,11 +181,11 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         computerParryGuess: actionData.parry,
                         computerDamageType: damageType,
                         computerEffects: [],
-                        enemyID: enemyID, // Was ''
+                        enemyID: enemyID, // Was ""
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
-                    EventBus.emit('blend-combat', {
+                    EventBus.emit("blend-combat", {
                         playerWin: res.playerWin,
                         computerWin: res.computerWin,
                         playerActionDescription: res.playerActionDescription,
@@ -214,30 +214,30 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
                     });
-                    EventBus.emit('update-enemy-health', { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
+                    EventBus.emit("update-enemy-health", { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;
-                case 'Chiomic': // Mindflay
+                case "Chiomic": // Mindflay
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const chiomic = Math.round(playerMastery / 2 * (1 + data / 100) * caerenic * playerLevel);
                     newComputerHealth = newComputerHealth - chiomic < 0 ? 0 : newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
                     playerActionDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
                     res = { ...combat(), newComputerHealth, playerWin, playerActionDescription };
-                    EventBus.emit('blend-combat', { newComputerHealth, playerWin });
+                    EventBus.emit("blend-combat", { newComputerHealth, playerWin });
                     affectsHealth = false;
                     break;
-                case 'Enemy Chiomic': // Mindflay
+                case "Enemy Chiomic": // Mindflay
                     if (combat().computer === undefined) return;
                     const enemyChiomic = Math.round(computerMastery / 2 * (1 + data / 100) * caerenicVulnerable * stalwart  * computerLevel);
                     newPlayerHealth = newPlayerHealth - enemyChiomic < 0 ? 0 : newPlayerHealth - enemyChiomic;
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = { ...combat(), newPlayerHealth, computerWin, computerActionDescription };
-                    EventBus.emit('blend-combat', { newPlayerHealth, computerWin, damagedID: combat().enemyID });
+                    EventBus.emit("blend-combat", { newPlayerHealth, computerWin, damagedID: combat().enemyID });
                     break;
-                case 'Tshaeral': // Lifedrain (Tick, 100%)
+                case "Tshaeral": // Lifedrain (Tick, 100%)
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const drained = Math.round(combat().playerHealth * (data / 100) * caerenic * playerLevel);
                     newPlayerHealth = newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : newPlayerHealth + drained;
@@ -245,9 +245,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     playerWin = newComputerHealth === 0;
                     playerActionDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin,playerActionDescription };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
-                case 'Enemy Tshaeral': // Lifedrain (Tick, 100%)
+                case "Enemy Tshaeral": // Lifedrain (Tick, 100%)
                     if (combat().computer === undefined) return;
                     const enemyDrain = Math.round(computerHealth * (data / 100) * caerenicVulnerable * stalwart * computerLevel);
                     newPlayerHealth = newPlayerHealth - enemyDrain < 0 ? 0 : newPlayerHealth - enemyDrain;
@@ -255,12 +255,12 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, damagedID: combat().enemyID };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, computerWin });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, computerWin });
                     break;
-                case 'Health': // Either Enemy or Player Gaining / Losing Health
+                case "Health": // Either Enemy or Player Gaining / Losing Health
                     let { key, value, id } = data;
                     switch (key) {
-                        case 'player':
+                        case "player":
                             const healed = Math.floor(combat().playerHealth * (value / 100));
                             newPlayerHealth = newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : newPlayerHealth + healed;
                             computerWin = newPlayerHealth <= 0;
@@ -268,10 +268,10 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                                 healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` 
                                 : `You are damaged for ${Math.abs(healed)}, down to ${Math.round(newPlayerHealth)}`;
                             res = { ...combat(), newPlayerHealth, playerActionDescription, damagedID: id };
-                            EventBus.emit('blend-combat', { newPlayerHealth, computerWin, damagedID: id });
+                            EventBus.emit("blend-combat", { newPlayerHealth, computerWin, damagedID: id });
                             affectsStealth = false;
                             break;
-                        case 'enemy':
+                        case "enemy":
                             computerActionDescription = value > newComputerHealth ? 
                                 `${combat().computer?.name} heals for ${Math.round(value - newComputerHealth)}, back up to ${Math.round(value)}` : 
                                 `${combat().computer?.name} is damaged for ${Math.round(newComputerHealth - value)}, down to ${Math.round(value)}.`;
@@ -279,10 +279,10 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                             playerWin = newComputerHealth === 0;
                             if (combat().enemyID === id) {
                                 res = { ...combat(), newComputerHealth, playerWin, computerActionDescription };
-                                EventBus.emit('blend-combat', { newComputerHealth, playerWin });
+                                EventBus.emit("blend-combat", { newComputerHealth, playerWin });
                             } else {
                                 res = { ...combat(), playerWin };
-                                EventBus.emit('update-enemy-health', { id, health: newComputerHealth, glancing: false, critical: false });
+                                EventBus.emit("update-enemy-health", { id, health: newComputerHealth, glancing: false, critical: false });
                             };
                             affectsHealth = false;
                             affectsStealth = false;
@@ -291,17 +291,17 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                             break;
                     };
                     break;
-                case 'Set Health':
+                case "Set Health":
                     computerWin = data.value <= 0;
                     playerActionDescription =  
                         data.value > newPlayerHealth ? `You heal for ${Math.round(data.value - newPlayerHealth)}, back to ${Math.round(data.value)}.` 
                         : `You are damaged for ${Math.round(newPlayerHealth - data.value)}, down to ${Math.round(data.value)}`;
                     newPlayerHealth = data.value;
                     res = { ...combat(), computerWin, newPlayerHealth, damagedID: data.id };
-                    EventBus.emit('blend-combat', { computerWin, newPlayerHealth: data.value, damagedID: data.id });
+                    EventBus.emit("blend-combat", { computerWin, newPlayerHealth: data.value, damagedID: data.id });
                     affectsStealth = false;
                     break;
-                case 'Enemy': // Blind Enemy Attack i.e. an enemy not targeted hitting the player
+                case "Enemy": // Blind Enemy Attack i.e. an enemy not targeted hitting the player
                     if (!data.ascean) return;
                     let enemyData = {
                         computer: data.ascean,
@@ -323,9 +323,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     res = weaponActionCompiler(res) as Combat;
                     computerWin = res.computerWin;
                     playerWin = res.playerWin; 
-                    EventBus.emit('blend-combat', res);
+                    EventBus.emit("blend-combat", res);
                     break;
-                case 'Sacrifice': 
+                case "Sacrifice": 
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const sacrifice = Math.round(playerMastery * caerenic * playerLevel);
                     newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwart);
@@ -334,19 +334,19 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwart)} health to rip ${Math.round(sacrifice * (1 + data / 50))} from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
-                case 'Suture':
+                case "Suture":
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const suture = Math.round(playerMastery * caerenic * playerLevel * (1 + data / 100) * 0.8);
                     newPlayerHealth = newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : newPlayerHealth + suture;
                     newComputerHealth = newComputerHealth - suture < 0 ? 0 : newComputerHealth - suture;
-                    playerActionDescription = `Your suture ${combat().computer?.name}'s caeren into you, absorbing and healing for ${suture}.`;    
+                    playerActionDescription = `Your suture ${combat().computer?.name}"s caeren into you, absorbing and healing for ${suture}.`;    
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, playerWin });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
-                case 'Enemy Sacrifice': 
+                case "Enemy Sacrifice": 
                     if (combat().computer === undefined) return;
                     const enemySac = Math.round(computerMastery * computerLevel * caerenicVulnerable * stalwart);
                     newPlayerHealth = newPlayerHealth - (enemySac * (1 + data / 50)) < 0 ? 0 : newPlayerHealth - (enemySac * (1 + data / 50));
@@ -355,9 +355,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, playerWin, damagedID: combat().enemyID };
-                    EventBus.emit('blend-combat', { newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     break;
-                case 'Enemy Suture':
+                case "Enemy Suture":
                     if (combat().computer === undefined) return;
                     const enemySut = Math.round(computerMastery * caerenicVulnerable * (1 + data / 100) * computerLevel * stalwart * 0.8);
                     newPlayerHealth = newPlayerHealth - enemySut < 0 ? 0 : newPlayerHealth - enemySut;
@@ -366,31 +366,31 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerActionDescription, computerWin, playerWin, damagedID: combat().enemyID };
-                    EventBus.emit('blend-combat', { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
+                    EventBus.emit("blend-combat", { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     break;
-                case 'Remove Enemy':
+                case "Remove Enemy":
                     if (combat().computer === undefined) return;
                     filterEnemies(combat().enemyID);
-                    EventBus.emit('clear-enemy');
+                    EventBus.emit("clear-enemy");
                     return;
                 default:
                     break;
             };
-            if (playerWin === true) res.computerDeathDescription = `${res.computer?.name || 'The Enemy'} has been defeated.`;
+            if (playerWin === true) res.computerDeathDescription = `${res.computer?.name || "The Enemy"} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
-            EventBus.emit('update-combat', res);
-            EventBus.emit('add-combat-logs', res);
+            EventBus.emit("update-combat", res);
+            EventBus.emit("add-combat-logs", res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {
                 adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
             if (affectsStealth && combat().isStealth) {
-                EventBus.emit('update-stealth');
+                EventBus.emit("update-stealth");
             };
             screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
         } catch (err: any) {
-            console.warn(err, 'Error Initiating Combat');
+            console.warn(err, "Error Initiating Combat");
         };
     };
     function resolveCombat(res: Combat) {
@@ -401,24 +401,24 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 experience = balanceExperience(experience, res?.player?.level as number);
                 const newState = { 
                     ...asceanState(), 
-                    avarice: res.prayerData.length > 0 ? res.prayerData.includes('Avarice') : false, 
+                    avarice: res.prayerData.length > 0 ? res.prayerData.includes("Avarice") : false, 
                     currency: ascean().currency,
                     firewater: ascean().firewater,
                     currentHealth: res.newPlayerHealth,
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience + ascean().experience, res?.player?.level! * 1000),
                 };
-                EventBus.emit('record-win', { record: res, experience: newState });
+                EventBus.emit("record-win", { record: res, experience: newState });
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
-                EventBus.emit('enemy-loot', loot);
+                EventBus.emit("enemy-loot", loot);
                 setAsceanState({ ...asceanState(), avarice: false });
-                EventBus.emit('special-combat-text', { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
+                EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
             } else {
-                EventBus.emit('record-loss', res);
+                EventBus.emit("record-loss", res);
             };
             res = statusEffectCheck(res);
         } catch (err: any) {
-            console.warn(err, 'Error Resolving Combat');
+            console.warn(err, "Error Resolving Combat");
         };
     };    
     function balanceExperience(experience: number, level: number) {
@@ -433,38 +433,38 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         });
         setEnemies(newEnemies);
     };
-    usePhaserEvent('killing-blow', (data: {e: Ascean, enemyID: string}) => {
+    usePhaserEvent("killing-blow", (data: {e: Ascean, enemyID: string}) => {
         const { e, enemyID } = data;
         let experience: number = Math.round(e.level * 50 * (e.level / ascean().level) + (combat().playerAttributes?.rawKyosir as number));
         experience = balanceExperience(experience, ascean().level);
         const newState = { 
             ...asceanState(), 
-            avarice: combat().prayerData.length > 0 ? combat().prayerData.includes('Avarice') : false, 
+            avarice: combat().prayerData.length > 0 ? combat().prayerData.includes("Avarice") : false, 
             currency: ascean().currency,
             firewater: ascean().firewater,
             currentHealth: combat().newPlayerHealth,
             opponent: e.level,
             opponentExp: Math.min(experience + ascean().experience, ascean().level * 1000),
         };
-        EventBus.emit('record-win', { record: combat(), experience: newState });
+        EventBus.emit("record-win", { record: combat(), experience: newState });
         const loot = { enemyID, level: e.level };
-        EventBus.emit('enemy-loot', loot);
+        EventBus.emit("enemy-loot", loot);
     });
-    usePhaserEvent('remove-non-aggressive-enemy', () => {
-        if (combat().enemyID !== '') filterEnemies(combat().enemyID);
-        EventBus.emit('clear-enemy');
+    usePhaserEvent("remove-non-aggressive-enemy", () => {
+        if (combat().enemyID !== "") filterEnemies(combat().enemyID);
+        EventBus.emit("clear-enemy");
     });
-    usePhaserEvent('initiate-combat', (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
-    usePhaserEvent('remove-enemy', filterEnemies);
-    usePhaserEvent('request-enemy', sendEnemyData);
-    usePhaserEvent('update-enemies', (e: any) => setEnemies(e));
-    usePhaserEvent('update-ascean-state' , (e: any) => setAsceanState(e));
-    usePhaserEvent('show-roster', () => setArena({ ...arena(), show: true }));
-    usePhaserEvent('set-tutorial-enemy', (enemy: Compiler) => {
+    usePhaserEvent("initiate-combat", (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
+    usePhaserEvent("remove-enemy", filterEnemies);
+    usePhaserEvent("request-enemy", sendEnemyData);
+    usePhaserEvent("update-enemies", (e: any) => setEnemies(e));
+    usePhaserEvent("update-ascean-state" , (e: any) => setAsceanState(e));
+    usePhaserEvent("show-roster", () => setArena({ ...arena(), show: true }));
+    usePhaserEvent("set-tutorial-enemy", (enemy: Compiler) => {
         instance.game?.registry.set("enemies", enemy);
         EventBus.emit("create-tutorial-enemy");
     });
-    usePhaserEvent('set-wager-arena', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[]; team: boolean }) => {
+    usePhaserEvent("set-wager-arena", (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[]; team: boolean }) => {
         const { wager, enemies, team } = data;
         instance.game?.registry.set("enemies", enemies);
         instance.game?.registry.set("wager", wager);
@@ -472,19 +472,19 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         setArena({ ...arena(), wager });
         EventBus.emit("scene-switch", {current:"Underground", next:"Arena"});
     });
-    usePhaserEvent('set-wager-underground', (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
+    usePhaserEvent("set-wager-underground", (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;
         instance.game?.registry.set("enemies", enemies);
         instance.game?.registry.set("wager", wager);
         setArena({ ...arena(), wager });
         EventBus.emit("create-arena", enemies);
     });
-    usePhaserEvent('settle-wager', (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
+    usePhaserEvent("settle-wager", (data: { wager: { silver: number; gold: number; multiplier: number; }; win: boolean; }) => {
         const { wager, win } = data;
         setArena({ ...arena(), wager, result: true, show: true, win });
     });
-    return <div id='base-ui'>
-        <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", 'z-index': 1 }}>
+    return <div id="base-ui">
+        <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", "z-index": 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
                 <CombatUI instance={instance} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
             </Suspense>

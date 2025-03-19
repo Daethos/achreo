@@ -2,6 +2,14 @@ import Enemy from "../entities/Enemy";
 import Player from "../entities/Player";
 import { ObjectPool } from "./ObjectPool";
 
+export const BONE = "bone";
+export const CAST = "cast";
+export const DAMAGE = "damage";
+export const EFFECT = "effect";
+export const HEAL = "heal";
+export const HUSH = "hush";
+export const TENDRIL = "tendril";
+
 export type CombatText = {
     x: number;
     y: number;
@@ -26,11 +34,11 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         super(scene, x, y);
         this.pool = pool;
 
-        this.text = new Phaser.GameObjects.Text(scene, 0, 0, '', {
-            color: '#fff',
-            fontFamily: 'Cinzel-Regular',
-            fontSize: '20px',
-            stroke: 'black',
+        this.text = new Phaser.GameObjects.Text(scene, 0, 0, "", {
+            color: "#fff",
+            fontFamily: "Cinzel-Regular",
+            fontSize: "20px",
+            stroke: "black",
             strokeThickness: 2,
         });
 
@@ -45,7 +53,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
 
     public reset(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): void {
         this.color = this.setColor(context);
-        this.text.setText(text).setColor(this.color).setFontSize(critical ? '32px' : '20px');
+        this.text.setText(text).setColor(this.color).setFontSize(critical ? "32px" : "20px");
         this.timerTime = 0;
         this.duration = duration;
         this.constant = constant;
@@ -71,22 +79,22 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
 
     private setColor = (context: string) => {
         switch (context) {
-            case 'bone':
-                return '#fdf6d8';
-            case 'cast':
-                return 'blue';
-            case 'damage':
-                return 'red';
-            case 'effect':
-                return 'gold';
-            case 'heal':
-                return 'green';
-            case 'hush':
-                return 'fuchsia';
-            case 'tendril':
-                return 'purple';
+            case "bone":
+                return "#fdf6d8";
+            case "cast":
+                return "blue";
+            case "damage":
+                return "red";
+            case "effect":
+                return "gold";
+            case "heal":
+                return "green";
+            case "hush":
+                return "fuchsia";
+            case "tendril":
+                return "purple";
             default:
-                return 'red';
+                return "red";
         };
     };
     

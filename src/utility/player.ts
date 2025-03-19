@@ -602,6 +602,8 @@ export const staminaCheck = (stamina: number, cost: number): { success: boolean;
     return { success, cost };
 };
 
+export const ENEMY_AGGRESSION = -15;
+
 export type faction = {
     name: string; // Name of faction type and functional key for factions[] array
     reputation: number; // 0 - 100. Higher reputation opens up dialog, quests, and trade

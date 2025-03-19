@@ -900,7 +900,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     },
                 } 
                 : q;
-            // if (q._id === quest._id) console.log(newQ.requirements, "newQ requirements");
             return newQ;
         });
         const newQuestManager = {

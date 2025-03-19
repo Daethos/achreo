@@ -6,124 +6,124 @@ import { Compiler, asceanCompiler } from "./ascean";
 import Equipment from "../models/equipment";
 
 export const BROADCAST_DEATH = "broadcast-comptuer-death";
-export const COMPUTER_BROADCAST = 'computer-broadcast';
-export const NEW_COMPUTER_ENEMY_HEALTH = 'newComputerEnemyHealth';
-export const UPDATE_COMPUTER_COMBAT = 'update-computer-combat';
-export const UPDATE_COMPUTER_DAMAGE = 'update-computer-damage';
+export const COMPUTER_BROADCAST = "computer-broadcast";
+export const NEW_COMPUTER_ENEMY_HEALTH = "newComputerEnemyHealth";
+export const UPDATE_COMPUTER_COMBAT = "update-computer-combat";
+export const UPDATE_COMPUTER_DAMAGE = "update-computer-damage";
 
 export const ENEMY_SPECIAL = {
-    'constitution': [ // 17
-        'Desperation',
-        'Disease',
-        'Dispel',
-        'Healing',
-        'Ilirech',
-        'Kyrisian',
-        'Kyrnaicism',
-        'Likyr',
-        'Mend',
-        'Paralyze',
-        'Renewal',
-        'Sacrifice',
-        'Scream',
-        'Shield',
-        'Shirk',
-        'Suture',
-        'Tether',
-        'Ward'
+    "constitution": [ // 17
+        "Desperation",
+        "Disease",
+        "Dispel",
+        "Healing",
+        "Ilirech",
+        "Kyrisian",
+        "Kyrnaicism",
+        "Likyr",
+        "Mend",
+        "Paralyze",
+        "Renewal",
+        "Sacrifice",
+        "Scream",
+        "Shield",
+        "Shirk",
+        "Suture",
+        "Tether",
+        "Ward"
     ], // 17
 
-    'strength': [ // 12
-        'Desperation',
-        'Envelop',
-        'Hook',
-        'Howl',
-        'Leap',
-        'Pursuit',
-        'Rush',
-        'Scream',
-        'Shield',
-        'Sprint',
-        'Suture',
-        'Tether',
-        'Tshaeral',
-        'Ward',
-        'Writhe'
+    "strength": [ // 12
+        "Desperation",
+        "Envelop",
+        "Hook",
+        "Howl",
+        "Leap",
+        "Pursuit",
+        "Rush",
+        "Scream",
+        "Shield",
+        "Sprint",
+        "Suture",
+        "Tether",
+        "Tshaeral",
+        "Ward",
+        "Writhe"
     ], // 12
 
-    'agility': [ // 12
-        'Achire',
-        'Desperation',
-        'Envelop',
-        'Hook',
-        'Howl',
-        'Leap',
-        'Pursuit',
-        'Rush',
-        'Shadow',
-        'Shimmer',
-        'Shirk',
-        'Slowing',
-        'Snare',
-        'Sprint',
-        'Suture',
+    "agility": [ // 12
+        "Achire",
+        "Desperation",
+        "Envelop",
+        "Hook",
+        "Howl",
+        "Leap",
+        "Pursuit",
+        "Rush",
+        "Shadow",
+        "Shimmer",
+        "Shirk",
+        "Slowing",
+        "Snare",
+        "Sprint",
+        "Suture",
     ], // 12
 
-    'achre': [ // 16
-        'Absorb',
-        'Achire',
-        'Astrave',
-        'Blink',
-        'Dispel',
-        'Freeze',
-        'Frost',
-        'Ilirech',
-        'Moderate',
-        'Multifarious',
-        'Polymorph',
-        'Quor',
-        'Reconstitute',
-        'Sacrifice',
-        'Slowing',
-        'Snare',
+    "achre": [ // 16
+        "Absorb",
+        "Achire",
+        "Astrave",
+        "Blink",
+        "Dispel",
+        "Freeze",
+        "Frost",
+        "Ilirech",
+        "Moderate",
+        "Multifarious",
+        "Polymorph",
+        "Quor",
+        "Reconstitute",
+        "Sacrifice",
+        "Slowing",
+        "Snare",
     ], // 16
         
-    'caeren': [ // 15
-        'Astrave',
-        'Blink',
-        'Fear',
-        'Healing',
-        'Ilirech',
-        'Kyrnaicism',
-        'Maiereth',
-        'Malice',
-        'Menace',
-        'Mend',
-        'Protect',
-        'Sacrifice',
-        'Scream',
-        'Shield',
-        'Shirk',
-        'Suture'
+    "caeren": [ // 15
+        "Astrave",
+        "Blink",
+        "Fear",
+        "Healing",
+        "Ilirech",
+        "Kyrnaicism",
+        "Maiereth",
+        "Malice",
+        "Menace",
+        "Mend",
+        "Protect",
+        "Sacrifice",
+        "Scream",
+        "Shield",
+        "Shirk",
+        "Suture"
     ], // 15
 
-    'kyosir': [ // 16
-        'Chiomic',
-        'Chiomism',
-        'Confuse',
-        'Desperation',
-        'Disease',
-        'Dispel',
-        'Hook',
-        'Kyrnaicism',
-        'Malice',
-        'Mystify',
-        'Protect',
-        'Reconstitute',
-        'Sacrifice',
-        'Scream',
-        'Suture',
-        'Tshaeral'
+    "kyosir": [ // 16
+        "Chiomic",
+        "Chiomism",
+        "Confuse",
+        "Desperation",
+        "Disease",
+        "Dispel",
+        "Hook",
+        "Kyrnaicism",
+        "Malice",
+        "Mystify",
+        "Protect",
+        "Reconstitute",
+        "Sacrifice",
+        "Scream",
+        "Suture",
+        "Tshaeral"
     ], // 16
 };
 export const DISTANCE = {
@@ -162,147 +162,147 @@ export const RANGE = {
     Arena: 2000,
 }; 
 export const INSTINCTS = {
-    'constitution': [
+    "constitution": [
         { // 0 - Desperate Heal
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.DESPERATION
         },{ // 1 - Casual Heal
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.HEALING
         },{ // 2 - Desperate Damage
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.KYRISIAN
         },{ // 3 - Casual Damage
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.KYRNAICISM
         },{ // 4 - Within 100 Distance
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.DISEASE
         },{ // 5 - Melee at Distance
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.WARD
         },{ // 6 - Ranged at Distance
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.ILIRECH
         }
     ],
-    'strength': [
+    "strength": [
         { // 0
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.DESPERATION
         },{ // 1
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.TSHAERAL
         },{ // 2
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.RUSH
         },{ // 3
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.MAIERETH
         },{ // 4
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.WRITHE
         },{ // 5
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.WARD
         },{ // 6
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.ILIRECH
         }
     ],
-    'agility': [
+    "agility": [
         { // 0
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.DESPERATION
         },{ // 1
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.MEND
         },{ // 2
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.RUSH
         },{ // 3
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.SUTURE
         },{ // 4
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.WRITHE
         },{ // 5
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.PURSUIT
         },{ // 6
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.SHIMMER
         }
     ],
-    'achre': [
+    "achre": [
         { // 0
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.RECONSTITUTE
         },{ // 1
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.HEALING
         },{ // 2
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.ACHIRE
         },{ // 3
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.FROST
         },{ // 4
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.FREEZE
         },{ // 5
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.MULTIFARIOUS
         },{ // 6
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.SLOWING
         }
     ],
-    'caeren': [
+    "caeren": [
         { // 0
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.HEALING
         },{ // 1
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.MEND
         },{ // 2
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.SACRIFICE
         },{ // 3
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.KYRNAICISM
         },{ // 4
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.SCREAM
         },{ // 5
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.MENACE
         },{ // 6
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.ILIRECH
         }
     ],
-    'kyosir': [
+    "kyosir": [
         { // 0
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.HEALING
         },{ // 1
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.TSHAERAL
         },{ // 2
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.CHIOMISM
         },{ // 3
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.ILIRECH
         },{ // 4
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.CHIOMIC
         },{ // 5
-            key: 'positiveMachine',
+            key: "positiveMachine",
             value: States.PROTECT
         },{ // 6
-            key: 'stateMachine',
+            key: "stateMachine",
             value: States.KYRNAICISM
         }
     ]
@@ -312,7 +312,7 @@ export type ARENA_ENEMY = {
     mastery: string;
     id: string;
 };
-export const GRIP_SCALE = { 'One Hand': 0.5, 'Two Hand': 0.65 };
+export const GRIP_SCALE = { "One Hand": 0.5, "Two Hand": 0.65 };
 export type EnemySheet = {
     id: string;
     game: Ascean;
@@ -357,9 +357,9 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
         let enemy = randomEnemy(min, max);
         enemy = populateEnemy(enemy);
         const res = asceanCompiler(enemy);
-        EventBus.emit('enemy-fetched', { enemy: res?.ascean, combat: res, enemyID: e.enemyID });
+        EventBus.emit("enemy-fetched", { enemy: res?.ascean, combat: res, enemyID: e.enemyID });
     } catch (err) {
-        console.warn(err, 'Error retrieving Enemies');
+        console.warn(err, "Error retrieving Enemies");
     };
 };
 export function fetchArena(enemies: ARENA_ENEMY[]) {
@@ -373,10 +373,10 @@ export function fetchArena(enemies: ARENA_ENEMY[]) {
         };
         return complete;
     } catch (err) {
-        console.warn(err, 'Error Retrieving Enemies');
+        console.warn(err, "Error Retrieving Enemies");
     };
 };
-export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5,mastery: ['constitution','strength','agility','achre','caeren','kyosir'][Math.floor(Math.random() * 6)], id: '0'}]) {
+export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5,mastery: ["constitution","strength","agility","achre","caeren","kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
     try {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {
@@ -387,6 +387,6 @@ export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5,mastery: ['co
         };
         return complete;
     } catch (err) {
-        console.warn(err, 'Error Retrieving Enemies');
+        console.warn(err, "Error Retrieving Enemies");
     };
 };

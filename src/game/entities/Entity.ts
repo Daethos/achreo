@@ -1,25 +1,25 @@
-import AoE from '../phaser/AoE';
-import Beam from '../matter/Beam';
-import Bubble from '../phaser/Bubble';
-import CastingBar from '../phaser/CastingBar';
-import HealthBar from '../phaser/HealthBar';
-import Enemy from './Enemy';
-import Player from './Player';
-import Ascean from '../../models/ascean';
-import Equipment from '../../models/equipment';
-import { v4 as uuidv4 } from 'uuid';
-import { CombatStats, roundToTwoDecimals } from '../../utility/combat';
-import { Particle } from '../matter/ParticleManager';
-import { Game } from '../scenes/Game';
-import { Underground } from '../scenes/Underground';
-import { States } from '../phaser/StateMachine';
-import { Arena } from '../scenes/Arena';
-import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from '../../utility/rotations';
-import { Play } from '../main';
-import { Tutorial } from '../scenes/Tutorial';
-import Party from './PartyComputer';
+import AoE from "../phaser/AoE";
+import Beam from "../matter/Beam";
+import Bubble from "../phaser/Bubble";
+import CastingBar from "../phaser/CastingBar";
+import HealthBar from "../phaser/HealthBar";
+import Enemy from "./Enemy";
+import Player from "./Player";
+import Ascean from "../../models/ascean";
+import Equipment from "../../models/equipment";
+import { v4 as uuidv4 } from "uuid";
+import { CombatStats, roundToTwoDecimals } from "../../utility/combat";
+import { Particle } from "../matter/ParticleManager";
+import { Game } from "../scenes/Game";
+import { Underground } from "../scenes/Underground";
+import { States } from "../phaser/StateMachine";
+import { Arena } from "../scenes/Arena";
+import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from "../../utility/rotations";
+import { Play } from "../main";
+import { Tutorial } from "../scenes/Tutorial";
+import Party from "./PartyComputer";
 export function assetSprite(asset: Equipment) {
-    return asset.imgUrl.split('/')[3].split('.')[0];
+    return asset.imgUrl.split("/")[3].split(".")[0];
 };
 export function calculateThreat(damage: number, currentHealth: number, totalHealth: number): number {
     const damageRatio = damage / currentHealth;
@@ -243,22 +243,22 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isDeleting: boolean = false;
 
     static preload(scene: Phaser.Scene) {
-        scene.load.atlas(`player_actions`, '../assets/gui/player_actions.png', '../assets/gui/player_actions_atlas.json');
-        scene.load.animation(`player_actions_anim`, '../assets/gui/player_actions_anim.json');
-        scene.load.atlas(`player_actions_two`, '../assets/gui/player_actions_two.png', '../assets/gui/player_actions_two_atlas.json');
-        scene.load.animation(`player_actions_two_anim`, '../assets/gui/player_actions_two_anim.json');
-        scene.load.atlas(`player_actions_three`, '../assets/gui/player_actions_three.png', '../assets/gui/player_actions_three_atlas.json');
-        scene.load.animation(`player_actions_three_anim`, '../assets/gui/player_actions_three_anim.json');
-        scene.load.atlas(`player_attacks`, '../assets/gui/player_attacks.png', '../assets/gui/player_attacks_atlas.json');
-        scene.load.animation(`player_attacks_anim`, '../assets/gui/player_attacks_anim.json');   
-        scene.load.atlas(`running`, '../assets/gui/running.png', '../assets/gui/running_atlas.json');
-        scene.load.animation(`running_anim`, '../assets/gui/running_anim.json');   
-        scene.load.atlas(`swimming`, '../assets/gui/swimming.png', '../assets/gui/swimming_atlas.json');
-        scene.load.animation(`swimming_anim`, '../assets/gui/swimming_anim.json');   
-        scene.load.atlas('rabbit_idle', '../assets/gui/rabbit_idle.png', '../assets/gui/rabbit_idle_atlas.json');
-        scene.load.animation('rabbit_idle_anim', '../assets/gui/rabbit_idle_anim.json');
-        scene.load.atlas('rabbit_movement', '../assets/gui/rabbit_movement.png', '../assets/gui/rabbit_movement_atlas.json');
-        scene.load.animation('rabbit_movement_anim', '../assets/gui/rabbit_movement_anim.json');
+        scene.load.atlas(`player_actions`, "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
+        scene.load.animation(`player_actions_anim`, "../assets/gui/player_actions_anim.json");
+        scene.load.atlas(`player_actions_two`, "../assets/gui/player_actions_two.png", "../assets/gui/player_actions_two_atlas.json");
+        scene.load.animation(`player_actions_two_anim`, "../assets/gui/player_actions_two_anim.json");
+        scene.load.atlas(`player_actions_three`, "../assets/gui/player_actions_three.png", "../assets/gui/player_actions_three_atlas.json");
+        scene.load.animation(`player_actions_three_anim`, "../assets/gui/player_actions_three_anim.json");
+        scene.load.atlas(`player_attacks`, "../assets/gui/player_attacks.png", "../assets/gui/player_attacks_atlas.json");
+        scene.load.animation(`player_attacks_anim`, "../assets/gui/player_attacks_anim.json");   
+        scene.load.atlas(`running`, "../assets/gui/running.png", "../assets/gui/running_atlas.json");
+        scene.load.animation(`running_anim`, "../assets/gui/running_anim.json");   
+        scene.load.atlas(`swimming`, "../assets/gui/swimming.png", "../assets/gui/swimming_atlas.json");
+        scene.load.animation(`swimming_anim`, "../assets/gui/swimming_anim.json");   
+        scene.load.atlas("rabbit_idle", "../assets/gui/rabbit_idle.png", "../assets/gui/rabbit_idle_atlas.json");
+        scene.load.animation("rabbit_idle_anim", "../assets/gui/rabbit_idle_anim.json");
+        scene.load.atlas("rabbit_movement", "../assets/gui/rabbit_movement.png", "../assets/gui/rabbit_movement_atlas.json");
+        scene.load.animation("rabbit_movement_anim", "../assets/gui/rabbit_movement_anim.json");
     };
 
     constructor (data: any) {
@@ -289,7 +289,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     startingSpeed = (entity: Ascean) => {
         let speed = SPEED;
-        if (this.name === 'player') {
+        if (this.name === "player") {
             speed += this.scene.hud.settings.difficulty.playerSpeed || 0;
         } else {
             speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
@@ -300,15 +300,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let modifier = 0;
         const addModifier = (item: string) => {
             switch (item) {
-                case 'Leather-Cloth':
+                case "Leather-Cloth":
                     break;
-                case 'Leather-Mail':
+                case "Leather-Mail":
                     modifier -= 0.01; // += 0.025;
                     break;
-                case 'Chain-Mail':
+                case "Chain-Mail":
                     modifier -= 0.02; // += 0.0;
                     break;
-                case 'Plate-Mail':
+                case "Plate-Mail":
                     modifier -= 0.03; // -= 0.025;
                     break;
                 default:
@@ -327,14 +327,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scene?.glowFilter?.remove(object);
         if (!glow) {
             switch (type) {
-                case 'shield':
+                case "shield":
                     if (this.glowShield !== undefined) {
                         this.glowShield.remove(false);
                         this.glowShield.destroy();
                         this.glowShield = undefined;
                     };
                     break;
-                case 'weapon':
+                case "weapon":
                     if (this.glowWeapon !== undefined) {
                         this.glowWeapon.remove(false);
                         this.glowWeapon.destroy();
@@ -353,7 +353,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
         this.updateGlow(object);
         switch (type) {
-            case 'shield':
+            case "shield":
                 this.glowShield = this.scene.time.addEvent({
                     delay: 250, // 125 Adjust the delay as needed
                     callback: () => this.updateGlow(object),
@@ -361,7 +361,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     callbackScope: this
                 });
                 break;
-            case 'weapon':
+            case "weapon":
                 this.glowWeapon = this.scene.time.addEvent({
                     delay: 250,
                     callback: () => this.updateGlow(object),
@@ -561,7 +561,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = (entity: string, target: Player | Enemy | Party) => {
-        if (entity === 'player' && !this.isStorming) {
+        if (entity === "player" && !this.isStorming) {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
             } else {

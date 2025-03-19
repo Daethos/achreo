@@ -2,12 +2,12 @@ import Entity, { assetSprite, FRAMES, Player_Scene, SWING_TIME } from "./Entity"
 import { screenShake, sprint, vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
-import PlayerMachine from '../phaser/PlayerMachine';
+import PlayerMachine from "../phaser/PlayerMachine";
 import { EventBus } from "../EventBus";
 import CastingBar from "../phaser/CastingBar";
 import { PHYSICAL_ACTIONS, PHYSICAL_EVASIONS, PLAYER, TALENT_COOLDOWN, TALENT_COST } from "../../utility/player";
 import Beam from "../matter/Beam";
-import Enemy from './Enemy';
+import Enemy from "./Enemy";
 import Ascean from "../../models/ascean";
 import NPC from "./NPC";
 import Equipment from "../../models/equipment";
@@ -45,12 +45,12 @@ export default class Player extends Entity {
     playerID: string;
     computerAction: boolean = false;
     currentTarget: undefined | Enemy = undefined;
-    spellTarget: string = '';
+    spellTarget: string = "";
     maxStamina: number;
     maxGrace: number;
     targetIndex: number = 1;
     isMoving: boolean = false;
-    targetID: string = '';
+    targetID: string = "";
     triggeredActionAvailable: any = undefined;
     staminaModifier: number = 0;
     strafingLeft: boolean = false;
@@ -76,7 +76,7 @@ export default class Player extends Entity {
     inputKeys: any;
     wasFlipped: boolean = false;
     specials: boolean = false;
-    spellName: string = '';
+    spellName: string = "";
     reconTimer: Phaser.Time.TimerEvent | undefined = undefined;
     isNetherswapping: boolean = false;
     isStimulating: boolean = false;
@@ -85,8 +85,8 @@ export default class Player extends Entity {
     isDiseasing: boolean = false;
     isSacrificing: boolean = false;
     isSlowing: boolean = false;
-    reactiveName: string = '';
-    confuseDirection = 'down';
+    reactiveName: string = "";
+    confuseDirection = "down";
     confuseVelocity = { x: 0, y: 0 };
     polymorphVelocity = { x: 0, y: 0 };
     fearVelocity = { x: 0, y: 0 };
@@ -109,7 +109,7 @@ export default class Player extends Entity {
     constructor(data: any) {
         const { scene } = data;
         const ascean = scene.registry.get("ascean");
-        super({ ...data, name: 'player', ascean: ascean, health: ascean?.health?.current || scene.state.newPlayerHealth });
+        super({ ...data, name: "player", ascean: ascean, health: ascean?.health?.current || scene.state.newPlayerHealth });
         this.ascean = ascean;
         this.health = this.ascean.health.current;
         this.playerID = this.ascean._id;
@@ -117,12 +117,12 @@ export default class Player extends Entity {
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
-        if (weapon.grip === 'One Hand') {
+        if (weapon.grip === "One Hand") {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            this.swingTimer = SWING_TIME['One Hand'];
+            this.swingTimer = SWING_TIME["One Hand"];
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = SWING_TIME['Two Hand'];
+            this.swingTimer = SWING_TIME["Two Hand"];
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
@@ -146,8 +146,8 @@ export default class Player extends Entity {
         this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PlayerMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);
-        let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: 'playerCollider' }); // Y + 10 For Platformer
-        let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: 'playerSensor' }); // Y + 2 For Platformer
+        let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: "playerCollider" }); // Y + 10 For Platformer
+        let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "playerSensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
             parts: [playerCollider, playerSensor],
             frictionAir: 0.5,
@@ -163,7 +163,7 @@ export default class Player extends Entity {
             .setScale(0.2)
             .strokeCircle(0, 0, 12)
             .setDepth(99);
-        (this.scene.plugins?.get?.('rexGlowFilterPipeline') as any)?.add(this.highlight, {
+        (this.scene.plugins?.get?.("rexGlowFilterPipeline") as any)?.add(this.highlight, {
             intensity: 0.005,
         });
         this.highlight.setVisible(false);
@@ -174,7 +174,7 @@ export default class Player extends Entity {
             .strokeCircle(0, 0, 12);
         this.mark.setVisible(false);
         this.markAnimation = false;
-        this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, 'player');
+        this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, "player");
         this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
         scene.time.delayedCall(1000, () => {
             if (this.scene.state.isCaerenic) this.caerenicUpdate();
@@ -189,19 +189,19 @@ export default class Player extends Entity {
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
-        .on('pointerup', () => {
+        .on("pointerup", () => {
             this.scene.hud.logger.log(`Console: Current States: Physical: ${this.playerMachine.stateMachine.getCurrentState()?.toUpperCase()} | Positive: ${this.playerMachine.positiveMachine.getCurrentState()?.toUpperCase()} | Negative: ${this.playerMachine.negativeMachine.getCurrentState()?.toUpperCase()}. Suffering: ${this.isSuffering()}`)
             if (this.inCombat) return;
-            const button = this.scene.hud.smallHud.getButton('info');
+            const button = this.scene.hud.smallHud.getButton("info");
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
         });
         this.beam = new Beam(this);
-        scene.registry.set('player', this);
+        scene.registry.set("player", this);
     };   
 
     getAscean = () => {
-        EventBus.on('player-ascean-ready', (ascean: Ascean) => this.ascean = ascean);
-        EventBus.emit('player-ascean');
+        EventBus.on("player-ascean-ready", (ascean: Ascean) => this.ascean = ascean);
+        EventBus.emit("player-ascean");
         return this.ascean;
     };
 
@@ -226,7 +226,7 @@ export default class Player extends Entity {
 
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
-        this.scene.sound.play('blink', { volume: this.scene.hud.settings.volume / 3 });
+        this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume / 3 });
         if (this.isCaerenic) {
             screenShake(this.scene, 96);
             this.scene.tweens.add({
@@ -237,13 +237,13 @@ export default class Player extends Entity {
                 yoyo: true
             });
             this.setGlow(this, true);
-            this.setGlow(this.spriteWeapon, true, 'weapon');
-            this.setGlow(this.spriteShield, true, 'shield'); 
+            this.setGlow(this.spriteWeapon, true, "weapon");
+            this.setGlow(this.spriteShield, true, "shield"); 
             this.adjustSpeed(PLAYER.SPEED.CAERENIC);
         } else {
             this.setGlow(this, false);
-            this.setGlow(this.spriteWeapon, false, 'weapon')
-            this.setGlow(this.spriteShield, false, 'shield'); 
+            this.setGlow(this.spriteWeapon, false, "weapon")
+            this.setGlow(this.spriteShield, false, "shield"); 
             this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
         };
     };
@@ -252,8 +252,8 @@ export default class Player extends Entity {
         this.isStalwart = stalwart;
         this.spriteShield.setVisible(this.isStalwart);
         screenShake(this.scene);
-        this.scene.sound.play('stalwart', { volume: this.scene.hud.settings.volume });
-        EventBus.emit('stalwart-buttons', this.isStalwart);
+        this.scene.sound.play("stalwart", { volume: this.scene.hud.settings.volume });
+        EventBus.emit("stalwart-buttons", this.isStalwart);
     };
 
     createSprite = (imgUrl: string, x: number, y: number, scale: number, originX: number, originY: number) => {
@@ -266,18 +266,18 @@ export default class Player extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('set-player', this.setPlayer);
-        EventBus.off('combat', this.constantUpdate);
-        EventBus.off('update-combat', this.eventUpdate);
-        EventBus.off('disengage', this.disengage);
-        EventBus.off('engage', this.engage);
-        EventBus.off('speed', this.speedUpdate);
-        EventBus.off('update-stealth', this.stealthUpdate);
-        EventBus.off('update-caerenic', this.caerenicUpdate);
-        EventBus.off('update-stalwart', this.stalwartUpdate);
-        EventBus.off('remove-enemy', this.enemyUpdate);
-        EventBus.off('tab-target', this.tabUpdate);
-        EventBus.off('updated-stamina', this.updateStamina);
+        EventBus.off("set-player", this.setPlayer);
+        EventBus.off("combat", this.constantUpdate);
+        EventBus.off("update-combat", this.eventUpdate);
+        EventBus.off("disengage", this.disengage);
+        EventBus.off("engage", this.engage);
+        EventBus.off("speed", this.speedUpdate);
+        EventBus.off("update-stealth", this.stealthUpdate);
+        EventBus.off("update-caerenic", this.caerenicUpdate);
+        EventBus.off("update-stalwart", this.stalwartUpdate);
+        EventBus.off("remove-enemy", this.enemyUpdate);
+        EventBus.off("tab-target", this.tabUpdate);
+        EventBus.off("updated-stamina", this.updateStamina);
     };
 
     clearBubbles = () => {
@@ -341,27 +341,27 @@ export default class Player extends Entity {
 
     computerBroadcast = (e: any) => {
         if (this.scene.state.enemyID !== e.id) return;
-        // if (e.key === 'newComputerEnemyHealth') {
-        EventBus.emit('update-combat-state', { key: 'newComputerHealth', value: e.value });
+        // if (e.key === "newComputerEnemyHealth") {
+        EventBus.emit("update-combat-state", { key: "newComputerHealth", value: e.value });
         // };
     };
 
     playerStateListener = () => {
-        EventBus.on('set-player', this.setPlayer)
-        EventBus.on('combat', this.constantUpdate);
-        EventBus.on('update-combat', this.eventUpdate);
+        EventBus.on("set-player", this.setPlayer)
+        EventBus.on("combat", this.constantUpdate);
+        EventBus.on("update-combat", this.eventUpdate);
         EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
         EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.on('disengage', this.disengage); 
-        EventBus.on('engage', this.engage);
-        EventBus.on('speed', this.speedUpdate);
-        EventBus.on('update-stealth', this.stealthUpdate);
-        EventBus.on('update-caerenic', this.caerenicUpdate);
-        EventBus.on('update-stalwart', this.stalwartUpdate);
-        EventBus.on('remove-enemy', this.enemyUpdate);
-        EventBus.on('tab-target', this.tabUpdate);
-        EventBus.on('updated-grace', this.updateGrace);
-        EventBus.on('updated-stamina', this.updateStamina);
+        EventBus.on("disengage", this.disengage); 
+        EventBus.on("engage", this.engage);
+        EventBus.on("speed", this.speedUpdate);
+        EventBus.on("update-stealth", this.stealthUpdate);
+        EventBus.on("update-caerenic", this.caerenicUpdate);
+        EventBus.on("update-stalwart", this.stalwartUpdate);
+        EventBus.on("remove-enemy", this.enemyUpdate);
+        EventBus.on("tab-target", this.tabUpdate);
+        EventBus.on("updated-grace", this.updateGrace);
+        EventBus.on("updated-stamina", this.updateStamina);
     }; 
     
     enemyDeath = (id: string) => {
@@ -428,7 +428,7 @@ export default class Player extends Entity {
             return;
         };
         const first = this.scene.state.enemyID;
-        if (first === '') {
+        if (first === "") {
             (this.scene as Player_Scene).quickCombat();
         } else {
             const enemy = this.scene.getEnemy(first);
@@ -445,7 +445,7 @@ export default class Player extends Entity {
     invalidTarget = (id: string) => {
         const enemy = this.scene.getEnemy(id);
         if (enemy) return enemy.health <= 0; // enemy.isDefeated;
-        this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, 'damage', false, false, () => this.resistCombatText = undefined);
+        this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, "damage", false, false, () => this.resistCombatText = undefined);
         return true;
     };
 
@@ -483,13 +483,13 @@ export default class Player extends Entity {
     checkGear = (shield: Equipment, weapon: Equipment, damage: string) => {
         if (!shield || !weapon) return;
         this.currentDamageType = damage;    
-        this.hasMagic = this.checkDamageType(damage, 'magic');
+        this.hasMagic = this.checkDamageType(damage, "magic");
         this.checkMeleeOrRanged(weapon);
         let staminaModifier = 0;
         if (this.currentWeaponSprite !== assetSprite(weapon)) {
             this.currentWeaponSprite = assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (weapon.grip === 'One Hand') {
+            if (weapon.grip === "One Hand") {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             } else {
                 staminaModifier += 2;
@@ -518,7 +518,7 @@ export default class Player extends Entity {
         if (this.health > newPlayerHealth) {
             let damage: number | string = Math.round(this.health - newPlayerHealth);
             // damage = computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
@@ -534,32 +534,32 @@ export default class Player extends Entity {
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.resistCombatText = this.scene.showCombatText('Fear Broken', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
+                    this.resistCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, "effect", false, false, () => this.resistCombatText = undefined);
                     this.isFeared = false;    
                 } else {
                     this.fearCount += 0.1;
                 };
             };
         };
-        if (this.health < newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(`${Math.round(newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, 'heal', false, false, () => this.scrollingCombatText = undefined);
+        if (this.health < newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(`${Math.round(newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, "heal", false, false, () => this.scrollingCombatText = undefined);
         this.health = newPlayerHealth;
         this.healthbar.setValue(this.health);
         if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
         if (computerParrySuccess === true) {
             this.isStunned = true;
-            this.scene.combatManager.combatMachine.input('computerParrySuccess', false);
-            this.resistCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
+            this.scene.combatManager.combatMachine.input("computerParrySuccess", false);
+            this.resistCombatText = this.scene.showCombatText("Parry", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
         };
         if (rollSuccess === true) {
-            this.specialCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            this.specialCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "heal", true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.useStamina(-5);
         };
         if (parrySuccess === true) {
-            this.specialCombatText = this.scene.showCombatText('Parry', PLAYER.DURATIONS.TEXT, 'heal', true, false, () => this.specialCombatText = undefined);
+            this.specialCombatText = this.scene.showCombatText("Parry", PLAYER.DURATIONS.TEXT, "heal", true, false, () => this.specialCombatText = undefined);
             this.scene.combatManager.stunned(e.enemyID);
             this.scene.combatManager.useStamina(-5);
         };
-        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText('Roll', PLAYER.DURATIONS.TEXT, 'damage', computerCriticalSuccess, false, () => this.resistCombatText = undefined);
+        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
             if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
@@ -574,7 +574,7 @@ export default class Player extends Entity {
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
         if (e.criticalSuccess || e.glancingBlow || parrySuccess || rollSuccess || e.computerGlancingBlow || computerCriticalSuccess || computerParrySuccess) {
-            EventBus.emit('blend-combat', { 
+            EventBus.emit("blend-combat", { 
                 computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
             });
         };
@@ -582,7 +582,7 @@ export default class Player extends Entity {
     };
 
     resist = () => {
-        this.resistCombatText = this.scene.showCombatText('Resisted', PLAYER.DURATIONS.TEXT, 'effect', false, false, () => this.resistCombatText = undefined);
+        this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, "effect", false, false, () => this.resistCombatText = undefined);
     };
 
     checkTalentCost = (type: string, cost: number) => {
@@ -628,7 +628,7 @@ export default class Player extends Entity {
             onStart: () => {
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.scene.sound.play('leap', { volume: this.scene.hud.settings.volume });
+                this.scene.sound.play("leap", { volume: this.scene.hud.settings.volume });
                 // this.flickerCaerenic(800);
             },
             onComplete: () => { 
@@ -638,7 +638,7 @@ export default class Player extends Entity {
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         const enemy = this.touching[i];
-                        this.scene.combatManager.playerMelee(enemy.enemyID, 'leap');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, "leap");
                         if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
                             if (enemy.isShielding) enemy.shield();
                             if (enemy.isWarding) enemy.ward(this.playerID);
@@ -652,7 +652,7 @@ export default class Player extends Entity {
                 };
             },
         });
-        EventBus.emit('special-combat-text', {
+        EventBus.emit("special-combat-text", {
             playerSpecialDescription: `You launch yourself through the air!`
         });
     };
@@ -661,7 +661,7 @@ export default class Player extends Entity {
         this.frameCount = 0;
         this.isRushing = true;
         this.isThrusting = true;
-        this.scene.sound.play('stealth', { volume: this.scene.hud.settings.volume });        
+        this.scene.sound.play("stealth", { volume: this.scene.hud.settings.volume });        
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -685,7 +685,7 @@ export default class Player extends Entity {
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
             duration: 600,
-            ease: 'Circ.easeOut',
+            ease: "Circ.easeOut",
             onStart: () => {
                 screenShake(this.scene);
             },
@@ -703,7 +703,7 @@ export default class Player extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.playerID);
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
-                        this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, "rush");
                         if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
                 } else if (this.touching.length > 0) {
@@ -718,7 +718,7 @@ export default class Player extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.playerID);
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);
-                        this.scene.combatManager.playerMelee(enemy.enemyID, 'rush');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, "rush");
                         if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
                 };
@@ -731,7 +731,7 @@ export default class Player extends Entity {
         this.clearAnimations();
         this.frameCount = 0;
         this.isStorming = true;
-        this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined); 
+        this.specialCombatText = this.scene.showCombatText("Storming", 800, "damage", false, false, () => this.specialCombatText = undefined); 
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -745,7 +745,7 @@ export default class Player extends Entity {
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.specialCombatText = this.scene.showCombatText('Storming', 800, 'damage', false, false, () => this.specialCombatText = undefined);
+                this.specialCombatText = this.scene.showCombatText("Storming", 800, "damage", false, false, () => this.specialCombatText = undefined);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         const enemy = this.touching[i];
@@ -758,14 +758,14 @@ export default class Player extends Entity {
                         if (enemy.isMenacing) enemy.menace(this.playerID);
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
-                        this.scene.combatManager.playerMelee(enemy.enemyID, 'storm');
+                        this.scene.combatManager.playerMelee(enemy.enemyID, "storm");
                     };
                 };
             },
             onComplete: () => this.isStorming = false,
             loop: 3,
         });  
-        EventBus.emit('special-combat-text', {
+        EventBus.emit("special-combat-text", {
             playerSpecialDescription: `You begin storming with your ${this.scene.state.weapons[0]?.name}.`
         });
         screenShake(this.scene);
@@ -775,39 +775,39 @@ export default class Player extends Entity {
         try {
             const soundEffectMap = (type: string, weapon: Equipment) => {
                 switch (type) {
-                    case 'Spooky':
-                        return this.scene.sound.play('spooky', { volume: this.scene.hud.settings.volume });
-                    case 'Righteous':
-                        return this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
-                    case 'Wild':
-                        return this.scene.sound.play('wild', { volume: this.scene.hud.settings.volume });
-                    case 'Earth':
-                        return this.scene.sound.play('earth', { volume: this.scene.hud.settings.volume });
-                    case 'Fire':
-                        return this.scene.sound.play('fire', { volume: this.scene.hud.settings.volume });
-                    case 'Frost':
-                        return this.scene.sound.play('frost', { volume: this.scene.hud.settings.volume });
-                    case 'Lightning':
-                        return this.scene.sound.play('lightning', { volume: this.scene.hud.settings.volume });
-                    case 'Sorcery':
-                        return this.scene.sound.play('sorcery', { volume: this.scene.hud.settings.volume / 3 });
-                    case 'Wind':
-                        return this.scene.sound.play('wind', { volume: this.scene.hud.settings.volume });
-                    case 'Pierce':
-                        return (weapon.type === 'Bow' || weapon.type === 'Greatbow') ? this.scene.sound.play('bow', { volume: this.scene.hud.settings.volume }) : this.scene.sound.play('pierce', { volume: this.scene.hud.settings.volume });
-                    case 'Slash':
-                        return this.scene.sound.play('slash', { volume: this.scene.hud.settings.volume });
-                    case 'Blunt':
-                        return this.scene.sound.play('blunt', { volume: this.scene.hud.settings.volume });
+                    case "Spooky":
+                        return this.scene.sound.play("spooky", { volume: this.scene.hud.settings.volume });
+                    case "Righteous":
+                        return this.scene.sound.play("righteous", { volume: this.scene.hud.settings.volume });
+                    case "Wild":
+                        return this.scene.sound.play("wild", { volume: this.scene.hud.settings.volume });
+                    case "Earth":
+                        return this.scene.sound.play("earth", { volume: this.scene.hud.settings.volume });
+                    case "Fire":
+                        return this.scene.sound.play("fire", { volume: this.scene.hud.settings.volume });
+                    case "Frost":
+                        return this.scene.sound.play("frost", { volume: this.scene.hud.settings.volume });
+                    case "Lightning":
+                        return this.scene.sound.play("lightning", { volume: this.scene.hud.settings.volume });
+                    case "Sorcery":
+                        return this.scene.sound.play("sorcery", { volume: this.scene.hud.settings.volume / 3 });
+                    case "Wind":
+                        return this.scene.sound.play("wind", { volume: this.scene.hud.settings.volume });
+                    case "Pierce":
+                        return (weapon.type === "Bow" || weapon.type === "Greatbow") ? this.scene.sound.play("bow", { volume: this.scene.hud.settings.volume }) : this.scene.sound.play("pierce", { volume: this.scene.hud.settings.volume });
+                    case "Slash":
+                        return this.scene.sound.play("slash", { volume: this.scene.hud.settings.volume });
+                    case "Blunt":
+                        return this.scene.sound.play("blunt", { volume: this.scene.hud.settings.volume });
                 };
             };
             if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment);
             if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
-            if (sfx.religiousSuccess === true) this.scene.sound.play('righteous', { volume: this.scene.hud.settings.volume });
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play('roll', { volume: this.scene.hud.settings.volume / 2 });
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play('parry', { volume: this.scene.hud.settings.volume });
+            if (sfx.religiousSuccess === true) this.scene.sound.play("righteous", { volume: this.scene.hud.settings.volume });
+            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
+            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play("parry", { volume: this.scene.hud.settings.volume });
         } catch (err) {
-            console.warn(err, 'Error Setting Sound Effects');
+            console.warn(err, "Error Setting Sound Effects");
         };
     };
 
@@ -903,8 +903,8 @@ export default class Player extends Entity {
 
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
-    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean);
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
+    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean);
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {
@@ -912,7 +912,7 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
-    isValidTouching = (other: any): boolean => other.gameObjectB && other.bodyB.label === 'enemyCollider' && other.gameObjectB.ascean;
+    isValidTouching = (other: any): boolean => other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean;
  
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
@@ -971,8 +971,8 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'duel') {
-                    EventBus.emit('alert', { 
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "duel") {
+                    EventBus.emit("alert", { 
                         header: "Ancient Eulex", 
                         body: `You have the option of summoning enemies to the dueling grounds. \n Would you like to see the roster?`, 
                         delay: 3000, 
@@ -980,73 +980,73 @@ export default class Player extends Entity {
                         arg: other.gameObjectB?.properties?.key
                     });
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'cave') {
-                    EventBus.emit('alert', { 
-                        header: 'Underground', 
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "cave") {
+                    EventBus.emit("alert", { 
+                        header: "Underground", 
                         body: `You have encountered a cave! \n Would you like to enter?`, 
                         delay: 3000, 
-                        key: 'Enter Underground'
+                        key: "Enter Underground"
                     });
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'teleport') {
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "teleport") {
                     switch (other.gameObjectB?.properties?.key) {
-                        case 'north':
-                            EventBus.emit('alert', { 
-                                header: 'North Port', 
+                        case "north":
+                            EventBus.emit("alert", { 
+                                header: "North Port", 
                                 body: `This is the Northren Port \n Would you like to enter?`, 
                                 delay: 3000,
-                                key: 'Enter North Port'
+                                key: "Enter North Port"
                             });
                             break;
-                        case 'south':
-                            EventBus.emit('alert', { 
-                                header: 'South Port', 
+                        case "south":
+                            EventBus.emit("alert", { 
+                                header: "South Port", 
                                 body: `This is the Southron Port \n Would you like to enter?`, 
                                 delay: 3000,
-                                key: 'Enter South Port'
+                                key: "Enter South Port"
                             });
                             break;
-                        case 'east':
-                            EventBus.emit('alert', { 
-                                header: 'East Port', 
+                        case "east":
+                            EventBus.emit("alert", { 
+                                header: "East Port", 
                                 body: `This is the Eastern Port \n Would you like to enter?`, 
                                 delay: 3000,
-                                key: 'Enter East Port'
+                                key: "Enter East Port"
                             });
                             break;
-                        case 'west':
-                            EventBus.emit('alert', { 
-                                header: 'West Port', 
+                        case "west":
+                            EventBus.emit("alert", { 
+                                header: "West Port", 
                                 body: `This is the Western Port \n Would you like to enter?`, 
                                 delay: 3000,
-                                key: 'Enter West Port'
+                                key: "Enter West Port"
                             });
                             break;
                         default: break;
                     };
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'stairs') {
-                    EventBus.emit('alert', { 
-                        header: 'Exit', 
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "stairs") {
+                    EventBus.emit("alert", { 
+                        header: "Exit", 
                         body: `You are at the stairs that lead back to the surface. \n Would you like to exit the cave and head up to the world?`, 
                         delay: 3000, 
-                        key: 'Exit Underground'
+                        key: "Exit Underground"
                     });
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'worldExit') {
-                    EventBus.emit('alert', { 
-                        header: 'Exit', 
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
+                    EventBus.emit("alert", { 
+                        header: "Exit", 
                         body: `You are near the exit. \n Would you like to head back to the world?`, 
                         delay: 3000, 
-                        key: 'Exit World'
+                        key: "Exit World"
                     });
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === 'Enter Tutorial') {
-                    EventBus.emit('alert', { 
-                        header: 'Tutorial', 
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "Enter Tutorial") {
+                    EventBus.emit("alert", { 
+                        header: "Tutorial", 
                         body: `You are near the entrance to the tutorial. \n Would you like to head back to area?`, 
                         delay: 3000, 
-                        key: 'Enter Tutorial'
+                        key: "Enter Tutorial"
                     });
                 };
             },
@@ -1080,14 +1080,14 @@ export default class Player extends Entity {
 
     setTimeEvent = (cooldown: string, limit = 30000) => {
         if (this.isComputer) return;
-        const evasion = cooldown === 'rollCooldown' || cooldown === 'dodgeCooldown';
+        const evasion = cooldown === "rollCooldown" || cooldown === "dodgeCooldown";
         if (evasion === false) {
             (this as any)[cooldown] = limit;
         };
-        const type = cooldown.split('Cooldown')[0];
+        const type = cooldown.split("Cooldown")[0];
         this.scene.hud.actionBar.setCurrent(0, limit, type);
         const button = this.scene.hud.actionBar.getButton(type); 
-        if (this.inCombat || type === 'blink' || type || 'desperation') {
+        if (this.inCombat || type === "blink" || type || "desperation") {
             this.scene.hud.time.delayedCall(limit, () => {
                 this.scene.hud.actionBar.setCurrent(limit, limit, type);
                 this.scene.hud.actionBar.animateButton(button as ActionButton);
@@ -1116,14 +1116,14 @@ export default class Player extends Entity {
     };
 
     swingTime = (type: string): number => {
-        return (type === 'dodge' || type === 'parry' || type === 'roll') ? 750 : this.swingTimer;
+        return (type === "dodge" || type === "parry" || type === "roll") ? 750 : this.swingTimer;
     };
 
     checkCaerenic = (caerenic: boolean) => {
         this.isGlowing = caerenic;
         this.setGlow(this, caerenic);
-        this.setGlow(this.spriteWeapon, caerenic, 'weapon');
-        this.setGlow(this.spriteShield, caerenic, 'shield');
+        this.setGlow(this.spriteWeapon, caerenic, "weapon");
+        this.setGlow(this.spriteShield, caerenic, "shield");
     };
 
     flickerCaerenic = (duration: number) => {
@@ -1207,7 +1207,7 @@ export default class Player extends Entity {
 
     clearEnemies = () => {
         this.targets = [];
-        EventBus.emit('update-enemies', []);
+        EventBus.emit("update-enemies", []);
     };
 
     sendEnemies = (enemies: Enemy[]) => {
@@ -1229,7 +1229,7 @@ export default class Player extends Entity {
                 isLuckout: enemy.isLuckout,
             };
         });
-        EventBus.emit('update-enemies', data);
+        EventBus.emit("update-enemies", data);
     };
 
     setCombat = (combat: boolean) => {
@@ -1249,7 +1249,7 @@ export default class Player extends Entity {
         if (this.isPosturing) return States.POSTURE;
         if (this.isRolling) return States.ROLL;
         if (this.isThrusting) return States.THRUST;
-        return '';
+        return "";
     };
 
     inputClear = (input: string) => {
@@ -1308,9 +1308,9 @@ export default class Player extends Entity {
             if (action === States.QUOR) {
                 if (this.checkTalentEnhanced(States.QUOR)) {
                     if (this.isComputer) {
-                        this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, false, this.attackedTarget);    
+                        this.aoe = new AoE(this.scene, "astrave", 1, false, undefined, false, this.attackedTarget);    
                     } else {
-                        this.aoe = new AoE(this.scene, 'astrave', 1, false, undefined, true);
+                        this.aoe = new AoE(this.scene, "astrave", 1, false, undefined, true);
                     };
                 };
             };
@@ -1334,9 +1334,9 @@ export default class Player extends Entity {
                 if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
-                this.scene.combatManager.combatMachine.action({ type: 'Weapon', data: { key: 'action', value: action }});
+                this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: "action", value: action }});
             } else {
-                this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
+                this.scene.combatManager.combatMachine.action({ type: "Player", data: { 
                     playerAction: { action, parry: this.scene.state.parryGuess },  
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
@@ -1369,9 +1369,9 @@ export default class Player extends Entity {
                 if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
-                this.scene.combatManager.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: action } });
+                this.scene.combatManager.combatMachine.action({ type: "Weapon",  data: { key: "action", value: action } });
             } else {
-                this.scene.combatManager.combatMachine.action({ type: 'Player', data: { 
+                this.scene.combatManager.combatMachine.action({ type: "Player", data: { 
                     playerAction: { action, parry: this.scene.state.parryGuess }, 
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
@@ -1615,7 +1615,7 @@ export default class Player extends Entity {
         if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality('player', this.currentTarget as Enemy);
+        this.functionality("player", this.currentTarget as Enemy);
     };
 
     handleMovement = () => {

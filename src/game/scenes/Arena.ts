@@ -1,31 +1,31 @@
-import { Combat, initCombat } from '../../stores/combat';
-import { EventBus } from '../EventBus';
-import LootDrop from '../matter/LootDrop';
-import { GameState } from '../../stores/game';
-import Equipment from '../../models/equipment';
-import { States } from '../phaser/StateMachine';
-import Fov from '../phaser/Fov';
-import { Reputation, initReputation } from '../../utility/player';
-import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
+import { Combat, initCombat } from "../../stores/combat";
+import { EventBus } from "../EventBus";
+import LootDrop from "../matter/LootDrop";
+import { GameState } from "../../stores/game";
+import Equipment from "../../models/equipment";
+import { States } from "../phaser/StateMachine";
+import Fov from "../phaser/Fov";
+import { Reputation, initReputation } from "../../utility/player";
+import Player from "../entities/Player";
+import Enemy from "../entities/Enemy";
 // @ts-ignore
-import AnimatedTiles from 'phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js';
-import Tile from '../phaser/Tile';
-import { CombatManager } from '../phaser/CombatManager';
-import MiniMap from '../phaser/MiniMap';
-import ParticleManager from '../matter/ParticleManager';
-import { screenShake } from '../phaser/ScreenShake';
-import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from './Hud';
-import { Compiler } from '../../utility/ascean';
-import PlayerComputer from '../entities/PlayerComputer';
-import MovingPlatform from '../matter/MovingPlatform';
-import { ObjectPool } from '../phaser/ObjectPool';
-import ScrollingCombatText from '../phaser/ScrollingCombatText';
-import Party from '../entities/PartyComputer';
-import { PARTY_OFFSET } from '../../utility/party';
+import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
+import Tile from "../phaser/Tile";
+import { CombatManager } from "../phaser/CombatManager";
+import MiniMap from "../phaser/MiniMap";
+import ParticleManager from "../matter/ParticleManager";
+import { screenShake } from "../phaser/ScreenShake";
+import { Hud, X_OFFSET, X_SPEED_OFFSET, Y_OFFSET, Y_SPEED_OFFSET } from "./Hud";
+import { Compiler } from "../../utility/ascean";
+import PlayerComputer from "../entities/PlayerComputer";
+import MovingPlatform from "../matter/MovingPlatform";
+import { ObjectPool } from "../phaser/ObjectPool";
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
+import Party from "../entities/PartyComputer";
+import { PARTY_OFFSET } from "../../utility/party";
 
 export class Arena extends Phaser.Scene {
-    sceneKey: string = '';
+    sceneKey: string = "";
     animatedTiles: any[];
     offsetX: number;
     offsetY: number;
@@ -81,13 +81,13 @@ export class Arena extends Phaser.Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
 
     constructor (view?: string) {
-        const key = view || 'Arena';
+        const key = view || "Arena";
         super(key);
         this.sceneKey = key;
     };
 
     preload() {
-        this.load.scenePlugin('animatedTiles', AnimatedTiles, 'animatedTiles', 'animatedTiles');
+        this.load.scenePlugin("animatedTiles", AnimatedTiles, "animatedTiles", "animatedTiles");
     };
 
     create (hud: Hud) {
@@ -102,15 +102,15 @@ export class Arena extends Phaser.Scene {
         this.markers = [];
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
-        const map = this.make.tilemap({ key: 'arena' });
+        const map = this.make.tilemap({ key: "arena" });
         this.map = map;
         this.add.rectangle(0, 0, 4096, 4096, 0x000000);
         const tileSize = 32;
-        const castleInterior = map.addTilesetImage('Castle Interior', 'Castle Interior', tileSize, tileSize, 0, 0);
-        const castleDecorations = map.addTilesetImage('Castle Decoratives', 'Castle Decoratives', tileSize, tileSize, 0, 0);
-        let layer1 = map.createLayer('Floors', castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer2 = map.createLayer('Decorations', castleDecorations as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer3 = map.createLayer('Top Layer', castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
+        const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
+        const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);
+        let layer1 = map.createLayer("Floors", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer2 = map.createLayer("Decorations", castleDecorations as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer3 = map.createLayer("Top Layer", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
@@ -122,17 +122,17 @@ export class Arena extends Phaser.Scene {
         this.layer2 = layer2;
         this.layer3 = layer3;
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
-        const objectLayer = map.getObjectLayer('navmesh');
+        const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
-        map?.getObjectLayer('summons')?.objects.forEach((summon: any) => this.markers.push(summon));
+        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
         if (this.hud.settings.difficulty.arena) {
-            this.player = new Player({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
+            this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         } else {
-            this.player = new PlayerComputer({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0' });
+            this.player = new PlayerComputer({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
             this.hud.actionBar.setVisible(false);
             this.hud.joystick.joystick.setVisible(false);
             this.hud.rightJoystick.joystick.setVisible(false);
@@ -142,7 +142,7 @@ export class Arena extends Phaser.Scene {
         const party = this.registry.get("party");
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
-                const p = new Party({scene:this,x: 200, y: 200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                const p = new Party({scene:this,x: 200, y: 200,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
                 this.party.push(p);
                 p.setPosition(this.player.x + PARTY_OFFSET[i].x, this.player.y + PARTY_OFFSET[i].y);    
                 if (!team) {
@@ -155,53 +155,53 @@ export class Arena extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
-        var postFxPlugin = this.plugins.get('rexHorrifiPipeline');
+        var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
         this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
         this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
 
         this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys('W,UP'),
-            down: this?.input?.keyboard?.addKeys('S,DOWN'),
-            left: this?.input?.keyboard?.addKeys('A,LEFT'),
-            right: this?.input?.keyboard?.addKeys('D,RIGHT'),
-            action: this?.input?.keyboard?.addKeys('ONE,TWO,THREE,FOUR,FIVE'),
-            strafe: this?.input?.keyboard?.addKeys('E,Q'),
-            shift: this?.input?.keyboard?.addKeys('SHIFT'),
-            firewater: this?.input?.keyboard?.addKeys('T'),
-            tab: this?.input?.keyboard?.addKeys('TAB'),
-            escape: this?.input?.keyboard?.addKeys('ESC'),
+            up: this?.input?.keyboard?.addKeys("W,UP"),
+            down: this?.input?.keyboard?.addKeys("S,DOWN"),
+            left: this?.input?.keyboard?.addKeys("A,LEFT"),
+            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
+            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
+            strafe: this?.input?.keyboard?.addKeys("E,Q"),
+            shift: this?.input?.keyboard?.addKeys("SHIFT"),
+            firewater: this?.input?.keyboard?.addKeys("T"),
+            tab: this?.input?.keyboard?.addKeys("TAB"),
+            escape: this?.input?.keyboard?.addKeys("ESC"),
         };
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
-        this.game.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+        this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-        this.musicBackground = this.sound.add('isolation', { volume: this?.hud?.settings?.volume || 0.1, loop: true });
+        this.musicBackground = this.sound.add("isolation", { volume: this?.hud?.settings?.volume || 0.1, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.musicCombat = this.sound.add('industrial', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicCombat2 = this.sound.add('combat2', { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add('stealthing', { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicCombat = this.sound.add("industrial", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicCombat2 = this.sound.add("combat2", { volume: this?.hud?.settings?.volume, loop: true });
+        this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
         
-        // this.platform = new MovingPlatform(this, 1440, 640, 'player-castbar', { isStatic: true });
+        // this.platform = new MovingPlatform(this, 1440, 640, "player-castbar", { isStatic: true });
         // this.platform.vertical(0, 1320, 12000);
         
-        // this.platform2 = new MovingPlatform(this, 768, 224, 'player-castbar', { isStatic: true });
+        // this.platform2 = new MovingPlatform(this, 768, 224, "player-castbar", { isStatic: true });
         // this.platform2.setAngle(90);
         // this.platform2.horizontal(0, 1824, 12000);
         
-        // this.platform3 = new MovingPlatform(this, 192, 1792, 'player-castbar', { isStatic: true });
+        // this.platform3 = new MovingPlatform(this, 192, 1792, "player-castbar", { isStatic: true });
         // this.platform3.setAngle(90);
         // this.platform3.horizontal(0, 1440, 12000);
         
         this.postFxEvent();
         if (this.hud.settings.desktop === true) {
-            this.input.setDefaultCursor('url(assets/images/cursor.png), pointer');
+            this.input.setDefaultCursor("url(assets/images/cursor.png), pointer");
         };
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
-        this.glowFilter = this.plugins.get('rexGlowFilterPipeline');
+        this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
 
         this.createArenaEnemy();
@@ -209,7 +209,7 @@ export class Arena extends Phaser.Scene {
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
 
     showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
@@ -219,16 +219,16 @@ export class Arena extends Phaser.Scene {
     };
 
     cleanUp = (): void => {
-        EventBus.off('combat');
-        EventBus.off('reputation');
-        EventBus.off('enemyLootDrop');
-        EventBus.off('minimap');
-        EventBus.off('update-postfx');
-        EventBus.off('game-map-load');
-        EventBus.off('update-camera-zoom');
-        EventBus.off('update-speed');
-        EventBus.off('update-enemy-special');
-        EventBus.off('resetting-game');
+        EventBus.off("combat");
+        EventBus.off("reputation");
+        EventBus.off("enemyLootDrop");
+        EventBus.off("minimap");
+        EventBus.off("update-postfx");
+        EventBus.off("game-map-load");
+        EventBus.off("update-camera-zoom");
+        EventBus.off("update-speed");
+        EventBus.off("update-enemy-special");
+        EventBus.off("resetting-game");
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
@@ -236,14 +236,14 @@ export class Arena extends Phaser.Scene {
     };
 
     gameEvent = (): void => {
-        EventBus.on('combat', (combat: any) => this.state = combat); 
-        EventBus.on('reputation', (reputation: Reputation) => this.reputation = reputation);
-        EventBus.on('game-map-load', (data: { camera: any, map: any }) => {this.map = data.map;});
-        EventBus.on('enemyLootDrop', (drops: any) => {
+        EventBus.on("combat", (combat: any) => this.state = combat); 
+        EventBus.on("reputation", (reputation: Reputation) => this.reputation = reputation);
+        EventBus.on("game-map-load", (data: { camera: any, map: any }) => {this.map = data.map;});
+        EventBus.on("enemyLootDrop", (drops: any) => {
             if (drops.scene !== this.sceneKey) return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });    
-        EventBus.on('minimap', () => {
+        EventBus.on("minimap", () => {
             if (this.minimap.minimap.visible === true) {
                 this.minimap.minimap.setVisible(false);
                 this.minimap.border.setVisible(false);
@@ -254,37 +254,37 @@ export class Arena extends Phaser.Scene {
                 this.minimap.minimap.startFollow(this.player);
             };
         });
-        EventBus.on('check-stealth', (stealth: boolean) => {
+        EventBus.on("check-stealth", (stealth: boolean) => {
             this.stealth = stealth;
         });
-        EventBus.on('update-camera-zoom', (zoom: number) => {
+        EventBus.on("update-camera-zoom", (zoom: number) => {
             let camera = this.cameras.main;
             camera.zoom = zoom;
         });
-        EventBus.on('update-speed', (data: { speed: number, type: string }) => {
+        EventBus.on("update-speed", (data: { speed: number, type: string }) => {
             switch (data.type) {
-                case 'playerSpeed':
+                case "playerSpeed":
                     this.player.adjustSpeed(data.speed);
                     break;
-                case 'enemySpeed':
+                case "enemySpeed":
                     for (let i = 0; i < this.enemies.length; i++) {
                         this.enemies[i].adjustSpeed(data.speed);
                     };
                     break;
             };
         });
-        EventBus.on('update-enemy-special', (special: number) => {
+        EventBus.on("update-enemy-special", (special: number) => {
             for (let i = 0; i < this.enemies.length; i++) {
                 this.enemies[i].isSpecial = special >= Math.random();
             };
         });
-        EventBus.on('resetting-game', () => {
-            this.sound.play('TV_Button_Press', { volume: this?.hud?.settings?.volume * 2 });
+        EventBus.on("resetting-game", () => {
+            this.sound.play("TV_Button_Press", { volume: this?.hud?.settings?.volume * 2 });
             this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_came: any, _effect: any) => {
-                EventBus.emit('reset-game');
+                EventBus.emit("reset-game");
             });
         });
-        EventBus.on('switch-arena', this.switchArena);
+        EventBus.on("switch-arena", this.switchArena);
     };
 
     resumeScene = () => {
@@ -310,7 +310,7 @@ export class Arena extends Phaser.Scene {
         this.createArenaEnemy();
         this.matter.resume();
         this.scene.wake();
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
 
     switchScene = (current: string) => {
@@ -330,62 +330,62 @@ export class Arena extends Phaser.Scene {
         });
     };
 
-    postFxEvent = () => EventBus.on('update-postfx', (data: {type: string, val: boolean | number}) => {
+    postFxEvent = () => EventBus.on("update-postfx", (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        if (type === 'bloom') this.postFxPipeline.setBloomRadius(val);
-        if (type === 'threshold') this.postFxPipeline.setBloomThreshold(val);
-        if (type === 'chromatic') {
+        if (type === "bloom") this.postFxPipeline.setBloomRadius(val);
+        if (type === "threshold") this.postFxPipeline.setBloomThreshold(val);
+        if (type === "chromatic") {
             if (val === true) {
                 this.postFxPipeline.setChromaticEnable();
             } else {
                 this.postFxPipeline.setChromaticEnable(val);
             };
         };
-        if (type === 'chabIntensity') this.postFxPipeline.setChabIntensity(val);
-        if (type === 'vignetteEnable') {
+        if (type === "chabIntensity") this.postFxPipeline.setChabIntensity(val);
+        if (type === "vignetteEnable") {
             if (val === true) {
                 this.postFxPipeline.setVignetteEnable();
             } else {
                 this.postFxPipeline.setVignetteEnable(val);
             };
         };
-        if (type === 'vignetteStrength') this.postFxPipeline.setVignetteStrength(val);
-        if (type === 'vignetteIntensity') this.postFxPipeline.setVignetteIntensity(val);
-        if (type === 'noiseEnable') {
+        if (type === "vignetteStrength") this.postFxPipeline.setVignetteStrength(val);
+        if (type === "vignetteIntensity") this.postFxPipeline.setVignetteIntensity(val);
+        if (type === "noiseEnable") {
             if (val === true) {
                 this.postFxPipeline.setNoiseEnable();
             } else {
                 this.postFxPipeline.setNoiseEnable(val);
             };
         };
-        if (type === 'noiseSeed') this.postFxPipeline.setNoiseSeed(val);
-        if (type === 'noiseStrength') this.postFxPipeline.setNoiseStrength(val);
-        if (type === 'vhsEnable') {
+        if (type === "noiseSeed") this.postFxPipeline.setNoiseSeed(val);
+        if (type === "noiseStrength") this.postFxPipeline.setNoiseStrength(val);
+        if (type === "vhsEnable") {
             if (val === true) {
                 this.postFxPipeline.setVHSEnable();
             } else {
                 this.postFxPipeline.setVHSEnable(val);
             };
         };
-        if (type === 'vhsStrength') this.postFxPipeline.setVhsStrength(val);
-        if (type === 'scanlinesEnable') {
+        if (type === "vhsStrength") this.postFxPipeline.setVhsStrength(val);
+        if (type === "scanlinesEnable") {
             if (val === true) {
                 this.postFxPipeline.setScanlinesEnable();
             } else {
                 this.postFxPipeline.setScanlinesEnable(val);
             };
         };
-        if (type === 'scanStrength') this.postFxPipeline.setScanStrength(val);
-        if (type === 'crtEnable') {
+        if (type === "scanStrength") this.postFxPipeline.setScanStrength(val);
+        if (type === "crtEnable") {
             if (val === true) {
                 this.postFxPipeline.setCRTEnable();
             } else {
                 this.postFxPipeline.setCRTEnable(val);
             };
         };
-        if (type === 'crtHeight') this.postFxPipeline.crtHeight = val;
-        if (type === 'crtWidth') this.postFxPipeline.crtWidth = val;
-        if (type === 'enable') {
+        if (type === "crtHeight") this.postFxPipeline.crtHeight = val;
+        if (type === "crtWidth") this.postFxPipeline.crtWidth = val;
+        if (type === "enable") {
             if (val === true) {
                 this.setPostFx(this.hud.settings?.postFx, true);
             } else {
@@ -422,7 +422,7 @@ export class Arena extends Phaser.Scene {
     };
 
     getReputation = (): Reputation => {
-        EventBus.emit('request-reputation');
+        EventBus.emit("request-reputation");
         return this.reputation;
     };
 
@@ -443,7 +443,7 @@ export class Arena extends Phaser.Scene {
                     targets: tween,
                     angle: count * 360,
                     duration: count * 925,
-                    ease: 'Circ.easeInOut',
+                    ease: "Circ.easeInOut",
                     yoyo: false,
                 });
             } else {
@@ -472,7 +472,7 @@ export class Arena extends Phaser.Scene {
     clearAggression = () => {
         for (let i = 0; i < this.enemies.length; i++) {
             if (this.enemies[i].inCombat === true) {
-                if (this.player.health <= 0) {
+                if (this.player.health <= 0 || this.state.newPlayerHealth <= 0) {
                     this.enemies[i].clearArenaWin();
                 } else {
                     this.enemies[i].clearArenaLoss();
@@ -541,7 +541,7 @@ export class Arena extends Phaser.Scene {
             this.stopCombatTimer();
         };
         this.combat = bool;
-        EventBus.emit('combat-engaged', bool);
+        EventBus.emit("combat-engaged", bool);
     };
 
     stealthEngaged = (bool: boolean) => {
@@ -597,7 +597,7 @@ export class Arena extends Phaser.Scene {
         };
     };
 
-    drinkFlask = (): boolean => EventBus.emit('drink-firewater');
+    drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
     configureParty = () => {
         const team = this.registry.get("team");
@@ -613,7 +613,7 @@ export class Arena extends Phaser.Scene {
         if (team) {
             const party = this.registry.get("party");
             for (let i = 0; i < party.length; i++) {
-                const p = new Party({scene:this,x: 200, y: 200,texture:'player_actions',frame:'player_idle_0',data:party[i],position:i});
+                const p = new Party({scene:this,x: 200, y: 200,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
                 this.party.push(p);    
                 p.setPosition(this.player.x + PARTY_OFFSET[i].x, this.player.y + PARTY_OFFSET[i].y);    
             };
@@ -621,7 +621,7 @@ export class Arena extends Phaser.Scene {
     };
 
     createArenaEnemy = () => {
-        EventBus.emit('alert', { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
+        EventBus.emit("alert", { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1000, () => {
             let data: Compiler[] = this.registry.get("enemies");
             if (!data) {
@@ -639,7 +639,7 @@ export class Arena extends Phaser.Scene {
             };
             for (let j = 0; j < data.length; j++) {
                 marker = markers[Math.floor(Math.random() * markers.length)];
-                const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: 'player_actions', frame: 'player_idle_0', data: data[j] });
+                const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
                 this.enemies.push(enemy);
                 enemy.setPosition(marker.x, marker.y);
                 const markerPosition = new Phaser.Math.Vector2(marker.x, marker.y);
@@ -687,15 +687,15 @@ export class Arena extends Phaser.Scene {
             "You're joking?", "Why did you even bother me with this.", `Well fought, ${this.state.player?.name}.`, "Very good! May we meet again."
         ];
         const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
-        enemy.specialCombatText = this.showCombatText(saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             if (this.enemies.length === 0) { // || !this.inCombat
                 if (enemy.isDefeated) {
-                    EventBus.emit('settle-wager', { wager: this.wager, win: true });
+                    EventBus.emit("settle-wager", { wager: this.wager, win: true });
                 } else if (enemy.isTriumphant) {
-                    EventBus.emit('settle-wager', { wager: this.wager, win: false });
+                    EventBus.emit("settle-wager", { wager: this.wager, win: false });
                 };
                 this.computerDisengage();
                 this.hud.clearNonAggressiveEnemy();
@@ -740,7 +740,7 @@ export class Arena extends Phaser.Scene {
             callback: () => {
                 if (this.scene.isPaused()) return;
                 this.combatTime += 1;
-                EventBus.emit('update-combat-timer', this.combatTime);
+                EventBus.emit("update-combat-timer", this.combatTime);
             },
             callbackScope: this,
             loop: true
@@ -749,7 +749,7 @@ export class Arena extends Phaser.Scene {
     stopCombatTimer = (): void => {
         if (this.combatTimer) this.combatTimer.destroy();
         this.combatTime = 0;
-        EventBus.emit('update-combat-timer', this.combatTime);
+        EventBus.emit("update-combat-timer", this.combatTime);
     };
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);

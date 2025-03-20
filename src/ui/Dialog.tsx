@@ -772,7 +772,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 merchantEquipment = await getSpecificArmor(combat()?.player?.level as number, armor);
             };
             setMerchantTable(merchantEquipment);
-            setShowBuy(true);
+            if (!showBuy()) setShowBuy(true);
             EventBus.emit("blend-game", { merchantEquipment });
         } catch (err) {
             console.warn(err, "--- Error Getting Loot! ---");
@@ -1321,7 +1321,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
-        <Show when={showBuy() && merchantTable()?.length > 0}>
+        {/* && merchantTable()?.length > 0 */}
+        <Show when={showBuy()}>
             <div class="modal">
             <div class="creature-heading" style={{ position: "absolute", left: "20%", top: "2.5%", height: "95%", width: "60%",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll","text-align": "center", "scrollbar-width":"none" }}>
                 <Currency ascean={ascean} />
@@ -1407,7 +1408,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </div>
                 <br /><br />
                 </div>
-                <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => switchToBuy()}>Check the Merchant"s Wares</button>
+                <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => switchToBuy()}>Buy Loot</button>
                 <button class="cornerBR highlight" onClick={() => setShowSell(false)} style={{ "background-color": "red" }}>X</button>
             </div>
         </Show>

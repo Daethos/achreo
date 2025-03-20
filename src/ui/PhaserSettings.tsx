@@ -247,139 +247,139 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     async function handleVolume(e: number) {
         const newSettings = { ...settings(), volume: e };
         await saveSettings(newSettings);
-        EventBus.emit('update-volume', e);
+        EventBus.emit("update-volume", e);
     };
 
     // function resetGame() {
-    //     EventBus.emit('reset-game'); 
+    //     EventBus.emit("reset-game"); 
     //     // setShowRestart(false); 
-    //     // EventBus.emit('set-show-player');
+    //     // EventBus.emit("set-show-player");
     // };
-    // <div style={{...font('0.5em', '#fdf6d8'), margin: '1% auto', display: 'block'}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
+    // <div style={{...font("0.5em", "#fdf6d8"), margin: "1% auto", display: "block"}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
     return <>
-        <div class='center' style={{ display: 'flex', 'flex-direction': 'row', height: '100%' }}>
-        <div class='gold' style={{ position: 'absolute', top: '0', 'font-size': '1.25em', display: 'inline' }}>
-            <div style={{ 'padding-top': '5%' }}>Controls - {settings().control}</div>
+        <div class="center" style={{ display: "flex", "flex-direction": "row", height: "100%" }}>
+        <div class="gold" style={{ position: "absolute", top: "0", "font-size": "1.25em", display: "inline" }}>
+            <div style={{ "padding-top": "5%" }}>Controls - {settings().control}</div>
             <Show when={settings().control !== CONTROLS.BUTTONS}>
-                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
             </Show>
             <Show when={settings().control !== CONTROLS.POST_FX}>
-                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
             </Show>
             <Show when={settings().control !== CONTROLS.DIFFICULTY}>
-                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
             </Show>
             <Show when={settings().control !== CONTROLS.PHASER_UI}>
-                <button class='highlight' style={{ 'font-size': '0.5em', display: 'inline', width: 'auto' }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
             </Show>
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
-            <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
-                <div style={font('1em', '#fdf6d8')}>Physical Actions<br /></div>
+            <div style={dimensions().ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
+                <div style={font("1em", "gold")}>Physicals<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
-                    <button class='highlight' onClick={() => actionModal(action, index)} style={{display: 'block'}}>
-                        <div style={{ width: '100%', 'min-width': '60px', 'font-size': '0.75em', margin: '3%' }}><span class='gold' style={{ 'padding-right': '3px' }}>{index + 1} </span> {action}</div>
+                    <button class="highlight" onClick={() => actionModal(action, index)} style={{display: "block"}}>
+                        <div style={{ width: "100%", "min-width": "60px", "font-size": "0.75em", margin: "3%" }}><span class="gold" style={{ "padding-right": "3px" }}>{index + 1} </span> {action}</div>
                     </button>
                 )}
                 </div>
-                <div style={dimensions().ORIENTATION === 'landscape' ? { margin: '25% auto 0' } : { 'margin-top': '50%' }}>
-                    <div style={font('1em', '#fdf6d8')}>Special Actions<br /></div>
+                <div style={dimensions().ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
+                    <div style={font("1em", "gold")}>Specials<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
-                        <button  class='highlight' onClick={() => specialModal(special, index)} style={{display: 'block'}}>
-                            <div style={{ width: '100%', 'min-width': '65px', 'font-size': '0.75em', margin: '3%' }}><span class='gold' style={{ 'padding-right': '3px' }}>{index + 1} </span> {special}</div>
+                        <button  class="highlight" onClick={() => specialModal(special, index)} style={{display: "block"}}>
+                            <div style={{ width: "100%", "min-width": "65px", "font-size": "0.75em", margin: "3%" }}><span class="gold" style={{ "padding-right": "3px" }}>{index + 1} </span> {special}</div>
                         </button>
                     )}
                 </div>
             </Match>
             <Match when={settings().control === CONTROLS.POST_FX}>
-                <div class='center creature-heading' style={dimensions().ORIENTATION === 'landscape' ? { 'margin-top': '25%' } : { 'margin-top': '50%' }}>
-                    <h1 onClick={() => resetFx('postfx', !fx().postfx)} style={font('1.25em')}>PostFx</h1>
-                    <Collapse value={fx().postfx} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('enable', !settings().postFx?.enable)}>
-                            {settings().postFx?.enable ? 'On' : 'Off'}
+                <div class="center creature-heading" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
+                    <h1 onClick={() => resetFx("postfx", !fx().postfx)} style={font("1.25em")}>PostFx</h1>
+                    <Collapse value={fx().postfx} class="my-transition">
+                        <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("enable", !settings().postFx?.enable)}>
+                            {settings().postFx?.enable ? "On" : "Off"}
                         </button> 
                         </div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFx('chromatic', !fx().chromatic)} style={font('1.25em')}>Chromatic Abb.</h1>
-                    <Collapse value={fx().chromatic} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('chromaticEnable', !settings().postFx?.chromaticEnable)}>
+                    <h1 onClick={() => resetFx("chromatic", !fx().chromatic)} style={font("1.25em")}>Chromatic Abb.</h1>
+                    <Collapse value={fx().chromatic} class="my-transition">
+                        <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("chromaticEnable", !settings().postFx?.chromaticEnable)}>
                         
-                            {settings().postFx?.chromaticEnable ? 'On' : 'Off'}
+                            {settings().postFx?.chromaticEnable ? "On" : "Off"}
                         </button>
                         </div>
                     </Collapse>
                         
-                    <h1 onClick={() => resetFx('chab', !fx().chab)} style={font('1.25em')}>Chab </h1>
-                    <Collapse value={fx().chab} class='my-transition'>
-                        <div style={font('1em', '#fdf6d8')}>
+                    <h1 onClick={() => resetFx("chab", !fx().chab)} style={font("1.25em")}>Chab </h1>
+                    <Collapse value={fx().chab} class="my-transition">
+                        <div style={font("1em", "#fdf6d8")}>
                             ({settings().postFx.chabIntensity})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx('chabIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx("chabIntensity", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx('vignette', !fx().vignette)} style={font('1.25em')}>Vignette</h1>
-                    <Collapse value={fx().vignette} class='my-transition'>
-                    <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('vignetteEnable', !settings().postFx?.vignetteEnable)}>
-                            {settings().postFx?.vignetteEnable ? 'On' : 'Off'}
+                    <h1 onClick={() => resetFx("vignette", !fx().vignette)} style={font("1.25em")}>Vignette</h1>
+                    <Collapse value={fx().vignette} class="my-transition">
+                    <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("vignetteEnable", !settings().postFx?.vignetteEnable)}>
+                            {settings().postFx?.vignetteEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font('1em', '#fdf6d8')}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx('vignetteStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                        <div style={font('1em', '#fdf6d8')}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx('vignetteIntensity', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font("1em", "#fdf6d8")}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx("vignetteStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
+                        <div style={font("1em", "#fdf6d8")}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx("vignetteIntensity", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx('noise', !fx().noise)} style={font('1.25em')}>Noise</h1>
-                    <Collapse value={fx().noise} class='my-transition'>
-                    <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('noiseEnable', !settings().postFx?.noiseEnable)}>
-                            {settings().postFx?.noiseEnable ? 'On' : 'Off'}
+                    <h1 onClick={() => resetFx("noise", !fx().noise)} style={font("1.25em")}>Noise</h1>
+                    <Collapse value={fx().noise} class="my-transition">
+                    <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("noiseEnable", !settings().postFx?.noiseEnable)}>
+                            {settings().postFx?.noiseEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font('1em', '#fdf6d8')}>Noise Strength ({settings().postFx.noiseStrength})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx('noiseStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                        <div style={font('1em', '#fdf6d8')}>Noise Seed ({settings().postFx.noiseSeed})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx('noiseSeed', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font("1em", "#fdf6d8")}>Noise Strength ({settings().postFx.noiseStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx("noiseStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
+                        <div style={font("1em", "#fdf6d8")}>Noise Seed ({settings().postFx.noiseSeed})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx("noiseSeed", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
                     
                     
-                    <h1 onClick={() => resetFx('vhs', !fx().vhs)} style={font('1.25em')}>VHS</h1>
-                    <Collapse value={fx().vhs} class='my-transition'>
-                    <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('vhsEnable', !settings().postFx?.vhsEnable)}>
-                            {settings().postFx?.vhsEnable ? 'On' : 'Off'}
+                    <h1 onClick={() => resetFx("vhs", !fx().vhs)} style={font("1.25em")}>VHS</h1>
+                    <Collapse value={fx().vhs} class="my-transition">
+                    <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("vhsEnable", !settings().postFx?.vhsEnable)}>
+                            {settings().postFx?.vhsEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font('1em', '#fdf6d8')}>Strength ({settings().postFx.vhsStrength})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx('vhsStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font("1em", "#fdf6d8")}>Strength ({settings().postFx.vhsStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx("vhsStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx('scanline', !fx().scanline)} style={font('1.25em')}>Scanlines</h1>
-                    <Collapse value={fx().scanline} class='my-transition'>
-                    <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('scanlinesEnable', !settings().postFx?.scanlinesEnable)}>
-                            {settings().postFx?.scanlinesEnable ? 'On' : 'Off'}
+                    <h1 onClick={() => resetFx("scanline", !fx().scanline)} style={font("1.25em")}>Scanlines</h1>
+                    <Collapse value={fx().scanline} class="my-transition">
+                    <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("scanlinesEnable", !settings().postFx?.scanlinesEnable)}>
+                            {settings().postFx?.scanlinesEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font('1em', '#fdf6d8')}>Strength ({settings().postFx.scanStrength})</div>
-                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx('scanStrength', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font("1em", "#fdf6d8")}>Strength ({settings().postFx.scanStrength})</div>
+                        <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx("scanStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx('crt', !fx().crt)} style={font('1.25em')}>CRT Enable</h1>
-                    <Collapse value={fx().crt} class='my-transition'>
-                    <div style={font('1em', '#fdf6d8')}>
-                        <button class='highlight' onClick={() => handlePostFx('crtEnable', !settings().postFx?.crtEnable)}>
-                            {settings().postFx?.crtEnable ? 'On' : 'Off'}
+                    <h1 onClick={() => resetFx("crt", !fx().crt)} style={font("1.25em")}>CRT Enable</h1>
+                    <Collapse value={fx().crt} class="my-transition">
+                    <div style={font("1em", "#fdf6d8")}>
+                        <button class="highlight" onClick={() => handlePostFx("crtEnable", !settings().postFx?.crtEnable)}>
+                            {settings().postFx?.crtEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font('1em', '#fdf6d8')}>CRT Height ({settings().postFx.crtHeight})</div>
-                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx('crtHeight', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
-                        <div style={font('1em', '#fdf6d8')}>CRT Width ({settings().postFx.crtWidth})</div>
-                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx('crtWidth', Number(e.target.value))} style={{ color: 'red', background: 'red', 'background-color': 'red' }} />
+                        <div style={font("1em", "#fdf6d8")}>CRT Height ({settings().postFx.crtHeight})</div>
+                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx("crtHeight", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
+                        <div style={font("1em", "#fdf6d8")}>CRT Width ({settings().postFx.crtWidth})</div>
+                        <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx("crtWidth", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
                     <br />
                     </div>
@@ -392,11 +392,11 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <h1 onClick={() => resetDifficulty('computerArena', !difficulty().computerArena)} style={font('0.85em')}>Arena Combat</h1>
                         <Collapse value={difficulty().computerArena} class='my-transition'> 
                             <div style={font('0.85em', '#fdf6d8')}>
-                                <button class='gold highlight' onClick={() => handleArenaCombat()}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
+                                <button class='highlight' onClick={() => handleArenaCombat()} style={{ color: settings().difficulty.arena ? "red" : "#fdf6d8" }}>{settings().difficulty.arena ? 'Manual' : 'Computer'}</button>
                                 <div style={font('0.5em')}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
 
                                 <h1 class='gold' style={font('0.85em')}>Player Computer Focus</h1>
-                                <button class='gold highlight' onClick={() => handleComputerFocus()}>{settings().computerFocus || 'Balanced'}</button>
+                                <button class='highlight' onClick={() => handleComputerFocus()} style={{ color: settings().computerFocus === "Balanced" ? "gold" : settings().computerFocus === "Offensive" ? "red" : "#fdf6d8" }}>{settings().computerFocus || 'Balanced'}</button>
                                 <ComputerLoadout settings={settings} />
                             </div>
                         </Collapse>
@@ -415,12 +415,12 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <p>Enemies May Always Attack From Accidental Damage.</p>
                         <div style={font('0.85em', '#fdf6d8')}>
                             <h1 style={font('1.25em')}>Computer Combat</h1>
-                            <button class='gold highlight' onClick={() => handleComputerCombat()}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
+                            <button class='highlight' onClick={() => handleComputerCombat()} style={{ color: settings().difficulty.computer ? "red" :  "#fdf6d8" }}>{settings().difficulty.computer ? 'Enabled' : 'Disabled'}</button>
                         </div>
                         <div style={font('0.5em')}>[Whether Computer Enemies Will Engage In Casual Combat With Each Other On Awareness / Contact.]</div>
                             <div style={font('0.85em')}>
                             <h1 style={font('1.25em')}>Immersion</h1>
-                            <button class="highlight" onClick={handleAggressionImmersion} style={{ color: settings().difficulty.aggressionImmersion ? "red" :  "gold" }}>
+                            <button class="highlight" onClick={handleAggressionImmersion} style={{ color: settings().difficulty.aggressionImmersion ? "red" :  "#fdf6d8" }}>
                                 {settings().difficulty.aggressionImmersion ? "Enabled" : "Disabled"}
                             </button>
                             </div>
@@ -548,8 +548,8 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                 </div>
             </Match>
         </Switch>
-        <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.25em', padding: '0.25em' }} onClick={() => setShowRestart(true)}>
-            <p>Restart</p>
+        <button class='highlight cornerTR' style={{ 'background-color': 'red', 'z-index': 1, 'font-size': '0.5em', padding: '0.25em' }} onClick={() => setShowRestart(true)}>
+            Restart
         </button>
         </div>
         <Show when={actionShow()}>

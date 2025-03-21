@@ -24,7 +24,7 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 // @ts-ignore
 import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
 import { PARTY_OFFSET } from "../../utility/party";
-import { faction } from "../../utility/player";
+import { FACTION } from "../../utility/player";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -392,7 +392,7 @@ export class Game extends Scene {
         EventBus.on("update-enemy-aggression-immersion", (aggression: boolean) => {
             if (aggression) {
                 for (let i = 0; i < this.enemies.length; i++) {
-                    this.enemies[i].isAggressive = this.hud.reputation.factions.find((f: faction) => f.name === this.enemies[i].ascean.name)?.aggressive as boolean;
+                    this.enemies[i].isAggressive = this.hud.reputation.factions.find((f: FACTION) => f.name === this.enemies[i].ascean.name)?.aggressive as boolean;
                 };
             } else {
                 for (let i = 0; i < this.enemies.length; i++) {

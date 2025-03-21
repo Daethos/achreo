@@ -144,7 +144,6 @@ export interface SupernaturalPhenomena {
     Insight: string;
 };
 
-
 export const institutions: Institutions = {
     Ascea:  {
         preamble: `"Ahh, the Ascea. Such a wonderful event could not possibly be put into words as eloquent as the cheers of the crowd, the gracious acceptance of rewards, and the lingering scent of trade and diplomacy as is seen during the games. \n

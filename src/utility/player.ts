@@ -2,8 +2,8 @@ import { States } from "../game/phaser/StateMachine";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 
-export const PHYSICAL_ACTIONS = ['attack', 'posture', 'thrust'];
-export const PHYSICAL_EVASIONS = ['dodge', 'roll'];
+export const PHYSICAL_ACTIONS = ["attack", "posture", "thrust"];
+export const PHYSICAL_EVASIONS = ["dodge", "roll"];
 const COST = {LOW: 15, MID: 30, HIGH: 45, HIGHEST: 60}; // Good, Better, Best, Bested. How is that for a declension
 const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
 export const TALENT_COST = {
@@ -295,7 +295,7 @@ const STATE = "stateMachine";
 const POSITIVE = "positiveMachine";
 
 export const PLAYER_INSTINCTS = {
-    'constitution': [
+    "constitution": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -340,7 +340,7 @@ export const PLAYER_INSTINCTS = {
             value: States.WARD
         }
     ],
-    'strength': [
+    "strength": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -385,7 +385,7 @@ export const PLAYER_INSTINCTS = {
             value: States.WARD
         }
     ],
-    'agility': [
+    "agility": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -430,7 +430,7 @@ export const PLAYER_INSTINCTS = {
             value: States.ACHIRE
         }
     ],
-    'achre': [
+    "achre": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.HEALING
@@ -475,7 +475,7 @@ export const PLAYER_INSTINCTS = {
             value: States.QUOR
         }
     ],
-    'caeren': [
+    "caeren": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.HEALING
@@ -520,7 +520,7 @@ export const PLAYER_INSTINCTS = {
             value: States.MENACE
         }
     ],
-    'kyosir': [
+    "kyosir": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.RECONSTITUTE
@@ -596,31 +596,15 @@ export const OFFENSIVE_INSTINCTS = {
     "kyosir": [States.INVOKE, States.CHIOMISM, States.DISPEL, States.ILIRECH, States.KYRNAICISM, States.MALICE, States.SACRIFICE],
 };
 
-export const STAMINA = ['attack', 'posture', 'roll', 'dodge', 'parry', 'thrust'];
+export const STAMINA = ["attack", "posture", "roll", "dodge", "parry", "thrust"];
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };
 };
 
 export const ENEMY_AGGRESSION = -15;
-
-export type faction = {
-    name: string; // Name of faction type and functional key for factions[] array
-    reputation: number; // 0 - 100. Higher reputation opens up dialog, quests, and trade
-    named: boolean; // Unique enemies
-    aggressive: boolean; // Attacks first if true
-    betrayed: boolean; // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
-    faith: string; // Adherent || Devoted
-};
-
-export const initFaction = {
-    name: "", // Name of faction type and functional key for factions[] array
-    reputation: 0, // 0 - 100. Higher reputation opens up dialog, quests, and trade
-    named: false, // Unique enemies
-    aggressive: false, // Attacks first if true
-    betrayed: false, // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
-    faith: "", // Adherent || Devoted
-};
+const ADHERENT = "Adherent";
+const DEVOTED = "Devoted";
 
 export const ACHREON_DRUID = "Achreon Druid";
 export const AHNARE_APOSTLE = "Ahn'are Apostle";
@@ -773,405 +757,395 @@ export const namedNameCheck = (name: string) => {
     };
 };
 
-const initFactions: faction[] = [
+export type FACTION = {
+    name: string; // Name of FACTION type and functional key for factions[] array
+    reputation: number; // 0 - 100. Higher reputation opens up dialog, quests, and trade
+    named: boolean; // Unique enemies
+    aggressive: boolean; // Attacks first if true
+    betrayed: boolean; // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
+    faith: string; // Adherent || Devoted
+    deity: string[];
+    province: string[];
+    [key: string]: boolean | number | string | string[];
+};
+
+export const initFaction = {
+    name: "", // Name of FACTION type and functional key for factions[] array
+    reputation: 0, // 0 - 100. Higher reputation opens up dialog, quests, and trade
+    named: false, // Unique enemies
+    aggressive: false, // Attacks first if true
+    betrayed: false, // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
+    faith: "", // Adherent || Devoted
+    province: [""],
+    deity: [""],
+};
+
+const initFactions: FACTION[] = [
     {
-        name: "Achreon Druid",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: ACHREON_DRUID,
+        faith: ADHERENT,
+        deity: ["Achreo"],
+        province: ["Kingdom", "Soverains"],
     }, {
-        name: "Ahn'are Apostle",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: AHNARE_APOSTLE,
+        faith: ADHERENT,
+        deity: ["Ahn've"],
+        province: ["Astralands", "Firelands"],
     }, {
-        name: "Anashtre",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: ANASHTRE,
+        faith: ADHERENT,
+        deity: ["Astra"],
+        province: ["Astralands"],
     }, {
-        name: "Astral Apostle",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: ASTRAL_APOSTLE,
+        faith: ADHERENT,
+        deity: ["Astra"],
+        province: ["Astralands"],
     }, {
-        name: "Cambiren Druid",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: CAMBIREN_DRUID,
+        faith: ADHERENT,
+        deity: ["Cambire"],
+        province: ["Kingdom", "Soverains"],
     }, {
-        name: "Chiomic Jester",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: CHIOMIC_JESTER,
+        faith: ADHERENT,
+        deity: ["Chiomyr", "Shrygei"],
+        province: ["Firelands", "West Fangs"],
     }, {
-        name: "Daethic Inquisitor",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Devoted',
+        ...initFaction,
+        name: DAETHIC_INQUISITOR,
+        faith: DEVOTED,
+        deity: ["Daethos"],
+        province: ["Licivitas"],
     }, {
-        name: "Daethic Knight",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Devoted',
+        ...initFaction,
+        name: DAETHIC_KNIGHT,
+        faith: DEVOTED,
+        deity: ["Daethos"],
+        province: ["Licivitas"],
     }, {
-        name: "Fang Duelist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: FANG_DUELIST,
+        faith: ADHERENT,
+        deity: ["Se'dyro", "Se'vas"],
+        province: ["West Fangs"],
     }, {
-        name: "Fang Mercenary",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: FANG_MERCENARY,
+        faith: ADHERENT,
+        deity: ["Kyn'gi", "Tshaer"],
+        province: ["West Fangs"],
     }, {
-        name: "Firesworn",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: FIRESWORN,
+        faith: ADHERENT,
+        deity: ["Fyer", "Rahvre", "Se'dyro"],
+        province: ["Firelands"],
     }, {
-        name: "Fyers Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: FYERS_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Fyer"],
+        province: ["Firelands"],
     }, {
-        name: "Ilire Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: ILIRE_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Ilios"],
+        province: ["Kingdom", "Soverains"],
     }, {
-        name: "Kingsman",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Devoted',
+        ...initFaction,
+        name: KINGSMAN,
+        faith: DEVOTED,
+        deity: ["Achreo", "Daethos"],
+        province: ["Kingdom"],
     }, {
-        name: "Kyn'gian Shaman",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: KYNGIAN_SHAMAN,
+        faith: ADHERENT,
+        deity: ["Kyn'gi"],
+        province: ["Sedyrus"],
     }, {
-        name: "Kyrisian Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: KYRISIAN_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Kyrisos"],
+        province: ["Licivitas"],
     }, {
-        name: "Li'ivi Legionnaire",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Devoted',
+        ...initFaction,
+        name: LIIVI_LEGIONNAIRE,
+        faith: DEVOTED,
+        deity: ["Daethos"],
+        province: ["Licivitas"],
     }, {
-        name: "Ma'ier Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: MAIER_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Ma'anre"],
+        province: ["Firelands", "Sedyrus"],
     }, {
-        name: "Marauder",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: MARAUDER,
+        faith: ADHERENT,
+        deity: ["Kyn'gi", "Se'vas"],
+        province: ["Firelands", "West Fangs"],
     }, {
-        name: "Mavrosin Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: MAVROSIN_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Ilios"],
+        province: ["Kingdom", "Soverains"],
     }, {
-        name: "Northren Wanderer",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: NORTHREN_WANDERER,
+        faith: ADHERENT,
+        deity: ["Achreo", "Cambire"],
+        province: ["Kingdom", "Soverains"],
     }, {
-        name: "Nyren",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: NYREN,
+        faith: ADHERENT,
+        deity: ["Nyrolus", "Senari"],
+        province: ["Licivitas", "West Fangs"],
     }, {
-        name: "Old Li'ivi Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: OLD_LIIVI_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Kyr'na", "Lilos"],
+        province: ["Licivitas"],
     }, {
-        name: "Quor'eite Occultist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: QUOREITE_OCCULTIST,
+        faith: ADHERENT,
+        deity: ["Quor'ei"],
+        province: ["Sedyrus"],
     }, {
-        name: "Quor'eite Stalker",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: QUOREITE_STALKER,
+        faith: ADHERENT,
+        deity: ["Quor'ei", "Se'vas"],
+        province: ["Sedyrus"],
     }, {
-        name: "Rahvrehcur",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: RAHVREHCUR,
+        faith: ADHERENT,
+        deity: ["Rahvre"],
+        province: ["West Fangs"],
     }, {
-        name: "Se'dyrist",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SEDYRIST,
+        faith: ADHERENT,
+        deity: ["Nyrolus", "Se'dyro", "Senari"],
+        province: ["Firelands", "Licivitas"],
     }, {
-        name: "Sedyreal Guard",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SEDYREAL_GUARD,
+        faith: ADHERENT,
+        deity: ["Se'dyro", "Se'vas"],
+        province: ["Sedyrus"],
     }, {
-        name: "Se'va Shrieker",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SEVA_SHRIEKER,
+        faith: ADHERENT,
+        deity: ["Se'vas"],
+        province: ["Sedyrus"],
     }, {
-        name: "Shrygeian Bard",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SHRYGEIAN_BARD,
+        faith: ADHERENT,
+        deity: ["Chiomyr", "Shrygei"],
+        province: ["Firelands", "West Fangs"],
     }, {
-        name: "Southron Wanderer",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SOUTHRON_WANDERER,
+        faith: ADHERENT,
+        deity: ["Kyn'gi", "Quor'ei", "Se'dyro"],
+        province: ["Sedyrus"],
     }, {
-        name: "Soverain Blood Cloak",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: SOVERAIN_BLOOD_CLOAK,
+        faith: ADHERENT,
+        deity: ["Achreo", "Cambire"],
+        province: ["Soverains"],
     }, {
-        name: "Tshaeral Shaman",
-        reputation: 0,
-        named: false,
-        aggressive: true,
-        betrayed: false,
-        faith: 'Adherent',
+        ...initFaction,
+        name: TSHAERAL_SHAMAN,
+        faith: ADHERENT,
+        deity: ["Tshaer"],
+        province: ["Sedyrus"],
     }, { // ===== Named Enemies ===== 
+        ...initFaction,
         name: "Ah'gani",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Astra", "Se'dyro", "Se'vas"],
+        province: ["Astralands"],
     }, {
+        ...initFaction,
         name: "Ashreu'ul",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Astra", "Se'dyro", "Se'vas"],
+        province: ["Astralands"],
     }, {
+        ...initFaction,
         name: "Cyrian Shyne",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Se'dyro", "Se'vas"],
+        province: ["Sedyrus"],
     }, {
+        ...initFaction,
         name: "Daetheus",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Daethos", "Kyr'na", "Lilos"],
+        province: ["Licivitas"],
     }, {
+        ...initFaction,
         name: "Dorien Caderyn",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Achreo", "Cambire", "Daethos"],
+        province: ["Kingdom"],
     }, {
+        ...initFaction,
         name: "Eugenes",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Ma'anre"],
+        province: ["Firelands"],
     }, {
+        ...initFaction,
         name: "Evrio Lorian Peroumes",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Daethos"],
+        province: ["Licivitas"],
     }, {
+        ...initFaction,
         name: "Fierous Ashfyre",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Fyer"],
+        province: ["Firelands"],
     }, {
+        ...initFaction,
         name: "Garris Ashenus",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Ma'anre"],
+        province: ["Firelands"],
     }, {
+        ...initFaction,
         name: "King Mathyus Caderyn",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Daethos"],
+        province: ["Kingdom"],
     }, {
+        ...initFaction,
         name: "Kreceus",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Astra"],
+        province: ["Astralands"],
     }, {
+        ...initFaction,
         name: "Laetrois Ath'Shaorah",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Daethos"],
+        province: [""],
     }, {
+        ...initFaction,
         name: "Leaf",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Achreo"],
+        province: ["Kingdom"],
     }, {
+        ...initFaction,
         name: "Lorian",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Daethos", "Lilos"],
+        province: [""],
     }, {
+        ...initFaction,
         name: "Mavros Ilios",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Daethos", "Ilios"],
+        province: [""],
     }, {
+        ...initFaction,
         name: "Mirio",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Cambire", "Chiomyr", "Daethos", "Kyr'na"],
+        province: ["Licivitas"],
     }, {
+        ...initFaction,
         name: "Quor'estes",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Chiomyr", "Shrygei"],
+        province: ["Sedyrus"],
     }, {
+        ...initFaction,
         name: "Relien Myelle",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Cambire", "Ilios"],
+        province: ["Soverains"],
     }, {
+        ...initFaction,
         name: "Sera Lorian",
-        reputation: 0,
+        faith: DEVOTED,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Devoted',
+        deity: ["Daethos"],
+        province: ["Licivitas"],
     }, {
+        ...initFaction,
         name: "Sky",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Achreo", "Nyrolus"],
+        province: ["Kingdom"],
     }, {
+        ...initFaction,
         name: "Synaethi Spiras",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Ahn've"],
+        province: ["Firelands"],
     }, {
+        ...initFaction,
         name: "Torreous Ashfyre",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Fyer"],
+        province: ["Firelands"],
     }, {
+        ...initFaction,
         name: "Vincere",
-        reputation: 0,
+        faith: ADHERENT,
         named: true,
-        aggressive: false,
-        betrayed: false,
-        faith: 'Adherent',
+        deity: ["Achreo"],
+        province: ["Licivitas"],
     },
 ];
 
 export class Reputation {
     public _id: string;
-    public factions: faction[];
+    public factions: FACTION[];
     public constructor(id: string) {
         this._id = id;
         this.factions = initFactions;

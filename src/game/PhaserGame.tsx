@@ -18,7 +18,7 @@ import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
 import { STARTING_SPECIALS } from "../utility/abilities";
-import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, faction } from "../utility/player";
+import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
 import QuestManager, { Quest } from "../utility/quests";
@@ -386,7 +386,7 @@ export default function PhaserGame (props: IProps) {
         if (!computer?.name) return newReputation;
         if (instance.scene?.scene.key !== "Game") return;
         const enemies = ENEMY_ENEMIES[computer.name as keyof typeof ENEMY_ENEMIES];
-        newReputation.factions.forEach((faction: faction) => {
+        newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {
                 faction.reputation = Math.min(faction.reputation + 1, 50);
                 if (faction.reputation > ENEMY_AGGRESSION && faction.aggressive) {
@@ -406,7 +406,7 @@ export default function PhaserGame (props: IProps) {
     function recordQuestReputation(giver: string) {
         let newReputation = { ...props.reputation() };
         if (!giver) return newReputation;
-        newReputation.factions.forEach((faction: faction) => {
+        newReputation.factions.forEach((faction: FACTION) => {
             if (faction.name === giver) {
                 faction.reputation = Math.min(faction.reputation + 10, 100);
             };

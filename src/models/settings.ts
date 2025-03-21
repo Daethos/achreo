@@ -42,6 +42,7 @@ export default class Settings {
     public characterViews: string;
     public faithViews: string;
     public healthViews: string;
+    public reputationViews: string;
     public grace: string;
     public stamina: string;
     public combatText: { 
@@ -207,6 +208,7 @@ export default class Settings {
         this.asceanViews = "Inventory";
         this.settingViews = "Control";
         this.characterViews = "Statistics";
+        this.reputationViews = "Enemy";
         this.faithViews = "Deities";
         this.healthViews = "FULL";
         this.grace = "NUMBER";

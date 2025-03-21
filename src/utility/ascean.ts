@@ -24,18 +24,18 @@ export type CharacterSheet = {
 export const STARTING_CHARACTERS: CharacterSheet[] = [
     {
         name: "Ah'gani Descaer",
-        description: 'Soldier of the Astral Wastes. Exile',
-        sex: 'Man',
-        origin: 'Ashtre',
+        description: "Soldier of the Astral Wastes. Exile",
+        sex: "Man",
+        origin: "Ashtre",
         constitution: 12,
         strength: 16,
         agility: 12,
         achre: 10,
         caeren: 13,
         kyosir: 10,
-        mastery: 'strength',
-        faith: 'Adherent',
-        preference: 'Chain-Mail',
+        mastery: "strength",
+        faith: "Adherent",
+        preference: "Chain-Mail",
     },{
         name: "Daetheus of Ky'myr",
         description: "Old Li'ivi Occultist",
@@ -320,25 +320,25 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
 ];
 
 export const initCharacter: CharacterSheet = {
-    name: 'Kreceus',
-    description: 'Apostle of Astra',
-    sex: 'Man',
-    origin: 'Ashtre',
+    name: "Kreceus",
+    description: "Apostle of Astra",
+    sex: "Man",
+    origin: "Ashtre",
     constitution: 12,
     strength: 10,
     agility: 12,
     achre: 16,
     caeren: 10,
     kyosir: 13,
-    mastery: 'achre',
-    faith: 'Adherent',
-    preference: 'Leather-Cloth',
+    mastery: "achre",
+    faith: "Adherent",
+    preference: "Leather-Cloth",
 };
 
 export const initCharacterSheet: CharacterSheet = {
-    name: 'Stranger', // Dorien Caderyn
-    description: 'Commoner From Elsewhere', // Prince of the Daethic Kingdom
-    sex: 'Man',
+    name: "Stranger", // Dorien Caderyn
+    description: "Commoner From Elsewhere", // Prince of the Daethic Kingdom
+    sex: "Man",
     origin: "Ashtre", // Notheo
     constitution: 16, // 12
     strength: 14, // 16
@@ -346,9 +346,9 @@ export const initCharacterSheet: CharacterSheet = {
     achre: 10,
     caeren: 13, // 12
     kyosir: 10, // 13
-    mastery: 'constitution',
-    faith: 'Adherent',
-    preference: 'Plate-Mail',
+    mastery: "constitution",
+    faith: "Adherent",
+    preference: "Plate-Mail",
 };
 
 export type LevelSheet = {
@@ -429,53 +429,53 @@ const FAITH_FLAT_MODIFIER = 3;
 const DEFENSE_MODIFIER_DIVIDE = 12;
 
 export type Skills = {
-    'Axe': number;
-    'Bow': number;
-    'Curved Sword': number;
-    'Dagger': number;
-    'Earth': number;
-    'Fire': number;
-    'Frost': number;
-    'Greataxe': number;
-    'Greatbow': number;
-    'Greatmace': number;
-    'Greatsword': number;
-    'Lightning': number;
-    'Long Sword': number;
-    'Mace': number;
-    'Polearm': number;
-    'Righteous': number;
-    'Scythe': number;
-    'Short Sword': number;
-    'Spooky': number;
-    'Sorcery': number;
-    'Wild': number;
-    'Wind': number;
+    "Axe": number;
+    "Bow": number;
+    "Curved Sword": number;
+    "Dagger": number;
+    "Earth": number;
+    "Fire": number;
+    "Frost": number;
+    "Greataxe": number;
+    "Greatbow": number;
+    "Greatmace": number;
+    "Greatsword": number;
+    "Lightning": number;
+    "Long Sword": number;
+    "Mace": number;
+    "Polearm": number;
+    "Righteous": number;
+    "Scythe": number;
+    "Short Sword": number;
+    "Spooky": number;
+    "Sorcery": number;
+    "Wild": number;
+    "Wind": number;
 };
 
 export const initSkills: Skills = {
-    'Axe': 1,
-    'Bow': 1,
-    'Curved Sword': 1,
-    'Dagger': 1,
-    'Earth': 1,
-    'Fire': 1,
-    'Frost': 1,
-    'Greataxe': 1,
-    'Greatbow': 1,
-    'Greatmace': 1,
-    'Greatsword': 1,
-    'Lightning': 1,
-    'Long Sword': 1,
-    'Mace': 1,
-    'Polearm': 1,
-    'Righteous': 1,
-    'Scythe': 1,
-    'Short Sword': 1,
-    'Spooky': 1,
-    'Sorcery': 1,
-    'Wild': 1,
-    'Wind': 1,
+    "Axe": 1,
+    "Bow": 1,
+    "Curved Sword": 1,
+    "Dagger": 1,
+    "Earth": 1,
+    "Fire": 1,
+    "Frost": 1,
+    "Greataxe": 1,
+    "Greatbow": 1,
+    "Greatmace": 1,
+    "Greatsword": 1,
+    "Lightning": 1,
+    "Long Sword": 1,
+    "Mace": 1,
+    "Polearm": 1,
+    "Righteous": 1,
+    "Scythe": 1,
+    "Short Sword": 1,
+    "Spooky": 1,
+    "Sorcery": 1,
+    "Wild": 1,
+    "Wind": 1,
 };
 
 const RACE = {
@@ -823,24 +823,24 @@ function defenseCompiler(ascean: any, attributes: CombatAttributes, combatStats:
 
 function coefficientCompiler(ascean: Ascean, item: Equipment): number {
     let coefficient = 0;
-    // console.log(item, 'Item!');
+    // console.log(item, "Item!");
     switch (item.rarity) {
-        case 'Common':
+        case "Common":
             // coefficient = 1;
             coefficient = ascean.level / 2;
             break;
-        case 'Uncommon':
+        case "Uncommon":
             // coefficient = 1;
             coefficient = ascean.level / 4;
             break;
-        case 'Rare':
+        case "Rare":
             coefficient = 1;
             // coefficient = ascean.level / 6;
             break;
-        case 'Epic':
+        case "Epic":
             coefficient = 1;
             break;
-        case 'Legendary':
+        case "Legendary":
             coefficient = 1;
             break;
     };
@@ -885,7 +885,7 @@ function rarityCompiler(ascean: Ascean) {
         };
         return rarities;
     } catch (err) {
-        console.warn(err, 'Rarity Compiler Error');
+        console.warn(err, "Rarity Compiler Error");
     };
 };
 
@@ -965,7 +965,7 @@ function asceanCompiler(ascean: any): Compiler | undefined {
         const defense = defenseCompiler(ascean, attributes, combatStats, rarities);
         return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense } as Compiler;
     } catch (err) {
-        console.warn(err, 'Ascean Compiler Error');
+        console.warn(err, "Ascean Compiler Error");
     };
 };
 

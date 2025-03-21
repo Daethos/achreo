@@ -3,7 +3,7 @@ import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from "uuid";
-import { PLAYER, ENEMY_ENEMIES, faction, ENEMY_AGGRESSION } from "../../utility/player";
+import { PLAYER, ENEMY_ENEMIES, FACTION } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
@@ -771,8 +771,10 @@ export default class Enemy extends Entity {
 
     setAggression = () => {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
-            const aggressive = this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number;
-            return aggressive <= ENEMY_AGGRESSION;
+            const aggressive = this.scene.hud.reputation.factions.find((f: FACTION) => f.name === this.ascean.name)?.aggressive || false;
+            return aggressive as boolean;
+            // const aggressive = this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number;
+            // return aggressive <= ENEMY_AGGRESSION;
         } else {
             const percent = this.scene.hud.settings.difficulty.aggression;
             return percent >= Math.random() || false;

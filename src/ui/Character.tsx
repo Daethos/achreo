@@ -14,7 +14,7 @@ import { Modal } from "../utility/buttons";
 import { font, getRarityColor, masteryColor } from "../utility/styling";
 import { useResizeListener } from "../utility/dimensions";
 import { Attributes } from "../utility/attributes";
-import { Reputation, faction } from "../utility/player";
+import { Reputation, FACTION } from "../utility/player";
 import { playerTraits } from "../utility/ascean";
 import { SPECIAL, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
 import { DEITIES } from "../utility/deities";
@@ -56,6 +56,16 @@ export const viewCycleMap = {
     Inventory: "Settings",
     Settings: "Faith", // Character
     Faith: "Character",
+};
+const REPUTATION = {
+    DEITY: "Deity",
+    ENEMY: "Enemy",
+    PROVINCE: "Province"
+};
+const nextReputation = {
+    Deity: "ENEMY",
+    Enemy: "PROVINCE",
+    Province: "DEITY"
 };
 const CHARACTERS = {
     QUESTS: "Quests",
@@ -113,7 +123,6 @@ interface Props {
     game: Accessor<GameState>;
     combat: Accessor<Combat>;
 };
-
 const Character = ({ quests, reputation, settings, setSettings, statistics, talents, ascean, asceanState, game, combat }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
@@ -145,7 +154,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [showFaith, setShowFaith] = createSignal<boolean>(false);
     const [deity, setDeity] = createSignal<any>(undefined);
     const [entry, setEntry] = createSignal<any>(undefined);
+    const [reputationConcern, setReputationConcern] = createSignal<string>(settings()?.reputationViews || REPUTATION.ENEMY);
     const dimensions = useResizeListener();
+    const bMargin = {"margin-bottom":"3%"};
  
     createEffect(() => {
         if (ascean) {
@@ -227,7 +238,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
 
     const checkQuest = (quest: Quest) => {
         const completed = quest.requirements.technical.id === "fetch" ? quest.requirements.technical.current === quest.requirements.technical.total : quest.requirements.technical.solved;
-        const questReputation = quest.requirements.reputation <= reputation().factions.find((f: faction) => f.name === quest.giver)?.reputation!;
+        const questReputation = quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
         setShowQuest({show:true,quest,complete:completed&&questReputation});
     };
 
@@ -250,10 +261,59 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         await saveSettings(newSettings);
     };
 
-    const createReputationBar = (faction: faction): JSX.Element => {
+    const currentReputationView = async (e: string) => {
+        setReputationConcern(e);
+        const newSettings: Settings = { ...settings(), reputationViews: e };
+        await saveSettings(newSettings);
+    };
+
+    const processReputation = (concern: string) => {
+        const key = concern.toLowerCase(); // "deity" or "group"
+        const factions = reputation().factions.filter(faction => faction.named === false);
+        
+        // Separate single factions & grouped factions
+        const singleFactions: FACTION[] = [];
+        const groupedFactions: Record<string, FACTION> = {};
+    
+        factions.forEach(faction => {
+            const identifiers = Array.isArray(faction[key]) ? faction[key] as string[] : [faction[key] as string];
+    
+            if (identifiers.length === 1) {
+                const identifier = identifiers[0];
+                if (!groupedFactions[identifier]) {
+                    groupedFactions[identifier] = { ...faction, reputation: 0, name: identifier };
+                }
+                groupedFactions[identifier].reputation += faction.reputation;
+            } else {
+                // Multiple deities case
+                identifiers.forEach(identifier => {
+                    if (!groupedFactions[identifier]) {
+                        groupedFactions[identifier] = { ...faction, reputation: 0, name: identifier };
+                    }
+                    groupedFactions[identifier].reputation += faction.reputation / identifiers.length; // Split reputation equally
+                });
+            };
+        });
+    
+        return [...singleFactions, ...Object.values(groupedFactions)].sort((a, b) => a.name.localeCompare(b.name));
+    };
+
+    const createReputationBar = (faction: FACTION, concern: string): JSX.Element => {
         const positive = faction.reputation >= 0;
+        let text: string;
+        
+        if (concern === "Enemy") {
+            text = faction.name; // Keep enemy faction name
+        } else if (concern === "Deity" || concern === "Province") {
+            text = faction.name; // Aggregated deity/group/province name
+        } else {
+            text = faction[concern.toLowerCase()] as string;
+        };
+    
+        // console.log(text, concern, "Text?");
+        const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000
         return <div class="skill-bar">
-            <p class="skill-bar-text">{faction.name}: {positive ? `${faction.reputation} / 100` : `${faction.reputation} / -100`}</p>
+            <p class="skill-bar-text">{text}: {positive ? `${faction.reputation} / ${num}` : `${faction.reputation} / -${num}`}</p>
             <div class="skill-bar-fill" style={{"background":`${positive ? "blue" : "red"}`, "width": `${Math.abs(faction.reputation)}%`}}></div>
         </div>;  
     };
@@ -272,7 +332,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         switch (character) {
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
-                    <h1 style={{ "margin-bottom": "3%" }}>Quests</h1>
+                    <h1 style={bMargin}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
                         return <div class="border juice wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: "gold" }}>{quest.title}</h2>
@@ -282,43 +342,27 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     }}</For>
                 </div>;
             case CHARACTERS.REPUTATION:
-                const unnamed = reputation().factions.filter((faction) => faction.named === false);
+                const unnamed = reputationConcern() === "Enemy" 
+                    ? reputation().factions.filter((faction) => faction.named === false)
+                    : processReputation(reputationConcern().toLowerCase());
                 return <div class="creature-heading">
-                    <h1 style={{ "margin-bottom": "3%" }}>Reputation</h1>
-                    <div style={{ "margin-bottom": "3%" }}>
+                    <h1 onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={bMargin}>Reputation ({reputationConcern()})</h1>
+                    <div style={bMargin}>
                         <For each={unnamed}>
-                            {(faction: faction) => (
-                                createReputationBar(faction)
+                            {(faction: FACTION) => (
+                                createReputationBar(faction, reputationConcern())
                             )}
                         </For>
                     </div>
-                </div>;
+                </div>
             case CHARACTERS.SKILLS:
+                const skills = Object.keys(ascean().skills).map((skill) => {
+                    return createSkillBar(skill);
+                });
                 return <div class="creature-heading">
-                    <h1 style={{ "margin-bottom": "3%" }}>Skills</h1>
-                    <div style={{ "margin-bottom": "3%" }}>
-                        {createSkillBar("Axe")}
-                        {createSkillBar("Bow")}
-                        {createSkillBar("Curved Sword")}
-                        {createSkillBar("Dagger")}
-                        {createSkillBar("Earth")}
-                        {createSkillBar("Fire")}
-                        {createSkillBar("Frost")}
-                        {createSkillBar("Greataxe")}
-                        {createSkillBar("Greatbow")}
-                        {createSkillBar("Greatmace")}
-                        {createSkillBar("Greatsword")}
-                        {createSkillBar("Lightning")}
-                        {createSkillBar("Long Sword")}
-                        {createSkillBar("Mace")}
-                        {createSkillBar("Polearm")}
-                        {createSkillBar("Righteous")}
-                        {createSkillBar("Scythe")}
-                        {createSkillBar("Short Sword")}
-                        {createSkillBar("Spooky")}
-                        {createSkillBar("Sorcery")}
-                        {createSkillBar("Wild")}
-                        {createSkillBar("Wind")}
+                    <h1 style={bMargin}>Skills</h1>
+                    <div style={bMargin}>
+                        {skills}
                     </div>
                 </div>;
             case CHARACTERS.STATISTICS:
@@ -328,14 +372,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
                 if (highestDeity?.[1] === 0) highestDeity[0] = combat().weapons?.[0]?.influences?.[0] as string; 
                 return <div class="creature-heading">
-                    <h1 style={{ "margin-bottom": "3%" }}>Attacks</h1>
+                    <h1 style={bMargin}>Attacks</h1>
                         Magical: <span class="gold">{statistics().combat?.attacks?.magical}</span> <br />
                         Physical: <span class="gold">{statistics().combat?.attacks?.physical}</span><br />
                         Highest Damage: <span class="gold">{Math.round(statistics().combat?.attacks?.total)}</span>
-                    <h1 style={{ "margin-bottom": "3%" }}>Combat</h1>
+                    <h1 style={bMargin}>Combat</h1>
                         Mastery: <span class="gold">{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
                         Wins / Losses: <span class="gold">{statistics().combat?.wins} / {statistics().combat?.losses}</span>
-                    <h1 style={{ "margin-bottom": "3%" }}>Prayers</h1>
+                    <h1 style={bMargin}>Prayers</h1>
                         Consumed / Invoked: <span class="gold">{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                         Highest Prayer: <span class="gold">{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                         Favored Deity: <span class="gold">{highestDeity[0]}</span><br />
@@ -393,19 +437,19 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         const amuletInfluenceStrength = FAITH_RARITY[ascean().amulet.rarity as keyof typeof FAITH_RARITY];
         const trinketInfluenceStrength = FAITH_RARITY[ascean().trinket.rarity as keyof typeof FAITH_RARITY];
         return <div class="creature-heading" style={{ padding: "5%" }}>
-            <h1 style={{ "margin-bottom": "3%" }}>Influence</h1>
+            <h1 style={bMargin}>Influence</h1>
             <h2>The influences of your equipment increase the likelihood of receiving a prayer from the associated deity.</h2>
                 {ascean().weaponOne.name}: <span class="gold">{ascean().weaponOne?.influences?.[0]} [{weaponInfluenceStrength}]</span><br />
                 {ascean().amulet.name}: <span class="gold">{ascean().amulet?.influences?.length as number > 0 ? `${ascean().amulet?.influences?.[0]}` : ""} [{amuletInfluenceStrength}]</span><br />
                 {ascean().trinket.name}: <span class="gold">{ascean().amulet?.influences?.length as number > 0 ? `${ascean().trinket?.influences?.[0]}` : ""} [{trinketInfluenceStrength}]</span>        
-            <h1 style={{ "margin-bottom": "3%" }}>Prayers</h1>
+            <h1 style={bMargin}>Prayers</h1>
             <h2>That which you seek in combat.</h2>
                 Mastery: <span class="gold">{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
                 Consumed / Invoked: <span class="gold">{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                 Highest Prayer: <span class="gold">{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                 Favored Deity: <span class="gold">{highestDeity[0]}</span><br />
                 Blessings: <span class="gold">{highestDeity[1]}</span>
-            <h1 style={{ "margin-bottom": "3%" }}>Traits</h1>
+            <h1 style={bMargin}>Traits</h1>
             <h2>That which you invoke without intent.</h2>
             {playerTraitWrapper()?.primary?.name} <span class="gold">({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName})</span><br />
             {playerTraitWrapper()?.secondary?.name} <span class="gold">({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName})</span><br />

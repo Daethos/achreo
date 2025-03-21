@@ -14,7 +14,7 @@ import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, sellRarity } from "../utility/styling";
 import ItemModal from "../components/ItemModal";
 import QuestManager, { getQuests, Quest, replaceChar } from "../utility/quests";
-import { ENEMY_ENEMIES, faction, initFaction, namedNameCheck, Reputation } from "../utility/player";
+import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
 import Thievery from "./Thievery";
 import Merchant from "./Merchant";
 import Roster from "./Roster";
@@ -316,7 +316,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [specialMerchant, setSpecialMerchant] = createSignal<boolean>(false);
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
-    const [rep, setRep] = createSignal<faction>(initFaction);
+    const [rep, setRep] = createSignal<FACTION>(initFaction);
     const [party, setParty] = createSignal(false);
     const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -399,7 +399,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setNamedEnemy(namedNameCheck(enemy.name));
         setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
         setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
-        const rep = reputation().factions.find((f: faction) => f.name === combat().computer?.name) as faction;
+        const rep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name) as FACTION;
         if (rep) setRep(rep);
         checkQuests(enemy, manager().quests);
     };

@@ -1,6 +1,6 @@
 import { Attributes, LOADOUT } from "../utility/attributes";  
 import { createSignal, For, createMemo, Accessor, Setter } from "solid-js";
-import { InputGroup } from 'solid-bootstrap';
+import { InputGroup } from "solid-bootstrap";
 import { useResizeListener } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 
@@ -24,16 +24,16 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
         setNewAscean({ ...newAscean(), ...LOADOUT[mastery as keyof typeof LOADOUT] });
         setPool((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);    
     });
-    return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%', width: '100%' }}>
-        <h1 class='gold' style={{ 'margin-bottom' : '5%' }}>Attribute Pool: {pool()} / 25</h1>
+    return <div class="center creature-heading fadeIn" style={{ "margin": "10% auto 5%", width: "100%" }}>
+        <h1 class="gold" style={{ "margin-bottom" : "5%" }}>Attribute Pool: {pool()} / 25</h1>
         <For each={Attributes}>
             {(attribute) => (
-                <InputGroup style={{ width: dimensions().ORIENTATION === 'landscape' ? `33%` : `40%`, display: 'inline-block' }}>
-                    <p class='tighten'>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
-                    <span class='gold'>{newAscean()[attribute.name as keyof typeof newAscean]} ({Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2) > 0 ? '+' : ''}{Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2)})</span>
+                <InputGroup style={{ width: dimensions().ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block" }}>
+                    <p class="tighten">{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
+                    <span class="gold">{newAscean()[attribute.name as keyof typeof newAscean]} ({Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2) > 0 ? "+" : ""}{Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2)})</span>
                     <br />
-                    <button class='highlight' onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>-</button>
-                    <button class='highlight' onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? 'inline-block' : 'none', width: 'auto', height: 'auto' }}>+</button>
+                    <button class="highlight" onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? "inline-block" : "none", width: "auto", height: "auto" }}>-</button>
+                    <button class="highlight" onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling(attribute.name) ? "inline-block" : "none", width: "auto", height: "auto" }}>+</button>
                 </InputGroup>
             )}
         </For>

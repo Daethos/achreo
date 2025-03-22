@@ -1,5 +1,5 @@
 import Inventory from "./Inventory";
-import { Accessor, createEffect, createSignal, For, Setter } from 'solid-js';
+import { Accessor, createEffect, createSignal, For, Setter } from "solid-js";
 import { EventBus } from "../game/EventBus";
 import { useResizeListener } from "../utility/dimensions";
 import Ascean from "../models/ascean";
@@ -62,13 +62,13 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         copy.splice(end.index, 0, reorderedItem); // copy[start.index] = drop; // For Pure Swap
         setDragAndDropInventory(copy);
         setInventorySwap({ start: { id: null, index: -1 }, end: { id: null, index: -1 } }); 
-        EventBus.emit('refresh-inventory', copy);
-        EventBus.emit('equip-sound');
+        EventBus.emit("refresh-inventory", copy);
+        EventBus.emit("equip-sound");
     };
-    return <div class='playerInventoryBag' style={{ 'grid-template-rows': 'repeat(7, 1fr)' }}> 
+    return <div class="playerInventoryBag" style={{ "grid-template-rows": "repeat(7, 1fr)" }}> 
         <For each={dragAndDropInventory()}>{(item, index) => {
             if (item === undefined || item === null) return;
-            return <div  onClick={() => doubleTap(item, index)} class='sortable juiceNB' style={dimensions().ORIENTATION === 'landscape' ? { margin: '5%' } : { margin: '2.5%' }}>
+            return <div  onClick={() => doubleTap(item, index)} class="sortable juiceNB" style={dimensions().ORIENTATION === "landscape" ? { margin: "5%" } : { margin: "2.5%" }}>
                 <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} 
                     highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
                 />

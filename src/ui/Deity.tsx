@@ -1,36 +1,36 @@
-import EnemyDialogNodes from '../utility/EnemyDialogNodes.json';
-import { DialogNodeOption, DialogNode } from '../utility/DialogNode';
-import { Accessor, createEffect, createSignal } from 'solid-js';
-import Ascean from '../models/ascean';
-import { Combat } from '../stores/combat';
-import { GameState } from '../stores/game';
-import { EventBus } from '../game/EventBus';
-import { NPC } from '../utility/npc';
-import { DialogTree } from './Dialog';
-import { evaluateDeity } from '../utility/deities';
-import Statistics from '../utility/statistics';
-import { Reputation } from '../utility/player';
+import EnemyDialogNodes from "../utility/EnemyDialogNodes.json";
+import { DialogNodeOption, DialogNode } from "../utility/DialogNode";
+import { Accessor, createEffect, createSignal } from "solid-js";
+import Ascean from "../models/ascean";
+import { Combat } from "../stores/combat";
+import { GameState } from "../stores/game";
+import { EventBus } from "../game/EventBus";
+import { NPC } from "../utility/npc";
+import { DialogTree } from "./Dialog";
+import { evaluateDeity } from "../utility/deities";
+import Statistics from "../utility/statistics";
+import { Reputation } from "../utility/player";
 
 const colors = {
-    constitution: '#fdf6d8',
-    strength: '#ff0000',
-    agility: '#00ff00',
-    achre: '#0000ff',
-    caeren: '#080080',
-    kyosir: '#ffc700'
+    constitution: "#fdf6d8",
+    strength: "#ff0000",
+    agility: "#00ff00",
+    achre: "#0000ff",
+    caeren: "#080080",
+    kyosir: "#ffc700"
 };
 
 const deityBorder = (mastery: string) => {
     return {
-        'border': `0.15em solid ${colors[mastery as keyof typeof colors]}`,
-        'border-radius': '50%',
-        'box-shadow': `0 0 5em ${colors[mastery as keyof typeof colors]}`,
-        'margin-bottom': '5%',
-        'margin-top': '2.5%',
-        'width': '40%',
-        'position': 'fixed',
-        'left': '50%',
-        'transform': 'translateX(-50%)',
+        "border": `0.15em solid ${colors[mastery as keyof typeof colors]}`,
+        "border-radius": "50%",
+        "box-shadow": `0 0 5em ${colors[mastery as keyof typeof colors]}`,
+        "margin-bottom": "5%",
+        "margin-top": "2.5%",
+        "width": "40%",
+        "position": "fixed",
+        "left": "50%",
+        "transform": "translateX(-50%)",
     } as any;
 };
 
@@ -67,13 +67,13 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);
     const [showDeity, setShowDeity] = createSignal<boolean>(true);
-    const [deity, setDeity] = createSignal({ name: '' });
+    const [deity, setDeity] = createSignal({ name: "" });
     const actions = {
         giveExp: () => giveExp(),
         resolveDeity: () => resolveDeity(),
     };
     createEffect(() => {
-        setDeity({name: statistics().relationships.deity.name === '' ? highestFaith() : statistics().relationships.deity.name});
+        setDeity({name: statistics().relationships.deity.name === "" ? highestFaith() : statistics().relationships.deity.name});
         getDialogNodes();
         checkOptions(game()?.currentNode as DialogNode);
     }); 
@@ -82,18 +82,18 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
         if (node === undefined || node === null) return;
         if (node.options.length === 0) return;
         node.options.forEach((option: DialogNodeOption) => {
-            if (option.next === '' || option.next === undefined || option.next === null) {
+            if (option.next === "" || option.next === undefined || option.next === null) {
                 setShowDeity(false);
                 return;
-            } else if (option.next !== '' && !showDeity()) {
+            } else if (option.next !== "" && !showDeity()) {
                 setShowDeity(true);
             };
         });
     };
-    const getDialogNodes = async () => setDialogNodes(getNodesForDeity('Deity', ascean().interactions.deity));
+    const getDialogNodes = async () => setDialogNodes(getNodesForDeity("Deity", ascean().interactions.deity));
     const giveExp = () => {
         const update = {...ascean(),experience: Math.min(0, ascean().experience - 500)};
-        EventBus.emit('update-ascean', update);
+        EventBus.emit("update-ascean", update);
     };
     async function resolveDeity() {
         try {
@@ -102,19 +102,19 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
                 asceanID: ascean()._id,
                 deity: deity().name,
                 entry: {
-                    title: 'Phenomenon',
+                    title: "Phenomenon",
                     body: playerResponses(),
-                    footnote: '',
+                    footnote: "",
                     date: Date.now(),
                     keywords: keywordResponses(),
                 },
             };
             const res = await evaluateDeity(data);
-            EventBus.emit('fetch-ascean', res.data._id);
-            EventBus.emit('show-deity', false);
+            EventBus.emit("fetch-ascean", res.data._id);
+            EventBus.emit("show-deity", false);
             if (game().pauseState) {
-                EventBus.emit('update-pause', false);
-                EventBus.emit('update-small-hud');
+                EventBus.emit("update-pause", false);
+                EventBus.emit("update-small-hud");
             };
         } catch (err: any) {
             console.log(err, "Error Resolving Deity Encounter");
@@ -126,17 +126,17 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
             if (acc[faith]) { acc[faith]++; } else { acc[faith] = 1; };
             return acc;
         }, {});
-        const faithsArray = Object.entries(faithsCount).filter((faith: any) => faith[0] !== '');
+        const faithsArray = Object.entries(faithsCount).filter((faith: any) => faith[0] !== "");
         const highestFaith = faithsArray.reduce((acc: any, faith: any) => {
             if (acc[1] < faith[1]) acc = faith;
             return acc;
         }, faithsArray[0]);
         return highestFaith[0];
     };
-    return <div class='modal' style={{ background: 'rgba(0, 0, 0, 1)' }} >
-        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? 'superfade-in' : 'fade-out'} src={ascean()?.faith === 'Adherent' ? '../assets/images/achreo-rising.jpg' : ascean()?.faith === 'Devoted' ? '../assets/images/daethos-forming.jpg' : '../assets/images/' + ascean().origin + '-' + ascean().sex + '.jpg'} alt={ascean().faith} id={'godBorder-'+ascean().mastery} />
-        <div class='deity-box'>
-            <div class='wrap' style={{ width: '100%' }}>
+    return <div class="modal" style={{ background: "rgba(0, 0, 0, 1)" }} >
+        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? "superfade-in" : "fade-out"} src={ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.jpg" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.jpg" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt={ascean().faith} id={"godBorder-"+ascean().mastery} />
+        <div class="deity-box">
+            <div class="wrap" style={{ width: "100%" }}>
             <br />
             {dialogNodes().length > 0 && (
                 <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} reputation={reputation} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />

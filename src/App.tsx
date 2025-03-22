@@ -1,30 +1,30 @@
-import { Setter, Show, createSignal, lazy, Suspense, onMount } from 'solid-js';
-import { Scene } from 'phaser';
-import PhaserGame from'./game/PhaserGame';
-import { Game } from './game/scenes/Game';
-import { useResizeListener } from './utility/dimensions';
-import Settings, { initSettings } from './models/settings';
-import { initMenu, LANDSCAPE_SCREENS, Menu, SCREENS } from './utility/screens';
-import Ascean, { createAscean } from './models/ascean';
-import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from './utility/ascean';
-import { usePhaserEvent } from './utility/hooks';
-import { EventBus } from './game/EventBus';
-import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from './assets/db/db'; 
-import { TIPS } from './utility/tips';
-import { Inventory, Reputation, initInventory, initReputation } from './utility/player';
-import { Puff } from 'solid-spinner';
-import type { IRefPhaserGame } from './game/PhaserGame';
-import Statistics, { initStatistics } from './utility/statistics';
-import LoadAscean from './components/LoadAscean';
-import { Tutorial } from './game/scenes/Tutorial';
-import Talents, { initTalents } from './utility/talents';
-import QuestManager, { getQuest, initQuests, Quest } from './utility/quests';
-import { v4 as uuidv4 } from 'uuid';
-const AsceanBuilder = lazy(async () => await import('./components/AsceanBuilder'));
-const AsceanView = lazy(async () => await import('./components/AsceanView'));
-const MenuAscean = lazy(async () => await import('./components/MenuAscean'));
-const Preview = lazy(async () => await import('./components/Preview'));
-const GameToast = lazy(async () => await import('./ui/GameToast'));
+import { Setter, Show, createSignal, lazy, Suspense, onMount } from "solid-js";
+import { Scene } from "phaser";
+import PhaserGame from"./game/PhaserGame";
+import { Game } from "./game/scenes/Game";
+import { useResizeListener } from "./utility/dimensions";
+import Settings, { initSettings } from "./models/settings";
+import { initMenu, LANDSCAPE_SCREENS, Menu, SCREENS } from "./utility/screens";
+import Ascean, { createAscean } from "./models/ascean";
+import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from "./utility/ascean";
+import { usePhaserEvent } from "./utility/hooks";
+import { EventBus } from "./game/EventBus";
+import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
+import { TIPS } from "./utility/tips";
+import { Inventory, Reputation, initInventory, initReputation } from "./utility/player";
+import { Puff } from "solid-spinner";
+import type { IRefPhaserGame } from "./game/PhaserGame";
+import Statistics, { initStatistics } from "./utility/statistics";
+import LoadAscean from "./components/LoadAscean";
+import { Tutorial } from "./game/scenes/Tutorial";
+import Talents, { initTalents } from "./utility/talents";
+import QuestManager, { getQuest, initQuests, Quest } from "./utility/quests";
+import { v4 as uuidv4 } from "uuid";
+const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
+const AsceanView = lazy(async () => await import("./components/AsceanView"));
+const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
+const Preview = lazy(async () => await import("./components/Preview"));
+const GameToast = lazy(async () => await import("./ui/GameToast"));
 var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 var creation = new Audio("../assets/sounds/freeze.wav");
 var load = new Audio("../assets/sounds/combat-round.mp3");
@@ -32,7 +32,7 @@ var load = new Audio("../assets/sounds/combat-round.mp3");
 export type Toast = { header: string; body: string; delay: number; key?: string; extra?: string; arg: any };
 
 export default function App() {
-    const [alert, setAlert] = createSignal<Toast>({ header: '', body: '', delay: 0, key: '', arg: undefined });
+    const [alert, setAlert] = createSignal<Toast>({ header: "", body: "", delay: 0, key: "", arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
     const [loading, setLoading] = createSignal<boolean>(false);
@@ -42,7 +42,7 @@ export default function App() {
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
     const [talents, setTalents] = createSignal<Talents>(initTalents);
-    const [scene, setScene] = createSignal<string>('');
+    const [scene, setScene] = createSignal<string>("");
     const [settings, setSettings] = createSignal<Settings>(initSettings);
     const [show, setShow] = createSignal<boolean>(false);
     const [startGame, setStartGame] = createSignal<boolean>(false);
@@ -54,11 +54,11 @@ export default function App() {
     function resetGame(): void {
         setTips(false);
         (phaserRef.scene as any)?.cleanUp();
-        if (phaserRef.scene?.scene.key === 'Game') {
-            const scene = phaserRef.scene?.scene.get('Underground');
+        if (phaserRef.scene?.scene.key === "Game") {
+            const scene = phaserRef.scene?.scene.get("Underground");
             if (scene.scene.isSleeping()) (scene as any)?.cleanUp();
         } else { // Underground
-            const scene = phaserRef.scene?.scene.get('Game');
+            const scene = phaserRef.scene?.scene.get("Game");
             if (scene?.scene.isSleeping()) (scene as any)?.cleanUp();
         };
         phaserRef.game?.destroy(false);
@@ -76,7 +76,7 @@ export default function App() {
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
                 setMenu({ ...menu(), asceans: hyd, loading: false }); // choosingCharacter: true
             } catch (err: any) {
-                console.warn('Error fetching Asceans:', err);
+                console.warn("Error fetching Asceans:", err);
             };
         };
         fetch();
@@ -103,7 +103,7 @@ export default function App() {
             setAscean(undefined as unknown as Ascean);
             await deleteAscean(id as string);
         } catch (err) {
-            console.warn('Error Deleting Ascean:', err);
+            console.warn("Error Deleting Ascean:", err);
         };
     };
     async function fetchAscean(id: string): Promise<void> {
@@ -122,14 +122,14 @@ export default function App() {
             setTalents(tal);
             setQuests(quest);
         } catch (err: any) {
-            console.warn('Error fetching Ascean:', err);
+            console.warn("Error fetching Ascean:", err);
         };
     };
 
     async function setLoadAscean(id: string) {
         load.play();
         const asc: Ascean = menu()?.asceans?.find((asc: Ascean) => asc._id === id) as Ascean;
-        setAlert({ header: 'Loading Game', body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: '', arg: undefined });
+        setAlert({ header: "Loading Game", body: `Preparing ${asc.name}. Good luck.`, delay: 3000, key: "", arg: undefined });
         setShow(true);
         const full = { ...asc }; // , inventory: inv
         setAscean(full);
@@ -138,7 +138,7 @@ export default function App() {
     };
     async function loadAscean(id: string): Promise<void> {
         try {
-            const inv = await getInventory(id); // This will start lagging a tiny bit when the player's inventory is hueg
+            const inv = await getInventory(id); // This will start lagging a tiny bit when the player"s inventory is hueg
             const rep = await getReputation(id);
             const set = await getSettings(id);
             const stat = await getStatistics(id);
@@ -179,13 +179,13 @@ export default function App() {
             phaserRef.game?.registry.set("reputation", reputation());
             phaserRef.game?.registry.set("settings", settings());
             phaserRef.game?.registry.set("talents", talents());
-            EventBus.emit('preload-ascean', id);
+            EventBus.emit("preload-ascean", id);
         } catch (err: any) {
-            console.warn('Error loading Ascean:', err);
+            console.warn("Error loading Ascean:", err);
         };
     };
-    const loadingAscean = () => EventBus.emit('enter-game');
-    const makeToast = (header: string, body: string, delay = 3000, key = '', extra = '', arg: any): void => {
+    const loadingAscean = () => EventBus.emit("enter-game");
+    const makeToast = (header: string, body: string, delay = 3000, key = "", extra = "", arg: any): void => {
         setShow(false);
         setAlert({ header, body, delay, key, extra, arg });
         setShow(true);
@@ -195,7 +195,7 @@ export default function App() {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
-                setAlert({ header: 'Gameplay Tidbit', body: tip, delay: 12000, key: 'Close', arg: undefined }); // 10000
+                setAlert({ header: "Gameplay Tidbit", body: tip, delay: 12000, key: "Close", arg: undefined }); // 10000
                 setShow(true);    
             }, interval); 
         } else {
@@ -212,7 +212,7 @@ export default function App() {
                 scene.resume();
             };
         };
-        EventBus.emit('toggle-pause', pause);
+        EventBus.emit("toggle-pause", pause);
     };
     const quickAscean = (a: Ascean): Ascean => setAscean(a);
     async function saveAscean(vaEsai: any): Promise<void> {
@@ -225,16 +225,16 @@ export default function App() {
             hydrate = { ...hydrate, ascean: full as Ascean } as Compiler;
             setAscean(full as Ascean);
             setInventory(inv);
-            EventBus.emit('set-player', hydrate);
+            EventBus.emit("set-player", hydrate);
         } catch (err: any) {
-            console.warn('Error saving Ascean:', err);
+            console.warn("Error saving Ascean:", err);
         };
     };
     async function silentSave(vaEsai: Ascean): Promise<void> {
         try {
             await scrub(vaEsai);
         } catch (err: any) {
-            console.warn('Error saving Ascean:', err);
+            console.warn("Error saving Ascean:", err);
         };
     };
     async function saveInventory(save: Inventory) {
@@ -242,7 +242,7 @@ export default function App() {
             setInventory(save);
             await updateInventory(save);
         } catch (err) { 
-            console.warn(err, 'Error Saving Inventory'); 
+            console.warn(err, "Error Saving Inventory"); 
         };
     };
     async function insertSettings(insert: any) {
@@ -251,7 +251,7 @@ export default function App() {
             await updateSettings(set);
             setSettings(set);
         } catch (err: any) {
-            console.warn('Error saving Settings:', err);
+            console.warn("Error saving Settings:", err);
         };
     };
     async function saveSettings(set: Settings): Promise<void> {
@@ -259,7 +259,7 @@ export default function App() {
             await updateSettings(set);
             setSettings(set);
         } catch (err: any) {
-            console.warn('Error saving Settings:', err);
+            console.warn("Error saving Settings:", err);
         };
     };
     async function saveThisSetting(data: any) {
@@ -267,7 +267,7 @@ export default function App() {
             const update = { ...settings(), ...data };
             await saveSettings(update);
         } catch (err) {
-            console.warn('Error Saving This Setting', err);
+            console.warn("Error Saving This Setting", err);
         };
     };
     const updateAscean = async (vaEsai: Ascean): Promise<void> => {
@@ -276,9 +276,9 @@ export default function App() {
             const pop = await populate(save);
             let hydrate = asceanCompiler(pop);
             setAscean(hydrate?.ascean as Ascean);
-            EventBus.emit('set-player', hydrate);
+            EventBus.emit("set-player", hydrate);
         } catch (err: any) {
-            console.warn('Error updating Ascean:', err);
+            console.warn("Error updating Ascean:", err);
         };
     };
 
@@ -298,7 +298,7 @@ export default function App() {
             };
             phaserRef.game?.registry.set("party", compiledParty);
         } catch(err) {
-            console.warn(err, 'Error Adding to Party');
+            console.warn(err, "Error Adding to Party");
         };
     };
     async function removeParty(party: Ascean) {
@@ -316,9 +316,9 @@ export default function App() {
                 compiledParty.push(compile);
             };
             phaserRef.game?.registry.set("party", compiledParty);
-            EventBus.emit('remove-from-party', party);
+            EventBus.emit("remove-from-party", party);
         } catch(err) {
-            console.warn(err, 'Error Adding to Party');
+            console.warn(err, "Error Adding to Party");
         };
     };
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
@@ -334,7 +334,7 @@ export default function App() {
             await updateQuests(newQuestManager);
             setQuests(newQuestManager);
         } catch (err) {
-            console.warn(err, 'Error Adding Quest');
+            console.warn(err, "Error Adding Quest");
         };
     };
     const completeQuest = async (quest: Quest) => {
@@ -361,7 +361,7 @@ export default function App() {
             await updateQuests(newQuestManager);
             setQuests(newQuestManager);
         } catch (err) {
-            console.warn(err, 'Error Removing Quest');
+            console.warn(err, "Error Removing Quest");
         };
     };
     const updateQuest = async (q: QuestManager) => {
@@ -377,7 +377,7 @@ export default function App() {
             await updateReputation(rep);
             setReputation(rep);
         } catch (err: any) {
-            console.warn('Error updating Reputation:', err);
+            console.warn("Error updating Reputation:", err);
         };
     };
     const updateStat = async (stat: Statistics): Promise<void> => {
@@ -385,7 +385,7 @@ export default function App() {
             await updateStatistics(stat);
             setStatistics(stat);
         } catch (err: any) {
-            console.warn('Error updating Statistics:', err);
+            console.warn("Error updating Statistics:", err);
         };
     };
     const updateTal = async (talents: Talents): Promise<void> => {
@@ -393,7 +393,7 @@ export default function App() {
             await updateTalents(talents);
             setTalents(talents);
         } catch (err) {
-            console.warn('Error Updating Talents', err);
+            console.warn("Error Updating Talents", err);
         };
     };
     async function viewAscean(id: string): Promise<void> {
@@ -402,7 +402,7 @@ export default function App() {
             setMenu({ ...menu(), choosingCharacter: false });
             return;
         };
-        EventBus.emit('preload-ascean', id);
+        EventBus.emit("preload-ascean", id);
         const asc = menu()?.asceans?.find((asc: Ascean) => asc._id === id);
         setAscean(asc as Ascean);
         setMenu({ ...menu(), choosingCharacter: false });
@@ -426,11 +426,11 @@ export default function App() {
     };
     function switchScene(current: string, next: string): void {
         setShow(false);
-        EventBus.emit('switch-scene', { current, next });
-        EventBus.emit('insert-settings', { map: next });
+        EventBus.emit("switch-scene", { current, next });
+        EventBus.emit("insert-settings", { map: next });
     };
     function summonEnemy(val: number = 1) {
-        EventBus.emit('summon-enemy', val);
+        EventBus.emit("summon-enemy", val);
         setShow(false);
     };
     function setScreen(screen: string) {
@@ -439,86 +439,86 @@ export default function App() {
 
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
-        "Roster": () => { EventBus.emit('show-roster'); setShow(false); },
-        'Enter Underground': () => switchScene('Game', 'Underground'),
-        'Enter Tent': () => switchScene('Game', 'Tent'),
-        'Enter North Port': () => EventBus.emit('Port', 'South'),
-        'Enter South Port': () => EventBus.emit('Port', 'North'),
-        'Enter East Port': () => EventBus.emit('Port', 'West'),
-        'Enter West Port': () => EventBus.emit('Port', 'East'),
-        'Close': () => setShow(false),
-        'Exit Underground': () => switchScene('Underground', 'Game'),
-        'Exit World': () => switchScene('Underground', 'Game'),
-        'Pause': () => togglePause(true),
-        'Resume': () => togglePause(false),
-        "Movement": () => EventBus.emit('highlight', 'joystick'),
-        "Combat": () => EventBus.emit('highlight', 'action-bar'),
-        "Settings": () => EventBus.emit('highlight', 'smallhud'),
-        "Enter World" : () => switchScene('Tutorial', 'Game'),
-        "Enter Tutorial" : () => switchScene('Game', 'Tutorial'),
+        "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
+        "Enter Underground": () => switchScene("Game", "Underground"),
+        "Enter Tent": () => switchScene("Game", "Tent"),
+        "Enter North Port": () => EventBus.emit("Port", "South"),
+        "Enter South Port": () => EventBus.emit("Port", "North"),
+        "Enter East Port": () => EventBus.emit("Port", "West"),
+        "Enter West Port": () => EventBus.emit("Port", "East"),
+        "Close": () => setShow(false),
+        "Exit Underground": () => switchScene("Underground", "Game"),
+        "Exit World": () => switchScene("Underground", "Game"),
+        "Pause": () => togglePause(true),
+        "Resume": () => togglePause(false),
+        "Movement": () => EventBus.emit("highlight", "joystick"),
+        "Combat": () => EventBus.emit("highlight", "action-bar"),
+        "Settings": () => EventBus.emit("highlight", "smallhud"),
+        "Enter World" : () => switchScene("Tutorial", "Game"),
+        "Enter Tutorial" : () => switchScene("Game", "Tutorial"),
     };
-    const sendSettings = () => EventBus.emit('get-settings', settings);
-    usePhaserEvent('add-party', addParty);
-    usePhaserEvent('remove-party', removeParty);
-    usePhaserEvent('request-settings', sendSettings);
-    usePhaserEvent('alert', (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
-    usePhaserEvent('set-tips', setTips);
-    usePhaserEvent('scene-switch', (data:{current:string,next:string}) => switchScene(data.current,data.next));
-    usePhaserEvent('enter-menu', enterMenu);
-    usePhaserEvent('fetch-ascean', fetchAscean);
-    usePhaserEvent('loading-ascean', loadingAscean);
-    usePhaserEvent('quick-ascean', quickAscean);
-    usePhaserEvent('reset-game', resetGame);
-    usePhaserEvent('save-ascean', saveAscean);
-    usePhaserEvent('silent-save', silentSave);
-    usePhaserEvent('update-ascean', updateAscean);
-    usePhaserEvent('update-inventory', saveInventory);
-    usePhaserEvent('update-pause', togglePause);
-    usePhaserEvent('request-reputation', () => EventBus.emit('reputation', reputation()));
-    usePhaserEvent('request-statistics', () => EventBus.emit('statistics', statistics()));
-    usePhaserEvent('request-talents', () => EventBus.emit('talents', talents()));
-    usePhaserEvent('add-quest', addQuest);
-    usePhaserEvent('complete-quest', completeQuest);
-    usePhaserEvent('remove-quest', removeQuest);
-    usePhaserEvent('update-quests', updateQuest);
-    usePhaserEvent('update-reputation', updateRep);
-    usePhaserEvent('update-statistics', updateStat);
-    usePhaserEvent('update-talents', updateTal);
-    usePhaserEvent('request-settings', () => EventBus.emit('settings', settings()));
-    usePhaserEvent('save-settings', saveSettings);
-    usePhaserEvent('save-this-setting', saveThisSetting);
-    usePhaserEvent('insert-settings', insertSettings);
-    usePhaserEvent('update-settings', updateRep);
-    usePhaserEvent('player-ascean', () => EventBus.emit('player-ascean-ready', ascean()));
-    usePhaserEvent('save-intro', async () => {
+    const sendSettings = () => EventBus.emit("get-settings", settings);
+    usePhaserEvent("add-party", addParty);
+    usePhaserEvent("remove-party", removeParty);
+    usePhaserEvent("request-settings", sendSettings);
+    usePhaserEvent("alert", (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
+    usePhaserEvent("set-tips", setTips);
+    usePhaserEvent("scene-switch", (data:{current:string,next:string}) => switchScene(data.current,data.next));
+    usePhaserEvent("enter-menu", enterMenu);
+    usePhaserEvent("fetch-ascean", fetchAscean);
+    usePhaserEvent("loading-ascean", loadingAscean);
+    usePhaserEvent("quick-ascean", quickAscean);
+    usePhaserEvent("reset-game", resetGame);
+    usePhaserEvent("save-ascean", saveAscean);
+    usePhaserEvent("silent-save", silentSave);
+    usePhaserEvent("update-ascean", updateAscean);
+    usePhaserEvent("update-inventory", saveInventory);
+    usePhaserEvent("update-pause", togglePause);
+    usePhaserEvent("request-reputation", () => EventBus.emit("reputation", reputation()));
+    usePhaserEvent("request-statistics", () => EventBus.emit("statistics", statistics()));
+    usePhaserEvent("request-talents", () => EventBus.emit("talents", talents()));
+    usePhaserEvent("add-quest", addQuest);
+    usePhaserEvent("complete-quest", completeQuest);
+    usePhaserEvent("remove-quest", removeQuest);
+    usePhaserEvent("update-quests", updateQuest);
+    usePhaserEvent("update-reputation", updateRep);
+    usePhaserEvent("update-statistics", updateStat);
+    usePhaserEvent("update-talents", updateTal);
+    usePhaserEvent("request-settings", () => EventBus.emit("settings", settings()));
+    usePhaserEvent("save-settings", saveSettings);
+    usePhaserEvent("save-this-setting", saveThisSetting);
+    usePhaserEvent("insert-settings", insertSettings);
+    usePhaserEvent("update-settings", updateRep);
+    usePhaserEvent("player-ascean", () => EventBus.emit("player-ascean-ready", ascean()));
+    usePhaserEvent("save-intro", async () => {
         const update = { ...settings(), tutorial: { ...settings().tutorial, intro: true} };
         await saveSettings(update);
         await fetchAscean(ascean()?._id as string);
-        const scene = phaserRef.scene as Scene; // 'intro'
-        scene.scene.stop('Intro');
-        scene.scene.wake('Hud');
-        const game = scene.scene.get('Tutorial') as Tutorial;
-        if (scene.scene.isSleeping('Tutorial')) {
-            scene.scene.wake('Tutorial');
+        const scene = phaserRef.scene as Scene; // "intro"
+        scene.scene.stop("Intro");
+        scene.scene.wake("Hud");
+        const game = scene.scene.get("Tutorial") as Tutorial;
+        if (scene.scene.isSleeping("Tutorial")) {
+            scene.scene.wake("Tutorial");
             game.musicBackground.resume();
         } else {
-            const hud = scene.scene.get('Hud');
-            scene.scene.launch('Tutorial', hud);
+            const hud = scene.scene.get("Hud");
+            scene.scene.launch("Tutorial", hud);
         };
-        EventBus.emit('boot-tutorial');
-        EventBus.emit('current-scene-ready', game);
+        EventBus.emit("boot-tutorial");
+        EventBus.emit("current-scene-ready", game);
     });
-    usePhaserEvent('sleep-scene', (key: string) => {
+    usePhaserEvent("sleep-scene", (key: string) => {
         const scene = phaserRef.scene as Scene;
-        scene.scene.sleep('Hud');
+        scene.scene.sleep("Hud");
         const game = scene.scene?.get(key) as any;
         game.sleepScene();
     });
-    usePhaserEvent('fetch-button-reorder', () => {
-        EventBus.emit('reorder-buttons', { list: settings().actions, type: 'action' });
-        EventBus.emit('reorder-buttons', { list: settings().specials, type: 'special' });
+    usePhaserEvent("fetch-button-reorder", () => {
+        EventBus.emit("reorder-buttons", { list: settings().actions, type: "action" });
+        EventBus.emit("reorder-buttons", { list: settings().specials, type: "special" });
     });
-    usePhaserEvent('update-fps', (fps: any) => {
+    usePhaserEvent("update-fps", (fps: any) => {
         if (!phaserRef.scene) return;
         const game = phaserRef.scene.game;
         game.loop.stop();
@@ -528,8 +528,8 @@ export default function App() {
     return <div id="app">
         <Show when={startGame()} fallback={<>
         {menu().creatingCharacter ? (
-            <div id='overlay' class='superCenter'>
-            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === 'landscape'}>
+            <div id="overlay" class="superCenter">
+            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === "landscape"}>
                 <Suspense fallback={<Puff color="gold"/>}>
                     <Preview newAscean={newAscean} />
                 </Suspense>
@@ -537,47 +537,47 @@ export default function App() {
             <Suspense fallback={<Puff color="gold"/>}>
                 <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
             </Suspense>
-            <Show when={dimensions().ORIENTATION === 'landscape'} fallback={
+            <Show when={dimensions().ORIENTATION === "landscape"} fallback={
                 <>{(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) &&
-                    <button class='highlight cornerBL' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV);}}>
+                    <button class="highlight cornerBL" onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV);}}>
                         <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
                 {(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT !== SCREENS.CHARACTER.KEY) &&
-                    <button class='highlight cornerBR' onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT);}}>
+                    <button class="highlight cornerBR" onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT);}}>
                         <div>Next ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.NEXT as keyof typeof SCREENS]?.TEXT})</div>
                     </button>
                 }
                 {SCREENS[menu()?.screen as keyof typeof SCREENS]?.KEY === SCREENS.COMPLETE.KEY &&
-                    <button class='highlight cornerBR' onClick={() => createCharacter(newAscean())}>
-                        <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                    <button class="highlight cornerBR" onClick={() => createCharacter(newAscean())}>
+                        <div>Create {newAscean()?.name?.split(" ")[0]}</div>
                     </button>
                 }
-                <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
+                <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
                     <div>Back (Menu)</div>
                 </button></>
                 }>
                 <>{(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBL' onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
+                        <button class="highlight cornerBL" onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
                             <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.PREMADE.KEY) && 
-                        <button class='highlight cornerBR' onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
+                        <button class="highlight cornerBR" onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
                             <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class='highlight cornerBR animate' onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                        <button class="highlight cornerBR animate" onClick={() => createCharacter(newAscean())}>
+                            <div>Create {newAscean()?.name?.split(" ")[0]}</div>
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.PREMADE.KEY) && 
-                        <button class='highlight cornerBL animate' onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(' ')[0]}</div>
+                        <button class="highlight cornerBL animate" onClick={() => createCharacter(newAscean())}>
+                            <div>Create {newAscean()?.name?.split(" ")[0]}</div>
                         </button>
                     }
-                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
+                    <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
                         <div>Back (Menu)</div>
                     </button>
                 </>
@@ -586,12 +586,12 @@ export default function App() {
         ) : loading() ? ( 
             <LoadAscean ascean={ascean} />
         ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
-            <div id="overlay" class='superCenter'>
+            <div id="overlay" class="superCenter">
                 <Suspense fallback={<Puff color="gold"/>}>
                     <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
+                    <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
                 </Show>
             </div>
         ) : ascean() ? (
@@ -600,28 +600,28 @@ export default function App() {
                     <AsceanView ascean={ascean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length > 0}>
-                    <button class='highlight cornerTL' onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} }>Main Menu</button> 
+                    <button class="highlight cornerTL" onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} }>Main Menu</button> 
                 </Show>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class='highlight cornerTR' onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
+                    <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
                 </Show>
                 <Show when={menu().deleteModal}>
-                    <div class='modal' onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: 'rgba(0, 0, 0, 1)' }}>
-                        <button class='highlight superCenter' onClick={() => deleteCharacter(ascean()?._id)} style={{ color: 'red', margin: 0, padding: '1em', width: 'auto', 'font-size': '1.5em', 'font-weight': 700, 'border-radius': '0' }}>Permanently Delete {ascean()?.name}?</button>
-                        <div class='gold verticalBottom super' style={{ 'margin-bottom': '10%' }}>[This action is irreversible. You may click anywhere to cancel.]</div>
+                    <div class="modal" onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: "rgba(0, 0, 0, 1)" }}>
+                        <button class="highlight superCenter" onClick={() => deleteCharacter(ascean()?._id)} style={{ color: "red", margin: 0, padding: "1em", width: "auto", "font-size": "1.5em", "font-weight": 700, "border-radius": "0" }}>Permanently Delete {ascean()?.name}?</button>
+                        <div class="gold verticalBottom super" style={{ "margin-bottom": "10%" }}>[This action is irreversible. You may click anywhere to cancel.]</div>
                     </div>
                 </Show> 
-                <button class="highlight cornerBL" onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(' ')[0]}</button>
-                <button class='highlight cornerBR animate' onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
+                <button class="highlight cornerBL" onClick={() => setMenu({ ...menu(), deleteModal: true })}>Delete {ascean()?.name.split(" ")[0]}</button>
+                <button class="highlight cornerBR animate" onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
             </>
         ) : ( 
             <Suspense fallback={<Puff color="gold"/>}>
-            <div class="cornerTL super" style={{ 'text-shadow': '0em 0em 0.1em #ffd700' }}>The Ascean v0.0.1</div>
-            <Show when={menu().loading === false} fallback={<div class='superCenter'><Puff color="gold"/></div>}>
-            <div class='superCenter cinzel full'>
-                <div class='center'>
-                    <div class='title long-animate'>The Ascean</div>
-                    <button class='center highlight animate cinzel enter' onClick={() => menuOption(menu().asceans.length > 0 ? 'choosingCharacter' : 'creatingCharacter')}>Enter Game</button>
+            <div class="cornerTL super" style={{ "text-shadow": "0em 0em 0.1em #ffd700" }}>The Ascean v0.0.1</div>
+            <Show when={menu().loading === false} fallback={<div class="superCenter"><Puff color="gold"/></div>}>
+            <div class="superCenter cinzel full">
+                <div class="center">
+                    <div class="title long-animate">The Ascean</div>
+                    <button class="center highlight animate cinzel enter" onClick={() => menuOption(menu().asceans.length > 0 ? "choosingCharacter" : "creatingCharacter")}>Enter Game</button>
                 </div>
             </div>
             </Show>

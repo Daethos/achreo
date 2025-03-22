@@ -1,6 +1,6 @@
-import { Toast } from 'solid-bootstrap';
-import { Accessor, Setter, Show } from 'solid-js';
-import { Toast as Toaster } from '../App';
+import { Toast } from "solid-bootstrap";
+import { Accessor, Setter, Show } from "solid-js";
+import { Toast as Toaster } from "../App";
 interface Props { 
     actions: any;
     show: Accessor<boolean>;
@@ -17,17 +17,17 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
         setShow(!show());
         setAlert(undefined as unknown as { header: string; body: string, delay: number, arg: any });
     };
-    const toast: any = {'position': alert()?.key !== '' ? 'absolute' : '', 'bottom': alert()?.extra ? '25vh' : alert()?.key !== '' ? '45vh' : '0' };
-    return <div class='cornerBL realize' style={{ width: '30%', 'z-index': 1 }}>
-        <Toast class='toast' onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
-            <p class='toastHeader'>{alert()?.header}</p>
+    const toast: any = {"position": alert()?.key !== "" ? "absolute" : "", "bottom": alert()?.extra ? "25vh" : alert()?.key !== "" ? "45vh" : "0" };
+    return <div class="cornerBL realize" style={{ width: "30%", "z-index": 1 }}>
+        <Toast class="toast" onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
+            <p class="toastHeader">{alert()?.header}</p>
             <svg height="5" width="100%" class="tapered-rule mt-2"><polyline points="0,0 200,2.5 0,5"></polyline></svg>
-            <p class='center toastBody' style={{ 'white-space': 'pre-wrap' }}>{alert()?.body}</p>
+            <p class="center toastBody" style={{ "white-space": "pre-wrap" }}>{alert()?.body}</p>
             <Show when={alert()?.extra}>
-                <button class='highlight toastButton' onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
+                <button class="highlight toastButton" onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
             </Show>
             <Show when={alert()?.key}>
-                <button class='highlight toastButton' onClick={() => performAction(alert()?.key as string)}>{alert()?.key}</button>
+                <button class="highlight toastButton" onClick={() => performAction(alert()?.key as string)}>{alert()?.key}</button>
             </Show>
         </Toast>
     </div>;

@@ -749,17 +749,18 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             <p>Get Exp</p>
                         </button> */}
                         <div style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
-                        { ascean().experience >= ascean().level * 1000 && (
-                            <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
-                                <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em" }}>Level++</p>
+                        
+                        <Show when={ascean().experience >= ascean().level * 1000}>
+                            <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
+                                <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
                             </button>
-                        ) }
+                        </Show>
                         {/* margin: 5% auto 2.5% */}
                         <div class="gold" style={dimensions().ORIENTATION === "landscape" ? { "font-size": dimensions().WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
                             {combat()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>
-                            <div style={{  }}>
+                            <div>
                                 <HealthBar combat={combat} enemy={false} game={game} />
                             </div>
                         </Suspense>

@@ -7,9 +7,9 @@ const ORIGINS = [{
     bio: `A hardened people from an inhospitable land to the East in the Astralands, many are ashen from tempest weather. Martial and religious--monotheistic in nature to Astra, the Lightning Ancient, 
         their governance forms of their leaders in a tetrarchy shored by commerce and law. Laconic and mistrusting, few outsiders get to know these folk, 
         drawing further tension from being the only civilization not to collapse during the Shattering in the War of the Ancients a millenia prior.`,
-    index: 'ashtre',
-    bonus: '+2 STR, +2 AGI, +5% Crit, +5% Crit Dam, +5% Phys Dam, +5% Phys Pen',
-    imgUrl: '../assets/images/Ashtre-Man.jpg'
+    index: "ashtre",
+    bonus: "+2 STR, +2 AGI, +5% Crit, +5% Crit Dam, +5% Phys Dam, +5% Phys Pen",
+    imgUrl: "../assets/images/Ashtre-Man.jpg"
 },{
     name: "Fyers",
     bio: `Fair folk from the Firelands, these people enjoy mild weather and bountiful harvest, leaving themselves to leisure time in pursuit of broad body and mind, often advancing both fields in competition and technology. 
@@ -17,18 +17,18 @@ const ORIGINS = [{
     bioTwo: `The Fyers Lord Protectorate Theogeni Spiras, the Ghost Hawk of Greyrock, came to govern the land, siezing power after civil warring against House Ashfyre whose lineage held the title for centuries. 
         To note, also a former Ascean in 130 AE. Fyer is the Ancient heralded in the land and has been worshiped for centuries, influencing the people's culture and language, though not the only Ancient worshiped, 
         with known allied Ancients in Ilios, Kyrisos, and Nyrolus were well celebrated. As of late, Daethic worship has seen its rise in the land, with Lord Spiras himself cozying to the Seyr, though his personal beliefs are unknown.`,
-    index: 'fyers',
-    bonus: '+2 ACH, +2 KYO, +5% Mag Pen, +5% Phys Pen, +5% Roll, +10% Grace', // +10% Grace (Special Ability Stamina)
-    imgUrl: '../assets/images/Fyers-Woman.jpg'
+    index: "fyers",
+    bonus: "+2 ACH, +2 KYO, +5% Mag Pen, +5% Phys Pen, +5% Roll, +10% Grace", // +10% Grace (Special Ability Stamina)
+    imgUrl: "../assets/images/Fyers-Woman.jpg"
 }, {
     name: "Li'ivi",
     bio: `In the centralands of Licivitas live a keen and practical people whose ambition and drive has helped economically enhance and ensnare the other cultures. Whether bartering or brokering, peacemaking or warring, a Li'ivi excels. 
         The One Above, Daethos, is founded and worshiped at the Seyr in its oldest city, Lor, and while not a theocracy, heavily leans on its teachings for guidance. Its governance is currently run by a loose-affiliate of city-states.`,
     bioTwo: `Highest general Evrio Lorian Peroumes, current va'Esai, is waging a 10 years long war in the Northren border against the monstrous Cragore. Tension has risen over the years as only letters have been sent to Lor from General Peroumes, 
         and the Noble Lorians have grown weary of the war's effect on the popularity of General Peroumes, whose had official leave to maintain the war after winning the Ascea, 
-        first boosting his popularity as being the first Li'ivi to be crowed the va'Esai this century.`,
+        first boosting his popularity as being the first Li'ivi to be crowned the Ascean va'Esai this century.`,
     index: "li'ivi",
-    bonus: '+1 STR, +2 AGI, +1 ACH, +2 CAER, +1 KYO, +2% Crit, +2% Crit Dam, +2% Roll, +2% Phys Dam, +2% Mag Dam, +2% Mag Pen, +2% Phys Pen, +5% Stamina, +5% Grace',
+    bonus: "+1 STR, +2 AGI, +1 ACH, +2 CAER, +1 KYO, +2% Crit, +2% Crit Dam, +2% Roll, +2% Phys Dam, +2% Mag Dam, +2% Mag Pen, +2% Phys Pen, +5% Stamina, +5% Grace",
     imgUrl: "../assets/images/Li'ivi-Woman.jpg"
 }, {
     name: "Notheo",
@@ -40,8 +40,8 @@ const ORIGINS = [{
         routinely traveling the various provinces to handle sensitive work on behalf of his father. King Caderyn himself tends his court in the Fox Hollow, rebuilt after the war, its destruction occurring during 'Fires of Fox Hollow' in 133 AE. 
         If not at home, the King travels around the kingdom, lending aid to the peoples affected by war.`,
     index: "noth'eo",
-    bonus: '+2 CON, +2 ACH, +5% Phys Dam, +5% Phys Pen, +5% Mag Def, +5% Stamina',
-    imgUrl: '../assets/images/Notheo-Man.jpg'
+    bonus: "+2 CON, +2 ACH, +5% Phys Dam, +5% Phys Pen, +5% Mag Def, +5% Stamina",
+    imgUrl: "../assets/images/Notheo-Man.jpg"
 }, {
     name: "Nothos",
     bio: `The Soverain people of the nothren'eas have kept to their own culturally and spiritually, passionately rejecting advances of the Daethic word with blood and bile. As the name states, 
@@ -51,8 +51,8 @@ const ORIGINS = [{
     bioTwo: `Soverian Garrick Myelle yielded greatest fruit in the treaty among the Soverain men, his daughter Jadei wedded to the Prince, Dorien Caderyn. 
         The arrangement of his daughter a choice only known to the Soverains themselves, with a secret vote cast to determine whose daughter were chosen.`,
     index: "noth'os",
-    bonus: '+2 CON, +2 CAER, +5% Mag Dam, +5% Mag Pen, +5% Phys Def, +5% Grace',
-    imgUrl: '../assets/images/Nothos-Woman.jpg'
+    bonus: "+2 CON, +2 CAER, +5% Mag Dam, +5% Mag Pen, +5% Phys Def, +5% Grace",
+    imgUrl: "../assets/images/Nothos-Woman.jpg"
 }, {
     name: "Quor'eite",
     bio: `Relaxed folk of the southernmost tip of the land, they owed much of their pleasure in life to the hospitable regions affording luxurious living and supply, thus Quor'ei, the Ancient of Earth, garnerning the most appreciation. 
@@ -62,7 +62,7 @@ const ORIGINS = [{
     bioTwo: `Quor'ator Mauricio Capulo has recently come upon a windfall atop mountainous jungle ranges, a new crop becoming a local favorite and extending East toward the Alluring Isles. This is thought to be the genesis for the Sedyren Sun, 
         Cyrian Shyne, betrothing his firstborn son to Capulo's third daughter, the first two already having wed to lower caste families.`,
     index: "quor'eite",
-    bonus: '+2 AGI, +2 ACH, +2 KYO, +5% Crit, +5% Roll, +10% Stamina',
+    bonus: "+2 AGI, +2 ACH, +2 KYO, +5% Crit, +5% Roll, +10% Stamina",
     imgUrl: "../assets/images/Quor'eite-Man.jpg"
 }, {
     name: "Sedyreal",
@@ -73,9 +73,9 @@ const ORIGINS = [{
     bioTwo: `The Sedyren Sun, Cyrian Shyne has taken to a life of travel and exploration, 
         having two homes with a new mountainous jungle range in the central lands of Sedyrus after the old fortress in the Sedyrus mountains were extinguished and melted from the eruption, killing many from Licivitas and Sedyrus alike. 
         It is a wonder that the Sedyreal were still so capable, after having sustained such losses, to invade and capture a sizable portion of land and conquer a neighboring people.`,
-    index: 'sedyreal',
-    bonus: '+2 CON, +2 STR, +2 CAER, +5% Mag Def, +5% Phys Def, +5% Crit Dam',
-    imgUrl: '../assets/images/Sedyreal-Man.jpg'
+    index: "sedyreal",
+    bonus: "+2 CON, +2 STR, +2 CAER, +5% Mag Def, +5% Phys Def, +5% Crit Dam",
+    imgUrl: "../assets/images/Sedyreal-Man.jpg"
 }];
 
 export const OriginModal = ({ origin }: { origin: string }) => {
@@ -86,7 +86,7 @@ export const OriginModal = ({ origin }: { origin: string }) => {
         width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
         left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
     }}>
-        <div class="border creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
+        <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
             <p class="super wrap">
                 {race?.bio}<br /><br />{race?.bioTwo}
             </p>
@@ -110,7 +110,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
             width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
             left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
             // height: dimensions().ORIENTATION === "landscape" ? "" : "75%",
-            // top: dimensions().ORIENTATION === "landscape" ? "" : "0%",
+            top: dimensions().ORIENTATION === "landscape" ? "48%" : "0%",
         }}>
             <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
                 <p class="super wrap">
@@ -124,16 +124,14 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
 };
 
 export default function Origin({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) { 
-    return (
-        <div class="center creature-heading fadeIn">
-            <h1 class="gold" style={{ "margin-bottom": "1.5%" }}>Origins</h1> 
-            <div>
-                <For each={ORIGINS}> 
-                    {((origin) => (
-                        <OriginsCard origin={origin} newAscean={newAscean} setNewAscean={setNewAscean} />
-                    ))} 
-                </For>
-            </div>
+    return <div class="center creature-heading fadeIn">
+        <h1 class="gold" style={{ "margin-bottom": "1.5%" }}>Origins</h1> 
+        <div>
+            <For each={ORIGINS}> 
+                {((origin) => (
+                    <OriginsCard origin={origin} newAscean={newAscean} setNewAscean={setNewAscean} />
+                ))} 
+            </For>
         </div>
-    );
+    </div>;
 };

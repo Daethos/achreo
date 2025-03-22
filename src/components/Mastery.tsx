@@ -10,14 +10,14 @@ const FaithCard = ({ mastery, newAscean, setNewAscean }: { mastery: any; newAsce
         setNewAscean({ ...newAscean(), mastery: mastery.name });
         setShow(!show());
     };
-    return <Show when={show()} fallback={<button onClick={handleMastery} class='highlight' style={{ color: mastery.name === newAscean().mastery ? 'gold' : '#fdf6d8' }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleMastery} class="highlight" style={{ color: mastery.name === newAscean().mastery ? "gold" : "#fdf6d8" }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
         <div class="modal" onClick={handleShow}><AttributeModal attribute={mastery} /></div>
     </Show>;
 };
 
 export default function Mastery({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet> }) {
-    return <div class='center creature-heading fadeIn' style={{ 'margin': '10% auto 5%' }}>
-        <h1 class='gold' style={{ "margin-bottom": "1.5%" }}>Mastery</h1>
+    return <div class="center creature-heading fadeIn" style={{ "margin": "10% auto 5%" }}>
+        <h1 class="gold" style={{ "margin-bottom": "1.5%" }}>Mastery</h1>
         <div>
             <For each={Attributes}>
                 {(mastery) => (

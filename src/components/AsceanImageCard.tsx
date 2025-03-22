@@ -1,7 +1,7 @@
-import { Accessor, JSX, Setter } from 'solid-js';
-import Ascean from '../models/ascean';
-import Equipment from '../models/equipment';
-import { getRarityColor } from '../utility/styling';
+import { Accessor, JSX, Setter } from "solid-js";
+import Ascean from "../models/ascean";
+import Equipment from "../models/equipment";
+import { getRarityColor } from "../utility/styling";
 interface Props {
     ascean: Accessor<Ascean>;
     setEquipment: Setter<Equipment | undefined>;
@@ -20,27 +20,27 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
     };
     const div = (eqp: Equipment): JSX.Element => {
         return <div onClick={() => info(eqp)} style={item(eqp.rarity as string)}>
-            <img src={eqp.imgUrl} alt={eqp.name} class='juiceNB' style={image} />
+            <img src={eqp.imgUrl} alt={eqp.name} class="juiceNB" style={image} />
         </div>;
     };
-    const image = { width: '100%', height: '100%' };
+    const image = { width: "100%", height: "100%" };
     function info(item: Equipment): void {
         setEquipment(item);
         setShow(!show());
     }; 
-    return <div class='imageCardGrid' style={{ width: '80%', margin: 'auto' }}>
-        <div class='imageCardLeft menu'>
+    return <div class="imageCardGrid" style={{ width: "80%", margin: "auto" }}>
+        <div class="imageCardLeft menu">
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}
             {div(ascean().weaponThree)}
             {div(ascean().shield)}
         </div>
-        <div class='imageCardMiddle menu'>
+        <div class="imageCardMiddle menu">
             {div(ascean().helmet)}
             {div(ascean().chest)}
             {div(ascean().legs)}
         </div>
-        <div class='imageCardRight menu'>
+        <div class="imageCardRight menu">
             {div(ascean().amulet)}
             {div(ascean().ringOne)}
             {div(ascean().ringTwo)}

@@ -1134,15 +1134,18 @@ export default function PhaserGame (props: IProps) {
             const { luck, luckout } = e;
             EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });
             setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
-            const rep = recordDialogReputation(3);
-            EventBus.emit("update-reputation", rep);    
+            if (combat().computer) {
+                const rep = recordDialogReputation(3);
+                EventBus.emit("update-reputation", rep);    
+                recordQuestUpdate(combat().computer as Ascean);
+            };
         });
         EventBus.on("persuasion", (e: { persuasion: string, persuaded: boolean }) => {
             const { persuasion, persuaded } = e;
             EventBus.emit("enemy-persuasion", { enemy: combat().enemyID, persuaded, persuasion });
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });
             const rep = recordDialogReputation(1);
-            EventBus.emit("update-reputation", rep); 
+            EventBus.emit("update-reputation", rep);
         }); 
         EventBus.on("record-loss", (e:Combat) => recordLoss(e));
         EventBus.on("record-win", (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));

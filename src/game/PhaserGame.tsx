@@ -381,6 +381,17 @@ export default function PhaserGame (props: IProps) {
         return newStatistics;
     };
 
+    function recordDialogReputation(strength: number) {
+        let newReputation = { ...props.reputation() };
+        if (!combat().computer) return newReputation;
+        newReputation.factions.forEach((faction: FACTION) => {
+            if (faction.name === combat().computer?.name) {
+                faction.reputation = Math.min(faction.reputation + strength, 75);
+            };
+        });
+        return newReputation;
+    };
+
     function recordCombatReputation(computer: Ascean) {
         let newReputation = { ...props.reputation() };
         if (!computer?.name) return newReputation;
@@ -1123,11 +1134,15 @@ export default function PhaserGame (props: IProps) {
             const { luck, luckout } = e;
             EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });
             setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
+            const rep = recordDialogReputation(3);
+            EventBus.emit("update-reputation", rep);    
         });
         EventBus.on("persuasion", (e: { persuasion: string, persuaded: boolean }) => {
             const { persuasion, persuaded } = e;
             EventBus.emit("enemy-persuasion", { enemy: combat().enemyID, persuaded, persuasion });
-            setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });   
+            setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });
+            const rep = recordDialogReputation(1);
+            EventBus.emit("update-reputation", rep); 
         }); 
         EventBus.on("record-loss", (e:Combat) => recordLoss(e));
         EventBus.on("record-win", (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));

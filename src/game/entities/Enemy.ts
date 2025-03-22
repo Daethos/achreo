@@ -765,6 +765,7 @@ export default class Enemy extends Entity {
         if (e.luckout) {
             this.isLuckout = true;
             this.playerTrait = e.luck;
+            EventBus.emit("killing-blow", {e:this.ascean, enemyID:this.enemyID});
             this.stateMachine.setState(States.DEFEATED);
         };
     };

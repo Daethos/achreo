@@ -107,6 +107,11 @@
     100% { transform: scale(1); }
 }
 .fadeIn {animation: fadein 1s ease;}
+@keyframes fadeInScale {
+    from {opacity:0;transform:scale(0.75);}
+    to {opacity:1;transform:scale(1);}
+}
+.fadeInScale {animation: fadeInScale 1s ease;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
 @keyframes glowing {0% {opacity: 0;}50% {opacity: 1;}100% {opacity: 0;}}
 @keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}

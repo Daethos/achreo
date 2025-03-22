@@ -313,7 +313,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         // console.log(text, concern, "Text?");
         const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000
         return <div class="skill-bar">
-            <p class="skill-bar-text">{text}: {positive ? `${faction.reputation} / ${num}` : `${faction.reputation} / -${num}`}</p>
+            <p class="skill-bar-text fadeInScale">{text}: {positive ? `${faction.reputation} / ${num}` : `${faction.reputation} / -${num}`}</p>
             <div class="skill-bar-fill" style={{"background":`${positive ? "blue" : "red"}`, "width": `${Math.abs(faction.reputation)}%`}}></div>
         </div>;  
     };
@@ -323,7 +323,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         const skillCap = ascean().level * 100;
         const skillPercentage = Math.round((skillLevel / skillCap) * 100);
         return <div class="skill-bar">
-            <p class="skill-bar-text">{skill}: {Math.floor(skillLevel / 10)} / {skillCap / 10}</p>
+            <p class="skill-bar-text fadeInScale">{skill}: {Math.floor(skillLevel / 10)} / {skillCap / 10}</p>
             <div class="skill-bar-fill" style={{"width": `${skillPercentage}%`}}></div>
         </div>;
     };
@@ -1016,11 +1016,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </div>
                 </div>
-                <button class="highlight cornerTR" style={{ transform: "scale(0.85)", right: "0", "color": "red" }} onClick={() => {EventBus.emit("remove-quest", showQuest().quest); setShowQuest({ show: false, quest: undefined, complete: false });}}>
-                    <p style={font("0.75em")}>Remove Quest</p>
+                <button class="highlight cornerTR" style={{ "color": "red" }} onClick={() => {EventBus.emit("remove-quest", showQuest().quest); setShowQuest({ show: false, quest: undefined, complete: false });}}>
+                    <p style={font("1em")}>Remove Quest</p>
                 </button>
-                <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "color": "red" }} onClick={() => setShowQuest({ show: false, quest: undefined, complete: false })}>
-                    <p style={font("0.75em")}>X</p>
+                <button class="highlight cornerBR" style={{ "color": "red" }} onClick={() => setShowQuest({ show: false, quest: undefined, complete: false })}>
+                    <p style={font("1em")}>X</p>
                 </button>
             </div>
         </Show>
@@ -1029,13 +1029,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <div class="superCenter" style={{ width:"50%" }}>
                 <div class="border row moisten" style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                     <div style={{ padding: "1em" }}>
-                        <p class="row" style={{ color: "gold", "font-size": "1.25em", margin: "3%", display: "" }}>
-                            <span style={{ "margin": "3%" }}>{svg(showTalent()?.talent.svg)}</span>
-                            {showTalent()?.talent.name}{" "} 
+                        <p class="row" style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
+                            <span style={{ "margin": "1%" }}>{svg(showTalent()?.talent.svg)}</span>
+                            <span style={{"font-weight":"bold", margin:"1%"}}>{showTalent()?.talent.name}</span>{" "} 
                             {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "(Enhanced)" : talents().points.spent < talents().points.total ?
                                 <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
                                     <p style={font("0.9em")}>Enhance</p>
-                            </button> : ""} 
+                            </button> : ""}{" "}
                             {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "(Optimized)" : talents().points.spent < talents().points.total ?
                                 <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
                                     <p style={font("0.9em")}>Optimize</p>
@@ -1054,11 +1054,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             </span>
                         </p>
                     </div>
-                    <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "5%", right: "0", "background-color": "red" }} onClick={() => setShowTalent({ show: false, talent: undefined })}>
-                        <p style={font("0.5em")}>X</p>
-                    </button>
                 </div>
                 </div>
+                <button class="highlight cornerBR" style={{ "color": "red" }} onClick={() => setShowTalent({ show: false, talent: undefined })}>
+                    <p style={font("1em")}>X</p>
+                </button>
             </div>
         </Show>
         <Show when={showTalentConfirm().show}>

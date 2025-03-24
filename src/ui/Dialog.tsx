@@ -22,9 +22,17 @@ import { ArenaRoster } from "./BaseUI";
 import Settings from "../models/settings";
 import { usePhaserEvent } from "../utility/hooks";
 import { fetchTutorial } from "../utility/enemy";
-import { getParty } from "../assets/db/db";
+import { getParty, updateItem } from "../assets/db/db";
 import { IRefPhaserGame } from "../game/PhaserGame";
-
+import { Weapons } from "../assets/db/weaponry";
+import { Amulets, Trinkets } from "../assets/db/jewelry";
+import { getItem } from "localforage";
+const GET_ETCH_COST = {
+    Common: 0.25,
+    Uncommon: 0.5,
+    Rare: 1,
+    Epic: 2,
+};
 const GET_FORGE_COST = {
     Common: 1,
     Uncommon: 3,
@@ -267,7 +275,8 @@ interface StoryDialogProps {
 };
 
 export default function Dialog({ ascean, asceanState, combat, game, settings, quests, reputation, instance }: StoryDialogProps) {
-    const [forgeModalShow, setForgeModalShow] = createSignal(false); 
+    const [forgeModalShow, setForgeModalShow] = createSignal(false);
+    const [etchModalShow, setEtchModalShow] = createSignal<{show:boolean;item:Equipment|undefined;types:string[];}>({show:false,item:undefined,types:[]});
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
     const [persuasionString, setPersuasionString] = createSignal<string>("");
     const [luckoutString, setLuckoutString] = createSignal<string>("");
@@ -310,7 +319,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
+    const [etch, setEtch] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
+    const [reforge, setReforge] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [rewardItem, setRewardItem] = createSignal<{show:boolean,item:any}>({show:false,item:undefined});
     const [thievery, setThievery] = createSignal<boolean>(false);
@@ -333,6 +344,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkInfluence(ascean);
         checkUpgrades();
         checkParty();
+        // checkEtchings();
     });
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
@@ -363,6 +375,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         getSell: () => setShowSell(!showSell()),
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
+        setReforgeSee: () => checkEtchings(),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit("highlight", "joystick"),
         getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
@@ -392,6 +405,31 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         } else {
             setUpgradeItems(undefined);
         };
+    };
+
+    function checkEtchings() {
+        const items: any[] = [];
+        const prospect: Equipment[] = game()?.inventory.inventory.filter((eqp: Equipment) => eqp?.influences !== undefined);
+        prospect.push(ascean().weaponOne);
+        prospect.push(ascean().weaponTwo);
+        prospect.push(ascean().weaponThree);
+        prospect.push(ascean().amulet);
+        prospect.push(ascean().trinket);
+        let jewelry = Amulets.concat(Trinkets);
+        jewelry = jewelry.filter((j: any) => j.rarity === "Uncommon");
+        for (let i = 0; i < prospect.length; ++i) {
+            const item = prospect[i];
+            if (item?.grip !== undefined) { // Weapon
+                const base = Weapons.find((w: any) => w.name === item.name);
+                if (base?.influences.length! > 1) items.push(item);
+            } else { // Amulet / Trinket
+                const base = jewelry.find((j: any) => j.name === item.name);
+                if (base?.influences.length! > 1) items.push(item);
+            };
+        };
+
+        console.log(items, "Items that can be re-etched");
+        setReforge({show:true, items});
     };
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
@@ -820,6 +858,39 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("sell-item", sellItem());    
     };
 
+    async function handleEtching(type: string, cost: number, item: Equipment) {
+        console.log(type, cost, item, "Type, Cost, Item");
+        // let currency = ascean().currency;
+        // if (cost < 1) { // silver cost
+        //     const silver = cost * 100;
+        //     if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
+        //         // Cannot afford etching
+        //         return;
+        //     };
+        //     currency.silver -= silver;
+        // } else { // Gold Cost
+        //     if (cost < ascean().currency.gold) {
+        //         // Cannot afford etching
+        //         return;
+        //     };
+        //     currency.gold -= cost;
+        // };
+
+        let equipment: Equipment = await getItem(item._id) as Equipment;
+        console.log(equipment, "Equipment in DB");
+        // equipment.influences = [type];
+        // await updateItem(equipment);
+        // EventBus.emit("update-currency", currency);
+
+
+        // const inventory = game().inventory.inventory.find((inv: Equipment) => inv._id === equipment._id);
+        // if (inventory) { // In Inventory
+        //     EventBus.emit("refetch-inventory");
+        // } else { // On Player
+        //     EventBus.emit("fetch-player");
+        // };
+    };
+
     async function handleUpgradeItem() {
         let type = "";
         if (forge()?.grip) type = "weaponOne";
@@ -841,14 +912,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             return;
         } else if (forge()?.rarity === "Legendary" && ascean()?.currency?.gold < 300) {
             return;
-        // } else if (forge()?.rarity === "Mythic" && ascean()?.currency?.gold < 1500) {
-        //     return;
-        // } else if (forge()?.rarity === "Divine" && ascean()?.currency?.gold < 7500) {
-        //     return;
-        // } else if (forge()?.rarity === "Ascended" && ascean()?.currency?.gold < 37500) {
-        //     return;
-        // } else if (forge()?.rarity === "Godly" && ascean()?.currency?.gold < 225000) {
-        //     return;
         };
         try {
             let match = JSON.parse(JSON.stringify(game().inventory.inventory));
@@ -877,6 +940,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     function itemForge(item: Equipment) {
         setForge(item);
         setForgeModalShow(true);
+    };
+
+    function itemReforge(item: Equipment) {
+        let types;
+        if (item?.grip !== undefined) {
+            types = Weapons.find((w:any) => w.name === item.name)?.influences;
+        } else {
+            types = Amulets.find((w:any) => w.name === item.name)?.influences || Trinkets.find((t:any) => t.name === item.name)?.influences;
+        };
+        setEtchModalShow({show:true,item,types:types as string[]});
     };
 
     function performAction(actionName: string) {
@@ -984,21 +1057,25 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     {" "}<div style={{ display: "inline" }}>{combat()?.computer?.name} <p style={{ display: "inline", "font-size": "0.75em" }}>[Level {combat()?.computer?.level}]</p><br /></div>
                 </div>
             </div>
+            {/* Uncommon: Achiom, Rare: Senic, Epic: Kyr, Legendary: Sedyreal */}
             { combat().npcType === "Merchant-Smith" ? ( <>
                 <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
                     <br /><br />
+                    <p class="gold">
                     Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
-                    <p class="greenMarkup">[Achiom - 1g]</p>
-                    <p class="blueMarkup">[Senic - 3g]</p>
-                    <p class="purpleMarkup">[Kyr - 12g]</p>
-                    <p class="darkorangeMarkup">[Sedyreal - 60g]</p>
-                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be Forged?</button>
+                    </p>
+                    <p class="greenMarkup">[Uncommon - 1g]</p>
+                    <p class="blueMarkup">[Rare - 3g]</p>
+                    <p class="purpleMarkup">[Epic - 12g]</p>
+                    <p class="darkorangeMarkup">[Legendary - 60g]</p>
+                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater?</button>
+                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge the primal etchings of your weapons or jewelry?</button>
                     <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith?</button>
                 `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
                 {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
                     {upgradeItems().map((item: any) => {
-                        if (item === undefined || item === undefined) return;
+                        if (item === undefined) return;
                         return (
                             <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
@@ -1007,6 +1084,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         );
                     })}
                 </div> ) : forgeSee() ? ( "There is nothing in your inventory to be forged." ) : ( "" )}
+                {reforge().show && reforge().items.length > 0 ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
+                    {reforge().items.map((item: any) => {
+                        if (item === undefined) return;
+                        return (
+                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
+                                <img src={item?.imgUrl} alt={item?.name} />
+                                Etch
+                            </div>
+                        );
+                    })}
+                </div> ) : forgeSee() ? ( "There is nothing in your inventory to be re-etched." ) : ( "" )}
                 <br />
                 {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
@@ -1366,6 +1454,23 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </>)}
             </div>
             <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setSpecialMerchant(false)}>x</button>
+            </div>
+        </Show>
+        <Show when={etchModalShow().show}> 
+            <div class="modal">
+                <div class="border superCenter wrap" style={{ width: "50%" }}>
+                <p class="center wrap" style={{ color: "red", "font-size": "1.25em", margin: "3%" }}>
+                    Do You Wish To change the nature of {etchModalShow().item?.name} [{etchModalShow().item?.influences?.[0]}] into either {etchModalShow().types?.map((type:string, i: number) => `${type}${i === etchModalShow().types.length - 1 ? "" : " or "}`)} for {GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST]} Gold?
+                </p>
+                <div>
+                    <For each={etchModalShow().types}>{(type: string) => {
+                        return <button class="highlight" style={{ color: "gold", "font-weight": 600, "font-size": "1.5em" }} onClick={() => handleEtching(type, GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST], etchModalShow()?.item as Equipment)}>
+                            {type}
+                        </button>
+                    }}</For>
+                <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setEtchModalShow({show:false,item:undefined,types:[]})}>x</button>
+                </div>
+                </div>
             </div>
         </Show>
         <Show when={forgeModalShow()}> 

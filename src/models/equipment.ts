@@ -34,7 +34,7 @@ function influence(influences: string[] | undefined): string[] | undefined {
 };
 
 export default class Equipment {
-    public _id: string | number[] = uuidv4();
+    public _id: string = uuidv4();
     public name: string;
     public type: string;
     public rarity?: string;

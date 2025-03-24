@@ -160,6 +160,9 @@ const styleMap: StyleMap = {
         padding: '0.25rem 1rem', 
         margin: '0.5rem',
     },
+    gold: {
+        color: "gold"
+    }
 };
 interface TypewriterProps {
     stringText: string | Accessor<any>;

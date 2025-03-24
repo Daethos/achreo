@@ -237,6 +237,15 @@ export default function App() {
             console.warn("Error saving Ascean:", err);
         };
     };
+    async function fetchInventory() {
+        try {
+            const inv = await getInventory(ascean()._id);
+            setInventory(inv);
+        } catch (err) { 
+            console.warn(err, "Error Saving Inventory"); 
+        };
+    };
+
     async function saveInventory(save: Inventory) {
         try {
             setInventory(save);
@@ -468,6 +477,7 @@ export default function App() {
     usePhaserEvent("fetch-ascean", fetchAscean);
     usePhaserEvent("loading-ascean", loadingAscean);
     usePhaserEvent("quick-ascean", quickAscean);
+    usePhaserEvent("fetch-inventory", fetchInventory);
     usePhaserEvent("reset-game", resetGame);
     usePhaserEvent("save-ascean", saveAscean);
     usePhaserEvent("silent-save", silentSave);

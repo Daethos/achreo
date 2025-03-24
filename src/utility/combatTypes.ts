@@ -1,17 +1,17 @@
 export const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
 export const ATTACKS = {
-    achire: 'achire',
-    attack: 'attack',
-    hook: 'hook',
-    parry: 'parry',
-    posture: 'posture against',
-    roll: 'roll into',
-    quor: 'quorse through',
-    leap: 'leap onto',
-    rush: 'rush through',
-    storm: 'storm through',
-    thrust: 'thrust attack',
-    writhe: 'writhe into',
+    achire: "achire",
+    attack: "attack",
+    hook: "hook",
+    parry: "parry",
+    posture: "posture against",
+    roll: "roll into",
+    quor: "quorse through",
+    leap: "leap onto",
+    rush: "rush through",
+    storm: "storm through",
+    thrust: "thrust attack",
+    writhe: "writhe into",
 };
 export const ACTION_TYPES = {
     ACHIRE: "achire",
@@ -85,27 +85,27 @@ export const DEFENSE_TYPES = {
     PLATE_MAIL: "Plate-Mail"
 };
 export const ENEMY_ATTACKS = {
-    attack: 'attacks',
-    posture: 'postures against',
-    roll: 'rolls into',
-    parry: 'parries',
-    achire: 'achires into',
-    hook: 'hooks into',
-    leap: 'leaps onto',
-    quor: 'quorses through',
-    rush: 'rushes through',
-    thrust: 'thrust attacks',
-    writhe: 'writhes into',
+    attack: "attacks",
+    posture: "postures against",
+    roll: "rolls into",
+    parry: "parries",
+    achire: "achires into",
+    hook: "hooks into",
+    leap: "leaps onto",
+    quor: "quorses through",
+    rush: "rushes through",
+    thrust: "thrust attacks",
+    writhe: "writhes into",
 };
 export const MASTERY = {
-    CONSTITUTION: 'constitution',
-    STRENGTH: 'strength',
-    AGILITY: 'agility',
-    ACHRE: 'achre',
-    CAEREN: 'caeren',
-    KYOSIR: 'kyosir'
+    CONSTITUTION: "constitution",
+    STRENGTH: "strength",
+    AGILITY: "agility",
+    ACHRE: "achre",
+    CAEREN: "caeren",
+    KYOSIR: "kyosir"
 };
-export const STRONG_ATTACKS = ['achire', 'attack', 'arc', 'leap', 'quor', 'rush', 'special', 'storm', 'writhe'];
+export const STRONG_ATTACKS = ["achire", "attack", "arc", "leap", "quor", "rush", "special", "storm", "writhe"];
 export const STRONG_TYPES = {
     "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
     "Leather-Mail": ["Pierce","Slash","Wind","Sorcery","Wild"],
@@ -120,9 +120,9 @@ export const WEAPON_TYPES = {
 };
 export const DEITIES = {DAETHOS: "Daethos"};
 export const FAITH_RARITY = {
-    'Common': 0,
-    'Uncommon': 0.5,
-    'Rare': 1,
-    'Epic': 2,
-    'Legendary': 3
+    "Common": 0,
+    "Uncommon": 0.5,
+    "Rare": 1,
+    "Epic": 2,
+    "Legendary": 3
 };

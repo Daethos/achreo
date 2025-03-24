@@ -227,6 +227,15 @@ export const scrub = async (ascean: Ascean) => {
     return scrubbed;
 };
 
+export const getItem = async (id: string): Promise<Equipment> => {
+    let item: Equipment = await db.collection(EQUIPMENT).doc({ _id: id}).get();
+    return item;
+};
+
+export const updateItem = async (item: Equipment) => {
+    await db.collection(EQUIPMENT).doc({ id: item._id }).update(item);
+};
+
 export const getInventory = async (id: string) => {
     let inventory: Inventory = await db.collection(INVENTORY).doc({ _id: id }).get();
     if (!inventory) {

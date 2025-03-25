@@ -228,12 +228,12 @@ export const scrub = async (ascean: Ascean) => {
 };
 
 export const getItem = async (id: string): Promise<Equipment> => {
-    let item: Equipment = await db.collection(EQUIPMENT).doc({ _id: id}).get();
+    let item: Equipment = await db.collection(EQUIPMENT).doc({ _id: id }).get();
     return item;
 };
 
 export const updateItem = async (item: Equipment) => {
-    await db.collection(EQUIPMENT).doc({ id: item._id }).update(item);
+    await db.collection(EQUIPMENT).doc({ _id: item._id }).update(item);
 };
 
 export const getInventory = async (id: string) => {

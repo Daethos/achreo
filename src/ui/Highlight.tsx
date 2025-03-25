@@ -284,16 +284,16 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         </div>
         <div style={{ width: "100%", "text-align": "center", "margin-top": "3%" }}>
         {canEquip(ascean()?.level, highlighted()?.item?.rarity as string) ? ( <> 
-            <button class="highlight cornerBL" style={{ left: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.5em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+            <button class="highlight cornerBL" style={{ left: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                 <div style={{ color: "red" }}>Remove</div>
             </button>
             {(inventoryType() === "weaponOne" || inventoryType() === "ringOne" || upgrade() === true) && ( // || upgrade() === true
-                <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.5em" }} onClick={() => setInspector()}>
+                <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setInspector()}>
                     <div style={{ color: "#fdf6d8" }}>Inspect</div>
                 </button>
             )}
             {canEquip(ascean()?.level, highlighted()?.item?.rarity as string) && (
-                <button class="highlight cornerBR" style={{ right: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.5em" }} onClick={() => setEquipper()}>
+                <button class="highlight cornerBR" style={{ right: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setEquipper()}>
                     <div style={{ color: "green" }}>Equip</div>
                 </button> 
             )}
@@ -302,7 +302,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 Unfortunately, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
                 {"\n"}{"\n"}    
             </div>
-            <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.5em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+            <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                     <div style={{ color: "red" }}>Remove</div>
                 </button>
         </> ) }

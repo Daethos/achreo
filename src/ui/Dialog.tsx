@@ -23,13 +23,12 @@ import Settings from "../models/settings";
 import { usePhaserEvent } from "../utility/hooks";
 import { fetchTutorial } from "../utility/enemy";
 import { getParty, updateItem } from "../assets/db/db";
-import { IRefPhaserGame } from "../game/PhaserGame";
+import { IRefPhaserGame, rebalanceCurrency } from "../game/PhaserGame";
 import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
-import { getItem } from "localforage";
 const GET_ETCH_COST = {
-    Common: 0.25,
-    Uncommon: 0.5,
+    Common: 0.1,
+    Uncommon: 0.25,
     Rare: 1,
     Epic: 2,
 };
@@ -319,7 +318,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
-    const [etch, setEtch] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [reforge, setReforge] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
@@ -428,7 +426,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
         };
 
-        console.log(items, "Items that can be re-etched");
         setReforge({show:true, items});
     };
 
@@ -855,40 +852,44 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function sellInventory() {
         EventBus.emit("alert", { header: "Selling Item In Inventory", body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
-        EventBus.emit("sell-item", sellItem());    
+        EventBus.emit("sell-item", sellItem());
     };
 
     async function handleEtching(type: string, cost: number, item: Equipment) {
-        console.log(type, cost, item, "Type, Cost, Item");
-        // let currency = ascean().currency;
-        // if (cost < 1) { // silver cost
-        //     const silver = cost * 100;
-        //     if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
-        //         // Cannot afford etching
-        //         return;
-        //     };
-        //     currency.silver -= silver;
-        // } else { // Gold Cost
-        //     if (cost < ascean().currency.gold) {
-        //         // Cannot afford etching
-        //         return;
-        //     };
-        //     currency.gold -= cost;
-        // };
-
-        let equipment: Equipment = await getItem(item._id) as Equipment;
-        console.log(equipment, "Equipment in DB");
-        // equipment.influences = [type];
-        // await updateItem(equipment);
-        // EventBus.emit("update-currency", currency);
-
-
-        // const inventory = game().inventory.inventory.find((inv: Equipment) => inv._id === equipment._id);
-        // if (inventory) { // In Inventory
-        //     EventBus.emit("refetch-inventory");
-        // } else { // On Player
-        //     EventBus.emit("fetch-player");
-        // };
+        let currency = ascean().currency;
+        if (cost < 1) { // silver cost
+            const silver = cost * 100;
+            if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
+                // Cannot afford etching
+                return;
+            };
+            currency.silver -= silver;
+        } else { // Gold Cost
+            if (cost < ascean().currency.gold) {
+                // Cannot afford etching
+                return;
+            };
+            currency.gold -= cost;
+        };
+        currency = rebalanceCurrency(currency);
+        EventBus.emit("alert", {header:"Change Etching",body:`You have changed your ${item.name}'s influence from ${item.influences?.[0]} to ${type}`,delay:3000, key:"Close"});
+        let equipment = JSON.parse(JSON.stringify(item));
+        equipment.influences = [type];
+        await updateItem(equipment);
+        const inventoryIndex = game().inventory.inventory.findIndex((inv: Equipment) => inv._id === equipment._id);
+        if (inventoryIndex !== -1) { // In Inventory
+            let newInventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+            newInventory[inventoryIndex] = equipment;
+            EventBus.emit("refresh-inventory", newInventory);
+        } else { // On Player
+            EventBus.emit("fetch-ascean", ascean()._id);
+        };
+        setEtchModalShow({show:false,item:undefined,types:[]});
+        EventBus.emit("purchase-sound");
+        setTimeout(() => {
+            EventBus.emit("update-currency", currency);
+            checkEtchings();
+        }, 500);
     };
 
     async function handleUpgradeItem() {
@@ -1083,8 +1084,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             </div>
                         );
                     })}
-                </div> ) : forgeSee() ? ( "There is nothing in your inventory to be forged." ) : ( "" )}
-                {reforge().show && reforge().items.length > 0 ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
+                </div> ) : forgeSee() ? ( <span style={{ color: "red" }}>There is nothing in your inventory that can be forged into its greater version.</span> ) : ( "" )}
+                {reforge().show && reforge().items.length > 0 ? ( 
+                    <div>
+                    <Currency ascean={ascean} />
+                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
                     {reforge().items.map((item: any) => {
                         if (item === undefined) return;
                         return (
@@ -1094,7 +1098,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             </div>
                         );
                     })}
-                </div> ) : forgeSee() ? ( "There is nothing in your inventory to be re-etched." ) : ( "" )}
+                    </div>
+                    </div> ) 
+                : reforge().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
                 <br />
                 {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
@@ -1459,8 +1465,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Show when={etchModalShow().show}> 
             <div class="modal">
                 <div class="border superCenter wrap" style={{ width: "50%" }}>
-                <p class="center wrap" style={{ color: "red", "font-size": "1.25em", margin: "3%" }}>
-                    Do You Wish To change the nature of {etchModalShow().item?.name} [{etchModalShow().item?.influences?.[0]}] into either {etchModalShow().types?.map((type:string, i: number) => `${type}${i === etchModalShow().types.length - 1 ? "" : " or "}`)} for {GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST]} Gold?
+                <p class="center wrap" style={{ "font-size": "1.25em", margin: "3%" }}>
+                    Do You Wish To change the nature of your <span class="gold">{etchModalShow().item?.name} [{etchModalShow().item?.influences?.[0]}]</span> into either {etchModalShow().types?.map((type:string, i: number) => `${type}${i === etchModalShow().types.length - 1 ? "" : " or "}`)} for 
+                    <span style={{ color: `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] < 1 ? "silver" : "gold"}` }}>{GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] < 1 ? `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] * 100} Silver` : `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST]} Gold`}</span>?
                 </p>
                 <div>
                     <For each={etchModalShow().types}>{(type: string) => {

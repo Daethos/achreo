@@ -122,6 +122,7 @@ export interface Combat {
     isStealth: boolean; //
     isSeering: boolean;
     isInsight: boolean;
+    isQuicken: boolean;
     enemyID: string;
     damagedID: string;
     combatTimer: number;
@@ -258,6 +259,7 @@ export const initCombat: Combat = {
     isStealth: false,
     isSeering: false,
     isInsight: false,
+    isQuicken: false,
     enemyID: '',
     damagedID: '',
     combatTimer: 0,

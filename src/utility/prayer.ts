@@ -2,7 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { CombatAttributes } from "./combat";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 export type Effect = { 
     physicalDamage?: number;
@@ -52,8 +52,8 @@ const EFFECT = {
 };
 
 const FAITHS = {
-    ADHERENT: 'Adherent',
-    DEVOTED: 'Devoted',
+    ADHERENT: "Adherent",
+    DEVOTED: "Devoted",
 };
 
 export const PRAYERS = {
@@ -65,10 +65,11 @@ export const PRAYERS = {
     DISPEL: "Dispel",
     HEAL: "Heal",
     INSIGHT: "Insight",
+    QUICKEN: "Quicken",
     SILENCE: "Silence"
 };
 
-const SPECIALS = ['Avarice', 'Denial', 'Dispel', 'Insight', 'Silence'];
+const SPECIALS = [PRAYERS.AVARICE, PRAYERS.DENIAL, PRAYERS.DISPEL, PRAYERS.INSIGHT, PRAYERS.QUICKEN, PRAYERS.SILENCE];
 
 export default class StatusEffect {
     public id: string;
@@ -382,7 +383,7 @@ export default class StatusEffect {
         let playerIntensity = updatedEffect.intensity.initial * updatedEffect.intensity.magnitude;
         let isEnemy = combat.computer;
         let playerFaith = combat?.player?.name === player.name ? combat.player.faith.toLowerCase() : isEnemy?.faith.toLowerCase();
-        if ((weapon?.influences?.[0] === 'Daethos' && playerFaith === FAITHS.DEVOTED) || (weapon?.influences?.[0] !== 'Daethos' && playerFaith === FAITHS.ADHERENT)) {
+        if ((weapon?.influences?.[0] === "Daethos" && playerFaith === FAITHS.DEVOTED) || (weapon?.influences?.[0] !== "Daethos" && playerFaith === FAITHS.ADHERENT)) {
             playerIntensity *= EFFECT.ONE_FIFTEEN;
         };
         updatedEffect.intensity.value += playerIntensity;
@@ -416,11 +417,11 @@ export default class StatusEffect {
         potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers,  effectModifiers); 
 
         switch (updatedEffect.prayer) {
-            case "Buff": {
+            case PRAYERS.BUFF: {
                 realizedModifiers = StatusEffect.buff(potentialModifiers, realizedModifiers);
                 break;
             };
-            case "Damage": {
+            case PRAYERS.DAMAGE: {
                 realizedModifiers = StatusEffect.damage(potentialModifiers, realizedModifiers);
                 realizedModifiers.damage *= updatedEffect.activeStacks;
                 break;
@@ -437,7 +438,7 @@ export default class StatusEffect {
         return this.activeStacks = intensity.value / intensity.initial; // Value is the cumulative stacking of the initial intensity. Initial is the base intensity.
     };
     setDebuffTarget(data: Combat, player: Ascean, prayer: string): string {
-        if (prayer !== 'Debuff') return '';
+        if (prayer !== PRAYERS.DEBUFF) return "";
         let enemyWeapon = data.computerWeapons[0].name;
         if (player.name === data?.player?.name) {
             return this.debuffTarget = enemyWeapon;
@@ -454,52 +455,52 @@ export default class StatusEffect {
     };
     setIntensity(weapon: Equipment, deity: string, attributes: CombatAttributes, player: Ascean): { initial: number; value: number; magnitude: number; governance: string; } {
         let attribute = 0;
-        let type = '';
-        if (deity === 'Achreo' || deity === 'Astra' || deity === "Quor'ei" || deity === "Senari") {
-            if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-                type = 'achre';
+        let type = "";
+        if (deity === "Achreo" || deity === "Astra" || deity === "Quor'ei" || deity === "Senari") {
+            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
+                type = "achre";
                 attribute = (attributes.totalAchre + weapon.achre) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
-                type = 'caeren';
+                type = "caeren";
                 attribute = attributes.totalCaeren + weapon.caeren * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
         } else if (deity === "Ahn've" || deity === "Cambire" || deity === "Fyer" || deity === "Nyrolus") {
-            if (weapon.grip === 'One Hand') {
-                type = 'achre';
+            if (weapon.grip === "One Hand") {
+                type = "achre";
                 attribute = attributes.totalAchre + weapon.achre * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
-                type = 'caeren';
+                type = "caeren";
                 attribute = (attributes.totalCaeren + weapon.caeren) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
         } else if (deity === "Kyn'gi" || deity === "Se'dyro" || deity === "Ma'anre") {
-            if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-                type = 'agility';
+            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
+                type = "agility";
                 attribute = (attributes.totalAgility + weapon.agility) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
-                type = 'strength';
+                type = "strength";
                 attribute = attributes.totalStrength + weapon.strength * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
         } else if (deity === "Ilios" || deity === "Se'vas" || deity === "Tshaer") {
-            if (weapon.grip === 'One Hand') {
-                type = 'agility';
+            if (weapon.grip === "One Hand") {
+                type = "agility";
                 attribute = attributes.totalAgility + weapon.agility * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
-                type = 'strength';
+                type = "strength";
                 attribute = (attributes.totalStrength + weapon.strength) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
         } else if (deity === "Chiomyr" || deity === "Kyrisos" || deity === "Shrygei") {
-            type = 'kyosir';
+            type = "kyosir";
             attribute = (attributes.totalKyosir + weapon.kyosir) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
         } else if (deity === "Lilos" || deity === "Kyr'na" || deity === "Rahvre") {
-            type = 'constitution';
+            type = "constitution";
             attribute = (attributes.totalConstitution) * (player.mastery === type ? EFFECT.TWO : EFFECT.ONE_FIFTY);
         } else if (deity === "Daethos") {
-            if (weapon.grip === 'One Hand' || weapon.type === 'Bow') {
-                type = 'daethic';
-                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === 'achre' || player.mastery === 'agility' ? 1 : EFFECT.ONE_FIFTY);
+            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
+                type = "daethic";
+                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === "achre" || player.mastery === "agility" ? 1 : EFFECT.ONE_FIFTY);
             } else {
-                type = 'daethic';
-                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === 'caeren' || player.mastery === 'strength' ? 1 : EFFECT.ONE_FIFTY);
+                type = "daethic";
+                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === "caeren" || player.mastery === "strength" ? 1 : EFFECT.ONE_FIFTY);
             };
         };
         attribute = Math.round(attribute * 100) / 100;
@@ -520,10 +521,10 @@ export default class StatusEffect {
         };
     };
     setRefreshes(prayer: string): boolean {
-        return this.refreshes = (prayer === 'Heal' || prayer === 'Debuff' || prayer === 'Avarice' || prayer === 'Denial' || prayer === 'Dispel' || prayer === 'Insight' || prayer === 'Silence') ? true : false;
+        return this.refreshes = (prayer === PRAYERS.HEAL || prayer === PRAYERS.DEBUFF || prayer === PRAYERS.AVARICE || prayer === PRAYERS.DENIAL || prayer === PRAYERS.DISPEL || prayer === PRAYERS.INSIGHT || prayer === PRAYERS.QUICKEN || prayer === PRAYERS.SILENCE) ? true : false;
     };
     setStacks(prayer: string): boolean {
-        return this.stacks = (prayer === 'Buff' || prayer === 'Damage') ? true : false;
+        return this.stacks = (prayer === PRAYERS.BUFF || prayer === PRAYERS.DAMAGE) ? true : false;
     };
 
     setEffect(combat: Combat, player: Ascean, weapon: Equipment, prayer: string) {
@@ -562,16 +563,16 @@ export default class StatusEffect {
         potentialModifiers = StatusEffect.setModifiers(weapon, potentialModifiers, effectModifiers);
 
         switch (prayer) {
-            case "Buff": {
+            case PRAYERS.BUFF: {
                 return this.effect = StatusEffect.buff(potentialModifiers, realizedModifiers);
             };
-            case "Damage": {
+            case PRAYERS.DAMAGE: {
                 return this.effect = StatusEffect.damage(potentialModifiers, realizedModifiers);
             };
-            case "Debuff": {
+            case PRAYERS.DEBUFF: {
                 return this.effect = StatusEffect.debuff(potentialModifiers, realizedModifiers);
             };
-            case "Heal": {
+            case PRAYERS.HEAL: {
                 return this.effect = StatusEffect.heal(potentialModifiers, realizedModifiers);
             };
         };
@@ -580,18 +581,18 @@ export default class StatusEffect {
     setDescription(combat: Combat, player: Ascean, enemy: Ascean, weapon: Equipment, prayer: string) {
         let duration = this.setDuration(player);
         let playerDescription = combat?.player?.name === player.name ? true : false;
-        const article = ['a','e','i','o','u'].includes(weapon.name[0].toLowerCase()) ? "an" : "a";
+        const article = ["a","e","i","o","u"].includes(weapon.name[0].toLowerCase()) ? "an" : "a";
         if (playerDescription) {
             if (this.setSpecial(prayer)) {
                 return this.description = `You channel an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
             };
-            let description = `You channel a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === 'Debuff' ? `cursing ${enemy.name}` : prayer === 'Heal' ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === 'Damage' ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            let description = `You channel a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
             return this.description = description;    
         } else {
             if (this.setSpecial(prayer)) {
                 return this.description = `${player.name} channels an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
             };
-            let description = `${player.name} channels a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === 'Debuff' ? `cursing ${enemy.name}` : prayer === 'Heal' ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === 'Damage' ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            let description = `${player.name} channels a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
             return this.description = description;
         };
     };

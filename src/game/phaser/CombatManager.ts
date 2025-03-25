@@ -1,13 +1,13 @@
-import CombatMachine from '../phaser/CombatMachine';
-import Enemy from '../entities/Enemy';
-import { EventBus } from '../EventBus';
-import Player from '../entities/Player';
-import { Play } from '../main';
-import StatusEffect, { PRAYERS } from '../../utility/prayer';
-import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from '../../utility/enemy';
-import { computerCombatCompiler } from '../../utility/computerCombat';
-import Party from '../entities/PartyComputer';
-import { States } from './StateMachine';
+import CombatMachine from "../phaser/CombatMachine";
+import Enemy from "../entities/Enemy";
+import { EventBus } from "../EventBus";
+import Player from "../entities/Player";
+import { Play } from "../main";
+import StatusEffect, { PRAYERS } from "../../utility/prayer";
+import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { computerCombatCompiler } from "../../utility/computerCombat";
+import Party from "../entities/PartyComputer";
+import { States } from "./StateMachine";
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -19,7 +19,7 @@ export class CombatManager {
     };
         
     checkPlayerSuccess = (): void => {
-        if (!this.context.player.actionSuccess && (this.context.state.action !== 'parry' && this.context.state.action !== 'roll' && this.context.state.action !== '')) this.combatMachine.input('action', '');
+        if (!this.context.player.actionSuccess && (this.context.state.action !== "parry" && this.context.state.action !== "roll" && this.context.state.action !== "")) this.combatMachine.input("action", "");
     };
 
     ifPlayer = (concern: string) => {
@@ -34,7 +34,7 @@ export class CombatManager {
         const { type, payload } = combat;
         const { action, origin, enemyID } = payload;
         switch (type) {
-            case 'Weapon':
+            case "Weapon":
                 let computerOne = this.context.enemies.find((e: Enemy) => e.enemyID === origin).computerCombatSheet;
                 let computerTwo;
                 let computer = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
@@ -61,10 +61,10 @@ export class CombatManager {
         if (!enemy) return;
         const match = this.context.isStateEnemy(id);
         if (match) { // Target Player Attack
-            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
+            this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type } });
         } else { // Blind Player Attack
             if (enemy.health === 0) return;
-            this.combatMachine.action({ type: 'Player', data: { 
+            this.combatMachine.action({ type: "Player", data: { 
                 playerAction: { action: type, parry: this.context.state.parryGuess }, 
                 enemyID: enemy.enemyID, 
                 ascean: enemy.ascean, 
@@ -81,14 +81,14 @@ export class CombatManager {
     magic = (entity: Player | Enemy | Party, target: Player | Enemy | Party): void => {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
-        if (target.name === 'player') {
+        if (target.name === "player") {
             const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'player', value: health, id: (entity as Enemy).enemyID }, type: 'Set Health' });
-        } else if (entity.name === 'player') {
+            this.combatMachine.action({ data: { key: "player", value: health, id: (entity as Enemy).enemyID }, type: "Set Health" });
+        } else if (entity.name === "player") {
             const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id: (target as Enemy).enemyID }, type: 'Health' });
+            this.combatMachine.action({ data: { key: "enemy", value: health, id: (target as Enemy).enemyID }, type: "Health" });
         } else { // Computer Entity + Computer Target
             const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.2);
             const health = target.health - damage;
@@ -111,7 +111,7 @@ export class CombatManager {
         const result = computerCombatCompiler({computerOne,computerTwo});
         EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
         EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);
-        // EventBus.emit('party-combat-text', { text: `${result?.computerOne?.computer?.name} ${ENEMY_ATTACKS[result?.computerOne?.computerAction as keyof typeof ENEMY_ATTACKS]} ${result?.computerOne?.computerEnemy?.name} with their ${result?.computerOne?.computerWeapons[0]?.name} for ${Math.round(result?.computerOne?.realizedComputerDamage as number)} ${result?.computerOne?.computerDamageType} damage.` });
+        // EventBus.emit("party-combat-text", { text: `${result?.computerOne?.computer?.name} ${ENEMY_ATTACKS[result?.computerOne?.computerAction as keyof typeof ENEMY_ATTACKS]} ${result?.computerOne?.computerEnemy?.name} with their ${result?.computerOne?.computerWeapons[0]?.name} for ${Math.round(result?.computerOne?.realizedComputerDamage as number)} ${result?.computerOne?.computerDamageType} damage.` });
     };
 
 
@@ -122,10 +122,10 @@ export class CombatManager {
         if (!enemy) return;
         const match = this.context.isStateEnemy(id);
         if (match) { // Target Player Attack
-            this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
+            this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type } });
         } else { // Blind Player Attack
             if (enemy.health === 0) return;
-            this.combatMachine.action({ type: 'Player', data: { 
+            this.combatMachine.action({ type: "Player", data: { 
                 playerAction: { action: type, parry: this.context.state.parryGuess }, 
                 enemyID: enemy.enemyID, 
                 ascean: enemy.ascean, 
@@ -153,7 +153,7 @@ export class CombatManager {
             if (enemyID === this.context.player.playerID) { // PvC Combat
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player.mastery as keyof typeof this.context.state.player]);
                 const health = enemy.health - damage;
-                this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+                this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
                 return;
             };
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
@@ -189,7 +189,7 @@ export class CombatManager {
             if (origin === this.context.player.playerID) {
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
                 const health = enemy.health - damage;
-                this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+                this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
                 enemy.specialFear = this.context.player.checkTalentEnhanced(States.FEAR);
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
@@ -208,15 +208,15 @@ export class CombatManager {
             enemy.isParalyzed = true;
             if (origin === this.context.player.playerID) {  
                 if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
-                    this.combatMachine.action({ type: 'Tshaeral', data: 15 });
+                    this.combatMachine.action({ type: "Tshaeral", data: 15 });
                 } else {
                     const drained = Math.round(this.context.state.playerHealth * 0.15 * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10));
                     const newPlayerHealth = drained / this.context.state.playerHealth * 100;
                     const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
                     const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
-                    EventBus.emit('add-combat-logs', { ...this.context.state, playerActionDescription: tshaeralDescription });
-                    this.combatMachine.action({ type: 'Health', data: { key: 'player', value: newPlayerHealth, id: this.context?.player?.playerID } });
-                    this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newHealth, id: enemy.enemyID } });
+                    EventBus.emit("add-combat-logs", { ...this.context.state, playerActionDescription: tshaeralDescription });
+                    this.combatMachine.action({ type: "Health", data: { key: "player", value: newPlayerHealth, id: this.context?.player?.playerID } });
+                    this.combatMachine.action({ type: "Health", data: { key: "enemy", value: newHealth, id: enemy.enemyID } });
                 };
             } else { // Party Combat
                 let party = this.context.party.find((e: Party) => e.enemyID === origin);
@@ -319,7 +319,7 @@ export class CombatManager {
             if (origin === this.context.player.playerID) { // Player Fyerus
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.35) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
                 const health = enemy.health - damage;
-                this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+                this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
             } else { // Party
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
@@ -388,7 +388,7 @@ export class CombatManager {
         };
     };
     renewal = () => {
-        this.combatMachine.action({ data: { key: 'player', value: 10, id: this.context?.player?.playerID }, type: 'Health' });
+        this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
     };
     enemyRenewal = (id: string): void => {
         if (!id) return;
@@ -397,12 +397,12 @@ export class CombatManager {
         const heal = enemy.healthbar.getTotal() * 0.1;
         const health = Math.min(enemy.health + heal, enemy.healthbar.getTotal());
         if (enemy.inCombat) {
-            this.combatMachine.action({ data: { key: 'enemy', value: health, id }, type: 'Health' });
+            this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
         } else { // CvC
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, "heal", false, false, () => enemy.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };
@@ -410,14 +410,14 @@ export class CombatManager {
         if (!id) return;
         let enemy = this.context.party.find((e: Party) => e.playerID === id);
         if (!enemy) { // Player Blessed
-            this.combatMachine.action({ data: { key: 'player', value: 10, id: this.context?.player?.playerID }, type: 'Health' });
+            this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
         } else {
             const heal = enemy.healthbar.getTotal() * 0.1;
             const health = Math.min(enemy.health + heal, enemy.healthbar.getTotal());
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, 'heal', false, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, "heal", false, false, () => enemy.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };
@@ -543,14 +543,14 @@ export class CombatManager {
         if (enemy) { // Enemy Taking Damage
             if (enemySpecialID === this.context.player.playerID) {
                 if (this.context.player.spellTarget === this.context.player.getEnemyId()) {
-                    this.combatMachine.action({ type: 'Chiomic', data: this.context.player.entropicMultiplier(20) }); 
+                    this.combatMachine.action({ type: "Chiomic", data: this.context.player.entropicMultiplier(20) }); 
                 } else {
                     if (!enemy || enemy.health <= 0 || enemy.isDefeated) return;
                     const tendril = Math.round(this.context.player.mastery() * (1 + (this.context.player.entropicMultiplier(20) / 100)) * this.context.player.caerenicDamage() * this.context.player.levelModifier());
                     const newComputerHealth = enemy.health - tendril < 0 ? 0 : enemy.health - tendril;
                     const playerActionDescription = `Your wreathing tendrils rip ${tendril} health from ${enemy.ascean?.name}.`;
-                    EventBus.emit('add-combat-logs', { ...this.context, playerActionDescription });
-                    this.combatMachine.action({ type: 'Health', data: { key: 'enemy', value: newComputerHealth, id: this.context.player.spellTarget } });
+                    EventBus.emit("add-combat-logs", { ...this.context, playerActionDescription });
+                    this.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: this.context.player.spellTarget } });
                 };
             } else {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
@@ -575,15 +575,15 @@ export class CombatManager {
             };
         };
     };
-    writhe = (id: string, enemyID: string, type = 'writhe'): void => {
+    writhe = (id: string, enemyID: string, type = "writhe"): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             let en = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (!en) return;
             if (en.isCurrentTarget) {
-                this.combatMachine.action({ type: 'Weapon', data: { key: 'computerAction', value: type, id: en.enemyID } });
+                this.combatMachine.action({ type: "Weapon", data: { key: "computerAction", value: type, id: en.enemyID } });
             } else {
-                this.combatMachine.action({ type: 'Enemy', data: { 
+                this.combatMachine.action({ type: "Enemy", data: { 
                     enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, 
                     actionData: { action: type, parry: en.parryAction, id: enemyID }}});
             };
@@ -595,9 +595,9 @@ export class CombatManager {
             if (enemyID === this.context.player.playerID) { // Player Combat
                 const match = this.context.isStateEnemy(id);
                 if (match) { // Target Player Attack
-                    this.combatMachine.action({ type: 'Weapon',  data: { key: 'action', value: type } });
+                    this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type } });
                 } else { // Blind Player Attack
-                    this.combatMachine.action({ type: 'Player', data: { 
+                    this.combatMachine.action({ type: "Player", data: { 
                         playerAction: { action: type, parry: this.context.state.parryGuess }, 
                         enemyID: enemy.enemyID, 
                         ascean: enemy.ascean, 
@@ -613,7 +613,7 @@ export class CombatManager {
                 if (party) { // Party Combat
                     this.partyAction({action:type,origin:enemyID,enemyID:id});
                 } else { // CvC
-                    this.computer({ type: 'Weapon', payload: { action: type, origin: enemyID, enemyID: id } });
+                    this.computer({ type: "Weapon", payload: { action: type, origin: enemyID, enemyID: id } });
                 };
             };
         } else {
@@ -621,27 +621,35 @@ export class CombatManager {
             if (party) {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
                 if (origin) { // Party Taking Damage vs Enemy
-                    this.computer({ type: 'Weapon', payload: { action: type, origin: enemyID, enemyID: id } });
+                    this.computer({ type: "Weapon", payload: { action: type, origin: enemyID, enemyID: id } });
                 };
             };
         };
     };
-    caerenic = (): boolean => EventBus.emit('update-caerenic');
-    stalwart = (): boolean => EventBus.emit('update-stalwart');
+    caerenic = (): boolean => EventBus.emit("update-caerenic");
+    stalwart = (): boolean => EventBus.emit("update-stalwart");
     useGrace = (value: number) => {
         if (this.context.state.isInsight && value > 0) {
             const effect = this.context.state.playerEffects.find((prayer: StatusEffect) => prayer.prayer === PRAYERS.INSIGHT);
             if (effect) {
-                this.combatMachine.action({ type: 'Remove Effect', data: effect });
+                this.combatMachine.action({ type: "Remove Effect", data: effect });
             };
-            this.combatMachine.input('isInsight',false);
+            this.combatMachine.input("isInsight",false);
             return;
         };
-        EventBus.emit('update-grace', value);
+        EventBus.emit("update-grace", value);
         this.context.player.grace -= value;
     };
     useStamina = (value: number) => {
-        EventBus.emit('update-stamina', value);
+        if (this.context.state.isQuicken && value > 0) {
+            const effect = this.context.state.playerEffects.find((prayer: StatusEffect) => prayer.prayer === PRAYERS.QUICKEN);
+            if (effect) {
+                this.combatMachine.action({ type: "Remove Effect", data: effect });
+            };
+            this.combatMachine.input("isQuicken",false);
+            return;
+        };
+        EventBus.emit("update-stamina", value);
         this.context.player.stamina -= value;
     };
 };

@@ -557,6 +557,9 @@ function statusEffectCheck(combat: Combat): Combat {
             if (effect.prayer === PRAYERS.INSIGHT) {
                 combat.isInsight = false;
             };
+            if (effect.prayer === PRAYERS.QUICKEN) {
+                combat.isQuicken = false;
+            };
             return false;
         };
         return true;
@@ -658,6 +661,9 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
             };
             if (exists.prayer === PRAYERS.INSIGHT) {
                 combat.isInsight = true;
+            };
+            if (exists.prayer === PRAYERS.QUICKEN) {
+                combat.isQuicken = true;
             };
             if (exists.prayer === PRAYERS.DEBUFF) {
                 const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
@@ -1884,6 +1890,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         'isStalwart': cleanData.isStalwart,
         'isStealth': cleanData.isStealth,
         'isInsight': cleanData.isInsight,
+        'isQuicken': cleanData.isQuicken,
         'astrication': cleanData.astrication,
         'berserk': cleanData.berserk,
         'conviction': cleanData.conviction,
@@ -2002,6 +2009,7 @@ function newDataCompiler(combat: Combat): any {
         isStealth: combat.isStealth,
         isSeering: combat.isSeering,
         isInsight: combat.isInsight,
+        isQuicken: combat.isQuicken,
         persuasionScenario: combat.persuasionScenario,
         luckoutScenario: combat.luckoutScenario,
         playerTrait: combat.playerTrait,
@@ -2072,6 +2080,7 @@ function talentPrayer(combat: Combat, prayer: string) {
         'playerInfluenceDescription': combat.playerInfluenceDescription,
 
         'isInsight': combat.isInsight,
+        'isQuicken': combat.isQuicken,
     };
     return changes;
 };
@@ -2137,6 +2146,7 @@ function instantActionSplitter(combat: Combat): any {
         'playerInfluenceDescription': combat.playerInfluenceDescription,
 
         'isInsight': combat.isInsight,
+        'isQuicken': combat.isQuicken,
     };
     return changes;
 };
@@ -2300,6 +2310,9 @@ function prayerRemoveTickSplitter(combat: Combat, statusEffect: StatusEffect): C
             };
             if (effect.prayer === PRAYERS.INSIGHT) {
                 combat.isInsight = false;
+            };
+            if (effect.prayer === PRAYERS.QUICKEN) {
+                combat.isQuicken = false;
             };
             return false;
         });

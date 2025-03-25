@@ -4,6 +4,7 @@ import { vibrate } from "./ScreenShake";
 import { ACTION_ORIGIN } from "../../utility/actions";
 import { Hud } from "../scenes/Hud";
 import { COOLDOWN, COST } from "../../ui/Character";
+import Player from "../entities/Player";
 const ACTIONS = [
     { ATTACK: 0x800080 }, 
     { POSTURE: 0x800080 }, 
@@ -822,15 +823,17 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const input = button.name.toLowerCase();
         const type = STAMINA.includes(input);
         let check: {success: boolean; cost: number;} = {success: false, cost: 0};
-        const player = this.scene.registry.get("player");
+        const player: Player = this.scene.registry.get("player");
         if (type) {
             check = staminaCheck(player.stamina, PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+            if (player.scene.state.isQuicken) check = {success:true,cost:0};
         } else {
             const initial = PLAYER.STAMINA[button.name.toUpperCase() as keyof typeof PLAYER.STAMINA];
             const grace = this.scene.talents.talents[input as keyof typeof this.scene.talents.talents].efficient 
                 ? TALENT_COST[initial as unknown as keyof typeof TALENT_COST] 
                 : initial;
             check = staminaCheck(player.grace, grace);
+            if (player.scene.state.isInsight) check = {success:true,cost:0};
         };
         if (check.success && player.playerMachine.stateMachine.isState(input)) {
             player.playerMachine.stateMachine.setState(`${input}`);

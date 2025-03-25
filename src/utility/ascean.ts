@@ -698,16 +698,16 @@ function penetration(weapon: any, attributes: CombatAttributes, combatStats: { p
 };
 
 function crit(weapon: Equipment, attributes: CombatAttributes, combatStats: { criticalChance: number; criticalDamage: number }): Equipment { 
-    if (weapon.attackType === 'Physical') {
+    if (weapon.attackType === "Physical") {
         weapon.criticalChance += 
-            combatStats.criticalChance + (attributes.agilityMod / WEIGHTS.MODIFIER) + (weapon.agility / WEIGHTS.MAJOR);
+            combatStats.criticalChance + (attributes.agilityMod / WEIGHTS.MAJOR);
         weapon.criticalDamage += 
-            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) + (attributes.constitutionMod + attributes.strengthMod + (weapon.strength / WEIGHTS.MODIFIER)) / 50;
+            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) + (attributes.constitutionMod + attributes.strengthMod) / 50;
     } else {
         weapon.criticalChance += 
-            combatStats.criticalChance + (attributes.achreMod / WEIGHTS.MODIFIER) + (weapon.achre / WEIGHTS.MAJOR);
+            combatStats.criticalChance + (attributes.achreMod / WEIGHTS.MAJOR);
         weapon.criticalDamage += 
-            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) + (attributes.constitutionMod + attributes.caerenMod + (weapon.caeren / WEIGHTS.MODIFIER)) / 50;
+            (combatStats.criticalDamage / WEIGHTS.ATTRIBUTE_START) + (attributes.constitutionMod + attributes.caerenMod) / 50;
     };
     weapon.criticalChance = Math.round(weapon.criticalChance * 100) / 100;
     weapon.criticalDamage = Math.round(weapon.criticalDamage * 100) / 100;

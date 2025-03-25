@@ -9,7 +9,7 @@ import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds 
 import Typewriter from "../utility/Typewriter";
 import Currency from "../utility/Currency";
 import MerchantTable from "./MerchantTable";
-import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from "../models/equipment";
+import Equipment, { determineMutation, getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from "../models/equipment";
 import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, sellRarity } from "../utility/styling";
 import ItemModal, { attrSplitter } from "../components/ItemModal";
@@ -51,6 +51,25 @@ const GET_NEXT_RARITY = {
     Uncommon: "Rare",
     Rare: "Epic",
     Epic: "Legendary",
+};
+
+const SANITIZE = {
+    criticalChance: "Critical Chance",
+    criticalDamage: "Critical Damage",
+    magicalDamage: "Magical Damage",
+    physicalDamage: "Physical Damage",
+    magicalPenetration: "Magical Penetration",
+    physicalPenetration: "Physical Penetration",
+    magicalResistance: "Magical Resistance",
+    physicalResistance: "Physical Resistance",
+    roll: "Roll",
+    constitution: "Constitution",
+    strength: "Strength",
+    agility: "Agility",
+    achre: "Achre",
+    caeren: "Caeren",
+    kyosir: "Kyosir",
+    influences: "Influences",
 };
 
 interface DialogOptionProps {
@@ -440,8 +459,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function checkForgings() {
-        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket].filter((i: Equipment) => !i.name.includes("Empty"));
-        console.log(items, "Items")
+        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket]
+            .filter((i: Equipment) => !i.rarity?.includes("Default"));
         setForgings({show:true,items});
     };
 
@@ -874,12 +893,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     async function handleEtching(type: string, cost: number, item: Equipment) {
         let currency = ascean().currency;
         const silver = cost * 100;
-        if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
+        if (silver > ascean().currency.silver && ascean().currency.gold === 0) {
             EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. The blacksmith requires ${silver} silver to etch ${type} into your ${item.name}.` });
             setEtchModalShow({show:false,item:undefined,types:[]});
             return;
         };
-        if (cost < ascean().currency.gold) {
+        if (cost > ascean().currency.gold) {
             EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. The blacksmith requires ${cost} gold to etch ${type} into your ${item.name}.` });
             setEtchModalShow({show:false,item:undefined,types:[]});
             return;
@@ -890,7 +909,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             currency.gold -= cost;
         };
         currency = rebalanceCurrency(currency);
-        EventBus.emit("alert", {header:"Change Etching",body:`You have changed your ${item.name}'s influence from ${item.influences?.[0]} to ${type}`,delay:3000, key:"Close"});
+        EventBus.emit("alert", {header:"Change Etching",body:`You have changed your ${item.name}'s influence from ${item.influences?.[0]} to ${type}`});
         let equipment = JSON.parse(JSON.stringify(item));
         equipment.influences = [type];
         await updateItem(equipment);
@@ -962,7 +981,48 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function itemReforge(item: Equipment) {
-        setReforge({...reforge(), show:true, item});
+        setReforge({...reforge(), show:true, item, cost:GET_REFORGE_COST[item.rarity as keyof typeof GET_REFORGE_COST]});
+    };
+
+    async function handleReforge() {
+        let currency = ascean().currency;
+        const silver = reforge().cost * 100;
+        if (silver > currency.silver && currency.gold === 0) {
+            EventBus.emit("alert", {header:"Insufficient Funds",body:`You do not have enough money. The blacksmith requires ${silver} silver to reforge your ${reforge().item?.name}`});
+            setReforge({...reforge(),show:false,item:undefined,cost:0});
+            setSans([]);
+            return;
+        };
+        if (reforge().cost > currency.gold) {
+            EventBus.emit("alert", {header:"Insufficient Funds",body:`You do not have enough money. The blacksmith requires ${reforge().cost} gold to reforge your ${reforge().item?.name}`});
+            setReforge({...reforge(),show:false,item:undefined,cost:0});
+            setSans([]);
+            return;
+        };
+        if (reforge().cost < 1) {
+            currency.silver -= silver;
+        } else {
+            currency.gold -= reforge().cost;
+        };
+        currency = rebalanceCurrency(currency);
+        EventBus.emit("alert", {header:"Reforging Item",body:`You have reforged your ${reforge().item?.name}! Hopefully it is more to your liking, ${ascean().name}.`});
+        const equipment = determineMutation(reforge().item as Equipment, sans());
+        await updateItem(equipment as Equipment);
+        const inventoryIndex = game().inventory.inventory.findIndex((inv: Equipment) => inv._id === equipment?._id);
+        if (inventoryIndex !== -1) { // In Inventory
+            let newInventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+            newInventory[inventoryIndex] = equipment;
+            EventBus.emit("refresh-inventory", newInventory);
+        } else { // On Player
+            EventBus.emit("fetch-ascean", ascean()._id);
+        };
+        setReforge({show:false,item:undefined,cost:0});
+        setSans([]);
+        EventBus.emit("purchase-sound");
+        setTimeout(() => {
+            EventBus.emit("update-currency", currency);
+            checkForgings();
+        }, 500);
     };
 
     function itemReetch(item: Equipment) {
@@ -1043,16 +1103,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
-    const typewriterStyling: JSX.CSSProperties = { };
-    const reforgeConcerns = (item: Equipment) => { 
+    const typewriterStyling: JSX.CSSProperties = {};
+    const reforgeConcerns = (item: Equipment) => {
         return { 
-            magicalDamage: item.magicalDamage,
-            physicalDamage: item.physicalDamage,
-            damageType: item?.damageType,
+            magicalDamage: item?.grip !== undefined ? item.magicalDamage : undefined,
+            physicalDamage: item?.grip !== undefined ? item.physicalDamage : undefined,
             criticalChance: item?.criticalChance,
             criticalDamage: item?.criticalDamage,
-            magicalPenetration: item?.magicalPenetration,
-            physicalPenetration: item?.physicalPenetration,
+            magicalPenetration: item?.magicalPenetration !== undefined ? item.magicalPenetration : undefined,
+            physicalPenetration: item?.physicalPenetration !== undefined ? item.physicalPenetration : undefined,
             magicalResistance: item?.magicalResistance,
             physicalResistance: item?.physicalResistance,
             roll: item?.roll,
@@ -1062,7 +1121,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             achre: item?.achre > 0 ? item.achre : undefined,
             caeren: item?.caeren > 0 ? item.caeren : undefined,
             kyosir: item?.kyosir > 0 ? item.kyosir : undefined,
-            influences: item?.influences,
         };
     };
     return (
@@ -1138,9 +1196,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         return (
                             <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
-                                <span style={{ "font-size":"0.75em" }}>
-                                Reforge
-                                </span>
+                                <span style={{ "font-size":"0.75em" }}>Reforge</span>
                             </div>
                         );
                     })}
@@ -1534,7 +1590,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </span>
                     </h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2" style={{ "margin-left":"5%" }}>
-                    <polyline points={`0,0 ${420},2.5 0,5`}></polyline>
+                    <polyline points={`0,0 ${window.innerWidth * 0.435},2.5 0,5`}></polyline>
                 </svg>
                 <div class="center">
                     <Show when={reforge().item?.type && reforge().item?.grip}>
@@ -1555,10 +1611,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     { reforge().item?.constitution as number + (reforge().item?.strength as number) + (reforge().item?.agility as number) 
                         + (reforge().item?.achre as number) + (reforge().item?.caeren as number) + (reforge().item?.kyosir as number) > 0 ? <br /> : "" }
                     Damage: <span class="gold">{reforge().item?.physicalDamage}</span> Phys | <span class="gold">{reforge().item?.magicalDamage}</span> Magi <br />
-                    <Show when={reforge().item?.physicalResistance || reforge().item?.magicalResistance}>
+                    <Show when={reforge().item?.physicalResistance !== undefined && reforge().item?.physicalResistance as number > 0 || reforge().item?.magicalResistance !== undefined && reforge().item?.magicalResistance as number > 0}>
                         Defense: <span class="gold">{roundToTwoDecimals(reforge().item?.physicalResistance as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(reforge().item?.magicalResistance as number)}</span> Magi <br />
                     </Show>
-                    <Show when={reforge().item?.physicalPenetration || reforge().item?.magicalPenetration}>
+                    <Show when={reforge().item?.physicalPenetration !== undefined && reforge().item?.physicalPenetration as number > 0 || reforge().item?.magicalPenetration !== undefined && reforge().item?.magicalPenetration as number > 0}>
                         Penetration: <span class="gold">{roundToTwoDecimals(reforge().item?.physicalPenetration as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(reforge().item?.magicalPenetration as number)}</span> Magi <br />
                     </Show>
                     Crit Chance: <span class="gold">{roundToTwoDecimals(reforge().item?.criticalChance as number)}%</span> <br />
@@ -1571,27 +1627,32 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         {reforge().item?.rarity}
                     </div>
                 </div>
-                <button class="highlight cornerBL" style={{ "background-color": "green" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>Reforge</button>
+                <button class="highlight cornerBL" style={{ "background-color": "green" }} onClick={handleReforge}>Reforge</button>
                 </div>
                 </div>
                 <div class="border right moisten" style={{width:"48%", height:"94%","margin-left":"-1%"}}>
                     <div class="creature-heading center">
                         <p class="center wrap" style={{ "font-size": "1.25em", margin: "5%" }}>
                             Do You Wish To Reforge Your <span class="gold">{reforge().item?.name}</span> For 
-                            <span style={{ color: `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? "silver" : "gold"}` }}>{GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] * 100} Silver` : `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST]} Gold`}</span>?
-                            <br /> [<span class="gold">Gold: Locked</span> | <span style={{ color: "red" }}>Red: Rerolled</span>]
+                            <span style={{ color: `${reforge().cost < 1 ? "silver" : "gold"}` }}>{reforge().cost < 1 ? `${reforge().cost * 100} Silver` : `${reforge().cost} Gold`}</span>?
+                            <br /><br /> [<span class="gold">Gold: Locked</span> | <span style={{ color: "red" }}>Red: Rerolled</span>]
                         </p>
                         <div>
                             <For each={Object.keys(reforgeConcerns(reforge().item as Equipment))}>{(type: string, i: Accessor<number>) => {
                                 const concern = reforgeConcerns(reforge().item as Equipment);
                                 if (concern[type as keyof typeof concern] === undefined) return;
                                 return <button class="highlight" style={{ color: sans().includes(type) ? "gold" : "red", "font-weight": 600, "font-size": "1em" }} 
-                                    onClick={() => setSans((prev) =>
-                                        prev.includes(type) 
-                                        ? prev.filter((p: string) => p !== type) 
-                                        : [...prev, type]
-                                    )}>
-                                    {type} {sans().includes(type) ? "✓" : "✗"} {i() % 2 === 0 ? <br /> : ""}
+                                    onClick={() => {
+                                        let length = sans().length;
+                                        const cost = GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST];
+                                        setSans((prev) =>
+                                            prev.includes(type) 
+                                            ? prev.filter((p: string) => p !== type) 
+                                            : [...prev, type]
+                                        );
+                                        setReforge({...reforge(), cost: roundToTwoDecimals(reforge().cost + (length > sans().length ? -cost : cost))});
+                                    }}>
+                                    {SANITIZE[type as keyof typeof SANITIZE]} {sans().includes(type) ? "✓" : "✗"} 
                                 </button>
                             }}</For>
                         <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>x</button>

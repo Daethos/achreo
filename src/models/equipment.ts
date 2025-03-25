@@ -18,6 +18,17 @@ const DAMAGE = ['physicalDamage', 'magicalDamage'];
 const DEFENSE = ['physicalResistance', 'magicalResistance'];
 const CRITICAL = ['criticalDamage'];
 
+export function getSpecificItem(item: Equipment) {
+    return Weapons.find((w: any) => w.name === item.name && w.rarity === item.rarity) ||
+    Legs.find((l: any) => l.name === item.name && l.rarity === item.rarity) ||
+    Chests.find((c: any) => c.name === item.name && c.rarity === item.rarity) ||
+    Shields.find((s: any) => s.name === item.name && s.rarity === item.rarity) ||
+    Helmets.find((h: any) => h.name === item.name && h.rarity === item.rarity) ||
+    Amulets.find((a: any) => a.name === item.name && a.rarity === item.rarity) ||
+    Rings.find((r: any) => r.name === item.name && r.rarity === item.rarity) ||
+    Trinkets.find((t: any) => t.name === item.name && t.rarity === item.rarity);
+};
+
 export function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
 };
@@ -109,11 +120,12 @@ async function defaultMutate(equipment: Equipment[]) {
 
 function determineMutation(item: Equipment, sans: string[]): Equipment | undefined {
     try {
+        const base = getSpecificItem(item);
         for (const attribute of ATTRIBUTES) {
             if (sans.includes(attribute)) continue;
-            if (item[attribute] > 0) {
+            if (base![attribute as keyof typeof base] > 0) {
                 // console.log(attribute, item[attribute], 'Current Attribute Rating');
-                switch (item[attribute]) {
+                switch (base![attribute as keyof typeof base]) {
                     case 1:
                         item[attribute] = 1;
                         break;
@@ -171,7 +183,7 @@ function determineMutation(item: Equipment, sans: string[]): Equipment | undefin
                     case 19: 
                         item[attribute] = randomIntFromInterval(15, 19);
                         break;
-                    case item[attribute] >= 20: 
+                    case base![attribute as keyof typeof base] >= 20: 
                         item[attribute] = item[attribute];
                         break;
                     default: break;
@@ -179,105 +191,105 @@ function determineMutation(item: Equipment, sans: string[]): Equipment | undefin
             };
         };
         for (const attribute of CHANCE) {    
-            if (sans.includes(item[attribute])) continue;
-            if (item[attribute] >= 24) { // 24+ +/- 2/0
-                item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 4);
-            } else if (item[attribute] >= 20) { // 20-23 +/- 2/0
-                item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
-            } else if (item[attribute] >= 18) { // 18-19 +/- 2/0
-                item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
-            } else if (item[attribute] >= 16) { // 16-17 +/- 2/0
-                item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
-            } else if (item[attribute] >= 14) { // 14-15 +/- 2/0
-                item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
-            } else if (item[attribute] >= 12) { // 12-13 +/- 2/0
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
-            } else if (item[attribute] >= 10) { // 10-11 +/- 2/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
-            } else if (item[attribute] >= 8) { // 8-9 +/- 2/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
-            } else if (item[attribute] >= 6) { // 6-7 +/- 1/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
-            } else if (item[attribute] >= 4) { // 2-5 +/- 1/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
-            } else if (item[attribute] >= 2) { // 2-3 +/- 0/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
+            if (sans.includes(attribute)) continue;
+            if (base![attribute as keyof typeof base] >= 24) { // 24+ +/- 2/0
+                item[attribute] = randomFloatFromInterval(base![attribute as keyof typeof base], base![attribute as keyof typeof base] + 4);
+            } else if (base![attribute as keyof typeof base] >= 20) { // 20-23 +/- 2/0
+                item[attribute] = randomFloatFromInterval(base![attribute as keyof typeof base], base![attribute as keyof typeof base] + 2);
+            } else if (base![attribute as keyof typeof base] >= 18) { // 18-19 +/- 2/0
+                item[attribute] = randomFloatFromInterval(base![attribute as keyof typeof base], base![attribute as keyof typeof base] + 2);
+            } else if (base![attribute as keyof typeof base] >= 16) { // 16-17 +/- 2/0
+                item[attribute] = randomFloatFromInterval(base![attribute as keyof typeof base], base![attribute as keyof typeof base] + 1.5);
+            } else if (base![attribute as keyof typeof base] >= 14) { // 14-15 +/- 2/0
+                item[attribute] = randomFloatFromInterval(base![attribute as keyof typeof base], base![attribute as keyof typeof base] + 1.5);
+            } else if (base![attribute as keyof typeof base] >= 12) { // 12-13 +/- 2/0
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 1.5);
+            } else if (base![attribute as keyof typeof base] >= 10) { // 10-11 +/- 2/1
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 1.5);
+            } else if (base![attribute as keyof typeof base] >= 8) { // 8-9 +/- 2/1
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 1);
+            } else if (base![attribute as keyof typeof base] >= 6) { // 6-7 +/- 1/1
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 1);
+            } else if (base![attribute as keyof typeof base] >= 4) { // 2-5 +/- 1/1
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 0.5);
+            } else if (base![attribute as keyof typeof base] >= 2) { // 2-3 +/- 0/1
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base] + 0.5);
             } else { // 0-1  +/ 0/1
-                item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute]);
+                item[attribute] = randomFloatFromInterval(Math.max(base![attribute as keyof typeof base] - 1, 0), base![attribute as keyof typeof base]);
             };
         };
         for (const damage of DAMAGE) {    
             if (sans.includes(damage)) continue;
-            if (item[damage] >= 20) { // 20+ +/- 2/0
-                item[damage] = randomIntFromInterval(item[damage], item[damage] + 4);
-            } else if (item[damage] >= 18) { // 18-19 +/- 2/0
-                item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-            } else if (item[damage] >= 16) { // 16-17 +/- 2/0
-                item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-            } else if (item[damage] >= 14) { // 14-15 +/- 2/0
-                item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-            } else if (item[damage] >= 12) { // 12-13 +/- 2/0
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
-            } else if (item[damage] >= 10) { // 10-11 +/- 2/1
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
-            } else if (item[damage] >= 8) { // 8-9 +/- 2/1
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
-            } else if (item[damage] >= 6) { // 6-7 +/- 1/1
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
-            } else if (item[damage] >= 4) { // 2-5 +/- 1/1
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
-            } else if (item[damage] >= 2) { // 2-3 +/- 0/1
-                item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
+            if (base![damage as keyof typeof base] >= 20) { // 20+ +/- 2/0
+                item[damage] = randomIntFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base] + 4);
+            } else if (base![damage as keyof typeof base] >= 18) { // 18-19 +/- 2/0
+                item[damage] = randomIntFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base] + 2);
+            } else if (base![damage as keyof typeof base] >= 16) { // 16-17 +/- 2/0
+                item[damage] = randomIntFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base] + 2);
+            } else if (base![damage as keyof typeof base] >= 14) { // 14-15 +/- 2/0
+                item[damage] = randomIntFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base] + 2);
+            } else if (base![damage as keyof typeof base] >= 12) { // 12-13 +/- 2/0
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base] + 2);
+            } else if (base![damage as keyof typeof base] >= 10) { // 10-11 +/- 2/1
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base] + 2);
+            } else if (base![damage as keyof typeof base] >= 8) { // 8-9 +/- 2/1
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base] + 1);
+            } else if (base![damage as keyof typeof base] >= 6) { // 6-7 +/- 1/1
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base] + 1);
+            } else if (base![damage as keyof typeof base] >= 4) { // 2-5 +/- 1/1
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base]);
+            } else if (base![damage as keyof typeof base] >= 2) { // 2-3 +/- 0/1
+                item[damage] = randomIntFromInterval(Math.max(base![damage as keyof typeof base] - 1, 0), base![damage as keyof typeof base]);
             } else { // 0-1  +/ 0/1
-                item[damage] = randomIntFromInterval(item[damage], item[damage]);
+                item[damage] = randomIntFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base]);
             };
         };
         for (const defense of DEFENSE) {    
             if (sans.includes(defense)) continue;
-            if (item[defense] >= 20) { // 20+ +/- 2/0
-                item[defense] = randomFloatFromInterval(item[defense], item[defense] + 3);
-            } else if (item[defense] >= 18) { // 18-19 +/- 2/0
-                item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-            } else if (item[defense] >= 16) { // 16-17 +/- 2/0
-                item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-            } else if (item[defense] >= 14) { // 14-15 +/- 2/0
-                item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-            } else if (item[defense] >= 12) { // 12-13 +/- 2/0
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
-            } else if (item[defense] >= 10) { // 10-11 +/- 2/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
-            } else if (item[defense] >= 8) { // 8-9 +/- 2/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
-            } else if (item[defense] >= 6) { // 6-7 +/- 1/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
-            } else if (item[defense] >= 4) { // 2-5 +/- 1/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
-            } else if (item[defense] >= 2) { // 2-3 +/- 0/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
+            if (base![defense as keyof typeof base] >= 20) { // 20+ +/- 2/0
+                item[defense] = randomFloatFromInterval(base![defense as keyof typeof base], base![defense as keyof typeof base] + 3);
+            } else if (base![defense as keyof typeof base] >= 18) { // 18-19 +/- 2/0
+                item[defense] = randomFloatFromInterval(base![defense as keyof typeof base], base![defense as keyof typeof base] + 1.5);
+            } else if (base![defense as keyof typeof base] >= 16) { // 16-17 +/- 2/0
+                item[defense] = randomFloatFromInterval(base![defense as keyof typeof base], base![defense as keyof typeof base] + 1.5);
+            } else if (base![defense as keyof typeof base] >= 14) { // 14-15 +/- 2/0
+                item[defense] = randomFloatFromInterval(base![defense as keyof typeof base], base![defense as keyof typeof base] + 1.5);
+            } else if (base![defense as keyof typeof base] >= 12) { // 12-13 +/- 2/0
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base] + 1);
+            } else if (base![defense as keyof typeof base] >= 10) { // 10-11 +/- 2/1
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base] + 1);
+            } else if (base![defense as keyof typeof base] >= 8) { // 8-9 +/- 2/1
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base] + 0.5);
+            } else if (base![defense as keyof typeof base] >= 6) { // 6-7 +/- 1/1
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base] + 0.5);
+            } else if (base![defense as keyof typeof base] >= 4) { // 2-5 +/- 1/1
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base]);
+            } else if (base![defense as keyof typeof base] >= 2) { // 2-3 +/- 0/1
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base]);
             } else { // 0-1  +/ 0/1
-                item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
+                item[defense] = randomFloatFromInterval(Math.max(base![defense as keyof typeof base] - 1, 0), base![defense as keyof typeof base]);
             };
         };
         for (const damage of CRITICAL) {    
             if (sans.includes(damage)) continue;
-            if (item[damage] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.2, item[damage] + 0.25);
-            } else if (item[damage] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.15, item[damage] + 0.2);
-            } else if (item[damage] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.1, item[damage] + 0.15);
-            } else if (item[damage] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.05, item[damage] + 0.1);
-            } else if (item[damage] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.02, item[damage] + 0.03);
-            } else if (item[damage] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.03);
-            } else if (item[damage] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
-            } else if (item[damage] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
-                item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
-            } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
+            if (base![damage as keyof typeof base] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.2, base![damage as keyof typeof base] + 0.25);
+            } else if (base![damage as keyof typeof base] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.15, base![damage as keyof typeof base] + 0.2);
+            } else if (base![damage as keyof typeof base] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.1, base![damage as keyof typeof base] + 0.15);
+            } else if (base![damage as keyof typeof base] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.05, base![damage as keyof typeof base] + 0.1);
+            } else if (base![damage as keyof typeof base] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.02, base![damage as keyof typeof base] + 0.03);
+            } else if (base![damage as keyof typeof base] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.01, base![damage as keyof typeof base] + 0.03);
+            } else if (base![damage as keyof typeof base] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.01, base![damage as keyof typeof base] + 0.02);
+            } else if (base![damage as keyof typeof base] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base] - 0.01, base![damage as keyof typeof base] + 0.02);
+            } else if (base![damage as keyof typeof base] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
+                item[damage] = randomFloatFromInterval(base![damage as keyof typeof base], base![damage as keyof typeof base] + 0.01);
             };
         };
         return item;

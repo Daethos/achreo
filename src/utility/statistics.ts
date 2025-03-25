@@ -322,7 +322,7 @@ export default class Statistics {
         };
         this.relationships = {
             deity: {
-                name: '', // This occurs when you meet a deity a second time, you can reinforce you believe it's *that* deity and it'll name them then.
+                name: "", // This occurs when you meet a deity a second time, you can reinforce you believe it's *that* deity and it'll name them then.
                 behaviors: [],
                 Compliant: { 
                     occurrence: 0,
@@ -348,5 +348,5 @@ export default class Statistics {
     [key: string]: any;
 };
 
-export const initStatistics = new Statistics('statistics', 'constitution');
+export const initStatistics = new Statistics("statistics", "constitution");
 export const createStatistics = (id: string, mastery: string): Statistics => new Statistics(id, mastery);

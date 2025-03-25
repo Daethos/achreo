@@ -13,7 +13,7 @@ export default function createStamina(stam: Accessor<number>) {
         setUsedStamina(0);
         const newStamina = Math.min(100, staminaPercentage() + (stamina() / 100));
         setStaminaPercentage(newStamina);
-        EventBus.emit('updated-stamina', newStamina);
+        EventBus.emit("updated-stamina", newStamina);
         if (newStamina >= 100) {clearInterval(interval); interval = undefined;};
     };
     const startRecovery = () => {
@@ -31,13 +31,13 @@ export default function createStamina(stam: Accessor<number>) {
         setUsedStamina((prev) => prev + e);
     };
     onMount(() => {
-        EventBus.on('update-stamina', updateStamina);
-        EventBus.on('update-total-stamina', (e: number) => setStamina(e));
+        EventBus.on("update-stamina", updateStamina);
+        EventBus.on("update-total-stamina", (e: number) => setStamina(e));
         updateStamina();
     });    
     onCleanup(() => {
-        EventBus.off('update-stamina', updateStamina);
-        EventBus.off('update-total-stamina');
+        EventBus.off("update-stamina", updateStamina);
+        EventBus.off("update-total-stamina");
         clearInterval(interval);
         interval = undefined;
     });

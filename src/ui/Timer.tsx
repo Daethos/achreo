@@ -1,26 +1,62 @@
 import { EventBus } from "../game/EventBus";
-var remaining: number = 0, timer: any = undefined;
-function startCountdown(combat: boolean, health: number) {
-    if (combat === false) {
-        EventBus.emit('save-health', health);
-        return;
-    };
-    timer = setInterval(() => {
-        remaining -= 1000;
-        if (remaining <= 0) {
-            clearInterval(timer);
-            remaining = 0;
-            timer = undefined;
-            EventBus.emit('save-health', health);
+
+class CountdownTimer {
+    private remaining: number = 0;
+    private timer: NodeJS.Timeout | undefined = undefined;
+    private healthValue: number = 0;
+    private inCombat: boolean = false;
+
+    public adjustTime(amount: number, combat: boolean, health: number, cancel?: boolean): void {
+        if (cancel) {
+            this.clearTimer();
+            return;
         };
-    }, 1000);
-};
-export function adjustTime(amount: number, combat: boolean, health: number, cancel?: boolean) {
-    if (cancel === true) {
-        clearInterval(timer);
-        timer = undefined;
-        return;
+
+        if (amount <= 0) {
+            console.warn("adjustTime: amount should be positive");
+            return;
+        };
+
+        this.inCombat = combat;
+        this.healthValue = health;
+        this.remaining += amount;
+
+        if (!this.timer) {
+            this.startCountdown();
+        };
     };
-    remaining += amount;
-    if (!timer) startCountdown(combat,health);
+
+    private startCountdown(): void {
+        if (!this.inCombat) {
+            this.saveHealth();
+            return;
+        };
+
+        this.timer = setInterval(() => {
+            this.remaining -= 1000;
+            
+            if (this.remaining <= 0) {
+                this.clearTimer();
+                this.remaining = 0;
+                this.saveHealth();
+            };
+        }, 1000);
+    };
+
+    private saveHealth(): void {
+        EventBus.emit("save-health", this.healthValue);
+    };
+
+    private clearTimer(): void {
+        if (this.timer) {
+            clearInterval(this.timer);
+            this.timer = undefined;
+        };
+    };
+
+    public cleanup(): void {
+        this.clearTimer();
+    };
 };
+
+export const timer = new CountdownTimer();

@@ -13,7 +13,7 @@ import { Reputation } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Statistics from "../utility/statistics";
 import { validateHealth, validateLevel, validateMastery } from "../utility/validators";
-import { adjustTime } from "./Timer";
+import { timer } from "./Timer";
 import { Store } from "solid-js/store";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import Talents from "../utility/talents";
@@ -383,7 +383,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {
-                adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
+                timer.adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
             if (affectsStealth && combat().isStealth) {
                 EventBus.emit("update-stealth");
@@ -395,7 +395,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     };
     function resolveCombat(res: Combat) {
         try {
-            adjustTime(0, res.combatEngaged, 0, true);
+            timer.adjustTime(0, res.combatEngaged, 0, true);
             if (res.playerWin === true) {
                 let experience: number = Math.round((res.computer?.level as number) * 50 * (res.computer?.level as number / res?.player?.level!) + (res?.playerAttributes?.rawKyosir as number));
                 experience = balanceExperience(experience, res?.player?.level as number);

@@ -179,5 +179,5 @@ export default class Talents {
     [key: string]: any;
 };
 
-export const initTalents = new Talents('talents');
+export const initTalents = new Talents("talents");
 export const createTalents = (id: string): Talents => new Talents(id);

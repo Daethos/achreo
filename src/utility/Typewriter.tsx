@@ -1,164 +1,164 @@
-import { Accessor, JSX, createEffect, createSignal } from 'solid-js';
+import { Accessor, JSX, createEffect, createSignal } from "solid-js";
 import Typed from "typed.js";
-import { EventBus } from '../game/EventBus';
+import { EventBus } from "../game/EventBus";
 type StyleMap = { [key: string]: JSX.CSSProperties };
 const styleMap: StyleMap = {
     rebukeButton: {
         float: "right",
-        'font-size': "24px",
-        'z-index': 9999,
-        'margin-left': "90vw",
-        'margin-top': "5vh",
+        "font-size": "24px",
+        "z-index": 9999,
+        "margin-left": "90vw",
+        "margin-top": "5vh",
         color: "red",
         border: "none",
-        'text-decoration': "none",
-        'background-color': "transparent",
+        "text-decoration": "none",
+        "background-color": "transparent",
     },
     journeyText: {
-        'margin-top': "5vh",
+        "margin-top": "5vh",
         color: "#fdf6d8",
-        'font-size': "0.9em",
+        "font-size": "0.9em",
     },
     whisperText: {
-        'font-size': "2em",
+        "font-size": "2em",
     },
     otherText: {
-        'font-size': "1.1em",
+        "font-size": "1.1em",
         color: "red",
-        'text-shadow': "1.5px 1.5px 1.5px darkred",
+        "text-shadow": "1.5px 1.5px 1.5px darkred",
     },
     devotedText: {
-        'font-size': "1.1em",
+        "font-size": "1.1em",
         color: "darkmagenta",
-        'text-shadow': "1.5px 1.5px 1.5px purple",
+        "text-shadow": "1.5px 1.5px 1.5px purple",
     },
     adherentText: {
-        'font-size': "1.1em",
+        "font-size": "1.1em",
         color: "orangered",
-        'text-shadow': "1.5px 1.5px 1.5px red",
+        "text-shadow": "1.5px 1.5px 1.5px red",
     },
     button: {
-        'z-index': 9999,
+        "z-index": 9999,
         border: "none",
-        'text-decoration': "none",
-        'background-color': "transparent",
+        "text-decoration": "none",
+        "background-color": "transparent",
     },
     typewriterContainer: {
-        'z-index': 9999,
+        "z-index": 9999,
         color: "gold",
-        'text-align': "center",
-        'text-shadow': "1.5px 1.5px 1.5px darkgoldenrod",
-        margin: 'auto',
-        'font-size': "16px",
+        "text-align": "center",
+        "text-shadow": "1.5px 1.5px 1.5px darkgoldenrod",
+        margin: "auto",
+        "font-size": "16px",
         padding: "1em",
-        'font-variant': "small-caps",
+        "font-variant": "small-caps",
     },
     godBorderConstitution: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid #fdf6d8",
-        'box-shadow': "0 0 3em #fdf6d8",
+        "box-shadow": "0 0 3em #fdf6d8",
     },
     godBorderStrength: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid #ff0000",
-        'box-shadow': "0 0 3em #ff0000",
+        "box-shadow": "0 0 3em #ff0000",
     },
     godBorderAgility: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid #00ff00",
-        'box-shadow': "0 0 3em #00ff00",
+        "box-shadow": "0 0 3em #00ff00",
     },
     godBorderAchre: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid blue",
-        'box-shadow': "0 0 3em blue",
+        "box-shadow": "0 0 3em blue",
     },
     godBorderCaeren: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid purple",
-        'box-shadow': "0 0 3em purple",
+        "box-shadow": "0 0 3em purple",
     },
     godBorderKyosir: {
-        'margin-bottom': "5%",
-        'width': "25em",
-        'margin-left': '-87.5%',
-        'margin-top': "5%",
-        'border-radius': "50%",
+        "margin-bottom": "5%",
+        "width": "25em",
+        "margin-left": "-87.5%",
+        "margin-top": "5%",
+        "border-radius": "50%",
         border: "2px solid gold",
-        'box-shadow': "0 0 3em gold",
+        "box-shadow": "0 0 3em gold",
     },
     greenMarkup: {
         color: "#fdf6d8",
-        'margin-right':'0.5em',
-        'text-shadow': "1.5px 1.5px 1.5px green",
-        'font-size': "16px",
-        'font-weight': 700,
-        display: 'inline-block'
+        "margin-right":"0.5em",
+        "text-shadow": "1.5px 1.5px 1.5px green",
+        "font-size": "16px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     blueMarkup: {
         color: "#fdf6d8",
-        'margin-right':'0.5em',
-        'text-shadow': "1.5px 1.5px 1.5px blue",
-        'font-size': "16px",
-        'font-weight': 700,
-        display: 'inline-block'
+        "margin-right":"0.5em",
+        "text-shadow": "1.5px 1.5px 1.5px blue",
+        "font-size": "16px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     purpleMarkup: {
         color: "#fdf6d8",
-        'margin-right':'0.5em',
-        'text-shadow': "1.5px 1.5px 1.5px purple",
-        'font-size': "16px",
-        'font-weight': 700,
-        display: 'inline-block'
+        "margin-right":"0.5em",
+        "text-shadow": "1.5px 1.5px 1.5px purple",
+        "font-size": "16px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     darkorangeMarkup: {
         color: "#fdf6d8",
-        // 'margin-right':'1em',
-        'text-shadow': "1.5px 1.5px 1.5px darkorange",
-        'font-size': "16px",
-        'font-weight': 700,
-        display: 'inline-block'
+        // "margin-right":"1em",
+        "text-shadow": "1.5px 1.5px 1.5px darkorange",
+        "font-size": "16px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     redMarkup: {
         color: "red",
-        'text-shadow': "1.5px 1.5px 1.5px #fdf6d8",
-        'font-size': "20px",
-        'font-weight': 700,
-        display: 'inline-block'
+        "text-shadow": "1.5px 1.5px 1.5px #fdf6d8",
+        "font-size": "20px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     goldMarkup: {
         color: "gold",
-        'text-shadow': "1.5px 1.5px 1.5px #fdf6d8",
-        'font-size': "20px",
-        'font-weight': 700,
-        display: 'inline-block'
+        "text-shadow": "1.5px 1.5px 1.5px #fdf6d8",
+        "font-size": "20px",
+        "font-weight": 700,
+        display: "inline-block"
     },
     highlight: {
-        color: '#fdf6d8', 
-        background: '#000', 
-        'border-radius': '0.25rem', 
-        padding: '0.25rem 1rem', 
-        margin: '0.5rem',
+        color: "#fdf6d8", 
+        background: "#000", 
+        "border-radius": "0.25rem", 
+        padding: "0.25rem 1rem", 
+        margin: "0.5rem",
     },
     gold: {
         color: "gold"
@@ -183,7 +183,7 @@ export default function Typewriter({ stringText, styling, performAction, main }:
     };
     const applyEventListeners = (element: HTMLElement): void => {
         const functionName = element?.attributes?.["data-function-name" as any]?.value;
-        element.setAttribute('onclick', `handleButton('${functionName}')`);
+        element.setAttribute("onclick", `handleButton("${functionName}")`);
     };
     const styleHTML = (html: string) => {
         const parser = new DOMParser();
@@ -201,7 +201,7 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         if (el()) typewriter(stringText);
     });
     function typewriter(text: string | Accessor<string>) {
-        const check = typeof text === 'function' ? text() : text;
+        const check = typeof text === "function" ? text() : text;
         const clean = styleHTML(check);
         const typedContent = {
             strings: [clean],
@@ -210,7 +210,7 @@ export default function Typewriter({ stringText, styling, performAction, main }:
             showCursor: false,
             onBegin: () => (isTyping = true), // Set flag when typing starts
             onComplete: () => {
-                if (main) EventBus.emit('typing-complete');
+                if (main) EventBus.emit("typing-complete");
                 isTyping = false;
             }, // Clear flag when typing completes
         };
@@ -222,12 +222,12 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         if (isTyping && typed) {
             typed.destroy();
             isTyping = false;
-            const check = typeof stringText === 'function' ? stringText() : stringText;
+            const check = typeof stringText === "function" ? stringText() : stringText;
             el()!.innerHTML = styleHTML(check);
-            EventBus.emit('typing-complete');
+            EventBus.emit("typing-complete");
         };
-    }; // 'white-space': 'pre-wrap', 
+    }; // "white-space": "pre-wrap", 
     return (
-        <div id="typewriter" onClick={skipTyping} ref={setEl} style={{'text-align': 'left', ...styling}}></div>
+        <div id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>
     );
 };

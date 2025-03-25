@@ -5,7 +5,7 @@
         "text": "Apologies for my Caerenesis, \n it rings and rhymes--your language's genesis. \n Just a moment you shall see, \n words string and set to harmony. \n Not to belie my intents brief, \n to whom are we in your belief? \n ...It seems to stir your hand to sheath.",
         "options": [
           {
-            "text": "Perhaps its anticipation of raising it in your name. I, ${ascean.name}, serve my life for yours, ${enemy.name}.",
+            "text": "Perhaps anticipation to raise it in your name. I, ${ascean.name}, serve my life for yours, ${enemy.name}.",
             "next": "0002",
             "npcIds": ["Deity"],
             "conditions": [],
@@ -243,7 +243,7 @@
         "text": "[ You Rebuked Touching '${enemy.name}.' This communion has faded for now. ]",
         "options": [
           {
-            "text": "As sure as you were to witness true mystery in this world, it's gone. Perhaps for the best. Keep your ${ascean.mastery} sharp, ${ascean.name}.",
+            "text": "As sure as you were to witness true mystery in this world, it is gone. Perhaps for the best. Keep your ${ascean.mastery} sharp, ${ascean.name}.",
             "next": "",
             "npcIds": ["Deity"],
             "conditions": [],

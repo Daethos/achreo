@@ -21,123 +21,123 @@ export const PARTY_OFFSET: {[key:number]: COORDINATES} = {
     7: { x: 60, y: 36 },
 };
 export const PARTY_SPECIAL = {
-    'constitution': [ // 14
-        'Absorb',
-        // 'Blind',
-        'Desperation',
-        'Dispel',
-        'Healing',
-        'Ilirech',
-        'Kynisos',
-        'Kyrisian',
-        'Kyrnaicism', 
-        'Likyr',
-        'Mend',
-        'Paralyze',
-        'Reconstitute',
-        'Renewal',
-        'Shield',
-        'Shirk',
-        'Tether',
-        'Ward'
+    "constitution": [ // 14
+        "Absorb",
+        // "Blind",
+        "Desperation",
+        "Dispel",
+        "Healing",
+        "Ilirech",
+        "Kynisos",
+        "Kyrisian",
+        "Kyrnaicism", 
+        "Likyr",
+        "Mend",
+        "Paralyze",
+        "Reconstitute",
+        "Renewal",
+        "Shield",
+        "Shirk",
+        "Tether",
+        "Ward"
     ], // 14 
-    'strength': [ // 14
-        'Arc',
-        // 'Blind',
-        // 'Caerenesis',
-        'Desperation',
-        'Devour',
-        'Healing',
-        'Hook',
-        'Howl',
-        'Leap',
-        'Quor',
-        'Reconstitute',
-        'Rush',
-        'Scream',
-        'Sprint',
-        'Storm',
-        'Tether',
-        'Ward',
-        'Writhe'
+    "strength": [ // 14
+        "Arc",
+        // "Blind",
+        // "Caerenesis",
+        "Desperation",
+        "Devour",
+        "Healing",
+        "Hook",
+        "Howl",
+        "Leap",
+        "Quor",
+        "Reconstitute",
+        "Rush",
+        "Scream",
+        "Sprint",
+        "Storm",
+        "Tether",
+        "Ward",
+        "Writhe"
     ], // 14
-    'agility': [ // 14
-        'Achire',
-        'Desperation',
-        'Envelop',
-        'Healing',
-        'Hook',
-        'Kynisos',
-        'Leap',
-        'Pursuit',
-        'Reconstitute',
-        'Rush',
-        'Shadow',
-        'Shimmer',
-        'Snare',
-        'Sprint',
-        'Storm',
+    "agility": [ // 14
+        "Achire",
+        "Desperation",
+        "Envelop",
+        "Healing",
+        "Hook",
+        "Kynisos",
+        "Leap",
+        "Pursuit",
+        "Reconstitute",
+        "Rush",
+        "Shadow",
+        "Shimmer",
+        "Snare",
+        "Sprint",
+        "Storm",
     ], // 14
-    'achre': [ // 14
-        'Absorb',
-        'Achire',
-        'Astrave',
-        'Blink',
-        'Caerenesis',
-        'Desperation',
-        'Devour',
-        'Freeze',
-        'Frost',
-        'Fyerus',
-        'Healing',
-        'Moderate',
-        'Multifarious',
-        'Netherswap',
-        'Polymorph',
-        'Quor',
-        'Reconstitute',
-        'Sacrifice',
-        'Slow'
+    "achre": [ // 14
+        "Absorb",
+        "Achire",
+        "Astrave",
+        "Blink",
+        "Caerenesis",
+        "Desperation",
+        "Devour",
+        "Freeze",
+        "Frost",
+        "Fyerus",
+        "Healing",
+        "Moderate",
+        "Multifarious",
+        "Netherswap",
+        "Polymorph",
+        "Quor",
+        "Reconstitute",
+        "Sacrifice",
+        "Slow"
     ], // 14 
-    'caeren': [ // 14
-        'Achire',
-        'Astrave',
-        'Blink',
-        // 'Caerenesis',
-        'Desperation',
-        'Fear',
-        'Fyerus',
-        'Healing',
-        'Ilirech',
-        'Kyrnaicism',
-        'Maiereth',
-        'Malice',
-        'Menace',
-        'Mend',
-        'Reconstitute',
-        'Sacrifice', 
-        'Scream',
-        'Shirk'
+    "caeren": [ // 14
+        "Achire",
+        "Astrave",
+        "Blink",
+        // "Caerenesis",
+        "Desperation",
+        "Fear",
+        "Fyerus",
+        "Healing",
+        "Ilirech",
+        "Kyrnaicism",
+        "Maiereth",
+        "Malice",
+        "Menace",
+        "Mend",
+        "Reconstitute",
+        "Sacrifice", 
+        "Scream",
+        "Shirk"
     ], // 14
-    'kyosir': [ // 14
-        'Blink',
-        'Chiomic',
-        'Chiomism',
-        'Confuse',
-        'Desperation',
-        'Devour',
-        'Disease',
-        'Dispel',
-        'Healing',
-        'Hook',
-        'Kynisos',
-        'Malice',
-        'Mystify',
-        'Netherswap',
-        'Protect',
-        'Reconstitute',
-        'Sacrifice',
-        'Suture'
+    "kyosir": [ // 14
+        "Blink",
+        "Chiomic",
+        "Chiomism",
+        "Confuse",
+        "Desperation",
+        "Devour",
+        "Disease",
+        "Dispel",
+        "Healing",
+        "Hook",
+        "Kynisos",
+        "Malice",
+        "Mystify",
+        "Netherswap",
+        "Protect",
+        "Reconstitute",
+        "Sacrifice",
+        "Suture"
     ], // 14
 };
 
@@ -145,7 +145,7 @@ const STATE = "stateMachine";
 const POSITIVE = "positiveMachine";
 
 export const PARTY_INSTINCTS = {
-    'constitution': [
+    "constitution": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -190,7 +190,7 @@ export const PARTY_INSTINCTS = {
             value: States.WARD
         }
     ],
-    'strength': [
+    "strength": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -235,7 +235,7 @@ export const PARTY_INSTINCTS = {
             value: States.WARD
         }
     ],
-    'agility': [
+    "agility": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -280,7 +280,7 @@ export const PARTY_INSTINCTS = {
             value: States.ACHIRE
         }
     ],
-    'achre': [
+    "achre": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.RECONSTITUTE
@@ -325,7 +325,7 @@ export const PARTY_INSTINCTS = {
             value: States.QUOR
         }
     ],
-    'caeren': [
+    "caeren": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.DESPERATION
@@ -370,7 +370,7 @@ export const PARTY_INSTINCTS = {
             value: States.MENACE
         }
     ],
-    'kyosir': [
+    "kyosir": [
         { // 0 - Critical Heal
             key: STATE,
             value: States.RECONSTITUTE

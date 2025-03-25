@@ -4,7 +4,7 @@ interface Loggers {
 };
 export class ConsoleLogger implements Loggers {
     log(message: string) {
-        EventBus.emit('special-combat-text', {playerSpecialDescription:message});
+        EventBus.emit("special-combat-text", {playerSpecialDescription:message});
     };
 };
 export default class Logger {

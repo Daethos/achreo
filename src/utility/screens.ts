@@ -8,68 +8,68 @@ export type Screen = {
 };
 
 export const SCREENS = {
-    'PREMADE': {
-        KEY: 'PREMADE',
-        TEXT: 'Name',
-        PREV: 'COMPLETE',
-        NEXT: 'CHARACTER'
+    "PREMADE": {
+        KEY: "PREMADE",
+        TEXT: "Name",
+        PREV: "COMPLETE",
+        NEXT: "CHARACTER"
     },
-    'CHARACTER': {
-        KEY: 'CHARACTER',
-        TEXT: 'Name',
-        PREV: 'PREMADE',
-        NEXT: 'ORIGIN'
+    "CHARACTER": {
+        KEY: "CHARACTER",
+        TEXT: "Name",
+        PREV: "PREMADE",
+        NEXT: "ORIGIN"
     },
-    'ORIGIN': {
-        KEY: 'ORIGIN',
-        TEXT: 'Origin',
-        PREV: 'CHARACTER',
-        NEXT: 'PREFERENCE'
+    "ORIGIN": {
+        KEY: "ORIGIN",
+        TEXT: "Origin",
+        PREV: "CHARACTER",
+        NEXT: "PREFERENCE"
     }, 
-    'PREFERENCE': {
-        KEY: 'PREFERENCE',
-        TEXT: 'Mastery',
-        PREV: 'ORIGIN',
-        NEXT: 'ATTRIBUTES'
+    "PREFERENCE": {
+        KEY: "PREFERENCE",
+        TEXT: "Mastery",
+        PREV: "ORIGIN",
+        NEXT: "ATTRIBUTES"
     },
-    'ATTRIBUTES': {
-        KEY: 'ATTRIBUTES',
-        TEXT: 'Stats',
-        PREV: 'PREFERENCE',
-        NEXT: 'COMPLETE'
+    "ATTRIBUTES": {
+        KEY: "ATTRIBUTES",
+        TEXT: "Stats",
+        PREV: "PREFERENCE",
+        NEXT: "COMPLETE"
     },
-    'COMPLETE': {
-        KEY: 'COMPLETE',
-        TEXT: 'Create',
-        PREV: 'ATTRIBUTES',
-        NEXT: 'PREMADE'
+    "COMPLETE": {
+        KEY: "COMPLETE",
+        TEXT: "Create",
+        PREV: "ATTRIBUTES",
+        NEXT: "PREMADE"
     }
 };
 
 export const LANDSCAPE_SCREENS = {
-    'PREMADE': {
-        KEY: 'PREMADE',
-        TEXT: 'Premade',
-        PREV: 'COMPLETE',
-        NEXT: 'CHARACTER'
+    "PREMADE": {
+        KEY: "PREMADE",
+        TEXT: "Premade",
+        PREV: "COMPLETE",
+        NEXT: "CHARACTER"
     },
-    'CHARACTER': {
-        KEY: 'CHARACTER',
-        TEXT: 'Name',
-        PREV: 'PREMADE',
-        NEXT: 'ATTRIBUTES'
+    "CHARACTER": {
+        KEY: "CHARACTER",
+        TEXT: "Name",
+        PREV: "PREMADE",
+        NEXT: "ATTRIBUTES"
     },
-    'ATTRIBUTES': {
-        KEY: 'ATTRIBUTES',
-        TEXT: 'Stats',
-        PREV: 'CHARACTER',
-        NEXT: 'COMPLETE'
+    "ATTRIBUTES": {
+        KEY: "ATTRIBUTES",
+        TEXT: "Stats",
+        PREV: "CHARACTER",
+        NEXT: "COMPLETE"
     },
-    'COMPLETE': {
-        KEY: 'COMPLETE',
-        TEXT: 'Create',
-        PREV: 'ATTRIBUTES',
-        NEXT: 'PREMADE'
+    "COMPLETE": {
+        KEY: "COMPLETE",
+        TEXT: "Create",
+        PREV: "ATTRIBUTES",
+        NEXT: "PREMADE"
     }
 };
 

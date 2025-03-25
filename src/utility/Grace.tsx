@@ -13,7 +13,7 @@ export default function createGrace(startGrace: Accessor<number>) {
         setUsedGrace(0);
         const newGrace = Math.min(100, gracePercentage() + (grace() / 100)); // 1
         setGracePercentage(newGrace);
-        EventBus.emit('updated-grace', newGrace);
+        EventBus.emit("updated-grace", newGrace);
         if (newGrace >= 100) {clearInterval(interval); interval = undefined;};
     };
     const startRecovery = () => {
@@ -30,13 +30,13 @@ export default function createGrace(startGrace: Accessor<number>) {
         setUsedGrace((prev) => prev + e);
     };
     onMount(() => {
-        EventBus.on('update-grace', updateStamina);
-        EventBus.on('update-total-grace', (e: number) => setGrace(e));
+        EventBus.on("update-grace", updateStamina);
+        EventBus.on("update-total-grace", (e: number) => setGrace(e));
         updateStamina();
     });    
     onCleanup(() => {
-        EventBus.off('update-grace', updateStamina);
-        EventBus.off('update-total-grace');
+        EventBus.off("update-grace", updateStamina);
+        EventBus.off("update-total-grace");
         clearInterval(interval);
         interval = undefined;
     });

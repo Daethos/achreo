@@ -4,7 +4,7 @@ import { useResizeListener } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 import { roundToTwoDecimals } from "../utility/combat";
 
-function attrSplitter(string: string, value: number) {
+export function attrSplitter(string: string, value: number) {
     if (value <= 0) return "";
     return <span>{string}: <span class="gold">+{value} </span></span>
 };

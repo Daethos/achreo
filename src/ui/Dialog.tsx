@@ -12,7 +12,7 @@ import MerchantTable from "./MerchantTable";
 import Equipment, { getArmorEquipment, getClothEquipment, getJewelryEquipment, getMagicalWeaponEquipment, getMerchantEquipment, getOneDetermined, getPhysicalWeaponEquipment, getSpecificArmor } from "../models/equipment";
 import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, sellRarity } from "../utility/styling";
-import ItemModal from "../components/ItemModal";
+import ItemModal, { attrSplitter } from "../components/ItemModal";
 import QuestManager, { getQuests, Quest, replaceChar } from "../utility/quests";
 import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
 import Thievery from "./Thievery";
@@ -26,6 +26,7 @@ import { getParty, updateItem } from "../assets/db/db";
 import { IRefPhaserGame, rebalanceCurrency } from "../game/PhaserGame";
 import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
+import { roundToTwoDecimals } from "../utility/combat";
 const GET_ETCH_COST = {
     Common: 0.1,
     Uncommon: 0.25,
@@ -439,7 +440,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function checkForgings() {
-        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket].filter((i: Equipment) => !i.name.includes("Default"));
+        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket].filter((i: Equipment) => !i.name.includes("Empty"));
+        console.log(items, "Items")
         setForgings({show:true,items});
     };
 
@@ -1042,6 +1044,27 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     const typewriterStyling: JSX.CSSProperties = { };
+    const reforgeConcerns = (item: Equipment) => { 
+        return { 
+            magicalDamage: item.magicalDamage,
+            physicalDamage: item.physicalDamage,
+            damageType: item?.damageType,
+            criticalChance: item?.criticalChance,
+            criticalDamage: item?.criticalDamage,
+            magicalPenetration: item?.magicalPenetration,
+            physicalPenetration: item?.physicalPenetration,
+            magicalResistance: item?.magicalResistance,
+            physicalResistance: item?.physicalResistance,
+            roll: item?.roll,
+            constitution: item?.constitution > 0 ? item.constitution : undefined,
+            strength: item?.strength > 0 ? item.strength : undefined,
+            agility: item?.agility > 0 ? item.agility : undefined,
+            achre: item?.achre > 0 ? item.achre : undefined,
+            caeren: item?.caeren > 0 ? item.caeren : undefined,
+            kyosir: item?.kyosir > 0 ? item.kyosir : undefined,
+            influences: item?.influences,
+        };
+    };
     return (
         <Show when={combat().computer}>
         <Show when={combat().isEnemy}>
@@ -1503,24 +1526,77 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={reforge().show}> 
             <div class="modal">
-                <div class="border superCenter wrap" style={{ width: "75%" }}>
-                <p class="center wrap" style={{ "font-size": "1.25em", margin: "3%" }}>
-                    Do You Wish To Reforge your <span class="gold">{reforge().item?.name}</span> for 
-                    <span style={{ color: `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? "silver" : "gold"}` }}>{GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] * 100} Silver` : `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST]} Gold`}</span>?
-                </p>
-                <div>
-                    <For each={Object.keys(reforge().item as Equipment)}>{(type: string) => {
-                        return <button class="highlight" style={{ color: sans().includes(type) ? "gold" : "red", "font-weight": 600, "font-size": "1.5em" }} 
-                            onClick={() => setSans((prev) =>
-                                prev.includes(type) 
-                                ? prev.filter((p: string) => p !== type) 
-                                : [...prev, type]
-                            )}>
-                            {type} {sans().includes(type) ? "✓" : "✗"}
-                        </button>
-                    }}</For>
-                <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>x</button>
+                <div class="border left moisten" style={{width: "48%", height: "94%" }}>
+                <div class="creature-heading center">
+                <h1 style={{ "justify-content": "space-evenly", margin: "24px 0 16px" }}>{reforge().item?.name} 
+                    <span style={{ transform: `scale(${1})`, float: "right", "margin-right": "5%" }}>
+                        <img src={reforge().item?.imgUrl} alt={reforge().item?.name} />
+                    </span>
+                    </h1>
+                <svg height="5" width="100%" class="tapered-rule mt-2" style={{ "margin-left":"5%" }}>
+                    <polyline points={`0,0 ${420},2.5 0,5`}></polyline>
+                </svg>
+                <div class="center">
+                    <Show when={reforge().item?.type && reforge().item?.grip}>
+                        <div class="my-2" style={{"font-size":"1.25em", margin:"3%"}}>
+                            {reforge().item?.type} [<span style={{ "font-style": "italic", color: "gold" }}>{reforge().item?.grip}</span>] <br />
+                            {reforge().item?.attackType} [<span style={{ "font-style": "italic", color: "gold" }}>{reforge().item?.damageType?.[0]}{reforge().item?.damageType?.[1] ? " / " + reforge().item?.damageType?.[1] : "" }{reforge().item?.damageType?.[2] ? " / " + reforge().item?.damageType?.[2] : "" }</span>] <br />
+                        </div>
+                    </Show>
+                    <Show when={reforge().item?.type && !reforge().item?.grip}>
+                        <div style={{"font-size":"1.25em", margin:"3%"}}>{reforge().item?.type}</div>
+                    </Show>
+                    {attrSplitter("CON", reforge().item?.constitution as number)}
+                    {attrSplitter("STR", reforge().item?.strength as number)}
+                    {attrSplitter("AGI", reforge().item?.agility as number)}
+                    {attrSplitter("ACH", reforge().item?.achre as number)}
+                    {attrSplitter("CAER", reforge().item?.caeren as number)}
+                    {attrSplitter("KYO", reforge().item?.kyosir as number)}
+                    { reforge().item?.constitution as number + (reforge().item?.strength as number) + (reforge().item?.agility as number) 
+                        + (reforge().item?.achre as number) + (reforge().item?.caeren as number) + (reforge().item?.kyosir as number) > 0 ? <br /> : "" }
+                    Damage: <span class="gold">{reforge().item?.physicalDamage}</span> Phys | <span class="gold">{reforge().item?.magicalDamage}</span> Magi <br />
+                    <Show when={reforge().item?.physicalResistance || reforge().item?.magicalResistance}>
+                        Defense: <span class="gold">{roundToTwoDecimals(reforge().item?.physicalResistance as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(reforge().item?.magicalResistance as number)}</span> Magi <br />
+                    </Show>
+                    <Show when={reforge().item?.physicalPenetration || reforge().item?.magicalPenetration}>
+                        Penetration: <span class="gold">{roundToTwoDecimals(reforge().item?.physicalPenetration as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(reforge().item?.magicalPenetration as number)}</span> Magi <br />
+                    </Show>
+                    Crit Chance: <span class="gold">{roundToTwoDecimals(reforge().item?.criticalChance as number)}%</span> <br />
+                    Crit Damage: <span class="gold">{roundToTwoDecimals(reforge().item?.criticalDamage as number)}x</span> <br />
+                    Roll Chance: <span class="gold">{roundToTwoDecimals(reforge().item?.roll as number)}%</span> <br />
+                    <Show when={reforge().item?.influences && reforge().item?.influences?.length as number > 0}>
+                        Influence: <span class="gold">{reforge().item?.influences?.[0]}</span>
+                    </Show>
+                    <div style={{ color: getRarityColor(reforge().item?.rarity as string), "font-size": "1.5em", "margin-top": "3%", "margin-bottom": "4%" }}>
+                        {reforge().item?.rarity}
+                    </div>
                 </div>
+                <button class="highlight cornerBL" style={{ "background-color": "green" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>Reforge</button>
+                </div>
+                </div>
+                <div class="border right moisten" style={{width:"48%", height:"94%","margin-left":"-1%"}}>
+                    <div class="creature-heading center">
+                        <p class="center wrap" style={{ "font-size": "1.25em", margin: "5%" }}>
+                            Do You Wish To Reforge Your <span class="gold">{reforge().item?.name}</span> For 
+                            <span style={{ color: `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? "silver" : "gold"}` }}>{GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] * 100} Silver` : `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST]} Gold`}</span>?
+                            <br /> [<span class="gold">Gold: Locked</span> | <span style={{ color: "red" }}>Red: Rerolled</span>]
+                        </p>
+                        <div>
+                            <For each={Object.keys(reforgeConcerns(reforge().item as Equipment))}>{(type: string, i: Accessor<number>) => {
+                                const concern = reforgeConcerns(reforge().item as Equipment);
+                                if (concern[type as keyof typeof concern] === undefined) return;
+                                return <button class="highlight" style={{ color: sans().includes(type) ? "gold" : "red", "font-weight": 600, "font-size": "1em" }} 
+                                    onClick={() => setSans((prev) =>
+                                        prev.includes(type) 
+                                        ? prev.filter((p: string) => p !== type) 
+                                        : [...prev, type]
+                                    )}>
+                                    {type} {sans().includes(type) ? "✓" : "✗"} {i() % 2 === 0 ? <br /> : ""}
+                                </button>
+                            }}</For>
+                        <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>x</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </Show>

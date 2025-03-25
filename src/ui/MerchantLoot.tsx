@@ -23,13 +23,13 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
                     cost = { silver: Math.floor(Math.random() * 15) + 10, gold: 0 }; break;
                 };
                 case "Uncommon": {
-                    cost = { silver: Math.floor(Math.random() * 30) + 30, gold: Math.floor(Math.random() * 2) + 1 }; break;
+                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: 1 }; break; // Math.floor(Math.random() * 2) + 
                 };
                 case "Rare": {
-                    cost = { silver: Math.floor(Math.random() * 45) + 30, gold: Math.floor(Math.random() * 6) + 2 }; break;
+                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 3) + 3 }; break;
                 };
                 case "Epic": {
-                    cost = { silver: Math.floor(Math.random() * 60) + 40, gold: Math.floor(Math.random() * 12) + 12 }; break;
+                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 5) + 10 }; break;
                 };
                 default: cost = { silver: 10, gold: 0 }; break; 
             };

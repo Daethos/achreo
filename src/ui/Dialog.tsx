@@ -38,6 +38,12 @@ const GET_FORGE_COST = {
     Rare: 12,
     Epic: 60,
 };
+const GET_REFORGE_COST = {
+    Common: 0.05,
+    Uncommon: 0.1,
+    Rare: 0.5,
+    Epic: 1,
+};
 
 const GET_NEXT_RARITY = {
     Common: "Uncommon",
@@ -277,6 +283,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [forgeModalShow, setForgeModalShow] = createSignal(false);
     const [etchModalShow, setEtchModalShow] = createSignal<{show:boolean;item:Equipment|undefined;types:string[];}>({show:false,item:undefined,types:[]});
     const [influence, setInfluence] = createSignal(combat()?.weapons[0]?.influences?.[0]);
+    const [sans, setSans] = createSignal<string[]>([]);
     const [persuasionString, setPersuasionString] = createSignal<string>("");
     const [luckoutString, setLuckoutString] = createSignal<string>("");
     const [upgradeItems, setUpgradeItems] = createSignal<any | undefined>(undefined);
@@ -319,7 +326,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
-    const [reforge, setReforge] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
+    const [etchings, setEtchings] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
+    const [forgings, setForgings] = createSignal<{show:boolean;items:Equipment[];}>({show:false,items:[]});
+    const [reforge, setReforge] = createSignal<{show:boolean;item:Equipment|undefined;cost:number;}>({show:false,item:undefined,cost:0});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [rewardItem, setRewardItem] = createSignal<{show:boolean,item:any}>({show:false,item:undefined});
     const [thievery, setThievery] = createSignal<boolean>(false);
@@ -342,7 +351,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkInfluence(ascean);
         checkUpgrades();
         checkParty();
-        // checkEtchings();
     });
 
     createEffect(() => setMerchantTable(game().merchantEquipment));
@@ -373,7 +381,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         getSell: () => setShowSell(!showSell()),
         setBlacksmithSell: () => setBlacksmithSell(!blacksmithSell()),
         setForgeSee: () => setForgeSee(!forgeSee()),
-        setReforgeSee: () => checkEtchings(),
+        setReetchSee: () => checkEtchings(),
+        setReforgeSee: () => checkForgings(),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit("highlight", "joystick"),
         getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
@@ -426,7 +435,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
         };
 
-        setReforge({show:true, items});
+        setEtchings({show:true, items});
+    };
+
+    function checkForgings() {
+        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket].filter((i: Equipment) => !i.name.includes("Default"));
+        setForgings({show:true,items});
     };
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
@@ -857,18 +871,20 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     async function handleEtching(type: string, cost: number, item: Equipment) {
         let currency = ascean().currency;
+        const silver = cost * 100;
+        if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
+            EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. The blacksmith requires ${silver} silver to etch ${type} into your ${item.name}.` });
+            setEtchModalShow({show:false,item:undefined,types:[]});
+            return;
+        };
+        if (cost < ascean().currency.gold) {
+            EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. The blacksmith requires ${cost} gold to etch ${type} into your ${item.name}.` });
+            setEtchModalShow({show:false,item:undefined,types:[]});
+            return;
+        };
         if (cost < 1) { // silver cost
-            const silver = cost * 100;
-            if (silver < ascean().currency.silver && ascean().currency.gold === 0) {
-                // Cannot afford etching
-                return;
-            };
             currency.silver -= silver;
         } else { // Gold Cost
-            if (cost < ascean().currency.gold) {
-                // Cannot afford etching
-                return;
-            };
             currency.gold -= cost;
         };
         currency = rebalanceCurrency(currency);
@@ -944,6 +960,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function itemReforge(item: Equipment) {
+        setReforge({...reforge(), show:true, item});
+    };
+
+    function itemReetch(item: Equipment) {
         let types;
         if (item?.grip !== undefined) {
             types = Weapons.find((w:any) => w.name === item.name)?.influences;
@@ -1070,7 +1090,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <p class="purpleMarkup">[Epic - 12g]</p>
                     <p class="darkorangeMarkup">[Legendary - 60g]</p>
                     <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater?</button>
-                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge the primal etchings of your weapons or jewelry?</button>
+                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess?</button>
+                    <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry?</button>
                     <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith?</button>
                 `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
@@ -1085,14 +1106,32 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         );
                     })}
                 </div> ) : forgeSee() ? ( <span style={{ color: "red" }}>There is nothing in your inventory that can be forged into its greater version.</span> ) : ( "" )}
-                {reforge().show && reforge().items.length > 0 ? ( 
+                {forgings().show ? ( 
                     <div>
                     <Currency ascean={ascean} />
                     <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
-                    {reforge().items.map((item: any) => {
+                    {forgings().items.concat(game().inventory.inventory).map((item: any) => {
                         if (item === undefined) return;
                         return (
                             <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
+                                <img src={item?.imgUrl} alt={item?.name} />
+                                <span style={{ "font-size":"0.75em" }}>
+                                Reforge
+                                </span>
+                            </div>
+                        );
+                    })}
+                    </div>
+                    </div> ) 
+                : forgings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
+                {etchings().show && etchings().items.length > 0 ? ( 
+                    <div>
+                    <Currency ascean={ascean} />
+                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
+                    {etchings().items.map((item: any) => {
+                        if (item === undefined) return;
+                        return (
+                            <div class="center" onClick={() => itemReetch(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
                                 Etch
                             </div>
@@ -1100,7 +1139,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     })}
                     </div>
                     </div> ) 
-                : reforge().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
+                : etchings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
                 <br />
                 {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
@@ -1462,11 +1501,34 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setSpecialMerchant(false)}>x</button>
             </div>
         </Show>
+        <Show when={reforge().show}> 
+            <div class="modal">
+                <div class="border superCenter wrap" style={{ width: "75%" }}>
+                <p class="center wrap" style={{ "font-size": "1.25em", margin: "3%" }}>
+                    Do You Wish To Reforge your <span class="gold">{reforge().item?.name}</span> for 
+                    <span style={{ color: `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? "silver" : "gold"}` }}>{GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] < 1 ? `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST] * 100} Silver` : `${GET_REFORGE_COST[reforge().item?.rarity as string as keyof typeof GET_REFORGE_COST]} Gold`}</span>?
+                </p>
+                <div>
+                    <For each={Object.keys(reforge().item as Equipment)}>{(type: string) => {
+                        return <button class="highlight" style={{ color: sans().includes(type) ? "gold" : "red", "font-weight": 600, "font-size": "1.5em" }} 
+                            onClick={() => setSans((prev) =>
+                                prev.includes(type) 
+                                ? prev.filter((p: string) => p !== type) 
+                                : [...prev, type]
+                            )}>
+                            {type} {sans().includes(type) ? "✓" : "✗"}
+                        </button>
+                    }}</For>
+                <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>x</button>
+                </div>
+                </div>
+            </div>
+        </Show>
         <Show when={etchModalShow().show}> 
             <div class="modal">
                 <div class="border superCenter wrap" style={{ width: "50%" }}>
                 <p class="center wrap" style={{ "font-size": "1.25em", margin: "3%" }}>
-                    Do You Wish To change the nature of your <span class="gold">{etchModalShow().item?.name} [{etchModalShow().item?.influences?.[0]}]</span> into either {etchModalShow().types?.map((type:string, i: number) => `${type}${i === etchModalShow().types.length - 1 ? "" : " or "}`)} for 
+                    Do You Wish To Change the Nature of your <span class="gold">{etchModalShow().item?.name} [{etchModalShow().item?.influences?.[0]}]</span> into either {etchModalShow().types?.map((type:string, i: number) => `${type}${i === etchModalShow().types.length - 1 ? "" : " or "}`)} for 
                     <span style={{ color: `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] < 1 ? "silver" : "gold"}` }}>{GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] < 1 ? `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST] * 100} Silver` : `${GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST]} Gold`}</span>?
                 </p>
                 <div>

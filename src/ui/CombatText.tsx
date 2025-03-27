@@ -27,7 +27,7 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
     };
     return <div>
         <div class="combatText" style={{...edit(), "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700"}}>
-        <div style={{ "text-wrap": "balance", margin: "3%" }}> 
+        <div class="animate-flicker" style={{ "text-wrap": "balance", margin: "3%", "--glow-color":"#000" }}> 
             <Show when={partyShow()} fallback={
                 <div style={{ "font-size": edit()?.size, "z-index": 1 }} innerHTML={combatHistory()} />
             }>

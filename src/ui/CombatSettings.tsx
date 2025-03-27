@@ -103,7 +103,7 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
     return <div>
         <button class="highlight" onClick={() => setEditShow(!editShow())} style={{ top: `${Number(edit().top.split("%")[0]) - 12.5}%`, left: `${Number(edit().left.split("%")[0]) - 1.25}%`, position: "absolute", color: "gold", transform: "scale(0.75)" }}>{svg("UI")}</button>
         <div class="center combatSettings" style={{ ...edit(), background: "#000", "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700", "font-size": edit()?.size, overflow: "scroll", "scrollbar-width": "none" }}>
-            <div class="center shadow" style={{ display: "flex", "flex-direction": "row", "margin-top": "1%", width: "100%", "z-index": 1 }}>
+            <div class="center shadow animate-flicker" style={{ display: "flex", "flex-direction": "row", "margin-top": "1%", width: "100%", "z-index": 1 }}>
             <For each={BUTTONS}>{((button) => {
                 return <button class="highlight gold" style={{ "z-index": 1 }} onClick={() => handleButton(button.direction)}>
                     {buttonText(button.direction, game().selectedHighlight)}
@@ -116,20 +116,20 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
             <Show when={game().scrollEnabled}>
                 <Switch>
                 <Match when={game().selectedHighlight === "Weapon"}>
-                    <div>
+                    <div class="animate-flicker">
                         <p class="shadow" style={highlightStyle}>Main Weapon: {combat()?.weapons?.[0]?.name}</p>
                         <p style={optionStyle}>Up{" ->> "} {combat()?.weapons?.[1]?.name} {" <<- "}Up</p>
                         <Show when={combat()?.weapons?.[2]}><p class="shadow" style={optionStyle}>Down{" ->> "} {combat()?.weapons?.[2]?.name} {" <<- "}Down</p></Show> 
                     </div>
                 </Match>
                 <Match when={game().selectedHighlight === "Damage"}>
-                    <div>
+                    <div class="animate-flicker">
                         <p class="shadow" style={highlightStyle}>Damage Style: <span style={{ color: borderColor(combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex] as string) }}>{combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</span></p>
                         <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
                     </div>
                 </Match>
                 <Match when={game().selectedHighlight === "Prayer"}>
-                    <div class="center">
+                    <div class="center animate-flicker">
                         <p class="shadow" style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(PRAYERS[game().selectedPrayerIndex]), "text-shadow": "0.025em 0.025em 0.025em #fdf6d8" }}>{PRAYERS[game().selectedPrayerIndex]}</span></p>
                         <div style={optionStyle}>{mapTypes(PRAYERS)}</div>
                     </div>

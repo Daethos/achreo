@@ -147,7 +147,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         {arena().enemies.length > 0 && <button class="highlight animate" onClick={() => createArena()} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
                         <For each={arena().enemies}>{(enemy) => {
                             return (
-                                <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0, animation: "flicker 0.5s infinite ease alternate" }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
+                                <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
                             )
                         }}</For>
                         <div>
@@ -224,7 +224,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                 <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red" }}>X</button>
             </>}>
                 <div class="center creature-heading moisten" style={style}>
-                    <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 0.5s infinite alternate" }}>{arena().win ? "Victory" : "Defeat"}</p>
+                    <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 0.5s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>
                     <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
                         return (

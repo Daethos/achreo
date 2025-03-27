@@ -25,8 +25,8 @@ const CONVERSION = {
     Game: Default,
     Tutorial: Default,
     Underground: {
-        X: 550, // 500
-        Y: 20 // 35
+        X: 555, // 500
+        Y: 30 // 35
     },
 };
 export default class Beam {

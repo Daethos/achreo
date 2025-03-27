@@ -412,7 +412,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
                 EventBus.emit("enemy-loot", loot);
                 setAsceanState({ ...asceanState(), avarice: false });
-                EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
+                setTimeout(() => {
+                    EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
+                }, 500);
             } else {
                 EventBus.emit("record-loss", res);
             };

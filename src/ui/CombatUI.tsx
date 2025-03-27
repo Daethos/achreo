@@ -1,4 +1,4 @@
-import { Accessor, Setter, createSignal } from "solid-js"
+import { Accessor, Setter, createEffect, createSignal } from "solid-js"
 import ItemModal from "../components/ItemModal";
 import { border, borderColor, itemStyle, masteryColor } from "../utility/styling";
 import PrayerEffects from "./PrayerEffects";
@@ -36,7 +36,42 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     const [shieldShow, setShieldShow] = createSignal(false);
     const [staminaShow, setStaminaShow] = createSignal(false);
     const [graceShow, setGraceShow] = createSignal(false);
+    const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
+    // createEffect((prev) => {
+    //     if (prev !== state().newPlayerHealth && previousHealth().health !== state().newPlayerHealth && previousHealth().show === false) {
+    //         console.log("Triggering show previous health aka change class")
+    //         setPreviousHealth({...previousHealth(),show:true});
+    //         setTimeout(() => {
+    //             setPreviousHealth({health:state().newPlayerHealth,show:false});
+    //         }, 1000);
+    //         return state().newPlayerHealth;
+    //     };
+    // });
+    createEffect(() => {
+        // Explicitly access all reactive values first for proper tracking
+        const currentHealth = state().newPlayerHealth;
+        const prevHealth = previousHealth().health;
+        const showStatus = previousHealth().show;
+    
+        if (prevHealth !== currentHealth && showStatus === false) {
+            
+            // First update - show the difference
+            setPreviousHealth(prev => ({
+                ...prev,
+                show: true,
+                positive: prevHealth < currentHealth
+            }));
+            // Set timeout to hide the difference
+            setTimeout(() => {
+                setPreviousHealth({
+                    health: currentHealth,
+                    show: false,
+                    positive:false
+                });
+            }, 1000);
+        }
+    });
     const disengage = () => EventBus.emit("disengage");
     const showPlayer = () => {
         EventBus.emit("action-button-sound");
@@ -94,16 +129,35 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     //     EventBus.emit("create-prayer", exists);
     // }; // , "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#800080"}`
     // top(state().player?.name.length as number)
-    return <div class="playerCombatUi"> 
-        <div class="playerHealthBar">
-            <div class="playerPortrait" style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}` }}>{healthDisplay()}</div>
+    return <div class="playerCombatUi" classList={{
+        "animate-texty": previousHealth().show && previousHealth().positive,
+        "animate-flicker": previousHealth().show && !previousHealth().positive,
+        "reset-animation": !previousHealth().show
+      }} style={{ "--glow-color": "violet", transition: "all 0.75s ease" }}>
+            <div class={`playerHealthBar`} classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }}>
+            <div class="playerPortrait" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
+            "--glow-color": "violet" }}>{healthDisplay()}</div>
             <div class="healthbarPosition" style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
-            <div class="healthbarPosition" style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out" }}></div>
+            <div class="healthbarPosition" style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
+            "--glow-color": "gold" }}></div>
         </div>
-        <p class="playerName" style={{
-            top: top(state().player?.name.length as number), 
-            "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
-            "font-size": size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+            <p class="playerName" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} style={{
+                top: top(state().player?.name.length as number), 
+                "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
+                "--glow-color": state().isStealth ? "#fdf6d8" : "gold",
+                "font-size": size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />

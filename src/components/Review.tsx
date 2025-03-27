@@ -11,7 +11,14 @@ const LANDS = {
     "Sedyreal": "Sedyrus",
     "Li'ivi": "Licivitas",
     "Quor'eite": "Quor'eia",
-}
+};
+
+const ARMORS = {
+    "leather-cloth": "apostles, occultists, and Sages.",
+    "leather-mail": "druids, shaman, and wandering outlaws.",
+    "chain-mail": "men of a particular sort.",
+    "plate-mail": "guards and knights of various vows.",
+};
 
 export default function Review({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const originArticle = ["a", "e", "i", "o", "u"].includes(newAscean()?.origin[0].toLowerCase()) ? "an" : "a";
@@ -35,9 +42,9 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         <div class="creature-heading">
             <h1>Review Character</h1>
             <h2 class="p-3">
-                You are <span class="gold">{newAscean()?.name}</span>, {originArticle} <span class="gold">{newAscean()?.origin}</span> {newAscean()?.sex === "Man" ? "man" : "woman"} of <span class="gold">{land}</span>, recently matured and venturing to the Ascea. 
+                You are <span class="gold">{newAscean()?.name}</span>, {originArticle} <span class="gold">{newAscean()?.origin}</span> {newAscean()?.sex === "Man" ? "man" : "woman"} of <span class="gold">{land}</span>, recently matured and leaving home, venturing to the Ascea. 
                 By your own admission, you are {descArticle} <span class="gold">{newAscean()?.description}</span>.
-                Your armor of choice which keeps you safe is <span class="gold">{newAscean()?.preference.toLowerCase()}</span>. Your mastery lies in <span class="gold">{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
+                The kind of armor you choose to wear is <span class="gold">{newAscean()?.preference.toLowerCase()}</span>, similar to those worn by {ARMORS[newAscean()?.preference.toLowerCase() as keyof typeof ARMORS]} Your mastery lies in <span class="gold">{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
                 in some sense, that is how one perceives this world. Your faith is <span class="gold">{newAscean()?.faith}</span>, the worship of <span class="gold">{name()}</span>. {character()} 
             </h2>
         </div>

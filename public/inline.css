@@ -69,7 +69,7 @@
 .flickerJuice:focus,.flickerJuice:hover {
     animation: flicker 0.5s infinite ease alternate;
 }
-.textGlow:focus,.textGlow:hover {
+.textGlow {
     animation: texty 1s infinite ease alternate;
 }
 .juiceNB:hover, .juiceNB:focus {
@@ -153,8 +153,26 @@
 }
 @keyframes texty {
     0%{text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color)}
-  100%{text-shadow: 0 0 10px var(--glow-color), 0 0 15px var(--glow-color)}
+    100%{text-shadow: 0 0 10px var(--glow-color), 0 0 15px var(--glow-color)}
 
+}
+.animate-texty {
+    animation: texty 1s ease alternate;
+}
+  
+.animate-flicker {
+    animation: flicker 1s ease alternate;
+}
+.animate-texty-infinite {
+    animation: texty 1s infinite ease alternate;
+}
+  
+.animate-flicker-infinite {
+    animation: flicker 1s infinite ease alternate;
+}
+  
+.reset-animation {
+    animation: none !important; /* Forces removal of animation */
 }
 .radial-glow {
     position: relative;

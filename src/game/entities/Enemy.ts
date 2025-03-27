@@ -1451,7 +1451,7 @@ export default class Enemy extends Entity {
     onDefeatedEnter = () => {
         if (this.isDeleting) return;
         this.stateMachine.clearStates();
-        this.scene.hud.logger.log(`Console: ${this.ascean.name} has been defeated by ${this.currentTarget?.ascean?.name ? this.currentTarget.ascean.name : "someone in this world"}.`);
+        // this.scene.hud.logger.log(`Console: ${this.ascean.name} has been defeated by ${this.currentTarget?.ascean?.name ? this.currentTarget.ascean.name : "someone in this world"}.`);
         this.anims.play(FRAMES.DEATH, true);
         this.defeatedTime = 120000;
         if (this.isShimmering) {

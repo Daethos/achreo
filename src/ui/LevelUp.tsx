@@ -19,7 +19,9 @@ const [show, setShow] = createSignal<boolean>(false);
         setShow(!show());
     };
 
-    return <Show when={show()} fallback={<button onClick={handleMastery} class="highlight" style={{ color: mastery.name === state().mastery ? "gold" : "#fdf6d8" }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleMastery} class="highlight" style={{ color: mastery.name === state().mastery ? "gold" : "#fdf6d8", animation: mastery.name === state().mastery ? "texty 1s infinite ease alternate" : "", "--glow-color":"gold" }}>
+            {mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}
+        </button>}>
         <div class="modal" onClick={handleShow}>
             <AttributeModal attribute={mastery} />
         </div>
@@ -44,7 +46,7 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
         });
         setShow(!show());
     };
-    return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ color: faith.worshipers === state().faith ? "gold" : "#fdf6d8" }}>{faith.name}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ color: faith.worshipers === state().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === state().faith ? "texty 1s infinite ease alternate" : "", "--glow-color":"gold" }}>{faith.name}</button>}>
         <div class="modal" onClick={handleShow}>
         <div class="border verticalCenter" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%" } : { }}>
         <div class="creature-heading border" style={{ "text-wrap": "balance" }}> 
@@ -129,7 +131,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
             <div class="right center" style={{ height: "80%", width: "48%", top: "10%", display: "inline-block", border: "0.15em solid #fdf6d8" }}>
             <div class="" style={{ width: "auto" }}>
                 <p class="gold">You will gain 2 attribute points <br />Would you like to allocate them now?</p>
-                <h3 class="gold" style={{ "margin-bottom" : "5%" }}>Attribute Pool: {pool()} / 2</h3>
+                <h3 class="gold" style={{ "margin-bottom" : "5%", animation: pool() === 2 ? "texty 1s infinite ease alternate" : "", "--glow-color": "gold" }}>Attribute Pool: {pool()} / 2</h3>
                 <For each={Attributes}>
                     {(attribute) => (
                         <InputGroup style={{ width: dimensions().ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block", height: "auto" }}>

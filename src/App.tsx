@@ -25,7 +25,7 @@ const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
 const Preview = lazy(async () => await import("./components/Preview"));
 const GameToast = lazy(async () => await import("./ui/GameToast"));
-var click = new Audio("../assets/sounds/TV_Button_Press.wav");
+export var click = new Audio("../assets/sounds/TV_Button_Press.wav");
 var creation = new Audio("../assets/sounds/freeze.wav");
 var load = new Audio("../assets/sounds/combat-round.mp3");
 

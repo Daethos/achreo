@@ -126,6 +126,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
     const [itemShow, setItemShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
     const [effect, setEffect] = createSignal<StatusEffect>();
+    const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, true);
     function fetchEnemy(enemy: EnemySheet) {
         EventBus.emit("setup-enemy", enemy);
@@ -153,6 +154,26 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
             default: return "3%";
         };
     };
+    createEffect(() => {
+        const currentHealth = state().newComputerHealth;
+        const prevHealth = previousHealth().health;
+        const showStatus = previousHealth().show;
+    
+        if (prevHealth !== currentHealth && showStatus === false) {
+            setPreviousHealth(prev => ({
+                ...prev,
+                show: true,
+                positive: prevHealth < currentHealth
+            }));
+            setTimeout(() => {
+                setPreviousHealth({
+                    health: currentHealth,
+                    show: false,
+                    positive:false
+                });
+            }, 1000);
+        }
+    });
     // function createPrayer() {
     //     console.log("Creating prayer...");
     //     const exists = new StatusEffect(
@@ -166,12 +187,32 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
     //         console.log(exists, "exists");
     //     EventBus.emit("create-enemy-prayer", exists);
     // };
-    return <div class="enemyCombatUi">
-        <div class="enemyName" style={{ position: "fixed", "z-index": 1, "font-size": size(state().computer?.name.length as number), "right": "4.5vw", "top": top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
-        <div class="center enemyHealthBar" onClick={changeDisplay} style={{ "right":"2%", width:"20.75vw" }}>
-            <div class="enemyPortrait" style={{ color: "#fdf6d8", top: "-0.5%" }}>{healthDisplay()}</div>
+    return <div class="enemyCombatUi" classList={{
+        "animate-texty": previousHealth().show && previousHealth().positive,
+        "animate-flicker": previousHealth().show && !previousHealth().positive,
+        "reset-animation": !previousHealth().show
+    }} style={{ "--glow-color": "red" }}>
+        <div class="enemyName" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} style={{ position: "fixed", "z-index": 1, "font-size": size(state().computer?.name.length as number), "right": "4.5vw", "top": top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
+        <div class="center enemyHealthBar" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} onClick={changeDisplay} style={{ "right":"2%", width:"20.75vw" }}>
+            <div class="enemyPortrait" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%" }}>{healthDisplay()}</div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
-            <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `${healthPercentage()}%`, "background": state().isEnemy ? "linear-gradient(purple, #191970)" : "linear-gradient(#00AA00, green)", transition: "width 0.5s ease-out, background 0.5s ease-out" }}></div>
+            <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `${healthPercentage()}%`, 
+            "background": state().isEnemy ? "linear-gradient(purple, #191970)" : "linear-gradient(#00AA00, green)", 
+            transition: "width 0.5s ease-out, background 0.5s ease-out",
+            "--glow-color":"red",
+        }}></div>
         </div>
         <img id="enemyHealthbarBorder" src={"../assets/gui/enemy-healthbar-bold.png"} alt="Health Bar" style={{ "z-index": -1 }} />
         <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>

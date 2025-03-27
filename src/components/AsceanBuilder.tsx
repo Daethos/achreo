@@ -6,6 +6,7 @@ import { Puff } from "solid-spinner";
 import { masteryColor } from "../utility/styling";
 import { Attributes } from "../utility/attributes";
 import AttributeModal from "./Attributes";
+import { click } from "../App";
 const Character = lazy(async () => await import("./Character"));
 const Sex = lazy(async () => await import("./Sex"));
 const Origin = lazy(async () => await import("./Origin"));
@@ -106,7 +107,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <Suspense fallback={<Puff color="gold" />}>
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row juice glowJuice" onClick={() => {setNewAscean(ascean); setFocus(ascean.name)}} style={{ width: "70%", margin: "1em auto", 
+                                <div class="border row juice glowJuice" onClick={() => {setNewAscean(ascean); setFocus(ascean.name); click.play()}} style={{ width: "70%", margin: "1em auto", 
                                     "border-color": masteryColor(ascean.mastery),
                                     "--glow-color": masteryColor(ascean.mastery),
                                     "--base-shadow": "#000 0 0 0 0.2em",

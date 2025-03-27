@@ -2,7 +2,7 @@ import { Accessor, createSignal, For, JSX, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import Currency from "../utility/Currency";
 import { FloatingLabel, Form } from "solid-bootstrap";
 import { ArenaRoster } from "./BaseUI";
@@ -24,14 +24,14 @@ const selectors = {
 };
 
 export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
-    const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: 'constitution', id: '' });
+    const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: "constitution", id: "" });
     const [switchScene, setSwitchScene] = createSignal<boolean>(true);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
     const [party, setParty] = createSignal<any>(instance?.game?.registry.get("party"));
 
     function createArena() {
-        EventBus.emit('alert', { header: 'Duel Commencing', body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+        EventBus.emit("alert", { header: "Duel Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
         const p = instance?.game?.registry.get("party");
         setParty(p);
         const enemies = fetchArena(arena().enemies);
@@ -44,12 +44,12 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         multiplier /= 2;
         const wager = { ...arena().wager, multiplier };
         if (switchScene()) {
-            EventBus.emit('set-wager-arena', {wager, enemies, team: arena().party});
+            EventBus.emit("set-wager-arena", {wager, enemies, team: arena().party});
         } else {
-            EventBus.emit('set-wager-underground', {wager, enemies});
+            EventBus.emit("set-wager-underground", {wager, enemies});
         };
         setArena({ ...arena(), show: false });
-        if (!base) EventBus.emit('outside-press', 'dialog');
+        if (!base) EventBus.emit("outside-press", "dialog");
     };
 
     function opponentAdd() {
@@ -110,113 +110,130 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
             gold -= arena().wager.gold;
         };
         const currency = rebalanceCurrency({ silver, gold });
-        EventBus.emit('update-currency', currency);
+        EventBus.emit("update-currency", currency);
         setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, win: false, show: false, result: false });
-        if (switchScene()) EventBus.emit('switch-arena');
+        if (switchScene()) EventBus.emit("switch-arena");
     };
-    const style = { position: 'absolute',left: '20%',top: '10%',height: '80%',width: '60%',background: 'linear-gradient(#000, #222)',border: `0.15em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
-    const partial = { top: '10%', height: '80%', width: '49%', background: 'linear-gradient(#000, #222)',border: `0.15em solid ${masteryColor(ascean().mastery)}`,'border-radius': '0.15em','box-shadow': `0 0 1.25em ${masteryColor(ascean().mastery)}`,overflow: 'scroll','text-align': 'center', 'scrollbar-width':'none' } as JSX.PropAttributes;
+    const style = { position: "absolute",left: "20%",top: "10%",height: "80%",width: "60%",
+        background: "linear-gradient(#000, #222)",
+        border: `0.15em solid ${masteryColor(ascean().mastery)}`,"border-radius": "0.15em",
+        "box-shadow": `0 0 1.25em ${masteryColor(ascean().mastery)}`, 
+        animation: `borderTalent 1.5s infinite ease alternate`,
+        "--glow-color":masteryColor(ascean().mastery),
+        "--base-shadow":"#000 0 0 0 0.2em",
+        overflow: "scroll","text-align": "center", "scrollbar-width":"none" 
+    } as JSX.PropAttributes;
+    const partial = { top: "10%", height: "80%", width: "49%", 
+        background: "linear-gradient(#000, #222)",
+        border: `0.15em solid ${masteryColor(ascean().mastery)}`,
+        "border-radius": "0.15em",
+        "box-shadow": `0 0 1.25em ${masteryColor(ascean().mastery)}`,
+        animation: `borderTalent 1.5s infinite ease alternate`,
+        "--base-shadow":"#000 0 0 0 0.2em",
+        "--glow-color":masteryColor(ascean().mastery),
+        overflow: "scroll","text-align": "center", "scrollbar-width":"none" 
+    } as JSX.PropAttributes;
     return <Show when={arena().show}>
-        <div class='modal' style={{ 'z-index': 99 }}>
+        <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
-                <div class='left moisten' style={{...partial, left: '0%'}}>
-                    <div class='creature-heading center' >
-                        <h1 style={{ margin: '8px 0' }} onClick={checkTeam}><span style={{ color: '#fdf6d8' }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? '[Party]' : '[Solo]'}</h1>
-                        <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
-                        {/* settings().difficulty.arena ? 'Arena [Computer]' : */}
-                        <h1 style={{ margin: '8px 0' }} onClick={switchScenes}><span style={{ color: '#fdf6d8' }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? 'Arena [Computer]' : 'Arena [Manual]' : 'Underground [Manual]'}</h1>
-                        <p style={{ color: 'gold', 'font-size': '0.75em', 'margin': '0' }}>Click on Maps and/or Opponents to Switch Between Options<br /> [Note]: Player AI is available only in the Arena. <br /> If you have a party, cannot fight [Solo] in the Underground.</p>
+                <div class="left moisten" style={{...partial, left: "0%"}}>
+                    <div class="creature-heading center" >
+                        <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
+                        <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
+                        {/* settings().difficulty.arena ? "Arena [Computer]" : */}
+                        <h1 style={{ margin: "8px 0" }} onClick={switchScenes}><span style={{ color: "#fdf6d8" }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? "Arena [Computer]" : "Arena [Manual]" : "Underground [Manual]"}</h1>
+                        <p style={{ color: "gold", "font-size": "0.75em", "margin": "0" }}>Click on Maps and/or Opponents to Switch Between Options<br /> [Note]: Player AI is available only in the Arena. <br /> If you have a party, cannot fight [Solo] in the Underground.</p>
                         <h1 ></h1>
-                        {arena().enemies.length > 0 && <button class='highlight animate' onClick={() => createArena()} style={{ 'font-size': '1.25em' }}>Enter the Eulex</button>}
+                        {arena().enemies.length > 0 && <button class="highlight animate" onClick={() => createArena()} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
                         <For each={arena().enemies}>{(enemy) => {
                             return (
-                                <div style={{ color: masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class='highlight' onClick={() => opponentRemove(enemy)}>Remove</button></div>
+                                <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0, animation: "flicker 0.5s infinite ease alternate" }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
                             )
                         }}</For>
                         <div>
-                            <button class='highlight' style={{ color: masteryColor(selector().mastery), 'font-size': '1.1em' }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
+                            <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em" }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
                         </div>
                     </div>
                 </div>
-                <div class='right moisten' style={{...partial, left: '50%'}}>
-                    <div class='creature-heading center'>
-                    <div style={{ display: 'grid', 'grid-template-columns': 'repeat(2, 25vw)' }}>
+                <div class="right moisten" style={{...partial, left: "50%"}}>
+                    <div class="creature-heading center">
+                    <div style={{ display: "grid", "grid-template-columns": "repeat(2, 25vw)" }}>
                         <div>
-                            <p style={{ color: 'gold', margin: '8px 0', 'font-size': '1.4em' }}>Opponent Level ({selector().level}) <br /> 
-                                <span style={{ color: '#fdf6d8', 'font-size': '0.75em' }}>
+                            <p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Opponent Level ({selector().level}) <br /> 
+                                <span style={{ color: "#fdf6d8", "font-size": "0.75em" }}>
                                     Prev ({selectors[selector().level as keyof typeof selectors].prev}) |  Next ({selectors[selector().level as keyof typeof selectors].next}) 
                                 </span>
                             </p>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('level', selectors[selector().level as keyof typeof selectors].prev)}>-</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('level', selectors[selector().level as keyof typeof selectors].next)}>+</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", selectors[selector().level as keyof typeof selectors].prev)}>-</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", selectors[selector().level as keyof typeof selectors].next)}>+</button>
                         </div>
-                        <div style={{ 'margin-bottom': '8px' }}><p style={{ color: 'gold', margin: '8px 0', 'font-size': '1.4em' }}>Mastery <br /> 
-                            <span style={{ color: masteryColor(selector().mastery), 'font-size': '0.75em' }}>
+                        <div style={{ "margin-bottom": "8px" }}><p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
+                            <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>
                                 ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})
                             </span>
                         </p>
                         {/*  ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)}) */}
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'constitution')}>Con</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'strength')}>Str</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'agility')}>Agi</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'achre')}>Ach</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'caeren')}>Caer</button>
-                            <button class='highlight' style={{ margin: '1%' }} onClick={() => selectOpponent('mastery', 'kyosir')}>Kyo</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "constitution")}>Con</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "strength")}>Str</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "agility")}>Agi</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "achre")}>Ach</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "caeren")}>Caer</button>
+                            <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "kyosir")}>Kyo</button>
                         </div>
                     </div>
-                        <div style={{ display: 'grid', 'grid-template-columns': 'repeat(2, 1fr)', 'grid-template-rows': 'repeat(2, 1fr)' }}>
-                            <p style={{ color: 'gold', margin: '8px 0 ', 'font-size': '1.4em', padding: '0' }}>Currency</p>
-                            <p style={{ color: 'gold', margin: '8px 0 ', 'font-size': '1.4em', padding: '0' }}>Wager</p>
+                        <div style={{ display: "grid", "grid-template-columns": "repeat(2, 1fr)", "grid-template-rows": "repeat(2, 1fr)" }}>
+                            <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Currency</p>
+                            <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Wager</p>
                             <Currency ascean={ascean} />
-                            <div style={{ padding: '2%' }}>
-                                <img src={'../assets/images/gold-full.png'} alt="Gold Stack" /> <span style={{ color: 'gold' }}>{arena().wager.gold}</span> <img src={'../assets/images/silver-full.png'} alt="Silver Stack" /> {arena().wager.silver}
+                            <div style={{ padding: "2%", "--glow-color":"silver" }}>
+                                <img src={"../assets/images/gold-full.png"} alt="Gold Stack" /> <span class="textGlow" style={{ color: "gold", "--glow-color":"gold",  }}>{arena().wager.gold}</span> <img src={"../assets/images/silver-full.png"} alt="Silver Stack" /> <span class="textGlow">{arena().wager.silver}</span>
                             </div>
                         </div>
                         <Show when={settings().desktop} fallback={
-                            <div style={{ display: 'grid', 'grid-template-columns': 'repeat(2, 1fr)', 'margin-top': '2.5%' }}>
-                                <div style={{ margin: '0 0 7.5%' }}>
-                                    <p style={{ color: 'gold', 'font-size': '1.4em', margin: '8px 0' }}>Gold</p>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('gold', 0)}>0</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('gold', Math.max(0, arena().wager.gold - 1))}>-</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('gold', Math.min(ascean().currency.gold, arena().wager.gold + 1))}>+</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('gold', ascean().currency.gold)}>{ascean().currency.gold}</button>
+                            <div style={{ display: "grid", "grid-template-columns": "repeat(2, 1fr)", "margin-top": "2.5%" }}>
+                                <div style={{ margin: "0 0 7.5%" }}>
+                                    <p style={{ color: "gold", "font-size": "1.4em", margin: "8px 0" }}>Gold</p>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", 0)}>0</button>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", Math.max(0, arena().wager.gold - 1))}>-</button>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", Math.min(ascean().currency.gold, arena().wager.gold + 1))}>+</button>
+                                    <button class="highlight textGlow" style={{ "--glow-color":"gold", margin: "1%" }} onClick={() => setWager("gold", ascean().currency.gold)}>{ascean().currency.gold}</button>
                                 </div>
-                                <div style={{ margin: '0 0 7.5%' }}>
-                                    <p style={{ 'font-size': '1.4em', margin: '8px 0' }}>Silver</p>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('silver', 0)}>0</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('silver', Math.max(0, arena().wager.silver - 1))}>-</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('silver', Math.min(ascean().currency.silver, arena().wager.silver + 1))}>+</button>
-                                    <button class='highlight' style={{ margin: '1%' }} onClick={() => setWager('silver', ascean().currency.silver)}>{ascean().currency.silver}</button>
+                                <div style={{ margin: "0 0 7.5%" }}>
+                                    <p style={{ "font-size": "1.4em", margin: "8px 0" }}>Silver</p>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", 0)}>0</button>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", Math.max(0, arena().wager.silver - 1))}>-</button>
+                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", Math.min(ascean().currency.silver, arena().wager.silver + 1))}>+</button>
+                                    <button class="highlight textGlow" style={{ "--glow-color":"silver", margin: "1%" }} onClick={() => setWager("silver", ascean().currency.silver)}>{ascean().currency.silver}</button>
                                 </div>
                             </div>
                         }>
-                            <div style={{ display: 'grid', 'grid-template-columns': 'repeat(2, 1fr)', 'grid-template-rows': 'repeat(2, 1fr)' }}>
-                                <p style={{ color: 'gold', margin: '8px 0 ', 'font-size': '1.4em', padding: '0' }}>Gold</p>
-                                <p style={{ margin: '8px 0 ', 'font-size': '1.4em', padding: '0' }}>Silver</p>
-                                <FloatingLabel controlId="floatingGold" label="" style={{ color: 'black', margin: '0 auto' }}>
-                                    <Form.Control  oninput={(e: any) => setWager('gold', safe(e, 0, ascean().currency.gold))} type="number" placeholder={`${ascean().currency.gold}`} style={{ color: 'black', margin: '0 auto 0 -5%', 'text-align': 'right', width: '100%' }} />
+                            <div style={{ display: "grid", "grid-template-columns": "repeat(2, 1fr)", "grid-template-rows": "repeat(2, 1fr)" }}>
+                                <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Gold</p>
+                                <p style={{ margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Silver</p>
+                                <FloatingLabel controlId="floatingGold" label="" style={{ color: "black", margin: "0 auto" }}>
+                                    <Form.Control oninput={(e: any) => setWager("gold", safe(e, 0, ascean().currency.gold))} type="number" placeholder={`${ascean().currency.gold}`} style={{ color: "black", "--glow-color":"silver", margin: "0 auto 0 -5%", "text-align": "right", width: "100%" }} />
                                 </FloatingLabel>
 
-                                <FloatingLabel controlId="floatingSilver" label=""  style={{ color: 'black', margin: '0 auto' }}>
-                                    <Form.Control  oninput={(e: any) => setWager('silver', safe(e, 0, ascean().currency.silver))} type="number" placeholder={`${ascean().currency.silver}`} style={{ color: 'black', margin: '0 auto 0 -5%', 'text-align': 'right', width: '100%' }} />
+                                <FloatingLabel controlId="floatingSilver" label=""  style={{ color: "black", margin: "0 auto" }}>
+                                    <Form.Control  oninput={(e: any) => setWager("silver", safe(e, 0, ascean().currency.silver))} type="number" placeholder={`${ascean().currency.silver}`} style={{ color: "black", "--glow-color":"silver", margin: "0 auto 0 -5%", "text-align": "right", width: "100%" }} />
                                 </FloatingLabel>
                             </div>
                         </Show>
                     </div>
                 </div>
-                <button class='highlight cornerBR' onClick={() => setArena({ ...arena(), show: false })} style={{ color: 'red' }}>X</button>
+                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red" }}>X</button>
             </>}>
-                <div class='center creature-heading moisten' style={style}>
-                    <p style={{ color: 'gold', margin: '12px 0', 'font-size': '3.5em', 'font-variant': 'small-caps' }}>{arena().win ? 'Victory' : 'Defeat'}</p>
-                    <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
+                <div class="center creature-heading moisten" style={style}>
+                    <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 0.5s infinite alternate" }}>{arena().win ? "Victory" : "Defeat"}</p>
+                    <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
                         return (
                             <div style={{ color: masteryColor(enemy.mastery) }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)}</div>
                         )
                     }}</For>
-                    <h1 style={{ margin: '8px 0' }}><span style={{ color: '#fdf6d8' }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
-                    <p class='gold' style={{ margin: '0 auto', 'font-size': '1.25em' }}>
-                        {arena().wager.gold > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g` : ``} <span style={{ color: '#fdf6d8' }}>{arena().wager.silver > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s` : ``}</span>
+                    <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> <span class="textGlow">{arena().wager.gold}g {arena().wager.silver}s</span></h1>
+                    <p class="gold" style={{ margin: "0 auto", "font-size": "1.25em" }}>
+                        {arena().wager.gold > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g` : ``} <span style={{ color: "#fdf6d8" }}>{arena().wager.silver > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s` : ``}</span>
                     </p>
                     <Show when={game().lootDrops.length > 0}>
                         <For each={game().lootDrops}>
@@ -226,15 +243,15 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </For>
                     </Show>
                     <Show when={!arena().win}>
-                        <h2 style={{ color: '', width: '75%', margin: '5% auto', 'font-size': "1.25em" }}>Do not worry, {ascean().name}, there is still time to train for the Ascea. {arena().enemies.length > 1 ? `Perhaps you need to focus on fewer opponents?` : `Perhaps you need a different, or easier opponent?`}</h2>
+                        <h2 style={{ color: "", width: "75%", margin: "5% auto", "font-size": "1.25em" }}>Do not worry, {ascean().name}, there is still time to train for the Ascea. {arena().enemies.length > 1 ? `Perhaps you need to focus on fewer opponents?` : `Perhaps you need a different, or easier opponent?`}</h2>
                     </Show>
                 </div>
                 <Show when={show()}>
-                    <div class='modal' onClick={() => setShow(!show())} style={{ 'z-index': 3 }}>
+                    <div class="modal" onClick={() => setShow(!show())} style={{ "z-index": 3 }}>
                         <ItemModal item={lootDrop()} stalwart={false} caerenic={false} />
                     </div>
                 </Show> 
-                <button class='highlight cornerBR' onClick={() => clearWager()}>Settle Wager</button>
+                <button class="highlight cornerBR animate" onClick={() => clearWager()}>Settle Wager</button>
             </Show>
         </div>
     </Show>

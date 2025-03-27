@@ -190,7 +190,7 @@ export default class Player extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
         .on("pointerup", () => {
-            this.scene.hud.logger.log(`Console: Current States: Physical: ${this.playerMachine.stateMachine.getCurrentState()?.toUpperCase()} | Positive: ${this.playerMachine.positiveMachine.getCurrentState()?.toUpperCase()} | Negative: ${this.playerMachine.negativeMachine.getCurrentState()?.toUpperCase()}. Suffering: ${this.isSuffering()}`)
+            // this.scene.hud.logger.log(`Console: Current States: Physical: ${this.playerMachine.stateMachine.getCurrentState()?.toUpperCase()} | Positive: ${this.playerMachine.positiveMachine.getCurrentState()?.toUpperCase()} | Negative: ${this.playerMachine.negativeMachine.getCurrentState()?.toUpperCase()}. Suffering: ${this.isSuffering()}`)
             if (this.inCombat) return;
             const button = this.scene.hud.smallHud.getButton("info");
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);

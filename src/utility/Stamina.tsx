@@ -5,8 +5,8 @@ export default function createStamina(stam: Accessor<number>) {
     const [stamina, setStamina] = createSignal(stam());
     const [staminaPercentage, setStaminaPercentage] = createSignal(0);
     const [usedStamina, setUsedStamina] = createSignal(0);
-    var interval: any | undefined = undefined;
-    var remaining = 0;
+    let interval: NodeJS.Timeout | undefined = undefined;
+    let remaining = 0;
     const recover = () => {
         if (remaining > 0) {remaining -= STAMINA.TICK; return;};
         if (remaining < 0) remaining = 0;

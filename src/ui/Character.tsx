@@ -1028,28 +1028,68 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={showTalent().show}>
             <div class="modal">
                 <div class="superCenter" style={{ width:"50%" }}>
-                <div class="border row moisten" style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                <div class="border row moisten glowingBorder " style={{ margin: "1em auto", 
+                    "--glow-color":masteryColor(ascean().mastery), 
+                    "--base-shadow":"#000 0 0 0 0.2em", "border-color": masteryColor(ascean().mastery), 
+                    "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em`, 
+                    animation: `borderTalent 1.5s infinite ease alternate` 
+                }}>
+                    {/* <div
+                    style={{
+                        position: "relative",
+                        width: "100px",
+                        height: "100px",
+                        "border-radius": "50%",
+                        background: "#111",
+                        "::before": {
+                            content: '""',
+                            position: "absolute",
+                            inset: "-10px",
+                            "border-radius": "50%",
+                            background: `radial-gradient(circle, ${masteryColor(ascean().mastery)} 0%, transparent 70%)`,
+                            opacity: "0.7",
+                            animation: "pulse 3s infinite alternate",
+                            zIndex: -1,
+                        },
+                    }}
+                    /> */}
+                    {/* <div
+                    style={{
+                        background: "#222",
+                        padding: "1em",
+                        "border-radius": "8px",
+                        "box-shadow": "inset 0 0 10px #000, inset 0 0 20px rgba(0, 0, 0, 0.5)",
+                    }}
+                    /> */}
                     <div style={{ padding: "1em" }}>
-                        <p class="row" style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
-                            <span style={{ "margin": "1%" }}>{svg(showTalent()?.talent.svg)}</span>
-                            <span style={{"font-weight":"bold", margin:"1%"}}>{showTalent()?.talent.name}</span>{" "} 
-                            {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "(Enhanced)" : talents().points.spent < talents().points.total ?
-                                <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
-                                    <p style={font("0.9em")}>Enhance</p>
-                            </button> : ""}{" "}
-                            {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "(Optimized)" : talents().points.spent < talents().points.total ?
-                                <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
-                                    <p style={font("0.9em")}>Optimize</p>
-                                </button> : ""}{" "}
-                            <br />
+                        <p class="row" style={{ color: "gold", "font-size": "1.5em", margin: "3%" }}>
+                            <span style={{color:"#0ff", "margin": "1%", "--glow-color": "#0ff",
+                                animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "flicker 0.75s infinite alternate" : "" }}>{svg(showTalent()?.talent.svg)}</span>
+                            <span style={{color:"#0ff", "font-weight":"bold", margin:"1%", "--glow-color": "#0ff",
+                                animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "flicker 0.75s infinite alternate" : ""}}>{showTalent()?.talent.name}</span>{" "} 
                         </p>
+                        <span class="gold">
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent < talents().points.total ?
+                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
+                                <p style={font("0.9em")}>Enhance</p>
+                        </button> : ""}{" "}
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient || (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent < talents().points.total ?
+                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
+                                <p style={font("0.9em")}>Optimize</p>
+                            </button> : ""}{" "}
+                        </span>
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <br /> : ""}
                         <p style={{ "color":"gold", "font-size":"0.75em" }}>{showTalent()?.talent.talent.split(".")[1]} <br /> {showTalent()?.talent.talent.split("Enhanced:")[0]}</p>
                         <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>{showTalent()?.talent.description}</p>
-                        <span style={{ color: "gold" }}>{(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? showTalent()?.talent.talent.split(".")[1] : ""}</span>
-                        <p style={{ color: "aqua" }}>
-                            
-                            {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
-                            <span style={{ color: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "gold" : "" }}>
+                        <span style={{ color: "gold", "--glow-color":"gold","text-shadow": "0 0 5px gold, 0 0 10px gold",animation: "flicker 0.5s infinite alternate" }}>{(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? showTalent()?.talent.talent.split(".")[1] : ""}</span>
+                        <p style={{ color: "#0ff"}}>
+                            <span style={{ }}>
+                                {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
+                            </span>
+                            <span style={{ color: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "gold" : "#0ff", 
+                                "--glow-color":(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "gold" : "#0ff",
+                                animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "flicker 0.5s infinite alternate" : ""
+                            }}>
                                 {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COST[showTalent()?.talent.cost.split(" Grace")[0] as keyof typeof COST] : showTalent()?.talent.cost}.{" "}
                                 {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COOLDOWN[showTalent()?.talent.cooldown as keyof typeof COOLDOWN] : showTalent()?.talent.cooldown} Cooldown. <br />
                             </span>

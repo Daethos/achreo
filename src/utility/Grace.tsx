@@ -5,8 +5,8 @@ export default function createGrace(startGrace: Accessor<number>) {
     const [grace, setGrace] = createSignal(startGrace());
     const [gracePercentage, setGracePercentage] = createSignal(0);
     const [usedGrace, setUsedGrace] = createSignal(0);
-    var interval: any | undefined = undefined;
-    var remaining = 0;
+    let interval: NodeJS.Timeout | undefined = undefined;
+    let remaining = 0;
     const recover = () => {
         if (remaining > 0) {remaining -= GRACE.TICK; return;}; // - grace()
         if (remaining < 0) remaining = 0;

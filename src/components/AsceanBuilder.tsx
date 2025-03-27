@@ -19,9 +19,16 @@ const Preview = lazy(async () => await import("./Preview"));
 export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, menu: Accessor<Menu> }) {
     const [prevMastery, setPrevMastery] = createSignal("");
     const [attrShow, setAttrShow] = createSignal(false);
+    const [focus, setFocus] = createSignal("");
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const dimensions = useResizeListener();
-    const photo = { "height": dimensions().ORIENTATION === "landscape" ? "auto" : "auto", "width": dimensions().ORIENTATION === "landscape" ? "5vw" : "15vw", "top": dimensions().ORIENTATION === "landscape" ? "3vh" : "0", "left": dimensions().ORIENTATION === "landscape" ? "20vw" : "3vw", "border": "0.15em solid #fdf6d8", "border-radius": "50%",  };
+    const photo = { 
+        "height": dimensions().ORIENTATION === "landscape" ? "auto" : "auto", 
+        "width": dimensions().ORIENTATION === "landscape" ? "5vw" : "15vw", 
+        "top": dimensions().ORIENTATION === "landscape" ? "3vh" : "0", 
+        "left": dimensions().ORIENTATION === "landscape" ? "20vw" : "3vw",
+        // "margin-left":"1%",
+        "border": "0.15em solid #fdf6d8", "border-radius": "50%",  };
     const font = { "font-size": "1em", margin: "0" };
     const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block" };
     function toggle(attr: string) {
@@ -95,14 +102,18 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         {/* <<---------- LANDSCAPE ---------->> */}
             <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
-                    <div class="drop-25 left menu" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
+                    <div class="drop-25 left" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
                         <Suspense fallback={<Puff color="gold" />}>
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row juice" onClick={() => setNewAscean(ascean)} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
-                                    <h4 class="gold" style={{ "font-family": "Cinzel-Regular", width: "50%" }}>{ascean.name.split(" ")[0]}</h4>
+                                <div class="border row juice glowJuice" onClick={() => {setNewAscean(ascean); setFocus(ascean.name)}} style={{ width: "70%", margin: "1em auto", 
+                                    "border-color": masteryColor(ascean.mastery),
+                                    "--glow-color": masteryColor(ascean.mastery),
+                                    "--base-shadow": "#000 0 0 0 0.2em",
+                                    "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`,
+                                }}>
                                     <img style={{...photo, "border-color": masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
-                                    <h4 class="gold" style={{ "font-family": "Cinzel-Regular", width: "50%" }}>{ascean.mastery.charAt(0).toUpperCase() + ascean.mastery.slice(1)}</h4>
+                                    <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%", animation: focus() === ascean.name ? "flicker 0.5s infinite ease alternate" : ""}}>{ascean.name}</h4>
                                 </div>
                             )}
                         </For>

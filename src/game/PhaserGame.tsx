@@ -394,8 +394,8 @@ export default function PhaserGame (props: IProps) {
 
     function recordCombatReputation(computer: Ascean) {
         let newReputation = { ...props.reputation() };
-        if (!computer?.name) return newReputation;
-        if (instance.scene?.scene.key !== "Game") return;
+        if (!computer || !computer?.name) return newReputation;
+        if (instance.scene?.scene.key !== "Game") return newReputation;
         const enemies = ENEMY_ENEMIES[computer.name as keyof typeof ENEMY_ENEMIES];
         newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {

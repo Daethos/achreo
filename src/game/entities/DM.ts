@@ -1,6 +1,6 @@
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
 import { Compiler } from "../../utility/ascean";
@@ -35,7 +35,7 @@ export default class DM extends Entity {
         this.npcType = npcType;
         this.npcTarget = undefined;
         this.createNPC();
-        this.stateMachine = new StateMachine(this, 'npc');
+        this.stateMachine = new StateMachine(this, "npc");
         this.stateMachine
         .addState(States.IDLE, {
                 onEnter: this.onIdleEnter, 
@@ -49,9 +49,9 @@ export default class DM extends Entity {
         this.setScale(0.8);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; 
-        let npcCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: 'npcCollider' });
+        let npcCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "npcCollider" });
         npcCollider.boundsPadding = { x, y };
-        let npcSensor = Bodies.circle(this.x, this.y + 2, 48, { isSensor: true, label: 'npcSensor' });
+        let npcSensor = Bodies.circle(this.x, this.y + 2, 48, { isSensor: true, label: "npcSensor" });
         const compoundBody = Body.create({
             parts: [npcCollider, npcSensor],
             frictionAir: 0.1, 
@@ -70,9 +70,9 @@ export default class DM extends Entity {
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
-            .on('pointerdown', () => {
+            .on("pointerdown", () => {
                 if (this.scene.combat === true) return;
-                EventBus.emit('combat-round');
+                EventBus.emit("combat-round");
                 vibrate();
                 this.clearTint();
                 this.setTint(0x00FF00); 
@@ -80,7 +80,7 @@ export default class DM extends Entity {
                 this.scene.player.setCurrentTarget(this);
                 this.scene.player.animateTarget();
             })
-            .on('pointerout', () => {
+            .on("pointerout", () => {
                 this.clearTint();
                 this.setTint(0x0000FF);
             });
@@ -88,14 +88,14 @@ export default class DM extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('dm-fetched', this.dmFetched);
+        EventBus.off("dm-fetched", this.dmFetched);
         this.removeAllListeners();
         this.removeInteractive();
     };
 
     createNPC = () => {
-        EventBus.once('dm-fetched', this.dmFetched);
-        EventBus.emit('fetch-dm', { enemyID: this.enemyID, npcType: this.npcType });
+        EventBus.once("dm-fetched", this.dmFetched);
+        EventBus.emit("fetch-dm", { enemyID: this.enemyID, npcType: this.npcType });
     };
 
     dmFetched = (e: Compiler) => {
@@ -108,7 +108,7 @@ export default class DM extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [npcSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.isInteracting) {
+                if (other.gameObjectB && other.gameObjectB.name === "player" && !other.gameObjectB.inCombat && !this.isInteracting) {
                     this.isInteracting = true;
                     this.interactCount++;
                     this.scene.hud.setupNPC(this);
@@ -127,7 +127,7 @@ export default class DM extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [npcSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && this.isInteracting) {
+                if (other.gameObjectB && other.gameObjectB.name === "player" && this.isInteracting) {
                     this.isInteracting = false;
                     this.stateMachine.setState(States.IDLE); 
                     other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.enemyID !== this.enemyID);
@@ -139,7 +139,7 @@ export default class DM extends Entity {
         }); 
     };
 
-    onIdleEnter = () => this.anims.play('player_idle', true);
+    onIdleEnter = () => this.anims.play("player_idle", true);
     onAwarenessEnter = () => this.scene.hud.showDialog(true);
     onAwarenessUpdate = (_dt: number) => {
         if (this.npcTarget) {

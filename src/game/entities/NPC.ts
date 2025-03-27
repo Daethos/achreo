@@ -1,6 +1,6 @@
 import Entity from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
 let idCount = 0;
@@ -12,7 +12,7 @@ const paddingWidth = 10;
 const paddingHeight = 10; 
 const x = colliderWidth + 2 * paddingWidth;
 const y = colliderHeight + 2 * paddingHeight;
-const types = ['Merchant-Alchemy', 'Merchant-Armor', 'Merchant-Smith', 'Merchant-Jewelry', 'Merchant-General', 'Merchant-Tailor', 'Merchant-Mystic', 'Merchant-Weapon', 'Merchant-Weapon-All', 'Merchant-Armor-All'];
+const types = ["Merchant-Alchemy", "Merchant-Armor", "Merchant-Smith", "Merchant-Jewelry", "Merchant-General", "Merchant-Tailor", "Merchant-Mystic", "Merchant-Weapon", "Merchant-Weapon-All", "Merchant-Armor-All"];
 export default class NPC extends Entity { 
     enemyID: string;
     id: number;
@@ -32,12 +32,12 @@ export default class NPC extends Entity {
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
         if (idCount >= 10) idCount = 0;
-        this.id = type ? type === 'Merchant-All-Armor' ? 9 : 10 : idCount++;
+        this.id = type ? type === "Merchant-All-Armor" ? 9 : 10 : idCount++;
         this.enemyID = uuidv4();
         this.npcType = type ? type : types[this.id];
         this.npcTarget = undefined;
         this.createNPC();
-        this.stateMachine = new StateMachine(this, 'npc');
+        this.stateMachine = new StateMachine(this, "npc");
         this.stateMachine
         .addState(States.IDLE, {
                 onEnter: this.onIdleEnter, 
@@ -51,9 +51,9 @@ export default class NPC extends Entity {
         this.setScale(0.8);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; 
-        let npcCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: 'npcCollider' });
+        let npcCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "npcCollider" });
         npcCollider.boundsPadding = { x, y };
-        let npcSensor = Bodies.circle(this.x, this.y + 2, 48, { isSensor: true, label: 'npcSensor' });
+        let npcSensor = Bodies.circle(this.x, this.y + 2, 48, { isSensor: true, label: "npcSensor" });
         const compoundBody = Body.create({
             parts: [npcCollider, npcSensor],
             frictionAir: 0.1, 
@@ -72,9 +72,9 @@ export default class NPC extends Entity {
             48, 0,
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
-            .on('pointerdown', () => {
+            .on("pointerdown", () => {
                 if (this.scene.combat === true) return;
-                EventBus.emit('purchase-sound');
+                EventBus.emit("purchase-sound");
                 vibrate();
                 this.clearTint();
                 this.setTint(0x00FF00); 
@@ -82,7 +82,7 @@ export default class NPC extends Entity {
                 this.scene.player.setCurrentTarget(this);
                 this.scene.player.animateTarget();
             })
-            .on('pointerout', () => {
+            .on("pointerout", () => {
                 this.clearTint();
                 this.setTint(0x0000FF);
             });
@@ -90,14 +90,14 @@ export default class NPC extends Entity {
     };
 
     cleanUp() {
-        EventBus.off('npc-fetched', this.npcFetched);
+        EventBus.off("npc-fetched", this.npcFetched);
         this.removeAllListeners();
         this.removeInteractive();
     };
 
     createNPC = () => {
-        EventBus.once('npc-fetched', this.npcFetched);
-        EventBus.emit('fetch-npc', { enemyID: this.enemyID, npcType: this.npcType });
+        EventBus.once("npc-fetched", this.npcFetched);
+        EventBus.emit("fetch-npc", { enemyID: this.enemyID, npcType: this.npcType });
     };
 
     npcFetched = (e: any) => {
@@ -111,7 +111,7 @@ export default class NPC extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [npcSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && !other.gameObjectB.inCombat && !this.isInteracting) {
+                if (other.gameObjectB && other.gameObjectB.name === "player" && !other.gameObjectB.inCombat && !this.isInteracting) {
                     this.isInteracting = true;
                     this.interactCount++;
                     this.scene.hud.setupNPC(this);
@@ -130,7 +130,7 @@ export default class NPC extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [npcSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB.name === 'player' && this.isInteracting) {
+                if (other.gameObjectB && other.gameObjectB.name === "player" && this.isInteracting) {
                     this.isInteracting = false;
                     this.stateMachine.setState(States.IDLE); 
                     other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.enemyID !== this.enemyID);
@@ -142,7 +142,7 @@ export default class NPC extends Entity {
         }); 
     }; 
 
-    onIdleEnter = () => this.anims.play('player_idle', true);
+    onIdleEnter = () => this.anims.play("player_idle", true);
     onAwarenessEnter = () => this.scene.hud.showDialog(true);
     onAwarenessUpdate = (_dt: number) => {
         if (this.npcTarget) {

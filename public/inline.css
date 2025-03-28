@@ -192,7 +192,7 @@
     animation: pulse 3s infinite alternate;
     z-index: -1;
 }
-.borderTalent {animation: borderTalent 2s infinite ease}
+.borderTalent {animation: borderTalent 2s infinite ease alternate;}
 .fadeInScale {animation: fadeInScale 1s ease;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}
 @keyframes glowing {0% {opacity: 0;}50% {opacity: 1;}100% {opacity: 0;}}

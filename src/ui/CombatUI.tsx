@@ -38,31 +38,16 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     const [graceShow, setGraceShow] = createSignal(false);
     const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
-    // createEffect((prev) => {
-    //     if (prev !== state().newPlayerHealth && previousHealth().health !== state().newPlayerHealth && previousHealth().show === false) {
-    //         console.log("Triggering show previous health aka change class")
-    //         setPreviousHealth({...previousHealth(),show:true});
-    //         setTimeout(() => {
-    //             setPreviousHealth({health:state().newPlayerHealth,show:false});
-    //         }, 1000);
-    //         return state().newPlayerHealth;
-    //     };
-    // });
     createEffect(() => {
-        // Explicitly access all reactive values first for proper tracking
         const currentHealth = state().newPlayerHealth;
         const prevHealth = previousHealth().health;
         const showStatus = previousHealth().show;
-    
         if (prevHealth !== currentHealth && showStatus === false) {
-            
-            // First update - show the difference
             setPreviousHealth(prev => ({
                 ...prev,
                 show: true,
                 positive: prevHealth < currentHealth
             }));
-            // Set timeout to hide the difference
             setTimeout(() => {
                 setPreviousHealth({
                     health: currentHealth,

@@ -1,13 +1,15 @@
 import { Accessor, For, Setter, Show, createSignal } from "solid-js";
 import { CharacterSheet } from "../utility/ascean";
+import { click } from "../App";
  
 const ArmorCard = ({ preference, newAscean, setNewAscean, show, setShow, setArmor }: { preference: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; show: Accessor<boolean>; setShow: Setter<boolean>; setArmor: any }) => {
     const handleArmor = () => {
         setNewAscean({ ...newAscean(), preference: preference.name });
         setArmor(preference);
         setShow(!show());
+        click.play();
     };
-    return <button onClick={handleArmor} class="highlight" style={{ color: preference.name === newAscean().preference ? "gold" : "#fdf6d8" }}>{preference.name}</button>;
+    return <button onClick={handleArmor} class="highlight" style={{ color: preference.name === newAscean().preference ? "gold" : "#fdf6d8", animation: preference.name === newAscean().preference ? "flicker 1s infinite ease alternate" : "none" }}>{preference.name}</button>;
 };
 
 export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {

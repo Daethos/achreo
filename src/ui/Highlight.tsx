@@ -176,7 +176,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 `Influence: ${highlighted()?.item?.influences?.[0]}` : undefined;
 
         return (
-            <table style={dimensions().ORIENTATION === "landscape" ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none" } : { width: `${dimensions().WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
+            <table class="animate-flicker" style={dimensions().ORIENTATION === "landscape" ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none", "--glow-color":"#000" } : { width: `${dimensions().WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
             <tbody>
                 <tr>
                     <td class="compare-border gold" style={{ "font-size": responsiveSizeStyle(asceanName?.length) }}>{asceanName}

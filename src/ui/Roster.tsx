@@ -224,21 +224,21 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                 <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red" }}>X</button>
             </>}>
                 <div class="center creature-heading moisten" style={style}>
-                    <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 0.5s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>
+                    <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 1s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>
                     <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {
                         return (
                             <div style={{ color: masteryColor(enemy.mastery) }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)}</div>
                         )
                     }}</For>
-                    <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> <span class="textGlow">{arena().wager.gold}g {arena().wager.silver}s</span></h1>
-                    <p class="gold" style={{ margin: "0 auto", "font-size": "1.25em" }}>
-                        {arena().wager.gold > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g` : ``} <span style={{ color: "#fdf6d8" }}>{arena().wager.silver > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s` : ``}</span>
+                    <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> <span>{arena().wager.gold}g <span style={{ color: "silver" }}>{arena().wager.silver}s</span></span></h1>
+                    <p class="gold textGlow" style={{ margin: "0 auto", "font-size": "1.25em" }}>
+                        {arena().wager.gold > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.gold * arena().wager.multiplier)}g` : `-${arena().wager.gold}g` : ``} <span style={{ color: "silver" }}>{arena().wager.silver > 0 ? arena().win ? `+${roundToTwoDecimals(arena().wager.silver * arena().wager.multiplier)}s` : `-${arena().wager.silver}s` : ``}</span>
                     </p>
                     <Show when={game().lootDrops.length > 0}>
                         <For each={game().lootDrops}>
                             {((lootDrop: Equipment) => {
-                                return <LootDrop lootDrop={lootDrop} setShow={setShow} setLootDrop={setLootDrop} />
+                                return <LootDrop lootDrop={lootDrop} setShow={setShow} setLootDrop={setLootDrop} />;
                             })}
                         </For>
                     </Show>

@@ -48,11 +48,11 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
     };
     return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ color: faith.worshipers === state().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === state().faith ? "texty 1s infinite ease alternate" : "", "--glow-color":"gold" }}>{faith.name}</button>}>
         <div class="modal" onClick={handleShow}>
-        <div class="border verticalCenter" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%" } : { }}>
-        <div class="creature-heading border" style={{ "text-wrap": "balance" }}> 
+        <div class="verticalCenter" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%" } : { }}>
+        <div class="creature-heading border borderTalent" style={{ "text-wrap": "balance", "--base-shadow": "#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" }}> 
             <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
             <p class="gold small">{faith.origin}</p>
-            <h2 class="gold">{faith.quote}</h2>
+            <h2 class="gold" style={{ "margin-bottom":"5%" }}>{faith.quote}</h2>
         </div>
         </div>
         </div>

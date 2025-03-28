@@ -3,6 +3,7 @@ import { createSignal, For, createMemo, Accessor, Setter } from "solid-js";
 import { InputGroup } from "solid-bootstrap";
 import { useResizeListener } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
+import { click } from "../App";
 
 export default function AttributesCreate({ newAscean, setNewAscean, prevMastery, setPrevMastery }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, prevMastery: any, setPrevMastery: (e: any) => void }) {
     const [pool, setPool] = createSignal((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);
@@ -14,6 +15,7 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
             [name]: Number(newAscean()[name as keyof typeof newAscean]) + value
         });
         setPool(pool() + value);
+        click.play();    
     };
     const ceiling = (name: string): boolean => pool() < 25 && newAscean()?.[name as keyof typeof newAscean] as number < 18;
     const floor = (name: string): boolean => newAscean()?.[name as keyof typeof newAscean] as number > 8;
@@ -22,7 +24,7 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
         const mastery = newAscean().mastery;
         setPrevMastery(mastery);
         setNewAscean({ ...newAscean(), ...LOADOUT[mastery as keyof typeof LOADOUT] });
-        setPool((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);    
+        setPool((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);
     });
     return <div class="center creature-heading fadeIn" style={{ "margin": "10% auto 5%", width: "100%" }}>
         <h1 class="gold" style={{ "margin-bottom" : "5%" }}>Attribute Pool: {pool()} / 25</h1>

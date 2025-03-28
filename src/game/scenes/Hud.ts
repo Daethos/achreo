@@ -166,7 +166,7 @@ export class Hud extends Phaser.Scene {
             var curDiff = Math.abs(this.currentX2 - pointer.x);
             if ((curDiff > 25 || this.prevDiff2 > 25)) {
                 const scene = this.scene.get(this.currScene);
-                if (scene && (scene as Player_Scene).state.computer !== undefined && !(scene as Player_Scene).player.inCombat) {
+                if (scene && ((scene as Player_Scene).state.computer !== undefined || (scene as Player_Scene).player.currentTarget !== undefined) && !(scene as Player_Scene).player.inCombat) {
                     (scene as Player_Scene).player.disengage();
                 };
             };
@@ -413,9 +413,9 @@ export class Hud extends Phaser.Scene {
     };
 
     startGameScene = () => {
-        if (!this.settings.tutorial?.boot) return;
         const scene = this.settings?.map ? this.settings.map : "Tutorial";
         this.currScene = scene;
+        if (!this.settings.tutorial?.boot) return;
         this.scene.launch(scene, this);
     };
 

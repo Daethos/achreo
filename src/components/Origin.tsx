@@ -1,6 +1,7 @@
 import { Accessor, createSignal, For, Setter, Show } from 'solid-js';
 import { useResizeListener } from '../utility/dimensions';
 import { CharacterSheet } from '../utility/ascean';
+import { click } from '../App';
 
 const ORIGINS = [{
     name: "Ashtre",
@@ -101,10 +102,11 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
     const handleOrigin = () => {
         setNewAscean({ ...newAscean(), origin: origin.name });
         setShow(!show());
+        click.play();
     }; 
     const dimensions = useResizeListener();
 
-    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8" }}>{origin.name}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8", animation: origin.name === newAscean()?.origin ? "flicker 1s infinite ease alternate" : "none" }}>{origin.name}</button>}>
         <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance" }}>
         <div class="border verticalCenter" style={{ position: "absolute",
             width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 

@@ -63,8 +63,8 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
         </div>
     }>
-        <div class="stat-block superCenter" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease" }}>
-            <div class="border left center" style={{ height: "80%", width: "48%", top: "9.5%" }}>
+        <div class="stat-block superCenter" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":"#fdf6d8" }}>
+            <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%" }}>
                 <div class="creature-heading superCenter" style={{ width: "100%" }}>
                     <h1>{ascean().name}</h1>
                     <h2>{ascean().description}</h2>
@@ -74,7 +74,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                     <p onClick={() => setShowFaith(!showFaith())} style={viewMargin}>Faith: <span class="gold">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class="gold">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                 </div>
             </div>
-            <div class="border right center" style={{ height: "80%", width: "48%", top: "9.5%" }}>
+            <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%" }}>
                 <div class="superCenter view" style={{ position: "absolute", ...positioning() }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     <Suspense fallback={<Puff color="gold" />}>

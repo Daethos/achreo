@@ -232,7 +232,7 @@
 .menu-3d {
     transform-style: preserve-3d;
     transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-    transform: rotateX(5deg);
+    /* transform: rotateX(5deg); */
 }
 .menu-3d:focus, .menu-3d:hover {
     transform: rotateX(-10deg);
@@ -246,16 +246,15 @@
 }
   
 .menu-item-3d:focus, 
-.menu-item-3d:hover,
-.menu-item-3d.selected { /* Added selected state */
+.menu-item-3d:hover { 
     transform: rotateX(10deg) scale(1.1);
     opacity: 1;
-    z-index: 10; /* Bring to front */
+    z-index: 10;
     /* filter: drop-shadow(0 0 15px var(--glow-color)); */
 }
   
 .menu-3d:hover .menu-item-3d:not(:hover):not(:focus):not(.selected) {
-    transform: rotateX(15deg) translate3D(-30px);
+    /* transform: rotateX(10deg) translate3D(-30px); */
     opacity: 0.65;
 }
 

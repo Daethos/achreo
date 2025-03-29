@@ -38,8 +38,8 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
                     <h2>{shortDescription(asc.description)}</h2>
                     <img src={`../assets/images/${asc.origin}-${asc.sex}.jpg`} id="origin-pic" style={{ transform: menu()?.asceans?.length === 3 ? "scale(1.3)" : "", "margin": menu()?.asceans?.length === 3 ? "7.5% auto" : "" }} />
                     <h4 class="gold" style={{ margin: "2%" }}>Level: {asc.level}</h4>
-                    <button class={`highlight`} style={{ "margin-bottom": "5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em" }} onClick={() => viewAscean(asc._id)}>View {asc.name.split(" ")[0]}</button>
-                    <button class={`highlight`} style={{ "margin-bottom": "5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em" }} onClick={() => loadAscean(asc._id)}>Quick Load</button>
+                    <button class="highlight" style={{ "margin-bottom": "5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em" }} onClick={() => viewAscean(asc._id)}>View {asc.name.split(" ")[0]}</button>
+                    <button class="highlight" style={{ "margin-bottom": "5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em" }} onClick={() => loadAscean(asc._id)}>Quick Load</button>
                 </div> 
                 </div>
             ))} 

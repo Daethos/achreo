@@ -232,14 +232,14 @@
 .menu-3d {
     transform-style: preserve-3d;
     transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-    transform: rotateX(5deg);
+    transform: rotateX(7.5deg);
 }
 .menu-3d:focus, .menu-3d:hover {
-    transform: rotateX(-10deg);
+    transform: rotateX(-12.5deg);
 }
 
 .menu-item-3d {
-    transform: rotateX(10deg) translate3D(-20px);
+    transform: rotateX(12.5deg) translate3D(-20px);
     opacity: 0.9;
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
@@ -248,7 +248,7 @@
 .menu-item-3d:focus, 
 .menu-item-3d:hover,
 .menu-item-3d.selected { /* Added selected state */
-    transform: rotateX(10deg) scale(1.1);
+    transform: rotateX(12.5deg) scale(1.05);
     opacity: 1;
     z-index: 10; /* Bring to front */
     /* filter: drop-shadow(0 0 15px var(--glow-color)); */

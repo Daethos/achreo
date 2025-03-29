@@ -465,30 +465,30 @@ export default function App() {
             container?.appendChild(rune);
         }
     };
-    function createTitle() {
-        setTimeout(() => {
-            if (loading() || ascean() || menu()?.choosingCharacter || menu()?.creatingCharacter) return;
-            createTitle();
-            const num = Math.random();
-            if (num > 0.9) {
-               setTitle( "ᛏhe Ascean");
-            } else if (num > 0.8) {
-               setTitle( "Tᚺe Ascean");
-            } else if (num > 0.7) {
-               setTitle( "Thᛖ Ascᛖan");
-            } else if (num > 0.6) {
-               setTitle("The ᚨsceᚨn");
-            } else if (num > 0.5) {
-               setTitle( "The Asᚲean");
-            } else if (num > 0.4) {
-                setTitle( "The Asceaᛜ");
-            } else if (num > 0.2) {
-                setTitle( "ᛏᚺᛖ ᚨsᚲᛖᚨᛜ");
-            } else {
-                setTitle("The Ascean");
-            };
-        }, 2000);
-    };
+    // function createTitle() {
+    //     setTimeout(() => {
+    //         if (loading() || ascean() || menu()?.choosingCharacter || menu()?.creatingCharacter) return;
+    //         createTitle();
+    //         const num = Math.random();
+    //         if (num > 0.9) {
+    //            setTitle( "ᛏhe Ascean");
+    //         } else if (num > 0.8) {
+    //            setTitle( "Tᚺe Ascean");
+    //         } else if (num > 0.7) {
+    //            setTitle( "Thᛖ Ascᛖan");
+    //         } else if (num > 0.6) {
+    //            setTitle("The ᚨsceᚨn");
+    //         } else if (num > 0.5) {
+    //            setTitle( "The Asᚲean");
+    //         } else if (num > 0.4) {
+    //             setTitle( "The Asceaᛜ");
+    //         } else if (num > 0.2) {
+    //             setTitle( "ᛏᚺᛖ ᚨsᚲᛖᚨᛜ");
+    //         } else {
+    //             setTitle("The Ascean");
+    //         };
+    //     }, 2000);
+    // };
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },

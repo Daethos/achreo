@@ -69,6 +69,9 @@
 .flickerJuice:focus,.flickerJuice:hover {
     animation: flicker 0.5s infinite ease alternate;
 }
+.flickerJuiceInsert:focus > h1, .flickerJuiceInsert:hover > h1, .flickerJuiceInsert:focus > h2, .flickerJuiceInsert:hover > h2, .flickerJuiceInsert:focus > h4, .flickerJuiceInsert:hover > h4 {
+    animation: flicker 0.5s infinite ease alternate;
+}
 .textGlow {
     animation: texty 1s infinite ease alternate;
 }
@@ -129,7 +132,7 @@
       box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.1em 0.3em;
     }
     100% {
-      box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.85em 0.3em;
+      box-shadow: var(--base-shadow), var(--glow-color) 0 0 1em 0.3em;
     }
   }
   
@@ -147,9 +150,13 @@
       text-shadow: none;
     }
 }
+@keyframes opacityPulse {
+    0% { opacity: 0.1; }
+    100% { opacity: 0.5; }
+}
 @keyframes pulse {
-    0% { transform: scale(0.95); opacity: 0.6; }
-    100% { transform: scale(1.1); opacity: 0.9; }
+    0% { transform: scale(0.9); opacity: 0.5; }
+    100% { transform: scale(1.15); opacity: 0.9; }
 }
 @keyframes texty {
     0%{text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color)}
@@ -174,24 +181,84 @@
 .reset-animation {
     animation: none !important; /* Forces removal of animation */
 }
-.radial-glow {
+.sunburst {
     position: relative;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
     background: #111;
+    overflow: visible;
 }
-  
-.radial-glow::before {
+.sunburst::before {
     content: "";
     position: absolute;
+    filter: blur(5px);
+    inset: -15px;
+    border-radius: 50%;
+    background: radial-gradient(
+        circle closest-side at center,
+        var(--glow-color) 0%,
+        transparent 75%
+    );
+    opacity: 0.8;
+    z-index: -1;
+    animation: pulse 3s infinite alternate;
+    aspect-ratio: 1; /* Also apply to pseudo-element */
+}
+
+.smallburst {
+    position: relative;
+    background: #111;
+    overflow: visible;
+}
+.smallburst::before {
+    content: "";
+    position: absolute;
+    filter: blur(5px);
     inset: -10px;
     border-radius: 50%;
-    background: radial-gradient(circle, var(--glow-color), transparent 70%);
-    opacity: 0.7;
-    animation: pulse 3s infinite alternate;
+    background: radial-gradient(
+        circle closest-side at center,
+        var(--glow-color) 0%,
+        transparent 50%
+    );
+    opacity: 0.65;
     z-index: -1;
+    animation: pulse 3s infinite alternate;
+    aspect-ratio: 1; /* Also apply to pseudo-element */
 }
+.menu-3d-container {
+    perspective: 1200px;
+    width: min(90vw, 800px);
+    margin: 0 auto;
+}
+.menu-3d {
+    transform-style: preserve-3d;
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+    transform: rotateX(5deg);
+}
+.menu-3d:focus, .menu-3d:hover {
+    transform: rotateX(-10deg);
+}
+
+.menu-item-3d {
+    transform: rotateX(10deg) translate3D(-20px);
+    opacity: 0.9;
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+}
+  
+.menu-item-3d:focus, 
+.menu-item-3d:hover,
+.menu-item-3d.selected { /* Added selected state */
+    transform: rotateX(10deg) scale(1.1);
+    opacity: 1;
+    z-index: 10; /* Bring to front */
+    /* filter: drop-shadow(0 0 15px var(--glow-color)); */
+}
+  
+.menu-3d:hover .menu-item-3d:not(:hover):not(:focus):not(.selected) {
+    transform: rotateX(15deg) translate3D(-30px);
+    opacity: 0.65;
+}
+
 .borderTalent {animation: borderTalent 2s infinite ease alternate;}
 .fadeInScale {animation: fadeInScale 1s ease;}
 @keyframes visible {0% {opacity: 0;}100% {opacity: 1;}}

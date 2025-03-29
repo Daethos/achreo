@@ -124,7 +124,8 @@ export const INTRO_NODES = {
         prev: 2,
         next: 4,
         text: `Inside the past century, warring ceased toward an uncomfortable peace, with many fathers and sons dying in its making—their progeny rapt with placidity. \n
-        The Ascea now satiates those wary of their idle, listless nature; a decennial tournament full of jest and joust, where prestige and wealth are sought, and the title, ‘Ascean va'Esai,’ is crowned.`,
+        The Ascea now satiates those wary of their idle, listless nature; a decennial tournament full of jest and joust, where prestige and wealth are now sought. \n
+        And at its end, the title ‘Ascean va'Esai,’ is crowned.`,
     },
     4: {
         key: 4,

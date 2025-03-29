@@ -106,7 +106,7 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
     }; 
     const dimensions = useResizeListener();
 
-    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8", animation: origin.name === newAscean()?.origin ? "flicker 1s infinite ease alternate" : "none" }}>{origin.name}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ "--glow-color":"gold", color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8", animation: origin.name === newAscean()?.origin ? "texty 1s infinite ease alternate" : "none" }}>{origin.name}</button>}>
         <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance" }}>
         <div class="border verticalCenter" style={{ position: "absolute",
             width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 

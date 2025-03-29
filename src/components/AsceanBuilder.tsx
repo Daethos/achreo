@@ -20,7 +20,6 @@ const Preview = lazy(async () => await import("./Preview"));
 export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, menu: Accessor<Menu> }) {
     const [prevMastery, setPrevMastery] = createSignal("");
     const [attrShow, setAttrShow] = createSignal(false);
-    const [focus, setFocus] = createSignal("");
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const dimensions = useResizeListener();
     const photo = { 
@@ -31,12 +30,12 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         // "margin-left":"1%",
         "border": "0.15em solid #fdf6d8", "border-radius": "50%",  };
     const font = { "font-size": "1em", margin: "0" };
-    const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block" };
+    const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block", "padding":"2%" };
     function toggle(attr: string) {
         setAttribute(Attributes.find(a => a.name === attr) as any);
         setAttrShow(!attrShow());
     };
-    return <div class="stat-block superCenter" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
+    return <div class="stat-block superCenter" style={{ overflow: "hidden", "scrollbar-width": "none" }}>
         <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== "landscape"}>
             <Preview newAscean={newAscean} />
         </Show>
@@ -101,23 +100,27 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
             </Switch>
         }> 
         {/* <<---------- LANDSCAPE ---------->> */}
-            <Switch>
+        {/* "box-shadow": `
+            inset 0 2px 4px rgba(0, 255, 255, 0.3),
+            inset 0 -2px 4px rgba(0, 0, 0, 0.8),
+            0 0 12px rgba(0, 255, 255, 0.5)
+        `,
+        transition: 'box-shadow 0.4s ease', */}
+                    <div class="sunburst" style={{ "--glow-color":masteryColor(newAscean().mastery) }}></div>
+                    <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
-                    <div class="drop-25 left" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
+                    <div class="drop-25 left menu-3d-container" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
                         <Suspense fallback={<Puff color="gold" />}>
+                        <div class="menu-3d">
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row juice glowJuice" onClick={() => {setNewAscean(ascean); setFocus(ascean.name); click.play()}} style={{ width: "70%", margin: "1em auto", 
-                                    "border-color": masteryColor(ascean.mastery),
-                                    "--glow-color": masteryColor(ascean.mastery),
-                                    "--base-shadow": "#000 0 0 0 0.2em",
-                                    "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`,
-                                }}>
+                                <div class="border row juice glowJuice flickerJuiceInsert menu-item-3d" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
                                     <img style={{...photo, "border-color": masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
-                                    <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%", animation: focus() === ascean.name ? "flicker 0.5s infinite ease alternate" : ""}}>{ascean.name}</h4>
+                                    <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%" }}>{ascean.name}</h4>
                                 </div>
                             )}
                         </For>
+                        </div>
                         </Suspense>
                     </div>
                     <div class="drop-25 right" style={{ height: "82.5%", width: "48%", display: "inline-block", animation: "fadein 1.5s ease" }}>
@@ -128,37 +131,37 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                             <img src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id="origin-pic" style={{ "border-color": masteryColor(newAscean().mastery) }} />
                             <p style={{margin:"2%"}}>Armor: <span class="gold">{newAscean().preference}</span></p>
                             <p style={{margin:"2%"}}>Faith: <span class="gold">{newAscean().faith}</span> | Mastery: <span class="gold">{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
-                            <div style={{ display: "inline-flex" }}>
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("constitution")} style={font}>Con</button>
-                                <p class="gold" style={font}>{newAscean()?.constitution}</p>
-                            </div>
-                            <div>{"\n"}</div>
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("strength")} style={font}>Str</button>
-                                <p class="gold" style={font}>{newAscean()?.strength}</p>
-                            </div>
-                            <div>{"\n"}</div>
+                            <div style={{ display: "inline-flex", "justify-content":"center" }}>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("constitution")} style={font}>Con</div>
+                                    <p class="gold" style={font}>{newAscean()?.constitution}</p>
+                                </div>
+                                <div>{"\n"}</div>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("strength")} style={font}>Str</div>
+                                    <p class="gold" style={font}>{newAscean()?.strength}</p>
+                                </div>
+                                <div>{"\n"}</div>
 
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("agility")} style={font}>Agi</button>
-                                <p class="gold" style={font}> {newAscean()?.agility}</p>
-                            </div>
-                            <div>{"\n"}</div>
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("achre")} style={font}>Ach</button>
-                                <p class="gold" style={font}>{newAscean()?.achre}</p>
-                            </div>
-                            <div>{"\n"}</div>
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("caeren")} style={font}>Caer</button>
-                                <p class="gold" style={font}>{newAscean()?.caeren}</p>
-                            </div>
-                            <div>{"\n"}</div>
-                            <div style={inline}>
-                                <button class="buttonBorderless" onClick={() => toggle("kyosir")} style={font}>Kyo</button>
-                                <p class="gold" style={font}>{newAscean()?.kyosir}</p>
-                            </div>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("agility")} style={font}>Agi</div>
+                                    <p class="gold" style={font}> {newAscean()?.agility}</p>
+                                </div>
+                                <div>{"\n"}</div>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("achre")} style={font}>Ach</div>
+                                    <p class="gold" style={font}>{newAscean()?.achre}</p>
+                                </div>
+                                <div>{"\n"}</div>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("caeren")} style={font}>Caer</div>
+                                    <p class="gold" style={font}>{newAscean()?.caeren}</p>
+                                </div>
+                                <div>{"\n"}</div>
+                                <div style={inline}>
+                                    <div class="" onClick={() => toggle("kyosir")} style={font}>Kyo</div>
+                                    <p class="gold" style={font}>{newAscean()?.kyosir}</p>
+                                </div>
                             </div>
                         </div>
                         </Suspense>

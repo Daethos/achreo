@@ -48,7 +48,7 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
         setShow(!show());
         click.play();
     };
-    return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ color: faith.worshipers === newAscean().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === newAscean().faith ? "flicker 1s infinite ease alternate" : "none" }}>{faith.name}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ "--glow-color":"gold", color: faith.worshipers === newAscean().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === newAscean().faith ? "texty 1s infinite ease alternate" : "none" }}>{faith.name}</button>}>
         <div class="modal" onClick={handleShow}>
         <div class="border verticalCenter borderTalent" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%", top: "48%", "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : { }}>
         <div class="creature-heading" style={{ "white-space": "pre-wrap" }}> 

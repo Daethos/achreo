@@ -12,7 +12,7 @@ const MasteryCard = ({ mastery, newAscean, setNewAscean }: { mastery: any; newAs
         setShow(!show());
         click.play();
     };
-    return <Show when={show()} fallback={<button onClick={handleMastery} class="highlight" style={{ color: mastery.name === newAscean().mastery ? "gold" : "#fdf6d8", animation: mastery.name === newAscean().mastery ? "flicker 1s infinite ease alternate" : "none" }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
+    return <Show when={show()} fallback={<button onClick={handleMastery} class="highlight" style={{ "--glow-color":"gold", color: mastery.name === newAscean().mastery ? "gold" : "#fdf6d8", animation: mastery.name === newAscean().mastery ? "texty 1s infinite ease alternate" : "none" }}>{mastery.name.charAt(0).toUpperCase() + mastery.name.slice(1)}</button>}>
         <div class="modal" onClick={handleShow}><AttributeModal attribute={mastery} /></div>
     </Show>;
 };

@@ -66,6 +66,20 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         <div class="stat-block superCenter" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":"#fdf6d8" }}>
             <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%" }}>
                 <div class="creature-heading superCenter" style={{ width: "100%" }}>
+                {/* <div style={{
+                    position: 'relative',
+                    background: '#1a1a1a',
+                    padding: '1.5rem',
+                    "border-radius": '8px',
+                    "box-shadow": `
+                        inset 0 2px 4px rgba(0, 255, 255, 0.3),
+                        inset 0 -2px 4px rgba(0, 0, 0, 0.8),
+                        0 0 12px rgba(0, 255, 255, 0.5)
+                    `,
+                    transition: 'box-shadow 0.4s ease'
+                    }}>
+                    CYBERPUNK BUTTON
+                </div> */}
                     <h1>{ascean().name}</h1>
                     <h2>{ascean().description}</h2>
                     <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id="origin-pic" />

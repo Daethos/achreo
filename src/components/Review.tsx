@@ -35,17 +35,17 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
     });
 
     const mastery = (attr: string) => {
-        return { color: newAscean()?.mastery === attr ? "gold" : "#fdf6d8" };
+        return { color: newAscean()?.mastery === attr ? "gold" : "#fdf6d8", "--glow-color": newAscean()?.mastery === attr ? "gold" : "#fdf6d8" };
     };
 
     return <div class="center wrap fadeIn">
         <div class="creature-heading">
-            <h1>Review Character</h1>
+            <h1 class="animate-texty-infinite" style={{ "--glow-color":"gold" }}>Review Character</h1>
             <h2 class="p-3">
-                You are <span class="gold">{newAscean()?.name}</span>, {originArticle} <span class="gold">{newAscean()?.origin}</span> {newAscean()?.sex === "Man" ? "man" : "woman"} of <span class="gold">{land}</span>, recently matured and leaving home, venturing to the Ascea. 
-                By your own admission, you are {descArticle} <span class="gold">{newAscean()?.description}</span>.
-                The kind of armor you choose to wear is <span class="gold">{newAscean()?.preference.toLowerCase()}</span>, similar to those worn by {ARMORS[newAscean()?.preference.toLowerCase() as keyof typeof ARMORS]} Your mastery lies in <span class="gold">{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
-                in some sense, that is how one perceives this world. Your faith is <span class="gold">{newAscean()?.faith}</span>, the worship of <span class="gold">{name()}</span>. {character()} 
+                You are <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.name}</span>, {originArticle} <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.origin}</span> {newAscean()?.sex === "Man" ? "man" : "woman"} of <span class="gold" style={{ "--glow-color":"gold" }}>{land}</span>, recently matured and leaving home, venturing to the Ascea. 
+                By your own admission, you are {descArticle} <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.description}</span>.
+                The kind of armor you choose to wear is <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.preference.toLowerCase()}</span>, similar to those worn by {ARMORS[newAscean()?.preference.toLowerCase() as keyof typeof ARMORS]} Your mastery lies in <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
+                in some sense, that is how one perceives this world. Your faith is <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.faith}</span>, the worship of <span class="gold" style={{ "--glow-color":"gold" }}>{name()}</span>. {character()} 
             </h2>
         </div>
         <Show when={dimensions().ORIENTATION === "landscape"} fallback={<>
@@ -62,7 +62,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
                 <h2 style={mastery("kyosir")}>Kyosir: {newAscean()?.kyosir}</h2>
             </div>
         </>}>
-            <div style={{ position: "absolute", width: "70%", left: "15%" }}>
+            <div class="animate-flicker" style={{ position: "absolute", width: "70%", left: "15%" }}>
             <div class="left" style={{ width: "48%" }}>
                 <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="" style={{ width: "75%", height: "50%", border: "0.15em solid gold", "border-radius": "50%" }} />
             </div>

@@ -28,15 +28,16 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
         };
     };
     const shortName = (name: string): string => name.split(" ").slice(0, 2).join(" ") + (name.split(" ").length > 2 ? "..." : "");
-    return <div class="menu" style={{ display: "inline-flex", "flex-direction": dimensions().ORIENTATION === "landscape" ? "row" : "column", "align-items": "center", "gap": "1%", "justify-content": "center" }}>
+    return <div class="menu menu-3d" style={{ display: "inline-flex", "flex-direction": dimensions().ORIENTATION === "landscape" ? "row" : "column", "align-items": "center", "gap": "1%", "justify-content": "center" }}>
+
         <For each={menu()?.asceans}> 
             {((asc, _idx) => (
-                <div class={dimensions().ORIENTATION === "landscape" ? "border center glowJuice juice" : "border center glowJuice juice"} style={style(menu, dimensions)}>
-                <div class="center creature-heading flickerJuice" style={{ width: "100%", height: "100%", margin: "auto" }}>
-                    <h1 class="flickerJuice" style={{ }}>{shortName(asc.name)}</h1>
+                <div class={dimensions().ORIENTATION === "landscape" ? "border center glowJuice juice menu-item-3d" : "border center glowJuice juice"} style={style(menu, dimensions)}>
+                <div class="center creature-heading flickerJuiceInsert" style={{ width: "100%", height: "100%", margin: "auto" }}>
+                    <h1>{shortName(asc.name)}</h1>
                     <h2>{shortDescription(asc.description)}</h2>
                     <img src={`../assets/images/${asc.origin}-${asc.sex}.jpg`} id="origin-pic" style={{ transform: menu()?.asceans?.length === 3 ? "scale(1.3)" : "", "margin": menu()?.asceans?.length === 3 ? "7.5% auto" : "" }} />
-                    <div class="gold" style={{ margin: "2%" }}>Level: {asc.level}</div>
+                    <h4 class="gold" style={{ margin: "2%" }}>Level: {asc.level}</h4>
                     <button class={`highlight`} style={{ "margin-bottom": "5%" }} onClick={() => viewAscean(asc._id)}>View {asc.name.split(" ")[0]}</button>
                     <button class={`highlight`} style={{ "margin-bottom": "5%" }} onClick={() => loadAscean(asc._id)}>Quick Load</button>
                 </div> 

@@ -9,7 +9,7 @@ const ArmorCard = ({ preference, newAscean, setNewAscean, show, setShow, setArmo
         setShow(!show());
         click.play();
     };
-    return <button onClick={handleArmor} class="highlight" style={{ color: preference.name === newAscean().preference ? "gold" : "#fdf6d8", animation: preference.name === newAscean().preference ? "flicker 1s infinite ease alternate" : "none" }}>{preference.name}</button>;
+    return <button onClick={handleArmor} class="highlight" style={{ "--glow-color":"gold", color: preference.name === newAscean().preference ? "gold" : "#fdf6d8", animation: preference.name === newAscean().preference ? "texty 1s infinite ease alternate" : "none" }}>{preference.name}</button>;
 };
 
 export default function Sex({ newAscean, setNewAscean }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet> }) {

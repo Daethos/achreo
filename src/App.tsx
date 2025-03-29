@@ -35,6 +35,7 @@ export default function App() {
     const [alert, setAlert] = createSignal<Toast>({ header: "", body: "", delay: 0, key: "", arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
+    const [title, setTitle] = createSignal<string>("The Ascean");
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
@@ -80,6 +81,8 @@ export default function App() {
             };
         };
         fetch();
+        createParticles();
+        // createTitle();
     };
     function menuOption(option: string): void {
         click.play();
@@ -445,7 +448,47 @@ export default function App() {
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
+    function createParticles() {
+        const runes = ["ᚨ", "ᛞ", "ᚦ", "ᛟ", "ᛇ", "ᛈ", "ᚠ", "ᚢ", "ᚦ", "ᚱ", "ᚲ", "ᚷ", "ᚹ", "ᚺ", "ᚾ", "ᛁ", "ᛃ", "ᛉ", "ᛊ", "ᛏ", "ᛒ", "ᛖ", "ᛗ", "ᛚ", "ᛜ"];
+        const container = document.querySelector('.menu-bg');
 
+        for (let i = 0; i < 100; i++) {
+            const rune = document.createElement('div');
+            rune.className = 'rune';
+            rune.textContent = runes[Math.floor(Math.random() * runes.length)];
+            rune.style.top = "-2.5vh";
+            rune.style.left = "-2.5vw";
+            rune.style.setProperty('--tx', `${Math.random() * 2 - 0.5}`);
+            rune.style.setProperty('--ty', `${Math.random() * 2 - 0.5}`);
+            rune.style.animationDuration = `${20 + Math.random() * 20}s`;
+            rune.style.animationDelay = `${Math.random() * 3}s`;
+            container?.appendChild(rune);
+        }
+    };
+    function createTitle() {
+        setTimeout(() => {
+            if (loading() || ascean() || menu()?.choosingCharacter || menu()?.creatingCharacter) return;
+            createTitle();
+            const num = Math.random();
+            if (num > 0.9) {
+               setTitle( "ᛏhe Ascean");
+            } else if (num > 0.8) {
+               setTitle( "Tᚺe Ascean");
+            } else if (num > 0.7) {
+               setTitle( "Thᛖ Ascᛖan");
+            } else if (num > 0.6) {
+               setTitle("The ᚨsceᚨn");
+            } else if (num > 0.5) {
+               setTitle( "The Asᚲean");
+            } else if (num > 0.4) {
+                setTitle( "The Asceaᛜ");
+            } else if (num > 0.2) {
+                setTitle( "ᛏᚺᛖ ᚨsᚲᛖᚨᛜ");
+            } else {
+                setTitle("The Ascean");
+            };
+        }, 2000);
+    };
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -536,7 +579,7 @@ export default function App() {
         game.loop.start(game.step.bind(game));
     });
     return <div id="app">
-        <Show when={startGame()} fallback={<>
+        <Show when={startGame()} fallback={<div class="">
         {menu().creatingCharacter ? (
             <div id="overlay" class="superCenter">
             <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === "landscape"}>
@@ -596,7 +639,7 @@ export default function App() {
         ) : loading() ? ( 
             <LoadAscean ascean={ascean} />
         ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
-            <div id="overlay" class="superCenter">
+            <div id="overlay" class="superCenter menu-3d-container">
                 <Suspense fallback={<Puff color="gold"/>}>
                     <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
                 </Suspense>
@@ -625,19 +668,21 @@ export default function App() {
                 <button class="highlight cornerBR animate" onClick={() => setLoadAscean(ascean()?._id)}>Enter Game</button>
             </>
         ) : ( 
+            <div class="menu-bg">
             <Suspense fallback={<Puff color="gold"/>}>
             <div class="cornerTL super" style={{ "text-shadow": "0em 0em 0.1em #ffd700" }}>The Ascean v0.0.1</div>
             <Show when={menu().loading === false} fallback={<div class="superCenter"><Puff color="gold"/></div>}>
             <div class="superCenter cinzel full">
                 <div class="center">
-                    <div class="title long-animate">The Ascean</div>
+                    <div class="title long-animate animate-flicker">The Ascean</div>
                     <button class="center highlight animate cinzel enter" onClick={() => menuOption(menu().asceans.length > 0 ? "choosingCharacter" : "creatingCharacter")}>Enter Game</button>
                 </div>
             </div>
             </Show>
             </Suspense>
+            </div>
         )}
-        </>}>
+        </div>}>
             <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} quests={quests} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
         </Show>
         <Show when={show()}>

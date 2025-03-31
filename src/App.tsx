@@ -35,7 +35,7 @@ export default function App() {
     const [alert, setAlert] = createSignal<Toast>({ header: "", body: "", delay: 0, key: "", arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
-    const [title, setTitle] = createSignal<string>("The Ascean");
+    // const [title, setTitle] = createSignal<string>("The Ascean");
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
@@ -463,7 +463,8 @@ export default function App() {
             rune.style.animationDuration = `${20 + Math.random() * 20}s`;
             rune.style.animationDelay = `${Math.random() * 3}s`;
             container?.appendChild(rune);
-        }
+        };
+
     };
     // function createTitle() {
     //     setTimeout(() => {

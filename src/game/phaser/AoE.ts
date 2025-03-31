@@ -1,38 +1,38 @@
-import Player from '../entities/Player';
-import Enemy from '../entities/Enemy';
+import Player from "../entities/Player";
+import Enemy from "../entities/Enemy";
 import { Particle } from "../matter/ParticleManager";
 import { Play } from "../main";
-import { Underground } from '../scenes/Underground';
-import { Tutorial } from '../scenes/Tutorial';
-import { Arena } from '../scenes/Arena';
-import { Game } from '../scenes/Game';
-import Party from '../entities/PartyComputer';
+import { Underground } from "../scenes/Underground";
+import { Tutorial } from "../scenes/Tutorial";
+import { Arena } from "../scenes/Arena";
+import { Game } from "../scenes/Game";
+import Party from "../entities/PartyComputer";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const COLORS = {
-    'astrave': 0xFFFF00,
-    'blind': 0xCC5500,
-    'caerenesis': 0x00FFFF,
-    'chiomic': 0xFFC700,
-    'freeze': 0x0000FF,
-    'fyerus': 0xE0115F,
-    'howl': 0xFF0000,
-    'kynisos': 0xFFD700,
-    'renewal': 0xFDF6D8,
-    'scream': 0xFF00FF,
-    'shock': 0x00FFFF,
-    'tendril': 0x00FF00,
-    'writhe': 0x080080,
+    "astrave": 0xFFFF00,
+    "blind": 0xCC5500,
+    "caerenesis": 0x00FFFF,
+    "chiomic": 0xFFC700,
+    "freeze": 0x0000FF,
+    "fyerus": 0xE0115F,
+    "howl": 0xFF0000,
+    "kynisos": 0xFFD700,
+    "renewal": 0xFDF6D8,
+    "scream": 0xFF00FF,
+    "shock": 0x00FFFF,
+    "tendril": 0x00FF00,
+    "writhe": 0x080080,
 
-    'earth': 0x000000,
-    'fire': 0xFF0000,
-    'frost': 0x0000FF,
-    'lightning': 0xFFFF00,
-    'righteous': 0xFFD700,
-    'sorcery': 0xA700FF,
-    'spooky': 0x080080,
-    'wild': 0x50C878,
-    'wind': 0x00FFFF
+    "earth": 0x000000,
+    "fire": 0xFF0000,
+    "frost": 0x0000FF,
+    "lightning": 0xFFFF00,
+    "righteous": 0xFFD700,
+    "sorcery": 0xA700FF,
+    "spooky": 0x080080,
+    "wild": 0x50C878,
+    "wind": 0x00FFFF
 };
 const SCALE = 0.01875;
 type Player_Scene = Arena | Underground | Game | Tutorial; 
@@ -44,7 +44,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     sensor: any;
 
     constructor(scene: Play, type: string, count = 1, positive = false, enemy: Enemy | Party | undefined = undefined, manual: boolean = false, target: undefined | any = undefined, particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined) {
-        super(scene.matter.world, 0, 6, 'target');
+        super(scene.matter.world, 0, 6, "target");
         this.name = type;
         this.setAngle(0);
         this.setVisible(false);
@@ -63,12 +63,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.bless = [];
         this.timer = undefined;    
         if (enemy !== undefined) {
-            if (enemy.name === 'enemy') {
+            if (enemy.name === "enemy") {
                 this.setupEnemySensor(enemy as Enemy, target);
                 this.setupEnemyListener(scene, enemy as Enemy);
                 this.setEnemyTimer(scene, enemy as Enemy, target);
                 this.setupEnemyCount(scene, type, positive, enemy as Enemy);
-            } else if (enemy.name === 'party') {
+            } else if (enemy.name === "party") {
                this.setupPartySensor(enemy as Party, target);
                this.setupPartyListener(scene);
                this.setPartyTimer(scene, enemy as Party, target);
@@ -90,7 +90,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         scene.rotateTween(this, 0, false);
     };
     setCount = (scene: Play, type: string, positive: boolean) => {
-        if (type === 'fyerus') {
+        if (type === "fyerus") {
             if ((scene as Player_Scene).player.isMoving) {
                 scene.tweens.add({
                     targets: [this],
@@ -165,7 +165,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
     };
     setPartyCount = (scene: Play, type: string, positive: boolean, origin: Party) => {
-        if (type === 'fyerus') {
+        if (type === "fyerus") {
             if ((scene as Player_Scene).player.isMoving) {
                 scene.tweens.add({
                     targets: [this],
@@ -287,11 +287,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (positive === true) {
             scene.time.delayedCall(975, () => {
                 this.hit.forEach((hit) => {
-                    if (hit.name === 'player') {
+                    if (hit.name === "player") {
                         if ((scene as Player_Scene).player.checkPlayerResist() === true) {
                             (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
                         };
-                    } else if (hit.name === 'enemy' || hit.name === 'party') {
+                    } else if (hit.name === "enemy" || hit.name === "party") {
                         (scene.combatManager as any)[type](hit.enemyID, enemy.enemyID);
                     };
                 });
@@ -444,7 +444,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setupEnemySensor = (enemy: Enemy, target: Player | Enemy) => {
         let targ = target !== undefined ? target : enemy;
         const aoeSensor = Bodies.circle(targ.x, targ.y, 60, { 
-            isSensor: true, label: 'aoeSensor' 
+            isSensor: true, label: "aoeSensor" 
         });
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
@@ -452,7 +452,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
     setupParticleSensor = (target: Particle) => {
         const aoeSensor = Bodies.circle(target.effect.x, target.effect.y, 60, { 
-            isSensor: true, label: 'particleAoeSensor' 
+            isSensor: true, label: "particleAoeSensor" 
         });
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
@@ -479,7 +479,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
         const y = manual === true ? targ.y : targ.y + 6;
         const aoeSensor = Bodies.circle(targ.x, y, 60, { 
-            isSensor: true, label: 'aoeSensor' 
+            isSensor: true, label: "aoeSensor" 
         });
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
@@ -489,7 +489,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     setupPartySensor = (origin: Party, target: Enemy) => {
         let targ = target ? target : origin;
         const aoeSensor = Bodies.circle(targ.x, targ.y, 60, {
-            isSensor: true, label: 'aoeSensor'
+            isSensor: true, label: "aoeSensor"
         });
         this.setExistingBody(aoeSensor);
         this.setStatic(true);
@@ -500,17 +500,17 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     const hit = this.hit.find((h) => h.playerID === gameObjectB.playerID);
                     if (!hit) this.hit.push(gameObjectB);
-                } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                } else if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     const enemy = origin.enemies.find((e) => e.id === gameObjectB.enemyID);
                     if (enemy) {
                         this.hit.push(gameObjectB);
                     } else {
                         this.bless.push(gameObjectB);
                     };
-                } else if (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider') {
+                } else if (gameObjectB?.name === "party" && bodyB?.label === "partyCollider") {
                     const hit = this.hit.find((h) => h.enemyID === gameObjectB.enemyID);
                     if (!hit) this.hit.push(gameObjectB);
                 };
@@ -521,12 +521,12 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     this.hit = this.hit.filter((target) => target !== gameObjectB);
-                } else if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                } else if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
                     this.hit = this.hit.filter((target) => target !== gameObjectB);
-                } else if (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider') {
+                } else if (gameObjectB?.name === "party" && bodyB?.label === "partyCollider") {
                     this.hit = this.hit.filter((target) => target !== gameObjectB);
                 };
             },
@@ -538,9 +538,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if ((gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') ||
-                    (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') ||
-                    (gameObjectB?.name === 'party' && bodyB?.label === 'partyCollider')
+                if ((gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") ||
+                    (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") ||
+                    (gameObjectB?.name === "party" && bodyB?.label === "partyCollider")
                 ) {
                     this.hit.push(gameObjectB);
                 };
@@ -551,8 +551,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if ((gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') || 
-                    (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider')) {
+                if ((gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") || 
+                    (gameObjectB?.name === "player" && bodyB?.label === "playerCollider")) {
                     this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
                 };
             },
@@ -564,9 +564,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     this.hit.push(gameObjectB);    
-                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                } else if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     this.bless.push(gameObjectB);
                 };
             },
@@ -576,9 +576,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
-                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                } else if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
                 };
             },
@@ -590,11 +590,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     this.hit.push(gameObjectB);    
-                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                } else if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     this.bless.push(gameObjectB);
-                } else if (gameObjectB?.name === 'party') {
+                } else if (gameObjectB?.name === "party") {
                     this.bless.push(gameObjectB);
                 };
             },
@@ -604,11 +604,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             objectA: [this.sensor],
             callback: (collision: { gameObjectB: any; bodyB: any; }) => {
                 const { gameObjectB, bodyB } = collision;
-                if (gameObjectB?.name === 'enemy' && bodyB?.label === 'enemyCollider') {
+                if (gameObjectB?.name === "enemy" && bodyB?.label === "enemyCollider") {
                     this.hit = this.hit.filter((target) => target.enemyID !== gameObjectB.enemyID);
-                } else if (gameObjectB?.name === 'player' && bodyB?.label === 'playerCollider') {
+                } else if (gameObjectB?.name === "player" && bodyB?.label === "playerCollider") {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
-                } else if (gameObjectB?.name === 'party') {
+                } else if (gameObjectB?.name === "party") {
                     this.bless = this.bless.filter((target) => target !== gameObjectB);
                 };
             },

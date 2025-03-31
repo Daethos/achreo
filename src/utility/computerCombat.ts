@@ -2,7 +2,7 @@ import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ComputerCombat } from "../stores/computer";
 import { criticalCompiler, damageTypeCompiler } from "./combat";
-import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_ATTACKS, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
+import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
 // import { PRAYERS } from "./prayer";
 
 function computerWeaponMaker(combat: ComputerCombat): ComputerCombat {
@@ -250,7 +250,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = computerWeapon.criticalChance;
     criticalChance -= (combat.computerEnemyAttributes?.kyosirMod as number / 2);
-    // if (combat.weather === 'Astralands') criticalChance += 10;
+    // if (combat.weather === "Astralands") criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, computerWeapon, computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
     combat.glancingBlow = criticalResult.glancingBlow;
     combat.criticalSuccess = criticalResult.criticalSuccess;
@@ -293,7 +293,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
 function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo: ComputerCombat }) {
     try {
         let { computerOne, computerTwo } = data;
-        const computerTwoLive = (computerTwo.computerAction !== '' && computerOne.personalID === computerTwo.enemyID) ? true : false;
+        const computerTwoLive = (computerTwo.computerAction !== "" && computerOne.personalID === computerTwo.enemyID) ? true : false;
         checkCombatSheetData(computerOne, computerTwo);
 
         if (computerTwoLive) {
@@ -337,7 +337,7 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
 
         return {computerOne, computerTwo};
     } catch (err) {
-        console.warn(err, 'Error in the Computer Combat Splitter of Game Services');
+        console.warn(err, "Error in the Computer Combat Splitter of Game Services");
     };
 };
 
@@ -441,7 +441,7 @@ function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerT
         const res = computerCombatSplitter(combat);
         return res;
     } catch (err) {
-        console.warn(err, 'Error in the Computer Combat Compiler of Game Services');
+        console.warn(err, "Error in the Computer Combat Compiler of Game Services");
     };
 };
 

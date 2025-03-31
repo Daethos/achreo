@@ -1,13 +1,13 @@
-import { EventBus } from '../EventBus';
-import { Scene } from 'phaser'; 
+import { EventBus } from "../EventBus";
+import { Scene } from "phaser"; 
 export class GameOver extends Scene {
     camera: Phaser.Cameras.Scene2D.Camera;
     background: Phaser.GameObjects.Image;
     gameOverText : Phaser.GameObjects.Text;
-    constructor () {super('GameOver');};
+    constructor () {super("GameOver");};
     create () {};
     changeScene () {
-        this.scene.start('MainMenu');
-        EventBus.emit('main-menu', this);
+        this.scene.start("MainMenu");
+        EventBus.emit("main-menu", this);
     };
 };

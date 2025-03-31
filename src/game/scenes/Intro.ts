@@ -1,5 +1,5 @@
 import { Scene } from "phaser";
-import TextTyping from 'phaser3-rex-plugins/plugins/texttyping.js';
+import TextTyping from "phaser3-rex-plugins/plugins/texttyping.js";
 import { EventBus } from "../EventBus";
 import { INTRO_NODES } from "../../utility/scene";
 import { useResizeListener } from "../../utility/dimensions";
@@ -19,15 +19,15 @@ export class Intro extends Scene {
     private fullText: Phaser.GameObjects.Text;
     private node: any;
 
-    constructor() {super('Intro');};
+    constructor() {super("Intro");};
     preload() {};
     create() {
         const height = dimensions()?.HEIGHT;
         const width = dimensions()?.WIDTH;
-        const fontSize = width > 1024 ? '32px' : width > 768 ? '24px' : '20px';
+        const fontSize = width > 1024 ? "32px" : width > 768 ? "24px" : "20px";
         
-        this.scene.sleep('Hud');
-        // this.scene.sleep('Game');
+        this.scene.sleep("Hud");
+        // this.scene.sleep("Game");
         this.node = INTRO_NODES[0];
         this.background = new Phaser.GameObjects.Graphics(this, {
             x: 0,
@@ -39,13 +39,13 @@ export class Intro extends Scene {
             0, // width * 0.1
             0, // height * 0.2 
             this.node.text, {
-                color: '#fdf6d8',
-                fontFamily: 'Cinzel Regular',
+                color: "#fdf6d8",
+                fontFamily: "Cinzel Regular",
                 fontSize,
-                stroke: 'black',
+                stroke: "black",
                 strokeThickness: 2,
                 fixedWidth: width * WRAP.WIDTH,
-                align: 'left',
+                align: "left",
                 wordWrap: {
                     width: width * WRAP.WIDTH,
                     callback: undefined,
@@ -73,7 +73,7 @@ export class Intro extends Scene {
         var typing = new TextTyping(this.introText, {
             wrap: true,
             speed: 40, // type speed in ms
-            typeMode: 0, //0|'left-to-right'|1|'right-to-left'|2|'middle-to-sides'|3|'sides-to-middle'
+            typeMode: 0, //0|"left-to-right"|1|"right-to-left"|2|"middle-to-sides"|3|"sides-to-middle"
             setTextCallback: function (text, _isLastChar, _insertIdx) { 
                 return text;
             }, // callback before set-text
@@ -81,31 +81,31 @@ export class Intro extends Scene {
             setTextCallbackScope: undefined,
         });
         typing.start(this.node.text);
-        this.nextText = this.add.text(width * 0.9, height * 0.85, 'Next', {
-            color: '#fdf6d8',
-            fontFamily: 'Cinzel',
-            fontSize: '18px',
-            stroke: 'black',
+        this.nextText = this.add.text(width * 0.9, height * 0.85, "Next", {
+            color: "#fdf6d8",
+            fontFamily: "Cinzel",
+            fontSize: "18px",
+            stroke: "black",
             strokeThickness: 2,
-            align: 'center',
+            align: "center",
         });
         this.nextText.setOrigin(0);
-        this.prevText = this.add.text(width * 0.075, height * 0.85, 'Previous', {
-            color: '#fdf6d8',
-            fontFamily: 'Cinzel',
-            fontSize: '18px',
-            stroke: 'black',
+        this.prevText = this.add.text(width * 0.075, height * 0.85, "Previous", {
+            color: "#fdf6d8",
+            fontFamily: "Cinzel",
+            fontSize: "18px",
+            stroke: "black",
             strokeThickness: 2,
-            align: 'center',
+            align: "center",
         });
         this.prevText.setOrigin(0); 
-        this.fullText = this.add.text(width * 0.475, height * 0.85, 'Reveal', {
-            color: '#fdf6d8',
-            fontFamily: 'Cinzel',
-            fontSize: '18px',
-            stroke: 'black',
+        this.fullText = this.add.text(width * 0.475, height * 0.85, "Reveal", {
+            color: "#fdf6d8",
+            fontFamily: "Cinzel",
+            fontSize: "18px",
+            stroke: "black",
             strokeThickness: 2,
-            align: 'center',
+            align: "center",
         });
         this.fullText.setOrigin(0); 
         if (this.node.prev === undefined) {
@@ -115,13 +115,13 @@ export class Intro extends Scene {
             this.nextText.visible = false;
         };
         this.nextText.setInteractive()
-            .on('pointerdown', () => {
-                this.nextText.setColor('gold');
+            .on("pointerdown", () => {
+                this.nextText.setColor("gold");
             })
-            .on('pointerup', () => {
-                this.sound.play('TV_Button_Press', { loop: false });
+            .on("pointerup", () => {
+                this.sound.play("TV_Button_Press", { loop: false });
                 if (this.node.key === 5) {
-                    EventBus.emit('save-intro');
+                    EventBus.emit("save-intro");
                     return;
                 };
                 if (INTRO_NODES[this.node.next as keyof typeof INTRO_NODES]?.prev === undefined) {
@@ -130,7 +130,7 @@ export class Intro extends Scene {
                     this.prevText.visible = true;
                 };
                 if (INTRO_NODES[this.node.next as keyof typeof INTRO_NODES]?.next === undefined) {
-                    this.nextText.setText('Enter');
+                    this.nextText.setText("Enter");
                 } else {
                     this.nextText.visible = true;
                 };
@@ -138,15 +138,15 @@ export class Intro extends Scene {
                     this.node = INTRO_NODES[this.node.next as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };
-                this.nextText.setColor('#fdf6d8');
+                this.nextText.setColor("#fdf6d8");
             })
 
         this.prevText.setInteractive()
-            .on('pointerdown', () => {
-                this.prevText.setColor('gold');
+            .on("pointerdown", () => {
+                this.prevText.setColor("gold");
             })
-            .on('pointerup', () => {
-                this.sound.play('TV_Button_Press', { loop: false }); 
+            .on("pointerup", () => {
+                this.sound.play("TV_Button_Press", { loop: false }); 
                 if (INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES]?.prev === undefined) {
                     this.prevText.visible = false;
                 } else {
@@ -155,28 +155,28 @@ export class Intro extends Scene {
                 if (INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES]?.next === undefined) {
                     this.nextText.visible = false;
                 } else {
-                    this.nextText.setText('Next');
+                    this.nextText.setText("Next");
                     this.nextText.visible = true;
                 };
                 if (this.node.prev !== undefined) {
                     this.node = INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };
-                this.prevText.setColor('#fdf6d8');
+                this.prevText.setColor("#fdf6d8");
             });
 
         this.fullText.setInteractive()
-            .on('pointerdown', () => {
-                this.fullText.setColor('gold');
+            .on("pointerdown", () => {
+                this.fullText.setColor("gold");
             })
-            .on('pointerup', () => {
-                this.sound.play('TV_Button_Press', { loop: false });
+            .on("pointerup", () => {
+                this.sound.play("TV_Button_Press", { loop: false });
                 if (typing.isTyping) {
                     typing.stop(true);
                     return;
                 };
-                this.fullText.setColor('#fdf6d8');
+                this.fullText.setColor("#fdf6d8");
             });
-        EventBus.emit('current-scene-ready', this);
+        EventBus.emit("current-scene-ready", this);
     };
 };

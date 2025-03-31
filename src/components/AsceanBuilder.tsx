@@ -27,7 +27,6 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         "width": dimensions().ORIENTATION === "landscape" ? "5vw" : "15vw", 
         "top": dimensions().ORIENTATION === "landscape" ? "3vh" : "0", 
         "left": dimensions().ORIENTATION === "landscape" ? "20vw" : "3vw",
-        // "margin-left":"1%",
         "border": "0.15em solid #fdf6d8", "border-radius": "50%",  };
     const font = { "font-size": "1em", margin: "0" };
     const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block", "padding":"2%" };
@@ -100,14 +99,8 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
             </Switch>
         }> 
         {/* <<---------- LANDSCAPE ---------->> */}
-        {/* "box-shadow": `
-            inset 0 2px 4px rgba(0, 255, 255, 0.3),
-            inset 0 -2px 4px rgba(0, 0, 0, 0.8),
-            0 0 12px rgba(0, 255, 255, 0.5)
-        `,
-        transition: 'box-shadow 0.4s ease', */}
-                    <div class="sunburst" style={{ "--glow-color":masteryColor(newAscean().mastery) }}></div>
-                    <Switch>
+                <div class="sunburst" style={{ "--glow-color":masteryColor(newAscean().mastery) }}></div>
+                <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
                     <div class="drop-25 left menu-3d-container" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
                         <Suspense fallback={<Puff color="gold" />}>

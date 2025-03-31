@@ -1,7 +1,7 @@
-import { EventBus } from '../EventBus'; 
-import NewText from '../phaser/NewText';
-const mastery = { constitution: '#fdf6d8', strength: 'red', agility: 'green', achre: 'blue', caeren: 'purple', kyosir: 'gold' };
-const masteries = ['#fdf6d8', 'red', 'green', 'blue', 'purple', 'gold'];
+import { EventBus } from "../EventBus"; 
+import NewText from "../phaser/NewText";
+const mastery = { constitution: "#fdf6d8", strength: "red", agility: "green", achre: "blue", caeren: "purple", kyosir: "gold" };
+const masteries = ["#fdf6d8", "red", "green", "blue", "purple", "gold"];
 export class MainMenu extends Phaser.Scene {
     background: Phaser.GameObjects.Image;
     logo: Phaser.GameObjects.Image;
@@ -12,7 +12,7 @@ export class MainMenu extends Phaser.Scene {
     centerY: number;
 
     constructor () {
-        super('MainMenu');
+        super("MainMenu");
         this.centerX = window.innerWidth / 2;
         this.centerY = window.innerHeight / 2;
     };
@@ -25,21 +25,21 @@ export class MainMenu extends Phaser.Scene {
             this,
             this.centerX,
             this.centerY * 0.7,
-            'The Ascean',
-            window.innerWidth > 1200 ? 'supertitle' : 'title',
+            "The Ascean",
+            window.innerWidth > 1200 ? "supertitle" : "title",
             0.5,
             shadow
         );
         this.text = this.add.text(
             this.centerX, 
             this.centerY * 1.25, 
-            'Enter Game', 
+            "Enter Game", 
         {
-            fontFamily: 'Cinzel-Regular', 
+            fontFamily: "Cinzel-Regular", 
             fontSize: window.innerWidth > 1200 ? 72 : 36,
             fontStyle: "small-caps",
-            color: '#fdf6d8',
-            stroke: '#000000', 
+            color: "#fdf6d8",
+            stroke: "#000000", 
             strokeThickness: 8,
             shadow: {
                 offsetX: 2,
@@ -49,10 +49,10 @@ export class MainMenu extends Phaser.Scene {
                 stroke: true,
                 fill: true
             },
-            align: 'center'
+            align: "center"
         }).setOrigin(0.5).setDepth(100);
         this.text.setInteractive();
-        this.text.on('pointerup', this.mainMenu, this);
+        this.text.on("pointerup", this.mainMenu, this);
         this.tween = this.tweens.chain({
             targets: [this.text],
             tweens: [
@@ -69,22 +69,22 @@ export class MainMenu extends Phaser.Scene {
             repeat: -1,
             callbackScope: this
         });
-        EventBus.emit('current-scene-ready', this);
-        EventBus.once('enter-menu', this.changeScene, this);
+        EventBus.emit("current-scene-ready", this);
+        EventBus.once("enter-menu", this.changeScene, this);
     };
     
     changeScene () {
-        this.sound.play('TV_Button_Press', { loop: false });
-        this.scene.start('Hud');
-        EventBus.emit('loading-ascean');
+        this.sound.play("TV_Button_Press", { loop: false });
+        this.scene.start("Hud");
+        EventBus.emit("loading-ascean");
     };
 
     mainMenu() {
-        this.sound.play('TV_Button_Press', { loop: false });
+        this.sound.play("TV_Button_Press", { loop: false });
         this.title.obj.destroy();
         this.title.destroy();
         this.tween.destroy();
         this.text.destroy();
-        EventBus.emit('enter-menu');
+        EventBus.emit("enter-menu");
     };
 };

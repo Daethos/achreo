@@ -7,6 +7,7 @@ import Equipment from "../models/equipment";
 import { Puff } from "solid-spinner";
 import { OriginModal } from "./Origin";
 import { FaithModal } from "./Faith";
+import { masteryColor } from "../utility/styling";
 const AsceanImageCard = lazy(async () => await import("./AsceanImageCard"));
 const ItemModal = lazy(async () => await import("./ItemModal"));
 const AttributeModal = lazy(async () => await import("./Attributes"));
@@ -63,23 +64,9 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
         </div>
     }>
-        <div class="stat-block superCenter" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":"#fdf6d8" }}>
-            <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%" }}>
+        <div class="stat-block superCenter" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":masteryColor(ascean().mastery), "--base-shadow":"#000 0 0 0 0.2em" }}>
+            <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem` }}>
                 <div class="creature-heading superCenter" style={{ width: "100%" }}>
-                {/* <div style={{
-                    position: 'relative',
-                    background: '#1a1a1a',
-                    padding: '1.5rem',
-                    "border-radius": '8px',
-                    "box-shadow": `
-                        inset 0 2px 4px rgba(0, 255, 255, 0.3),
-                        inset 0 -2px 4px rgba(0, 0, 0, 0.8),
-                        0 0 12px rgba(0, 255, 255, 0.5)
-                    `,
-                    transition: 'box-shadow 0.4s ease'
-                    }}>
-                    CYBERPUNK BUTTON
-                </div> */}
                     <h1>{ascean().name}</h1>
                     <h2>{ascean().description}</h2>
                     <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id="origin-pic" />
@@ -88,7 +75,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                     <p onClick={() => setShowFaith(!showFaith())} style={viewMargin}>Faith: <span class="gold">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> | Mastery: <span class="gold">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
                 </div>
             </div>
-            <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%" }}>
+            <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem` }}>
                 <div class="superCenter view" style={{ position: "absolute", ...positioning() }}>
                     <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     <Suspense fallback={<Puff color="gold" />}>

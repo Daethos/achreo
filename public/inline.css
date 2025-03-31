@@ -179,7 +179,7 @@
 }
   
 .reset-animation {
-    animation: none !important; /* Forces removal of animation */
+    animation: none !important;
 }
 .sunburst {
     position: relative;
@@ -200,7 +200,7 @@
     opacity: 0.8;
     z-index: -1;
     animation: pulse 3s infinite alternate;
-    aspect-ratio: 1; /* Also apply to pseudo-element */
+    aspect-ratio: 1;
 }
 
 .smallburst {
@@ -222,7 +222,7 @@
     opacity: 0.65;
     z-index: -1;
     animation: pulse 3s infinite alternate;
-    aspect-ratio: 1; /* Also apply to pseudo-element */
+    aspect-ratio: 1;
 }
 .menu-3d-container {
     perspective: 1200px;
@@ -239,7 +239,7 @@
 }
 
 .menu-item-3d {
-    transform: rotateX(10deg) translate3D(-20px);
+    /* transform: rotateX(10deg) rotateY(10deg) translate3D(-25px); */
     opacity: 0.9;
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
@@ -253,8 +253,8 @@
     /* filter: drop-shadow(0 0 15px var(--glow-color)); */
 }
   
-.menu-3d:hover .menu-item-3d:not(:hover):not(:focus):not(.selected) {
-    /* transform: rotateX(10deg) translate3D(-30px); */
+.menu-3d:hover .menu-item-3d:not(:hover):not(:focus) {
+    /* transform: rotateX(-25deg) rotateY(-25deg) translate3D(-50px); */
     opacity: 0.65;
 }
 

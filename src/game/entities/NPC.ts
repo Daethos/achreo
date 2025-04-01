@@ -3,6 +3,7 @@ import StateMachine, { States } from "../phaser/StateMachine";
 import { v4 as uuidv4 } from "uuid";
 import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 let idCount = 0;
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
@@ -26,6 +27,7 @@ export default class NPC extends Entity {
     originalPosition: any;
     originPoint: any;
     npcSensor: any;
+    weapons: any;
 
     constructor(data: any) {
         let { scene, type } = data;
@@ -63,6 +65,7 @@ export default class NPC extends Entity {
         this.setExistingBody(compoundBody);                                    
         this.setFixedRotation();
         this.npcSensor = npcSensor;
+        // this.setCollisionCategory(ENTITY_FLAGS.NPC);
         this.npcCollision(npcSensor); 
         this.setStatic(true);
         this.setTint(0x0000FF);
@@ -105,6 +108,7 @@ export default class NPC extends Entity {
         this.ascean = e.game;
         this.health = e.combat.attributes.healthTotal;
         this.combatStats = e.combat;
+        this.weapons = [e.combat.combatWeaponOne, e.combat.combatWeaponTwo, e.combat.combatWeaponThree]
     };
 
     npcCollision = (npcSensor: any) => {

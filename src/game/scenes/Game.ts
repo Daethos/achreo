@@ -25,6 +25,7 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
 import { PARTY_OFFSET } from "../../utility/party";
 import { FACTION } from "../../utility/player";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -113,6 +114,8 @@ export class Game extends Scene {
         map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
         [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
+            // layer?.setCollisionCategory(ENTITY_FLAGS.WORLD);
+            // layer?.setCollidesWith([ENTITY_FLAGS.PLAYER, ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.PARTY])
             this.matter.world.convertTilemapLayer(layer!);
             if (index < 5) return;
             layer?.setDepth(5);

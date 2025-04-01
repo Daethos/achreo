@@ -16,6 +16,7 @@ import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
 import AoE from "../phaser/AoE";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -146,7 +147,10 @@ export default class Player extends Entity {
         this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PlayerMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);
-        let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: "playerCollider" }); // Y + 10 For Platformer
+        let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
+            isSensor: false, label: "playerCollider", 
+            // collisionFilter: {category: ENTITY_FLAGS.PLAYER, mask: ENTITY_FLAGS.ENEMY}
+        }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "playerSensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
             parts: [playerCollider, playerSensor],
@@ -155,8 +159,11 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
+        // this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
+        // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC, ENTITY_FLAGS.WORLD]);
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
+        this.aoeMask = ENTITY_FLAGS.PLAYER;
 
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFFc700)
@@ -341,9 +348,7 @@ export default class Player extends Entity {
 
     computerBroadcast = (e: any) => {
         if (this.scene.state.enemyID !== e.id) return;
-        // if (e.key === "newComputerEnemyHealth") {
         EventBus.emit("update-combat-state", { key: "newComputerHealth", value: e.value });
-        // };
     };
 
     playerStateListener = () => {
@@ -1447,7 +1452,9 @@ export default class Player extends Entity {
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
-            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
+            if (this.inCombat && (!this.scene.state.computer || !this.enemyIdMatch() || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
+                // const enemy = this.enemyIdMatch();
+                if (!this.enemyIdMatch() && this.attackedTarget) this.currentTarget = this.attackedTarget;
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
         } else if (this.highlight.visible) {

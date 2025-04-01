@@ -691,7 +691,7 @@ export const ENEMY_ENEMIES = {
 
     "Cyrian Shyne": ["King Mathyus Caderyn"],
     "Dorien Caderyn": ["Garris Ashenus"],
-    "Eugenes": [""],
+    "Eugenes Ma'ier": ["Dorien Caderyn"],
     "Evrio Lorian Peroumes": ["Mirio"],
     "Fierous Ashfyre": ["Synaethi Spiras"],
     "Garris Ashenus": ["Dorien Caderyn"],

@@ -11,6 +11,7 @@ import { Play } from "../main";
 import Beam from "../matter/Beam";
 import { Particle } from "../matter/ParticleManager";
 import CastingBar from "../phaser/CastingBar";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 import HealthBar from "../phaser/HealthBar";
 import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
@@ -152,7 +153,10 @@ export default class Party extends Entity {
         this.speed = this.startingSpeed(ascean);
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
-        let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { isSensor: false, label: "partyCollider" }); // Y + 10 For Platformer
+        let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
+            isSensor: false, label: "partyCollider",
+            // collisionFilter: {category: ENTITY_FLAGS.PARTY, mask: ENTITY_FLAGS.ENEMY}
+        }); // Y + 10 For Platformer
         let partySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "partySensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
             parts: [partyCollider, partySensor],
@@ -161,8 +165,11 @@ export default class Party extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = partySensor;
+        // this.setCollisionCategory(ENTITY_FLAGS.PARTY);
+        // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.WORLD]);
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
+        this.aoeMask = ENTITY_FLAGS.PARTY;
 
         this.highlight = this.scene.add.graphics()
             .lineStyle(4, 0xFFc700)

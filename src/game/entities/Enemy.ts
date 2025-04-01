@@ -24,6 +24,7 @@ import { ArenaView } from "../scenes/ArenaCvC";
 import StatusEffect from "../../utility/prayer";
 import Party from "./PartyComputer";
 import { DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
@@ -131,7 +132,7 @@ export default class Enemy extends Entity {
             this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
             this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
             this.computerCombatSheet = this.createComputerCombatSheet(data.data);
-            this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
+            this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
         };
         this.setTint(ENEMY_COLOR);
         this.stateMachine = new StateMachine(this, NAME);
@@ -271,7 +272,10 @@ export default class Enemy extends Entity {
 
         let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "enemyCollider" });
         enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
-        let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "enemySensor" }); // Sensor was 48
+        let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { 
+            isSensor: true, label: "enemySensor", 
+            // collisionFilter: {category: ENTITY_FLAGS.ENEMY, mask: ENTITY_FLAGS.GOOD}
+        }); // Sensor was 48
         const compoundBody = Body.create({
             parts: [enemyCollider, enemySensor],
             density: 0.0015,
@@ -283,6 +287,9 @@ export default class Enemy extends Entity {
         this.setFixedRotation();
         this.enemyStateListener();
         this.enemySensor = enemySensor;
+        // this.setCollisionCategory(ENTITY_FLAGS.ENEMY);
+        // this.setCollidesWith([ENTITY_FLAGS.PLAYER, ENTITY_FLAGS.PARTY, ENTITY_FLAGS.WORLD]);
+        this.aoeMask = ENTITY_FLAGS.ENEMY;
         this.collision(enemySensor);
         
         this.setInteractive(new Phaser.Geom.Rectangle(
@@ -801,10 +808,8 @@ export default class Enemy extends Entity {
     
     immersionCheck = (enemy: Enemy): boolean => {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
-            const name = this.ascean.name.split("(Converted)")[0].trim();
-            const enemies = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES];
             const enemyName = enemy.ascean.name.split("(Converted)")[0].trim();
-            return enemies.includes(enemyName);
+            return this.potentialEnemies.includes(enemyName);
         } else if (this.scene.hud.settings.difficulty.computer) {
             return true;
         } else {
@@ -1023,7 +1028,7 @@ export default class Enemy extends Entity {
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.computerCombatSheet = this.createComputerCombatSheet(e.combat as Compiler);
-        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES];
+        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
     };
 
     createEnemy = () => {
@@ -1244,12 +1249,12 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    // const specific = ["paralyze"];
-                    // const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(special)) {
-                        this.stateMachine.setState(special);
-                    } else if (this.positiveMachine.isState(special)) {
-                        this.positiveMachine.setState(special);
+                    const specific = [States.CHIOMIC];
+                    const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(test)) {
+                        this.stateMachine.setState(test);
+                    } else if (this.positiveMachine.isState(test)) {
+                        this.positiveMachine.setState(test);
                     };
                     this.setSpecialCombat(true);
                 },

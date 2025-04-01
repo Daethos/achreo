@@ -18,6 +18,7 @@ import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from "../../utility/rot
 import { Play } from "../main";
 import { Tutorial } from "../scenes/Tutorial";
 import Party from "./PartyComputer";
+import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
 };
@@ -241,6 +242,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     polymorphTimer: Phaser.Time.TimerEvent | undefined;
     reconTimer: Phaser.Time.TimerEvent | undefined;
     isDeleting: boolean = false;
+    aoeMask: EntityFlag = ENTITY_FLAGS.NONE;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas(`player_actions`, "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");

@@ -34,7 +34,8 @@ const COLORS = {
     "sorcery": 0xA700FF,
     "spooky": 0x080080,
     "wild": 0x50C878,
-    "wind": 0x00FFFF
+    "wind": 0x00FFFF,
+    "": 0x000000
 };
 
 const PARTICLE_SCALE = 0.0075;
@@ -45,110 +46,196 @@ const REPEAT = 20;
 const ENEMY = "enemy";
 const PARTY = "party";
 const PLAYER = "player";
-const ENEMY_COLLIDER = "enemyCollider";
-const PARTY_COLLIDER = "partyCollider";
-const PLAYER_COLLIDER = "playerCollider";
 
 type Player_Scene = Arena | Underground | Game | Tutorial; 
 type Target = Player | Enemy | Party;
-
+interface CountCallbacks {
+    concern?: () => boolean;
+    hit: (target: Target, originId?: string) => void;
+    bless?: (target: Target) => void; // Bless typically affects allies
+};
 interface ListenerCondition<T = any> {
-    // name: string;
-    // label: string;
     mask: EntityFlag;
     filter: (gameObject: T) => boolean;
 };
 
+export class AoEPool {
+    private readonly pool: AoE[] = [];
+    private readonly activeAoEs: AoE[] = [];
+    private readonly scene: Play;
+    private readonly typePools = new Map<string, AoE[]>();
+
+    constructor(scene: Play, initialSize = 20) {
+        this.scene = scene;
+        this.preallocate(initialSize);
+    };
+    
+    private createNewAoE(): AoE {
+        const aoe = new AoE(this.scene);
+        aoe.setVisible(false);
+        aoe.setActive(false);
+        return aoe;
+    };
+
+    private preallocate(count: number) {
+        for (let i = 0; i < count; i++) {
+            this.pool.push(this.createNewAoE());
+        };
+    };
+
+    get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
+        const typePool = this.typePools.get(type) || [];
+        let aoe = typePool.pop() || this.pool.pop();
+        if (!aoe) {
+            aoe = this.createNewAoE();
+        };
+
+        aoe.reset(type, count, positive, enemy, manual, target, particle);
+
+        this.activeAoEs.push(aoe);
+        return aoe;
+    };
+
+    release(aoe: AoE) {
+        if (!aoe || !(aoe instanceof AoE)) {
+            console.error('Attempted to release invalid AoE object');
+            return;
+        };
+        if (aoe.active) {
+            console.warn('Releasing active AoE - forcing cleanup', aoe.name);
+            aoe.cleanup(false);
+        };
+        const index = this.activeAoEs.indexOf(aoe);
+        if (index !== -1) {
+            this.activeAoEs[index] = this.activeAoEs[this.activeAoEs.length - 1];
+            this.activeAoEs.pop();
+        } else {
+            console.warn('AoE not found in active pool:', aoe.name);
+        };
+        if (aoe.visible || aoe.active) {
+            aoe.setVisible(false);
+            aoe.setActive(false);
+        };
+        if (!this.typePools.has(aoe.name)) {
+            this.typePools.set(aoe.name, []);
+        };
+        this.typePools.get(aoe.name)!.push(aoe);
+        console.debug(`[Pool] Released ${aoe.name}`, {
+            activeCount: this.activeAoEs.length,
+            typePoolSize: this.typePools.get(aoe.name)?.length || 0
+        });
+    };
+
+    releaseAll() {
+        while (this.activeAoEs.length) {
+            this.release(this.activeAoEs[0]);
+        };
+    };
+
+    shrink(keepCount = 10) {
+        for (const [_type, pool] of this.typePools) {
+            while (pool.length > keepCount) {
+                const aoe = pool.pop()!;
+                aoe.destroy();
+            };
+        };
+    };
+};
+
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    count: number;
-    hit: any[];
-    bless: any[];
-    timer: Phaser.Time.TimerEvent | undefined;
-    sensor: MatterJS.BodyType;
+    name: string = "";
+    count: number = 1;
+    hit: any[] = [];
+    bless: any[] = [];
+    timer: Phaser.Time.TimerEvent | undefined = undefined;
+    sensor: MatterJS.BodyType | undefined = undefined;
     scene: Play;
     manual: boolean = false;
     enhanced: boolean = false;
-    hitMask: EntityFlag = ENTITY_FLAGS.NONE;
-    blessMask: EntityFlag = ENTITY_FLAGS.NONE;
 
-    constructor(
-        scene: Play, 
-        type: string, 
-        count = 1, 
-        positive = false, 
-        enemy: Enemy | Party | undefined = undefined, 
-        manual: boolean = false, 
-        target: Target | undefined = undefined, 
-        particle: undefined | {effect: Particle; entity: Player | Enemy } = undefined
-    ) {
+    constructor(scene: Play) {
         super(scene.matter.world, 0, 6, "target");
-        this.name = type;
-        this.setAngle(0);
-        this.setVisible(false);
-        // this.setScale(0.375); // 0.375 IS THE FINAL SIZE
-        this.setOrigin(0.5);
         this.scene = scene;
         scene.add.existing(this);
-        scene.glowFilter.add(this, {
-            outerStrength: 1,
-            innerStrength: 1,
-            glowColor: COLORS[type as keyof typeof COLORS],
-            intensity: 0.25,
-            knockout: true,
-        });
-        this.count = count;
-        this.hit = [];
-        this.bless = [];
-        this.timer = undefined;
-        this.manual = manual;
-        if (enemy !== undefined) {
-            if (enemy.name === ENEMY) {
-                this.hitMask = ENTITY_FLAGS.ENTITY;
-                this.blessMask = ENTITY_FLAGS.ENEMY;
-                this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
-                this.setupEnemyListener(enemy as Enemy);
-                this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT); // *NEW*
-                this.setupEnemyCount(scene, type, positive, enemy as Enemy);
-            } else if (enemy.name === "party") {
-                this.hitMask = ENTITY_FLAGS.ENEMY;
-                this.blessMask = ENTITY_FLAGS.GOOD;
-                this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
-                this.setupPartyListener(enemy as Party);
-                this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT);
-                this.setPartyCount(scene, type, positive, enemy as Party);
-            };
-        } else if (particle !== undefined) {
-            this.hitMask = ENTITY_FLAGS.ENTITY;
-            this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
-            this.setupParticleListener();
-            this.scalingTimer(particle.effect.effect, PARTICLE_SCALE, 0, REPEAT); // *NEW*
-            this.setParticleCount(particle.entity, scene);
-        } else if ((scene as Player_Scene).player) {
-            this.hitMask = ENTITY_FLAGS.ENEMY;
-            this.blessMask = ENTITY_FLAGS.GOOD;
-            this.enhanced = scene.hud.talents.talents[this.name as keyof typeof scene.hud.talents.talents].enhanced;
-            const manualPoint = scene.getWorldPointer();
-            this.setupSensor(target ? target.x : manual ? manualPoint.x : scene.player.x, target ? target.y : manual ? manualPoint.y : scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
-            // this.setupListener();
-            this.setupPlayerListener();
-            this.scalingTimer(target ? target : manual ? manualPoint : scene.player, SCALE * (this.enhanced ? 1.5 : 1), manual ? 0 : Y_OFFSET, REPEAT);
-            this.setCount(scene, type, positive);
-        };
+        this.setVisible(false);
+        this.setActive(false);
+        this.setOrigin(0.5);
     };
-    cleanAnimation = (scene: Play) => {
+
+    public cleanAnimation = (scene: Play) => {
         scene.rotateTween(this, 0, false);
     };
-    cleanup = () => {
-        this.scene.glowFilter.remove(this);
-        this.bless = [];
-        this.hit = [];
+    
+    public cleanup = (returnToPool: boolean = true) => {
+        if (this.scene) {
+            this.scene.matterCollision.removeOnCollideStart({ objectA: [this.sensor] });
+            this.scene.matterCollision.removeOnCollideEnd({ objectA: [this.sensor] });
+            this.scene.glowFilter.remove(this);
+        };
+        
         if (this.timer) {
             this.timer.destroy();
             this.timer.remove(false);
             this.timer = undefined;
         };
-        this.destroy();
+
+        this.bless = [];
+        this.hit = [];
+
+        this.setVisible(false);
+        this.setActive(false);
+
+        if (this.sensor) {
+            this.scene.matter.world.remove(this.sensor);
+            this.sensor = undefined;
+        };
+
+        this.scene.tweens.killTweensOf(this);
+
+        if (returnToPool) this.scene.aoePool.release(this);
     };
+    
+    public reset(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }): AoE {
+        if (this.active) {
+            console.warn('Resetting an active AoE!');
+            this.cleanup(false);
+        };
+
+        this.name = type;
+        this.count = count;
+        this.manual = manual;
+
+        this.scene.glowFilter.add(this, {
+            outerStrength: 1,
+            innerStrength: 1,
+            glowColor: COLORS[type as keyof typeof COLORS],
+            intensity: 0.25,
+            knockout: true
+        });
+
+        this.setPosition(0, 0);
+        this.setAlpha(1);
+        this.setAngle(0);
+        this.setScale(1);
+
+        if (enemy !== undefined) {
+            if (enemy.name === ENEMY) {
+                this.enemyAoe(type, positive, enemy, target);
+            } else if (enemy.name === PARTY) {
+                this.partyAoe(type, positive, enemy as Party, target);
+            };
+        } else if (particle !== undefined) {
+            this.particleAoe(particle, positive);
+        } else if ((this.scene as Player_Scene).player) {
+            this.playerAoe(type, positive, manual, enemy);
+        };
+
+        this.setActive(true);
+        this.setVisible(true);
+
+        return this;
+    };
+
     protected fadeOut(duration: number, onComplete?: () => void) {
         this.scene.tweens.add({
             targets: [this],
@@ -158,8 +245,81 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (onComplete) onComplete();
                 this.cleanup();
             }
-        });    
+        });
     };
+
+    enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined) {
+        this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
+        this.setupEnemyListener(enemy as Enemy);
+        this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT); // *NEW*
+        this.baseCount(type, !positive, enemy, {
+            concern: () => enemy.isDeleting,
+            hit: (target, originId) => {
+                if (target.name === PLAYER) {
+                    (this.scene.combatManager as any)[type]((target as Player).playerID, originId);
+                } else {
+                    (this.scene.combatManager as any)[type]((target as Enemy | Party).enemyID, originId);
+                };
+            },
+            bless: (target) => {
+                (this.scene.combatManager as any)[type]((target as Enemy).enemyID);
+            } 
+        });
+    };
+    particleAoe(particle: { effect: Particle; entity: Target }, positive: boolean) {
+        this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
+        this.setupParticleListener();
+        this.scalingTimer(particle.effect.effect, PARTICLE_SCALE, 0, REPEAT); // *NEW*
+        this.baseCount("magic", positive, particle.entity, {
+            hit: (target) => this.scene.combatManager.magic(target, particle.entity)
+        });
+    };
+    partyAoe(type: string, positive: boolean, party: Party, target: Target | undefined) {
+        this.setupSensor(target ? target.x : party.x, target ? target.y : party.y, RADIUS, "aoeSensor");
+        this.setupPartyListener(party);
+        this.scalingTimer(target ? target : party, SCALE, Y_OFFSET, REPEAT);
+        this.baseCount(type, positive, party, {
+            hit: (target) => {
+                (this.scene.combatManager as any)[type]((target as Enemy).enemyID, party.enemyID);
+            },
+            bless: (target) => {
+                (this.scene.combatManager as any)[type]((target as Player | Party).playerID);
+            }
+        });
+    };
+    playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
+        this.enhanced = this.scene.hud.talents.talents[this.name as keyof typeof this.scene.hud.talents.talents].enhanced;
+        const manualPoint = this.scene.getWorldPointer();
+        this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
+        this.setupPlayerListener();
+        this.scalingTimer(target ? target : manual ? manualPoint : this.scene.player, SCALE * (this.enhanced ? 1.5 : 1), manual ? 0 : Y_OFFSET, REPEAT);
+        this.baseCount(type, positive, this.scene.player, {
+            concern: () => type === "fyerus" && (this.scene as Player_Scene).player.isMoving,
+            bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID), 
+            hit: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID, this.scene.player.playerID)
+        });
+    };
+
+    private baseCount(type: string, positive: boolean, origin: Target, onTick: CountCallbacks) {
+        if (onTick.concern && onTick.concern()) {
+            this.fadeOut(1000);
+            return;    
+        };
+        this.scene.time.delayedCall(1000, () => {
+            if (positive && onTick.bless) {
+                this.bless.forEach(target => onTick.bless!(target));
+            } else if (!positive && onTick.hit) {
+                this.hit.forEach(target => onTick.hit!(target, (origin as Player).playerID ?? (origin as Enemy).enemyID));
+            };
+            this.count -= 1;
+            if (this.count === 0) {
+                this.fadeOut(1000);
+            } else {
+                this.baseCount(type, positive, origin, onTick);
+            };
+        });
+    };
+
     protected setupSensor(x: number, y: number, radius: number, label: string) {
         if (this.manual === true) {
             const centerX = this.scene.cameras.main.width / 2;
@@ -193,7 +353,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
         this.scene.rotateTween(this, this.count, true);
         this.setScale(scale);
-        this.setVisible(true);
         this.timer = this.scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -318,10 +477,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             });
         };
     };
-    setParticleCount = (entity: Player | Enemy, scene: Play) => {
+    setParticleCount = (entity: Target, scene: Play) => {
         scene.time.delayedCall(1000, () => {
             this.hit.forEach((target) => {
-                (scene.combatManager as any).magic(entity, target);
+                (scene.combatManager as any).magic(target, entity);
             });
             this.count -= 1;
             if (this.count === 0) {

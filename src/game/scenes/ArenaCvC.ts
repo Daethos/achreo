@@ -17,6 +17,7 @@ import { ARENA_ENEMY, fetchArena } from "../../utility/enemy";
 import Player from "../entities/Player";
 import { Compiler } from "../../utility/ascean";
 import Party from "../entities/PartyComputer";
+import { AoEPool } from "../phaser/AoE";
 
 export class ArenaCvC extends Phaser.Scene {
     player: Player;
@@ -62,6 +63,7 @@ export class ArenaCvC extends Phaser.Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     highlight: Phaser.GameObjects.Graphics;
     highlightAnimation: boolean = false;
+    aoePool: AoEPool;
 
     constructor (view?: string) {
         const key = view || "ArenaCvC";
@@ -135,6 +137,7 @@ export class ArenaCvC extends Phaser.Scene {
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
         
         this.createArenaEnemy();
+        this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -312,7 +315,7 @@ export class ArenaCvC extends Phaser.Scene {
         ];
         const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
         enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
-        enemy.stateMachine.setState(States.DEATH);
+        enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             if (this.enemies.length === 0) { // || !this.inCombat
@@ -326,6 +329,16 @@ export class ArenaCvC extends Phaser.Scene {
             };
             this.removeHighlight();
             // this.cameras.main.setPosition(this.cameras.main.width / 2, this.cameras.main.height / 2);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
+    };
+    killEnemy = (enemy: Enemy) => {
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
+        this.time.delayedCall(500, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();
             enemy.destroy();
         }, undefined, this);

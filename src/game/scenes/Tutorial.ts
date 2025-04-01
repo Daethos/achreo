@@ -16,6 +16,7 @@ import DM from "../entities/DM";
 // @ts-ignore
 import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import Party from "../entities/PartyComputer";
+import { AoEPool } from "../phaser/AoE";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 export class Tutorial extends Phaser.Scene {
@@ -51,6 +52,7 @@ export class Tutorial extends Phaser.Scene {
     targetTarget: Enemy;
     hud: Hud;
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    aoePool: AoEPool;
 
     constructor () {
         super("Tutorial");
@@ -145,6 +147,7 @@ export class Tutorial extends Phaser.Scene {
         this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
+        this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -450,7 +453,16 @@ export class Tutorial extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
-
+    killEnemy = (enemy: Enemy) => {
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
+        this.time.delayedCall(500, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
+    };
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();

@@ -1,6 +1,5 @@
 import { EventBus } from "../EventBus";
 import Equipment from "../../models/equipment";
-import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 export const { Bodies } = Phaser.Physics.Matter.Matter;
 

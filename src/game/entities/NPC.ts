@@ -3,7 +3,6 @@ import StateMachine, { States } from "../phaser/StateMachine";
 import { v4 as uuidv4 } from "uuid";
 import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
-import { ENTITY_FLAGS } from "../phaser/Collision";
 let idCount = 0;
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;

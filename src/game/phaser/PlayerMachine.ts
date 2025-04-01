@@ -1025,9 +1025,9 @@ export default class PlayerMachine {
     onAstraveExit = () => {
         if (this.player.castingSuccess === true) {
             if (this.player.isComputer) {
-                this.player.aoe = new AoE(this.scene, "astrave", 1, false, undefined, false, this.player.currentTarget);    
+                this.player.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, false, this.player.currentTarget);    
             } else {
-                this.player.aoe = new AoE(this.scene, "astrave", 1, false, undefined, true);
+                this.player.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, true);
                 this.player.checkTalentCooldown(States.ASTRAVE, PLAYER.COOLDOWNS.MODERATE);
             };
             EventBus.emit("special-combat-text", {
@@ -1402,9 +1402,9 @@ export default class PlayerMachine {
         this.player.castbar.setVisible(true);  
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);  
         if (this.player.isComputer) {
-            this.player.aoe = new AoE(this.scene, "fyerus", 6, false, undefined, false, this.player.currentTarget);    
+            this.player.aoe = this.scene.aoePool.get("fyerus", 6, false, undefined, false, this.player.currentTarget);    
         } else {
-            this.player.aoe = new AoE(this.scene, "fyerus", 6, false, undefined, true);    
+            this.player.aoe = this.scene.aoePool.get("fyerus", 6, false, undefined, true);    
         };
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
         if (!this.player.isComputer) this.player.setTimeEvent("fyerusCooldown", PLAYER.COOLDOWNS.SHORT);
@@ -1549,9 +1549,9 @@ export default class PlayerMachine {
     onKynisosExit = () => {
         if (this.player.castingSuccess === true) {
             if (this.player.isComputer) {
-                this.player.aoe = new AoE(this.scene, "kynisos", 3, false, undefined, false, this.player.currentTarget);    
+                this.player.aoe = this.scene.aoePool.get("kynisos", 3, false, undefined, false, this.player.currentTarget);    
             } else {
-                this.player.aoe = new AoE(this.scene, "kynisos", 3, false, undefined, true);    
+                this.player.aoe = this.scene.aoePool.get("kynisos", 3, false, undefined, true);    
             };
             EventBus.emit("special-combat-text", {
                 playerSpecialDescription: `You unearth the netting of the golden hunt.`
@@ -2294,7 +2294,7 @@ export default class PlayerMachine {
 
     onChiomicEnter = () => {
         this.player.checkTalentCost(States.CHIOMIC, PLAYER.STAMINA.CHIOMIC);
-        this.player.aoe = new AoE(this.scene, "chiomic", 1);    
+        this.player.aoe = this.scene.aoePool.get("chiomic", 1);    
         this.scene.sound.play("death", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Hah! Hah!", PLAYER.DURATIONS.CHIOMIC, "effect", false, true, () => this.player.specialCombatText = undefined);
         this.player.isChiomic = true;
@@ -2311,7 +2311,7 @@ export default class PlayerMachine {
 
     onDiseaseEnter = () => {
         this.player.isDiseasing = true;
-        this.player.aoe = new AoE(this.scene, "tendril", 6);    
+        this.player.aoe = this.scene.aoePool.get("tendril", 6);    
         this.scene.sound.play("dungeon", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Tendrils Swirl", 750, "tendril", false, true, () => this.player.specialCombatText = undefined);
         this.player.checkTalentCost(States.DISEASE, PLAYER.STAMINA.DISEASE);
@@ -2329,7 +2329,7 @@ export default class PlayerMachine {
 
     onHowlEnter = () => {
         this.player.checkTalentCost(States.HOWL, PLAYER.STAMINA.HOWL);
-        this.player.aoe = new AoE(this.scene, "howl", 1);
+        this.player.aoe = this.scene.aoePool.get("howl", 1);
         this.scene.sound.play("howl", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Howling", PLAYER.DURATIONS.HOWL, "damage", false, true, () => this.player.specialCombatText = undefined);
         this.player.isHowling = true;
@@ -2391,7 +2391,7 @@ export default class PlayerMachine {
     };
 
     onFreezeEnter = () => {
-        this.player.aoe = new AoE(this.scene, "freeze", 1);
+        this.player.aoe = this.scene.aoePool.get("freeze", 1);
         this.scene.sound.play("freeze", { volume: this.scene.hud.settings.volume });
         this.player.checkTalentCost(States.FREEZE, PLAYER.STAMINA.FREEZE);
         this.player.specialCombatText = this.scene.showCombatText("Freezing", PLAYER.DURATIONS.FREEZE, "cast", false, true, () => this.player.specialCombatText = undefined);
@@ -2778,7 +2778,7 @@ export default class PlayerMachine {
     onRenewalEnter = () => {
         this.player.isRenewing = true;
         this.player.checkTalentCost(States.RENEWAL, PLAYER.STAMINA.RENEWAL);
-        this.player.aoe = new AoE(this.scene, "renewal", 6, true);    
+        this.player.aoe = this.scene.aoePool.get("renewal", 6, true);    
         this.scene.sound.play("shield", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Hush Tears", 750, "bone", false, true, () => this.player.specialCombatText = undefined);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.RENEWAL, PLAYER.COOLDOWNS.MODERATE);  
@@ -2793,7 +2793,7 @@ export default class PlayerMachine {
 
     onScreamEnter = () => {
         this.player.checkTalentCost(States.SCREAM, PLAYER.STAMINA.SCREAM);
-        this.player.aoe = new AoE(this.scene, "scream", 1);
+        this.player.aoe = this.scene.aoePool.get("scream", 1);
         this.scene.sound.play("scream", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Screaming", 750, "hush", false, true, () => this.player.specialCombatText = undefined);
         this.player.isScreaming = true;
@@ -3007,7 +3007,7 @@ export default class PlayerMachine {
 
     onWritheEnter = () => {
         this.player.checkTalentCost(States.WRITHE, PLAYER.STAMINA.WRITHE);
-        this.player.aoe = new AoE(this.scene, "writhe", 1);
+        this.player.aoe = this.scene.aoePool.get("writhe", 1);
         this.scene.sound.play("spooky", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Writhing", 750, "tendril", false, true, () => this.player.specialCombatText = undefined);
         this.player.isWrithing = true;
@@ -3065,7 +3065,7 @@ export default class PlayerMachine {
 
     onBlindEnter = () => {
         this.player.checkTalentCost(States.BLIND, PLAYER.STAMINA.BLIND);
-        this.player.aoe = new AoE(this.scene, "blind", 1);
+        this.player.aoe = this.scene.aoePool.get("blind");
         this.scene.sound.play("righteous", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Brilliance", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
         this.player.isBlinding = true;
@@ -3083,7 +3083,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.checkTalentCost(States.CAERENESIS, PLAYER.STAMINA.CAERENESIS);
         const count = this.player.checkTalentEnhanced(States.CAERENESIS) ? 3 : 1;
-        this.player.aoe = new AoE(this.scene, "caerenesis", count, false, undefined, false, this.player.currentTarget);    
+        this.player.aoe = this.scene.aoePool.get("caerenesis", count, false, undefined, false, this.player.currentTarget);    
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Caerenesis", 750, "cast", false, true, () => this.player.specialCombatText = undefined);
         this.player.isCaerenesis = true;

@@ -3,13 +3,12 @@ import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from "uuid";
-import { PLAYER, ENEMY_ENEMIES, FACTION } from "../../utility/player";
+import { PLAYER, ENEMY_ENEMIES, FACTION, NAMED_ENEMY } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import AoE from "../phaser/AoE";
 import Bubble from "../phaser/Bubble";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
-import { roundToTwoDecimals } from "../../utility/combat";
 import { Underground } from "../scenes/Underground";
 import { Combat } from "../../stores/combat";
 import Player from "./Player";
@@ -23,7 +22,7 @@ import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { ArenaView } from "../scenes/ArenaCvC";
 import StatusEffect from "../../utility/prayer";
 import Party from "./PartyComputer";
-import { DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
+import { BONE, DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
@@ -113,6 +112,7 @@ export default class Enemy extends Entity {
     confuseCount: number = 0;
     specialFear: boolean = false;
     defeatedByPlayer: boolean = false;
+    isDying: boolean = false;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -160,6 +160,7 @@ export default class Enemy extends Entity {
             .addState(States.STUNNED, { onEnter: this.onStunnedEnter, onUpdate: this.onStunnedUpdate, onExit: this.onStunnedExit })
             .addState(States.CONSUMED, { onEnter: this.onConsumedEnter, onUpdate: this.onConsumedUpdate, onExit: this.onConsumedExit })
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
+            .addState(States.DESTROY, { onEnter: this.onDestroyEnter, onUpdate: this.onDestroyUpdate })
             .addState(States.DEATH, { onEnter: this.onDeathEnter, onUpdate: this.onDeathUpdate })
             .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter, onUpdate: this.onDefeatedUpdate, onExit: this.onDefeatedExit }) // ====== Special States ======
             .addState(States.ACHIRE, { onEnter: this.onAchireEnter, onUpdate: this.onAchireUpdate, onExit: this.onAchireExit })
@@ -1249,12 +1250,12 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    const specific = [States.CHIOMIC];
-                    const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(test)) {
-                        this.stateMachine.setState(test);
-                    } else if (this.positiveMachine.isState(test)) {
-                        this.positiveMachine.setState(test);
+                    // const specific = [States.CHIOMIC];
+                    // const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(special)) {
+                        this.stateMachine.setState(special);
+                    } else if (this.positiveMachine.isState(special)) {
+                        this.positiveMachine.setState(special);
                     };
                     this.setSpecialCombat(true);
                 },
@@ -1453,6 +1454,18 @@ export default class Enemy extends Entity {
         };
     };
 
+    onDeathEnter = () => {
+        this.resistCombatText = this.scene.showCombatText(`${this.ascean.name} has perished in combat!`, 3000, BONE, true, true, () => this.specialCombatText = undefined); 
+        this.scene.tweens.add({
+            targets: [this],
+            alpha: 0,
+            duration: 10000,
+            onComplete: () => EventBus.emit("kill-enemy", this),
+            callbackScope: this
+        });
+    };
+    onDeathUpdate = () => {};
+
     onDefeatedEnter = () => {
         if (this.isDeleting) return;
         this.stateMachine.clearStates();
@@ -1488,15 +1501,28 @@ export default class Enemy extends Entity {
         this.setCollisionCategory(0);
         this.enemies = [];
         this.clearStatuses();
+        if (Math.random() > 0.9 && this.scene.hud.currScene === "Game") {
+            this.isDying = true;
+            this.scene.hud.logger.log(`Console: ${this.ascean.name} has perished, leaving this world.`);
+            this.specialCombatText = this.scene.showCombatText(`${this.ascean.name} has perished!`, 3000, BONE, false, true, () => this.specialCombatText = undefined); 
+            this.scene.tweens.add({
+                targets: [this],
+                alpha: 0.25,
+                duration: 6000,
+                onComplete: () => EventBus.emit("kill-enemy", this),
+                callbackScope: this
+            });    
+        };
     };
     onDefeatedUpdate = (dt: number) => {
-        if (this.isDeleting) return;
+        if (this.isDeleting || this.isDying) return;
         this.defeatedTime -= dt;
         if (this.defeatedTime <= 0 && !this.stateMachine.isCurrentState(States.IDLE)) this.stateMachine.setState(States.IDLE);
     };
     onDefeatedExit = () => {
         if (this.isDeleting) return;
         this.anims.playReverse(FRAMES.DEATH);
+        if (this.isDying) return;
         this.isDefeated = false;
         this.defeatedTime = 120000;
         this.health = this.ascean.health.max;
@@ -1510,11 +1536,12 @@ export default class Enemy extends Entity {
         this.specialCombatText = this.scene.showCombatText(text, 1500, EFFECT, false, true, () => this.specialCombatText = undefined);
     };
 
-    onDeathEnter = () => {
+    onDestroyEnter = () => {
         this.clearTint(); 
         this.setStatic(true);
     };
-    onDeathUpdate = () => this.anims.play(FRAMES.HURT, true);
+
+    onDestroyUpdate = () => this.anims.play(FRAMES.HURT, true);
 
     onIdleEnter = () => {
         this.setVelocity(0);
@@ -2095,7 +2122,7 @@ export default class Enemy extends Entity {
     onAstraveExit = () => {
         if (this.targetID === this.scene?.player?.playerID) {
             if (this.castingSuccess === true && this.checkPlayerResist() === true) {
-                this.aoe = new AoE(this.scene, "astrave", 1, true, this, false, this.scene.player);    
+                this.aoe = this.scene.aoePool.get("astrave", 1, true, this, false, this.scene.player);    
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} unearths the winds and lightning from the land of hush and tendril.`
                 });
@@ -2103,7 +2130,7 @@ export default class Enemy extends Entity {
             };
         } else if (this.castingSuccess === true) { // CvC
             const enemy = this.scene.enemies.find((e: Enemy) => e.enemyID === this.targetID) || this.scene.party.find((p: Party) => p.enemyID === this.targetID);
-            this.aoe = new AoE(this.scene, "astrave", 1, true, this, false, enemy);    
+            this.aoe = this.scene.aoePool.get("astrave", 1, true, this, false, enemy);    
         };
         this.enemySound("combat-round", this.castingSuccess);
         this.stopCasting("Countered Astrave");
@@ -2946,7 +2973,7 @@ export default class Enemy extends Entity {
         };
     };
     onChiomicEnter = () => {
-        this.aoe = new AoE(this.scene, "chiomic", 1, true, this);    
+        this.aoe = this.scene.aoePool.get("chiomic", 1, true, this);    
         this.specialCombatText = this.scene.showCombatText("Hah! Hah!", PLAYER.DURATIONS.CHIOMIC, EFFECT, false, true, () => this.specialCombatText = undefined);
         this.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
@@ -2963,7 +2990,7 @@ export default class Enemy extends Entity {
 
     onDiseaseEnter = () => {
         this.isDiseasing = true;
-        this.aoe = new AoE(this.scene, "tendril", 6, true, this);    
+        this.aoe = this.scene.aoePool.get("tendril", 6, true, this);    
         this.specialCombatText = this.scene.showCombatText("Tendrils Swirl", 750, "tendril", false, true, () => this.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.isDiseasing = false;
@@ -3024,7 +3051,7 @@ export default class Enemy extends Entity {
         };
     };
     onFreezeEnter = () => {
-        this.aoe = new AoE(this.scene, "freeze", 1, true, this);
+        this.aoe = this.scene.aoePool.get("freeze", 1, true, this);
         this.specialCombatText = this.scene.showCombatText("Freezing", PLAYER.DURATIONS.FREEZE, "cast", false, true, () => this.specialCombatText = undefined);
         this.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
@@ -3040,7 +3067,7 @@ export default class Enemy extends Entity {
     onFreezeUpdate = (_dt: number) => {if (!this.isFreezing) this.positiveMachine.setState(States.CLEAN);};
 
     onHowlEnter = () => {
-        this.aoe = new AoE(this.scene, "howl", 1, true, this);    
+        this.aoe = this.scene.aoePool.get("howl", 1, true, this);    
         this.specialCombatText = this.scene.showCombatText("Howling", PLAYER.DURATIONS.HOWL, DAMAGE, false, true, () => this.specialCombatText = undefined);
         this.isHowling = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
@@ -3383,7 +3410,7 @@ export default class Enemy extends Entity {
 
     onRenewalEnter = () => {
         this.isRenewing = true;
-        this.aoe = new AoE(this.scene, "renewal", 6, false, this);    
+        this.aoe = this.scene.aoePool.get("renewal", 6, false, this);    
         this.specialCombatText = this.scene.showCombatText("Hush Tears", 750, "bone", false, true, () => this.specialCombatText = undefined);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.isRenewing = false;
@@ -3399,7 +3426,7 @@ export default class Enemy extends Entity {
 
     onScreamEnter = () => {
         if (!this.inCombat && !this.inComputerCombat) return;
-        this.aoe = new AoE(this.scene, "scream", 1, true, this);  
+        this.aoe = this.scene.aoePool.get("scream", 1, true, this);  
         this.specialCombatText = this.scene.showCombatText("Screaming", 750, "hush", false, true, () => this.specialCombatText = undefined);
         this.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
@@ -3626,7 +3653,7 @@ export default class Enemy extends Entity {
     };
 
     onWritheEnter = () => {
-        this.aoe = new AoE(this.scene, "writhe", 1, true, this);    
+        this.aoe = this.scene.aoePool.get("writhe", 1, true, this);    
         this.specialCombatText = this.scene.showCombatText("Writhing", 750, "tendril", false, true, () => this.specialCombatText = undefined);
         this.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {

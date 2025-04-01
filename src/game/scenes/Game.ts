@@ -25,7 +25,7 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
 import { PARTY_OFFSET } from "../../utility/party";
 import { FACTION } from "../../utility/player";
-import { ENTITY_FLAGS } from "../phaser/Collision";
+import { AoEPool } from "../phaser/AoE";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -73,6 +73,7 @@ export class Game extends Scene {
     daytime: number = 0.0;
     compositeTextures: any;
     day: boolean = true;
+    aoePool: AoEPool;
 
     constructor () {
         super("Game");
@@ -217,7 +218,8 @@ export class Game extends Scene {
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
         this.startDayCycle();
-
+        
+        this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -236,6 +238,7 @@ export class Game extends Scene {
                     onComplete: () => {
                         this.musicNight.stop();
                         this.musicDay.play("", { volume: this.hud.settings.volume });
+                        this.aoePool.shrink(15);
                     }
                 });
             } else {
@@ -320,8 +323,9 @@ export class Game extends Scene {
         EventBus.off("update-speed");
         EventBus.off("update-enemy-aggression");
         EventBus.off("update-enemy-special");
-        EventBus.off("add-to-party");
-        EventBus.off("despawn-enemy");
+        EventBus.off("add-to-party", this.addToParty);
+        EventBus.off("despawn-enemy", this.despawnEnemyToParty);
+        EventBus.off("kill-enemy", this.killEnemy)
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
             this.enemies[i].destroy();
@@ -411,6 +415,7 @@ export class Game extends Scene {
         EventBus.on("add-to-party", this.addToParty);
         EventBus.on("remove-from-party", this.removeFromParty);
         EventBus.on("despawn-enemy-to-party", this.despawnEnemyToParty);
+        EventBus.on("kill-enemy", this.killEnemy);
     };
 
     resumeScene = () => {
@@ -615,6 +620,27 @@ export class Game extends Scene {
 
     drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
+    createEnemy = () => {
+        this.time.delayedCall(10000, () => {
+            const newEnemy = new Enemy({scene:this, x:200, y:200, texture:"player_actions", frame:"player_idle_0", data:undefined});
+            this.enemies.push(newEnemy);
+            newEnemy.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
+        }, undefined, this);
+    };
+
+    killEnemy = (enemy: Enemy) => {
+        enemy.isDeleting = true;
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
+        this.time.delayedCall(500, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            enemy.cleanUp();
+            enemy.destroy();
+            this.createEnemy();
+        }, undefined, this);
+    };
+
     addToParty = (party: Ascean) => {
         const position = this.party.length;
         const ascean = populateEnemy(party);
@@ -657,7 +683,6 @@ export class Game extends Scene {
             this.enemies.push(enemy);
             enemy.setPosition(prevCoords.x, prevCoords.y);
         }, undefined, this);
-        
     };
 
     checkEnvironment = (player: Player | Enemy | Party) => {
@@ -742,8 +767,8 @@ export class Game extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            if (this.enemies[i].isDeleting) return;
             this.enemies[i].update(delta);
+            if (this.enemies[i].isDeleting) return;
             this.checkEnvironment(this.enemies[i]);
         };
         for (let i = 0; i < this.party.length; i++) {

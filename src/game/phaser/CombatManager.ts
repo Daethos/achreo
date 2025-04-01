@@ -8,6 +8,8 @@ import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, 
 import { computerCombatCompiler } from "../../utility/computerCombat";
 import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
+import { HEAL } from "./ScrollingCombatText";
+import { PLAYER } from "../../utility/player";
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -78,7 +80,7 @@ export class CombatManager {
     };
 
     // ============================ Magic Impact ============================= \\
-    magic = (entity: Player | Enemy | Party, target: Player | Enemy | Party): void => {
+    magic = (target: Player | Enemy | Party, entity: Player | Enemy | Party): void => {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
         if (target.name === "player") {
@@ -387,8 +389,39 @@ export class CombatManager {
             party.isPolymorphed = true;
         };
     };
-    renewal = () => {
-        this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
+    renewal = (id: string) => {
+        // this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
+        if (!id) return;
+        
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
+        if (enemy) {        
+            const heal = enemy.healthbar.getTotal() * 0.1;
+            const health = Math.min(enemy.health + heal, enemy.healthbar.getTotal());
+            if (enemy.inCombat) { // Player Combat
+                this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
+            } else { // CvC
+                enemy.health = health;
+                enemy.updateHealthBar(health);
+                enemy.computerCombatSheet.newComputerHealth = health;
+                enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
+                EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+            };
+            return; 
+        };
+
+        let party = this.context.party.find((e: Party) => e.playerID === id);
+        if (party) {
+            const heal = party.healthbar.getTotal() * 0.1;
+            const health = Math.min(party.health + heal, party.healthbar.getTotal());
+            party.health = health;
+            party.updateHealthBar(health);
+            party.computerCombatSheet.newComputerHealth = health;
+            party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
+            EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+            return;
+        };
+
+        this.combatMachine.action({ data: { key: "player", value: 10, id }, type: "Health" });
     };
     enemyRenewal = (id: string): void => {
         if (!id) return;
@@ -402,22 +435,22 @@ export class CombatManager {
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, "heal", false, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };
     partyRenewal = (id: string): void => {
         if (!id) return;
-        let enemy = this.context.party.find((e: Party) => e.playerID === id);
-        if (!enemy) { // Player Blessed
+        let party = this.context.party.find((e: Party) => e.playerID === id);
+        if (!party) { // Player Blessed
             this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
         } else {
-            const heal = enemy.healthbar.getTotal() * 0.1;
-            const health = Math.min(enemy.health + heal, enemy.healthbar.getTotal());
-            enemy.health = health;
-            enemy.updateHealthBar(health);
-            enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, 1500, "heal", false, false, () => enemy.scrollingCombatText = undefined);
+            const heal = party.healthbar.getTotal() * 0.1;
+            const health = Math.min(party.health + heal, party.healthbar.getTotal());
+            party.health = health;
+            party.updateHealthBar(health);
+            party.computerCombatSheet.newComputerHealth = health;
+            party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
             EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
         };
     };

@@ -22,6 +22,7 @@ import { ObjectPool } from "../phaser/ObjectPool";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import Party from "../entities/PartyComputer";
 import { PARTY_OFFSET } from "../../utility/party";
+import { AoEPool } from "../phaser/AoE";
 
 export class Arena extends Phaser.Scene {
     sceneKey: string = "";
@@ -76,6 +77,7 @@ export class Arena extends Phaser.Scene {
     platform3: MovingPlatform;
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    aoePool: AoEPool;
 
     constructor (view?: string) {
         const key = view || "Arena";
@@ -198,6 +200,7 @@ export class Arena extends Phaser.Scene {
 
 
         this.createArenaEnemy();
+        this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -584,7 +587,7 @@ export class Arena extends Phaser.Scene {
         ];
         const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
         enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
-        enemy.stateMachine.setState(States.DEATH);
+        enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             if (this.enemies.length === 0) { // || !this.inCombat
@@ -600,7 +603,17 @@ export class Arena extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
-
+    killEnemy = (enemy: Enemy) => {
+        enemy.stateMachine.setState(States.DEATH);
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
+        this.time.delayedCall(500, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
+    };
     partyDestroy = (party: Party) => {
         party.isDeleting = true;
         this.time.delayedCall(1000, () => {

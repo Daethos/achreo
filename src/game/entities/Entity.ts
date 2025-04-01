@@ -695,7 +695,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     particleAoe = (effect: Particle) => {
-        new AoE(this.scene, effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
+        this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
+        // new AoE(this.scene, effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
     functionality = (entity: string, target: Player | Enemy | Party) => {

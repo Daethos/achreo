@@ -6,8 +6,9 @@ export interface StateInterface {
 };
 
 export const States = {
-    DEFEATED: "defeated",
     DEATH: "death",
+    DEFEATED: "defeated",
+    DESTROY: "destroy",
     
     AWARE: "aware",
     CHASE: "chase",

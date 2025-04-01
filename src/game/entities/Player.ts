@@ -1313,9 +1313,9 @@ export default class Player extends Entity {
             if (action === States.QUOR) {
                 if (this.checkTalentEnhanced(States.QUOR)) {
                     if (this.isComputer) {
-                        this.aoe = new AoE(this.scene, "astrave", 1, false, undefined, false, this.attackedTarget);    
+                        this.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, false, this.attackedTarget);    
                     } else {
-                        this.aoe = new AoE(this.scene, "astrave", 1, false, undefined, true);
+                        this.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, true);
                     };
                 };
             };
@@ -1452,7 +1452,7 @@ export default class Player extends Entity {
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
-            if (this.inCombat && (!this.scene.state.computer || !this.enemyIdMatch() || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
+            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 // const enemy = this.enemyIdMatch();
                 if (!this.enemyIdMatch() && this.attackedTarget) this.currentTarget = this.attackedTarget;
                 this.scene.hud.setupEnemy(this.currentTarget);

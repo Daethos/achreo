@@ -22,6 +22,7 @@ import { Compiler } from "../../utility/ascean";
 import { ObjectPool } from "../phaser/ObjectPool";
 import ScrollingCombatText, { BONE } from "../phaser/ScrollingCombatText";
 import Party from "../entities/PartyComputer";
+import { AoEPool } from "../phaser/AoE";
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -73,6 +74,7 @@ export class Underground extends Scene {
     hud: Hud;
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    aoePool: AoEPool;
 
     constructor () {
         super("Underground");
@@ -180,6 +182,7 @@ export class Underground extends Scene {
                 this.party.push(p);
             };
         };
+        this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -509,7 +512,7 @@ export class Underground extends Scene {
         ];
         const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
         enemy.specialCombatText = this.showCombatText(saying, 2000, BONE, false, true, () => enemy.specialCombatText = undefined);
-        enemy.stateMachine.setState(States.DEATH);
+        enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             if (this.enemies.length === 0) {
@@ -526,7 +529,16 @@ export class Underground extends Scene {
             enemy.destroy();
         }, undefined, this);
     };
-
+    killEnemy = (enemy: Enemy) => {
+        if (enemy.isCurrentTarget) {
+            this.player.disengage();
+        };
+        this.time.delayedCall(500, () => {
+            this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
+            enemy.cleanUp();
+            enemy.destroy();
+        }, undefined, this);
+    };
     summonEnemy = (summons: number) => {
         for (let i = 0; i < summons; i++) {
             const enemy = this.createEnemy();

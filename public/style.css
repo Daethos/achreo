@@ -43,7 +43,6 @@ div > .animateFocus:focus {
     overflow: hidden;
     z-index: -1;
 }
-  
 .menu-bg::before {
     content: "";
     position: absolute;
@@ -52,58 +51,22 @@ div > .animateFocus:focus {
         radial-gradient(circle at 0% 0%, purple 0%, transparent 50%),
         radial-gradient(circle at 100% 50%, gold 0%, transparent 50%),
         #000;
-    animation: opacityPulse 5s infinite ease-in-out alternate;
+    animation: opacityPulse 6s infinite ease-in-out alternate;
     aspect-ratio: 1;
     filter: blur(5px);
 }
-@keyframes float {
-    0%, 100% { 
-        transform: translate(
-            calc(var(--rand-x) * 1px),
-            calc(var(--rand-y) * 1px)
-        ); 
-    }
-    50% { 
-        transform: translate(
-            calc(var(--rand-x) * 0.5px),
-            calc(var(--rand-y) * 0.5px)
-        ); 
-    }
-  }
-  .rune {
-        position: absolute;
-        font-size: 2rem;
-        color: #8a5a44;
-        text-shadow: 0 0 5px #d4af37;
-        animation: float-rune 30s infinite linear;
-        user-select: none;
-  }
-  
-  @keyframes float-rune {
-    0% { 
-        transform: translate(0, 0) rotate(0deg); 
-        opacity: 0;
-    }
-    10% { opacity: 0.7; filter: brightness(0.5); }
-    90% { opacity: 0.7; filter: brightness(1.5); }
-    100% { 
-        transform: translate(calc(100vw * var(--tx)), calc(100vh * var(--ty))) rotate(360deg);
-        opacity: 0;
-    }
-  }
-.particle {
-    position: absolute;
-    width: 2px;
-    height: 2px;
-    background: #fdf6d8;
-    border-radius: 50%;
-    animation: float 8s infinite ease;
+
+@keyframes opacityPulse {
+    0% { opacity: 0; }
+    100% { opacity: 0.3; }
 }
+
 @keyframes gradient {
     0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.05em #ffd700, -0.025em -0.025em 0.05em #ffd700 }
     50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.1em #800080, -0.025em -0.025em 0.1em #800080 }
     100% { color: #fdf6d8; text-shadow: 0.025em 0.025em 0.05em #ffd700, -0.025em -0.025em 0.05em #ffd700 }
 }
+
 @keyframes power {
     0% { color:#fdf6d8; text-shadow: 0.025em 0.025em 0.075em #ffd700, -0.025em -0.025em 0.075em #ffd700 }
     50% { color:#ffd700; text-shadow: 0.025em 0.025em 0.125em #800080, -0.025em -0.025em 0.125em #800080 }

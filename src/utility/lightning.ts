@@ -4,11 +4,13 @@ const config = {
     opacityHigh: 0.6,
     opacityLow: 0.2,
     intensity: 1.25,
-    startingBolts: 5,
+    startingBolts: 7,
     boltSize: 0.5,
     frequency: 660,
     duration: 1,
-    color: [50, 255, 255] // 150, 200, 255
+    color: [50, 255, 255], // 150, 200, 255
+    gold: [255, 215, 0], 
+    purple: [128, 0, 128], 
 };
 export const lightning = () => {
     const canvas = document.getElementById('lightning') as HTMLCanvasElement;
@@ -17,7 +19,6 @@ export const lightning = () => {
     let activeTimers: any[] = [];
 
     function createBolt() {
-
         ctx?.clearRect(0, 0, canvas.width, canvas.height);
         
         const startX = Math.random() > 0.5 ? 0 : canvas.width;
@@ -48,7 +49,7 @@ export const lightning = () => {
             };
         };
         
-        ctx!.strokeStyle = `rgba(${config.color.join(',')}, ${config.opacityHigh * config.intensity})`;
+        ctx!.strokeStyle = `rgba(${(startX === 0 ? config.gold : config.purple).join(',')}, ${config.opacityHigh * config.intensity})`;
         ctx!.lineWidth = 2 * config.boltSize;
         ctx?.stroke();
         
@@ -65,7 +66,7 @@ export const lightning = () => {
 
     function startLightning() {
         for (let i = 0; i < config.startingBolts; i++) {
-            activeTimers.push(setTimeout(createBolt, i * 300) as unknown as number);
+            activeTimers.push(setTimeout(createBolt, i * 250) as unknown as number);
         };
         
         lightningInterval = setInterval(() => {

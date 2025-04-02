@@ -332,7 +332,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
             case CHARACTERS.CHARACTER:
-                return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000" }}>
+                return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div class="animate-flicker">
                     { dimensions().ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
@@ -714,7 +714,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden" }}>
+                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "justify-content": "center", "align-items": "center", "text-align": "center" }}>
                             <p style={{ color: "gold", "font-size": "1.25em" }}>Feedback</p>
                             <Form class="verticalCenter" style={{ "text-wrap": "balance" }}>
@@ -741,7 +741,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     {createCharacterInfo(CHARACTERS.CHARACTER)}
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw" }}>
+                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
                         {/* <button class="highlight cornerTL" style={{ "background-color": "blue", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getInventory()}>
                             <p>Get Eqp</p>
                         </button> */}
@@ -783,7 +783,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </Match>
                 <Match when={settings().asceanViews === VIEWS.FAITH}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll" }}>
+                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "margin-left": "0", "margin-top": "7.5%", transform: "scale(0.9)" }}>
                             <div class="creature-heading" style={{ "margin-top": "-5%", animation: "flicker 0.75s ease alternate", "--glow-color":"gold" }}>
                                 <h1>Blessings</h1>
@@ -810,7 +810,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
-        <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw" }}>
+        <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class="center creature-heading animate-flicker" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
                     {/* <div class="smallburst" style={{ "--glow-color":masteryColor(ascean().mastery), "z-index":1 }}></div> */}
@@ -864,7 +864,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class="playerWindow" style={{height: `${dimensions().HEIGHT * 0.8}px`, left: "66.75vw"}}>
+            <div class="playerWindow" style={{height: `${dimensions().HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class="center wrap"> 
                         {createCharacterInfo(settings()?.characterViews)}

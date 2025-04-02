@@ -6,7 +6,6 @@ export enum ENTITY_FLAGS {
     LOOT = 1 << 3,    // 8
     NPC = 1 << 4,     // 16
     WORLD = 1 << 5,   // 32
-    // Combined flags
     GOOD = PLAYER | PARTY,
     ENTITY = PLAYER | ENEMY | PARTY,
     ALL = PLAYER | ENEMY | PARTY | LOOT | NPC | WORLD

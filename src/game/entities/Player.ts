@@ -1,4 +1,4 @@
-import Entity, { assetSprite, FRAMES, Player_Scene, SWING_TIME } from "./Entity";  
+import Entity, { assetSprite, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";  
 import { screenShake, sprint, vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
@@ -652,6 +652,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);
                         if (special) this.scene.combatManager.stun(enemy.enemyID);
+                        this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE["leap" as keyof typeof SWING_FORCE]);
                     };
                 };
             },
@@ -763,6 +764,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, "storm");
+                        this.applyKnockback(enemy, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE["storm" as keyof typeof SWING_FORCE]);
                     };
                 };
             },
@@ -1295,8 +1297,9 @@ export default class Player extends Entity {
 
     playerActionSuccess = () => {
         if (!this.attackedTarget) return;
+        let action = "";
         if (this.particleEffect) {
-            const action = this.particleEffect.action;
+            action = this.particleEffect.action;
             this.killParticle();
             if (action === States.ACHIRE) {
                 if (this.checkTalentEnhanced(States.ACHIRE)) {
@@ -1352,7 +1355,7 @@ export default class Player extends Entity {
                 }});
             };
         } else {
-            const action = this.checkPlayerAction();
+            action = this.checkPlayerAction();
             if (!action) return;
             if (!this.isAstrifying) {
                 if (this?.attackedTarget?.isShimmering && Phaser.Math.Between(1, 100) > 50) {
@@ -1393,6 +1396,8 @@ export default class Player extends Entity {
             this.inCombat = true;
             this.attackedTarget.jumpIntoCombat();
             this.stealthUpdate();
+        } else {
+            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };
     };
 

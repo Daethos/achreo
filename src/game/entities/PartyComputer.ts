@@ -20,7 +20,7 @@ import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
-import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_TIME } from "./Entity";
+import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";
 import { v4 as uuidv4 } from "uuid";
 
 // @ts-ignore
@@ -1351,9 +1351,9 @@ export default class Party extends Entity {
             return;    
         };
         if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body 
-        || this.playerMachine.stateMachine.isCurrentState(States.CHASE) 
-        || this.playerMachine.stateMachine.isCurrentState(States.EVADE)
-    ) return;
+            || this.playerMachine.stateMachine.isCurrentState(States.CHASE) 
+            || this.playerMachine.stateMachine.isCurrentState(States.EVADE)
+        ) return;
         
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
@@ -1598,8 +1598,9 @@ export default class Party extends Entity {
 
     partyActionSuccess = () => {
         if (!this.attackedTarget) return;
+        let action = "";
         if (this.particleEffect) {
-            const action = this.particleEffect.action;
+            action = this.particleEffect.action;
             this.killParticle();
             if (action === "hook") {
                 this.hook(this.attackedTarget, 1500);
@@ -1646,6 +1647,7 @@ export default class Party extends Entity {
                 if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
                 if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
             };
+            action = this.currentAction;
             this.scene.combatManager.partyAction({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
         };
         if (this.isStealthing) {
@@ -1654,7 +1656,10 @@ export default class Party extends Entity {
             this.inComputerCombat = true;
             this.attackedTarget.jumpIntoCombat();
             this.stealthUpdate();
+        } else {
+            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };
+        
     };
 
     update(dt: number) {

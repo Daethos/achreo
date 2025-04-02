@@ -248,7 +248,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined) {
+    private enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined) {
         this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
         this.setupEnemyListener(enemy as Enemy);
         this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT); // *NEW*
@@ -261,12 +261,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                     (this.scene.combatManager as any)[type]((target as Enemy | Party).enemyID, originId);
                 };
             },
-            bless: (target) => {
-                (this.scene.combatManager as any)[type]((target as Enemy).enemyID);
-            } 
+            bless: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID)
         });
     };
-    particleAoe(particle: { effect: Particle; entity: Target }, positive: boolean) {
+
+    private particleAoe(particle: { effect: Particle; entity: Target }, positive: boolean) {
         this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
         this.setupParticleListener();
         this.scalingTimer(particle.effect.effect, PARTICLE_SCALE, 0, REPEAT); // *NEW*
@@ -274,20 +273,19 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             hit: (target) => this.scene.combatManager.magic(target, particle.entity)
         });
     };
-    partyAoe(type: string, positive: boolean, party: Party, target: Target | undefined) {
+
+    private partyAoe(type: string, positive: boolean, party: Party, target: Target | undefined) {
         this.setupSensor(target ? target.x : party.x, target ? target.y : party.y, RADIUS, "aoeSensor");
         this.setupPartyListener(party);
         this.scalingTimer(target ? target : party, SCALE, Y_OFFSET, REPEAT);
         this.baseCount(type, positive, party, {
-            hit: (target) => {
-                (this.scene.combatManager as any)[type]((target as Enemy).enemyID, party.enemyID);
-            },
-            bless: (target) => {
-                (this.scene.combatManager as any)[type]((target as Player | Party).playerID);
-            }
+            hit: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID, party.enemyID),
+            bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID)
+            
         });
     };
-    playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
+
+    private playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
         this.enhanced = this.scene.hud.talents.talents[this.name as keyof typeof this.scene.hud.talents.talents].enhanced;
         const manualPoint = this.scene.getWorldPointer();
         this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
@@ -351,7 +349,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             target.x -= offsetX / 5;
             target.y -= offsetY / 5;
         };
-        this.scene.rotateTween(this, this.count, true);
+        // this.scene.rotateTween(this, this.count, true);
         this.setScale(scale);
         this.timer = this.scene.time.addEvent({
             delay: 50,
@@ -408,125 +406,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             },
             context: this.scene
         });
-    };
-
-    setCount = (scene: Play, type: string, positive: boolean) => {
-        if (type === "fyerus") {
-            if ((scene as Player_Scene).player.isMoving) {
-                this.fadeOut(1000);
-                return;
-            };
-        };
-        if (positive === true) {
-            scene.time.delayedCall(975, () => {
-                this.bless.forEach((_target) => {
-                    (scene.combatManager as any)[type]();
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setCount(scene, type, positive);
-                };
-            });
-        } else {
-            scene.time.delayedCall(975, () => {
-                this.hit.forEach((target) => {
-                    (scene.combatManager as any)[type](target.enemyID, scene.player.playerID);
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setCount(scene, type, false);
-                };
-            });
-        };
-    };
-    setPartyCount = (scene: Play, type: string, positive: boolean, origin: Party) => {
-        if (type === "fyerus") {
-            if ((scene as Player_Scene).player.isMoving) {
-                this.fadeOut(1000);
-                return;
-            };
-        };
-        if (positive === true) {
-            scene.time.delayedCall(975, () => {
-                const blessing = `party${type.charAt(0).toUpperCase() + type.slice(1)}`;
-                this.bless.forEach((blessed) => {
-                    (scene.combatManager as any)[blessing](blessed.playerID);
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setPartyCount(scene, type, positive, origin);
-                };
-            });
-        } else {
-            scene.time.delayedCall(975, () => {
-                this.hit.forEach((hit) => {
-                    (scene.combatManager as any)[type](hit.enemyID, origin.enemyID);
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setPartyCount(scene, type, false, origin);
-                };
-            });
-        };
-    };
-    setParticleCount = (entity: Target, scene: Play) => {
-        scene.time.delayedCall(1000, () => {
-            this.hit.forEach((target) => {
-                (scene.combatManager as any).magic(target, entity);
-            });
-            this.count -= 1;
-            if (this.count === 0) {
-                this.fadeOut(1000);
-            } else {
-                this.setParticleCount(entity, scene);
-            };
-        });
-    };
-    setupEnemyCount = (scene: Play, type: string, positive: boolean, enemy: Enemy) => {
-        if (enemy.isDeleting) {
-            this.fadeOut(1000);
-            return;
-        };
-        if (positive === true) {
-            scene.time.delayedCall(975, () => {
-                this.hit.forEach((hit) => {
-                    if (hit.name === PLAYER) {
-                        if ((scene as Player_Scene).player.checkPlayerResist() === true) {
-                            (scene.combatManager as any)[type](hit.playerID, enemy.enemyID);
-                        };
-                    } else if (hit.name === ENEMY || hit.name === PARTY) {
-                        (scene.combatManager as any)[type](hit.enemyID, enemy.enemyID);
-                    };
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setupEnemyCount(scene, type, positive, enemy);
-                };
-            });
-        } else {
-            scene.time.delayedCall(975, () => {
-                const blessing = `enemy${type.charAt(0).toUpperCase() + type.slice(1)}`;
-                this.bless.forEach((blessed) => {
-                    (scene.combatManager as any)[blessing](blessed.enemyID);
-                });
-                this.count -= 1;
-                if (this.count === 0) {
-                    this.fadeOut(1000);
-                } else {
-                    this.setupEnemyCount(scene, type, false, enemy);
-                };
-            });
-        };
     };
     protected setupEnemyListener(origin: Enemy) {
         this.setupBaseListener({

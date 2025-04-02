@@ -67,6 +67,25 @@ export const FRAME_COUNT = {
 }; 
 export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
+export const SWING_FORCE = { 
+    "One Hand": 1, 
+    "Two Hand": 1.25,
+    "storm": 1.1,
+    "leap": 1.1,
+    "arc": 1.25,
+    "quor": 1.25,
+    "achire": 1.1,
+    "attack": 1.1,
+    "posture": 0.9,
+    "roll": 0.75, 
+    "thrust": 0.6, 
+    "parry": 0,
+    "hook": 0,
+}; // 750, 1250 [old]
+export const SWING_FORCE_ATTRIBUTE = {
+    "Physical": "strength",
+    "Magic": "caeren"
+};
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
 const DAMAGE_TYPES = { "magic": ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], "physical": ["blunt", "pierce", "slash"] };
@@ -450,6 +469,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.name === "party") this.setTint(0x00FF00);    
         }); 
     };
+
     knockback(id: string) {
         const enemy = this.scene.getEnemy(id);
         if (enemy === undefined) return;
@@ -472,7 +492,20 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
         let startTime: any = undefined;
         requestAnimationFrame(knockbackLoop);
-        if ("vibrate" in navigator) navigator.vibrate(48);
+        if ("vibrate" in navigator) navigator.vibrate(40);
+    };
+    
+    applyKnockback(target: Enemy | Player | Party, force = 10) {
+        if (Number.isNaN(force) || force <= 0) return;
+        const angle = Phaser.Math.Angle.BetweenPoints(this, target);
+        // console.log({x: Math.cos(angle) * force,y: Math.sin(angle) * force,force});
+        this.scene.tweens.add({
+            targets: target,
+            ease: Phaser.Math.Easing.Expo.Out,
+            x: target.x + Math.cos(angle) * force,
+            y: target.y + Math.sin(angle) * force,
+            duration: 250
+        });
     };
     getDirection = () => {
         if (this.velocity?.x as number < 0) {

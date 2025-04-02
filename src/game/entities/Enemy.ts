@@ -1,4 +1,4 @@
-import Entity, { calculateThreat, ENEMY, FRAME_COUNT, FRAMES, Player_Scene } from "./Entity"; 
+import Entity, { calculateThreat, ENEMY, FRAME_COUNT, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE } from "./Entity"; 
 import StateMachine, { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
@@ -488,7 +488,7 @@ export default class Enemy extends Entity {
         const { damage, origin } = e;
         this.health = Math.max(this.health - damage, 0);
         this.updateHealthBar(this.health);
-            this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => this.scrollingCombatText = undefined);
+        this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => this.scrollingCombatText = undefined);
         if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
         if (this.isFeared) {
             const strength = this.specialFear ? 0.05 : 0.1;
@@ -4194,6 +4194,7 @@ export default class Enemy extends Entity {
 
     enemyActionSuccess = () => {
         if (!this.attackedTarget) return;
+        let action = "";
         if (this.attackedTarget?.name === "player") {
            if (this.isRanged) this.scene.combatManager.checkPlayerSuccess();
            const shimmer = Math.random() * 101;
@@ -4213,9 +4214,9 @@ export default class Enemy extends Entity {
                 } else {
                     this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
                 };
-                const action = this.particleEffect.action;
+                action = this.particleEffect.action;
                 this.killParticle();
-                if (action === "hook") {
+                if (action === States.HOOK) {
                     this.hook(this.attackedTarget, 1500);
                     return;
                 };
@@ -4226,6 +4227,7 @@ export default class Enemy extends Entity {
                 } else {
                     this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
                 };
+                action = this.currentAction;
             }; 
             this.scene.combatManager.useStamina(1);
             if (this.attackedTarget.isMenacing || this.attackedTarget.isModerating || this.attackedTarget.isMultifaring || this.attackedTarget.isMystifying) {
@@ -4247,15 +4249,16 @@ export default class Enemy extends Entity {
             };
             if (this.particleEffect) {
                 this.scene.combatManager.computer({ type: "Weapon", payload: { action: this.particleEffect.action, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } });
-                const action = this.particleEffect.action;
+                action = this.particleEffect.action;
                 this.killParticle();
-                if (action === "hook") {
+                if (action === States.HOOK) {
                     this.hook(this.attackedTarget, 1500);
                     return;
                 };
             } else {
                 if (this.currentAction === "") return;
                 this.scene.combatManager.computer({ type: "Weapon", payload: { action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } });
+                action = this.currentAction;
             };
             if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.enemyID);
             if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.enemyID);
@@ -4264,6 +4267,11 @@ export default class Enemy extends Entity {
             if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
             if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
         };
+        // console.log("Action and Force Concerns: Size | Attribute | Action", action, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE], this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]], SWING_FORCE[action as keyof typeof SWING_FORCE])
+        this.applyKnockback(this.attackedTarget, 
+            SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] 
+            * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] 
+            * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         this.attackedTarget = undefined;
     };
 

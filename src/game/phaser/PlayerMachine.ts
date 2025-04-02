@@ -667,7 +667,6 @@ export default class PlayerMachine {
         this.player.currentAction = "";
         this.instincts();
     };
-
     onIdleEnter = () => {
         this.player.setVelocity(0);
         this.player.currentRound = 0;

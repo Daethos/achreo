@@ -435,7 +435,7 @@
         text-indent: 6px;
     }
 }
-@media screen and (min-width: 1200px) {
+@media screen and (min-width: 1400px) {
     #enemyHealthbarBorder, #playerHealthbarBorder {max-height:92px;}
     .border {
         border: 0.2em solid #fdf6d8; 

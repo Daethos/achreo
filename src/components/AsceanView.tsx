@@ -22,14 +22,15 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attrShow, setAttrShow] = createSignal(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const viewMargin = { margin: "2.5%" };
+    console.log(dimensions(), "Dims")
     const [positioning, setPositioning] = createSignal({
-        top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1200 ? "30%" : "50%",
-        left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1200 ? "25%" : "50%",
+        top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
+        left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
     });
     createEffect(() => {
         setPositioning({
-            top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1200 ? "30%" : "50%",
-            left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1200 ? "25%" : "50%",
+            top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
+            left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
         });
     });
     return <Show when={dimensions().ORIENTATION === "landscape"} fallback={

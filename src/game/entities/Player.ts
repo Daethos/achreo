@@ -15,7 +15,6 @@ import { Compiler } from "../../utility/ascean";
 import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
-import AoE from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
@@ -1454,7 +1453,7 @@ export default class Player extends Entity {
             this.highlightTarget(this.currentTarget);
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 // const enemy = this.enemyIdMatch();
-                if (!this.enemyIdMatch() && this.attackedTarget) this.currentTarget = this.attackedTarget;
+                // if (!this.enemyIdMatch() && this.attackedTarget) this.currentTarget = this.attackedTarget;
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
         } else if (this.highlight.visible) {

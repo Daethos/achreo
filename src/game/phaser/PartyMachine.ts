@@ -1,7 +1,6 @@
 import Party from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
 import { FRAME_COUNT } from "../entities/Entity";
-import AoE from "./AoE";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";

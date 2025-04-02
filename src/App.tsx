@@ -81,7 +81,7 @@ export default function App() {
             };
         };
         fetch();
-        createParticles();
+        // createParticles();
         // createTitle();
     };
     function menuOption(option: string): void {

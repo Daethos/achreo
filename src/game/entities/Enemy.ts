@@ -1249,12 +1249,12 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    // const specific = [States.CHIOMIC];
-                    // const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(special)) {
-                        this.stateMachine.setState(special);
-                    } else if (this.positiveMachine.isState(special)) {
-                        this.positiveMachine.setState(special);
+                    const specific = [States.CHIOMIC];
+                    const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(test)) {
+                        this.stateMachine.setState(test);
+                    } else if (this.positiveMachine.isState(test)) {
+                        this.positiveMachine.setState(test);
                     };
                     this.setSpecialCombat(true);
                 },

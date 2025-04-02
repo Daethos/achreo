@@ -155,7 +155,7 @@
     100% { opacity: 0.5; }
 }
 @keyframes pulse {
-    0% { transform: scale(0.9); opacity: 0.5; }
+    0% { transform: scale(0.9); opacity: 0.3; }
     100% { transform: scale(1.15); opacity: 0.9; }
 }
 @keyframes texty {
@@ -197,9 +197,9 @@
         var(--glow-color) 0%,
         transparent 75%
     );
-    opacity: 0.8;
+    opacity: 0.75;
     z-index: -1;
-    animation: pulse 3s infinite alternate;
+    animation: pulse 6s infinite ease alternate;
     aspect-ratio: 1;
 }
 

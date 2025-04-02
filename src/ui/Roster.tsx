@@ -172,7 +172,6 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                                 ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})
                             </span>
                         </p>
-                        {/*  ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)}) */}
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "constitution")}>Con</button>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "strength")}>Str</button>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "agility")}>Agi</button>

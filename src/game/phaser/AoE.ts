@@ -145,13 +145,13 @@ export class AoEPool {
 export default class AoE extends Phaser.Physics.Matter.Sprite {
     name: string = "";
     count: number = 1;
-    hit: any[] = [];
     bless: any[] = [];
-    timer: Phaser.Time.TimerEvent | undefined = undefined;
-    sensor: MatterJS.BodyType | undefined = undefined;
-    scene: Play;
-    manual: boolean = false;
+    hit: any[] = [];
     enhanced: boolean = false;
+    manual: boolean = false;
+    scene: Play;
+    sensor: MatterJS.BodyType | undefined = undefined;
+    timer: Phaser.Time.TimerEvent | undefined = undefined;
 
     constructor(scene: Play) {
         super(scene.matter.world, 0, 6, "target");
@@ -216,7 +216,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setPosition(0, 0);
         this.setAlpha(1);
         this.setAngle(0);
-        this.setScale(1);
 
         if (enemy !== undefined) {
             if (enemy.name === ENEMY) {
@@ -367,7 +366,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     protected setupBaseListener(conditions: {hitConditions: ListenerCondition[]; blessConditions: ListenerCondition[]; origin?: Enemy | Party;}) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
-            callback: (collision: { gameObjectB: any; bodyB: any }) => {
+            callback: (collision: any) => {
                 const { gameObjectB } = collision;
                 for (const condition of conditions.hitConditions) {
                     if ((gameObjectB?.aoeMask & condition.mask) && condition.filter(gameObjectB)) {
@@ -391,7 +390,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
-            callback: (collision: { gameObjectB: any; bodyB: any }) => {
+            callback: (collision: any) => {
                 const { gameObjectB } = collision;
                 this.hit = this.hit.filter(target => 
                     !conditions.hitConditions.some(cond => 

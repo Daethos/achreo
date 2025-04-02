@@ -20,6 +20,7 @@ import { Tutorial } from "./game/scenes/Tutorial";
 import Talents, { initTalents } from "./utility/talents";
 import QuestManager, { getQuest, initQuests, Quest } from "./utility/quests";
 import { v4 as uuidv4 } from "uuid";
+import { lightning } from "./utility/lightning";
 const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
 const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
@@ -448,100 +449,7 @@ export default function App() {
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
-    const lightning = () => {
-        const config = {
-            intensity: 1,       // 0-2 (default 1)
-            boltSize: 0.5,        // 0.5-3 (default 1)
-            frequency: 1,       // 0.1-3 (default 1)
-            duration: 1,        // 0.5-2 (default 1)
-            color: [150, 200, 255] // RGB base color
-        };
 
-        const canvas = document.getElementById('lightning') as HTMLCanvasElement;
-        const ctx = canvas?.getContext('2d');
-        let isActive = true;
-        let lightningInterval: number;
-        let activeTimers: any[] = [];
-
-        function createBolt() {
-            if (!isActive) return;
-
-            ctx?.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const startX = Math.random() > 0.5 ? 0 : canvas.width;
-            const startY = Math.random() * canvas.height * 0.8;
-            const segments = 15 + Math.floor(Math.random() * 10 * config.intensity);
-            const life = 50 + Math.random() * 100 * config.duration;
-            
-            ctx?.beginPath();
-            ctx?.moveTo(startX, startY);
-            
-            let x = startX;
-            let y = startY;
-            
-            for (let i = 0; i < segments; i++) {
-                x += (Math.random() * 100 - 50) * (startX === 0 ? 1 : -1) * config.boltSize;
-                y += Math.random() * 50 * config.boltSize;
-                x = Math.max(0, Math.min(x, canvas.width));
-                
-                
-                ctx?.lineTo(x, y);
-                
-                if (Math.random() > 0.7) {
-                ctx?.moveTo(x, y);
-                    ctx?.lineTo(
-                        x + (Math.random() * 40 - 20) * config.boltSize,
-                        y + Math.random() * 30 * config.boltSize
-                    );
-                    ctx?.moveTo(x, y);
-                };
-            };
-            
-            ctx!.strokeStyle = `rgba(${config.color.join(',')}, ${0.7 * config.intensity})`;
-            ctx!.lineWidth = 2 * config.boltSize;
-            ctx?.stroke();
-            
-            ctx!.strokeStyle = `rgba(200, 230, 255, ${0.3 * config.intensity})`;
-            ctx!.lineWidth = 8 * config.boltSize;
-            ctx?.stroke();
-          
-            const fadeTimer = setTimeout(() => {
-                ctx!.clearRect(0, 0, canvas.width, canvas.height);
-            }, life);
-
-            activeTimers.push(fadeTimer);
-        };
-
-        function startLightning() {
-            // Initial bolts
-            for (let i = 0; i < 3; i++) {
-                activeTimers.push(setTimeout(createBolt, i * 300) as unknown as number);
-            }
-            
-            // Continuous lightning
-            lightningInterval = setInterval(() => {
-                if (Math.random() > 0.5) createBolt();
-            }, 800 / config.frequency) as unknown as number;
-        };
-    
-        function stopLightning() {
-            clearInterval(lightningInterval);
-            activeTimers.forEach(timer => clearTimeout(timer));
-            activeTimers = [];
-            ctx?.clearRect(0, 0, canvas.width, canvas.height);
-        };
-
-        startLightning();
-
-        return stopLightning;
-        // for (let i = 0; i < 3; i++) {
-        //     setTimeout(createBolt, i * 300);
-        // };
-        
-        // setInterval(() => {
-        //     if (Math.random() > 0.5) createBolt();
-        // }, 800);
-    };
 
     const actions = {
         "Duel": (val: number) => summonEnemy(val),

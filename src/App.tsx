@@ -35,7 +35,6 @@ export default function App() {
     const [alert, setAlert] = createSignal<Toast>({ header: "", body: "", delay: 0, key: "", arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
-    // const [title, setTitle] = createSignal<string>("The Ascean");
     const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
@@ -48,6 +47,7 @@ export default function App() {
     const [show, setShow] = createSignal<boolean>(false);
     const [startGame, setStartGame] = createSignal<boolean>(false);
     const dimensions = useResizeListener();
+    var stopLightning: () => void;
     var phaserRef: IRefPhaserGame;
     var tips: string | number | NodeJS.Timeout | undefined =  undefined;
     onMount(() => fetchAsceans());
@@ -81,12 +81,12 @@ export default function App() {
             };
         };
         fetch();
-        // createParticles();
-        // createTitle();
+        stopLightning = lightning();
     };
     function menuOption(option: string): void {
         click.play();
         setMenu({ ...menu(), [option]: true });
+        stopLightning();
     };
     async function createCharacter(character: CharacterSheet): Promise<void> {
         creation.play();
@@ -448,48 +448,101 @@ export default function App() {
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
-    function createParticles() {
-        const runes = ["ᚨ", "ᛞ", "ᚦ", "ᛟ", "ᛇ", "ᛈ", "ᚠ", "ᚢ", "ᚦ", "ᚱ", "ᚲ", "ᚷ", "ᚹ", "ᚺ", "ᚾ", "ᛁ", "ᛃ", "ᛉ", "ᛊ", "ᛏ", "ᛒ", "ᛖ", "ᛗ", "ᛚ", "ᛜ"];
-        const container = document.querySelector('.menu-bg');
-
-        for (let i = 0; i < 100; i++) {
-            const rune = document.createElement('div');
-            rune.className = 'rune';
-            rune.textContent = runes[Math.floor(Math.random() * runes.length)];
-            rune.style.top = "-2.5vh";
-            rune.style.left = "-2.5vw";
-            rune.style.setProperty('--tx', `${Math.random() * 2 - 0.5}`);
-            rune.style.setProperty('--ty', `${Math.random() * 2 - 0.5}`);
-            rune.style.animationDuration = `${20 + Math.random() * 20}s`;
-            rune.style.animationDelay = `${Math.random() * 3}s`;
-            container?.appendChild(rune);
+    const lightning = () => {
+        const config = {
+            intensity: 1,       // 0-2 (default 1)
+            boltSize: 0.5,        // 0.5-3 (default 1)
+            frequency: 1,       // 0.1-3 (default 1)
+            duration: 1,        // 0.5-2 (default 1)
+            color: [150, 200, 255] // RGB base color
         };
 
+        const canvas = document.getElementById('lightning') as HTMLCanvasElement;
+        const ctx = canvas?.getContext('2d');
+        let isActive = true;
+        let lightningInterval: number;
+        let activeTimers: any[] = [];
+
+        function createBolt() {
+            if (!isActive) return;
+
+            ctx?.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const startX = Math.random() > 0.5 ? 0 : canvas.width;
+            const startY = Math.random() * canvas.height * 0.8;
+            const segments = 15 + Math.floor(Math.random() * 10 * config.intensity);
+            const life = 50 + Math.random() * 100 * config.duration;
+            
+            ctx?.beginPath();
+            ctx?.moveTo(startX, startY);
+            
+            let x = startX;
+            let y = startY;
+            
+            for (let i = 0; i < segments; i++) {
+                x += (Math.random() * 100 - 50) * (startX === 0 ? 1 : -1) * config.boltSize;
+                y += Math.random() * 50 * config.boltSize;
+                x = Math.max(0, Math.min(x, canvas.width));
+                
+                
+                ctx?.lineTo(x, y);
+                
+                if (Math.random() > 0.7) {
+                ctx?.moveTo(x, y);
+                    ctx?.lineTo(
+                        x + (Math.random() * 40 - 20) * config.boltSize,
+                        y + Math.random() * 30 * config.boltSize
+                    );
+                    ctx?.moveTo(x, y);
+                };
+            };
+            
+            ctx!.strokeStyle = `rgba(${config.color.join(',')}, ${0.7 * config.intensity})`;
+            ctx!.lineWidth = 2 * config.boltSize;
+            ctx?.stroke();
+            
+            ctx!.strokeStyle = `rgba(200, 230, 255, ${0.3 * config.intensity})`;
+            ctx!.lineWidth = 8 * config.boltSize;
+            ctx?.stroke();
+          
+            const fadeTimer = setTimeout(() => {
+                ctx!.clearRect(0, 0, canvas.width, canvas.height);
+            }, life);
+
+            activeTimers.push(fadeTimer);
+        };
+
+        function startLightning() {
+            // Initial bolts
+            for (let i = 0; i < 3; i++) {
+                activeTimers.push(setTimeout(createBolt, i * 300) as unknown as number);
+            }
+            
+            // Continuous lightning
+            lightningInterval = setInterval(() => {
+                if (Math.random() > 0.5) createBolt();
+            }, 800 / config.frequency) as unknown as number;
+        };
+    
+        function stopLightning() {
+            clearInterval(lightningInterval);
+            activeTimers.forEach(timer => clearTimeout(timer));
+            activeTimers = [];
+            ctx?.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
+        startLightning();
+
+        return stopLightning;
+        // for (let i = 0; i < 3; i++) {
+        //     setTimeout(createBolt, i * 300);
+        // };
+        
+        // setInterval(() => {
+        //     if (Math.random() > 0.5) createBolt();
+        // }, 800);
     };
-    // function createTitle() {
-    //     setTimeout(() => {
-    //         if (loading() || ascean() || menu()?.choosingCharacter || menu()?.creatingCharacter) return;
-    //         createTitle();
-    //         const num = Math.random();
-    //         if (num > 0.9) {
-    //            setTitle( "ᛏhe Ascean");
-    //         } else if (num > 0.8) {
-    //            setTitle( "Tᚺe Ascean");
-    //         } else if (num > 0.7) {
-    //            setTitle( "Thᛖ Ascᛖan");
-    //         } else if (num > 0.6) {
-    //            setTitle("The ᚨsceᚨn");
-    //         } else if (num > 0.5) {
-    //            setTitle( "The Asᚲean");
-    //         } else if (num > 0.4) {
-    //             setTitle( "The Asceaᛜ");
-    //         } else if (num > 0.2) {
-    //             setTitle( "ᛏᚺᛖ ᚨsᚲᛖᚨᛜ");
-    //         } else {
-    //             setTitle("The Ascean");
-    //         };
-    //     }, 2000);
-    // };
+
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -670,6 +723,7 @@ export default function App() {
             </>
         ) : ( 
             <div class="menu-bg">
+                <canvas id="lightning"></canvas>
             <Suspense fallback={<Puff color="gold"/>}>
             <div class="cornerTL super" style={{ "text-shadow": "0em 0em 0.1em #ffd700" }}>The Ascean v0.0.1</div>
             <Show when={menu().loading === false} fallback={<div class="superCenter"><Puff color="gold"/></div>}>

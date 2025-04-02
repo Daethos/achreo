@@ -265,6 +265,38 @@
 @keyframes invisible {0% {opacity: 1;}100% {opacity: 0;}}
 @keyframes fadein {0% {opacity:0}100% {opacity:1}}
 @keyframes fadeout {0% {opacity:1}100% {opacity:0}}
+.lightning-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    opacity: 0.7;
+    overflow: hidden;
+}
+  
+svg.lightning {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    filter: url(#lightning-filter);
+}
+  
+svg.defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+#lightning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+  }
 .superfade-in {animation: 5s glowing infinite;}
 .superfade-out {animation: 3s 1 invisible;}
 .super-in {animation: 3s 1 fadein;}

@@ -215,7 +215,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
         }}></div>
         </div>
         <img id="enemyHealthbarBorder" src={"../assets/gui/enemy-healthbar-bold.png"} alt="Health Bar" style={{ "z-index": -1 }} />
-        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={itemStyle(state()?.computerWeapons?.[0]?.rarity as string)}>
+        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), "height": "7.5vh"}}>
             <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
         </div>
         {/* <button class="highlight center" onClick={() => createPrayer()}>

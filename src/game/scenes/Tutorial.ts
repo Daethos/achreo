@@ -428,12 +428,12 @@ export class Tutorial extends Phaser.Scene {
             let data: Compiler[] = this.registry.get("enemies");
             for (let j = 0; j < data.length; j++) {
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
-                enemy.setPosition(this.player.x - 50, this.player.y);
                 this.enemies.push(enemy);
+                enemy.setPosition(this.player.x - 50, this.player.y);
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
-                    this.player.targets.push(enemy);
-                        this.player.targetEngagement(enemy.enemyID);
+                    // this.player.targets.push(enemy);
+                    this.player.targetEngagement(enemy.enemyID);
                 }, undefined, this);
             };
         }, undefined, this);

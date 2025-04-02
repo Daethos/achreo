@@ -472,11 +472,11 @@ export default class Player extends Entity {
         if (!enemy) return;
         if (this.isNewEnemy(enemy)) this.targets.push(enemy);
         if (this.scene.state.enemyID !== id) this.scene.hud.setupEnemy(enemy);
+        this.currentTarget = enemy;
+        this.highlightTarget(enemy);
         this.inCombat = true;
         this.scene.combatEngaged(true);
         this.targetID = id;
-        this.currentTarget = enemy;
-        this.highlightTarget(enemy);
         if (this.scene.party.length) {
             for (let i = 0; i < this.scene.party.length; i++) {
                 if (!this.scene.party[i].inComputerCombat) this.scene.party[i].checkComputerEnemyCombatEnter(enemy);
@@ -1457,9 +1457,7 @@ export default class Player extends Entity {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
-                // const enemy = this.enemyIdMatch();
-                // if (!this.enemyIdMatch() && this.attackedTarget) this.currentTarget = this.attackedTarget;
-                this.scene.hud.setupEnemy(this.currentTarget);
+                if (this.currentTarget.name === "enemy") this.scene.hud.setupEnemy(this.currentTarget);
             };
         } else if (this.highlight.visible) {
             this.removeHighlight();

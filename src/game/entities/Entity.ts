@@ -496,9 +496,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     
     applyKnockback(target: Enemy | Player | Party, force = 10) {
-        if (Number.isNaN(force) || force <= 0) return;
+        if (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isCasting) return;
+        force *= 0.65;
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
-        // console.log({x: Math.cos(angle) * force,y: Math.sin(angle) * force,force});
         this.scene.tweens.add({
             targets: target,
             ease: Phaser.Math.Easing.Expo.Out,
@@ -507,6 +507,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             duration: 250
         });
     };
+
     getDirection = () => {
         if (this.velocity?.x as number < 0) {
             this.setFlipX(true);
@@ -521,6 +522,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
         };
     };
+
     handleIdleAnimations = () => {
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
@@ -531,6 +533,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.anims.play(this.isStealthing ? FRAMES.CROUCH_IDLE : FRAMES.IDLE, true);
         };
     };
+
     handleMovementAnimations = () => {
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
@@ -542,7 +545,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.anims.play(FRAMES.RUNNING, true);
         };
     };
+
     handleTerrain = (): number => (this.isClimbing || this.inWater) ? 0.65 : 1;
+
     moving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
@@ -551,11 +556,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     xCheck = () => this.velocity?.x !== 0;
     ailments = (): number => {
         let total = 0;
-        if (this.isConfused) total+=2;
-        if (this.isFeared) total+=2;
-        if (this.isParalyzed) total+=2;
-        if (this.isPolymorphed) total+=2;
-        if (this.isStunned) total+=2;
+        if (this.isConfused) total += 2;
+        if (this.isFeared) total += 2;
+        if (this.isParalyzed) total += 2;
+        if (this.isPolymorphed) total += 2;
+        if (this.isStunned) total += 2;
 
         if (this.isFrozen) total++;
         if (this.isRooted) total++;
@@ -565,8 +570,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     halesness = (): number => {
         let total = 0;
-        if (this.reactiveBubble) total +=2;
-        if (this.negationBubble) total +=2;
+        if (this.reactiveBubble) total += 2;
+        if (this.negationBubble) total += 2;
         if (this.isShadowing) total++;
         if (this.isSprinting) total++;
         if (this.isTethering) total++;

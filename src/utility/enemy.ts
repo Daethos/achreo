@@ -5,7 +5,7 @@ import { States } from "../game/phaser/StateMachine";
 import { Compiler, asceanCompiler } from "./ascean";
 import Equipment from "../models/equipment";
 
-export const BROADCAST_DEATH = "broadcast-comptuer-death";
+export const BROADCAST_DEATH = "broadcast-computer-death";
 export const COMPUTER_BROADCAST = "computer-broadcast";
 export const NEW_COMPUTER_ENEMY_HEALTH = "newComputerEnemyHealth";
 export const UPDATE_COMPUTER_COMBAT = "update-computer-combat";
@@ -376,7 +376,7 @@ export function fetchArena(enemies: ARENA_ENEMY[]) {
         console.warn(err, "Error Retrieving Enemies");
     };
 };
-export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5,mastery: ["constitution","strength","agility","achre","caeren","kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
+export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5, mastery: ["constitution", "strength", "agility", "achre", "caeren", "kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
     try {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {

@@ -22,7 +22,6 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attrShow, setAttrShow] = createSignal(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const viewMargin = { margin: "2.5%" };
-    console.log(dimensions(), "Dims")
     const [positioning, setPositioning] = createSignal({
         top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
         left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
@@ -85,34 +84,32 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 </div>
             </div>
         </div>
-        {/* <div class="creature-heading center">
-        </div> */}
-            <Show when={show()}>
-                <div class="modal" onClick={() => setShow(!show())}>
-                <Suspense fallback={<Puff color="gold" />}>
-                    <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
-                </Suspense>
-                </div>
-            </Show>
-            <Show when={attrShow()}>
-            <div class="modal" onClick={() => setAttrShow(!attrShow())}>
-                <AttributeModal attribute={attribute()}/>
-            </div> 
-            </Show>
-            <Show when={attributeDisplay().show}>
-                <div class="modal" onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
-                    <AttributeNumberModal attribute={attributeDisplay} />
-                </div>
-            </Show>
-            <Show when={showFaith()}>
-                <div class="modal" onClick={() => setShowFaith(!showFaith())}>
-                    <FaithModal faith={ascean().faith} />
-                </div>
-            </Show> 
-            <Show when={showOrigin()}>
-                <div class="modal" onClick={() => setShowOrigin(!showOrigin())}>
-                    <OriginModal origin={ascean().origin} />
-                </div>
-            </Show>
+        <Show when={show()}>
+            <div class="modal" onClick={() => setShow(!show())}>
+            <Suspense fallback={<Puff color="gold" />}>
+                <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+            </Suspense>
+            </div>
+        </Show>
+        <Show when={attrShow()}>
+        <div class="modal" onClick={() => setAttrShow(!attrShow())}>
+            <AttributeModal attribute={attribute()}/>
+        </div> 
+        </Show>
+        <Show when={attributeDisplay().show}>
+            <div class="modal" onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                <AttributeNumberModal attribute={attributeDisplay} />
+            </div>
+        </Show>
+        <Show when={showFaith()}>
+            <div class="modal" onClick={() => setShowFaith(!showFaith())}>
+                <FaithModal faith={ascean().faith} />
+            </div>
+        </Show> 
+        <Show when={showOrigin()}>
+            <div class="modal" onClick={() => setShowOrigin(!showOrigin())}>
+                <OriginModal origin={ascean().origin} />
+            </div>
+        </Show>
     </Show>;
 };

@@ -1659,7 +1659,6 @@ export default class Party extends Entity {
         } else {
             this.applyKnockback(this.attackedTarget, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };
-        
     };
 
     update(dt: number) {

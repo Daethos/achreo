@@ -630,10 +630,11 @@ export class Game extends Scene {
 
     killEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
+        EventBus.emit("remove-computer-enemy", enemy.enemyID);
         if (enemy.isCurrentTarget) {
             this.player.disengage();
         };
-        this.time.delayedCall(500, () => {
+        this.time.delayedCall(1000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();
             enemy.destroy();

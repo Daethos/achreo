@@ -338,6 +338,7 @@ export default class Enemy extends Entity {
         EventBus.off("convert-enemy", this.enemyConversion);
         EventBus.off("enemy-luckout", this.luckoutUpdate);
         EventBus.off("update-enemy-health", this.healthUpdate);
+        EventBus.off("remove-computer-enemy", this.removeComputerEnemy);
         if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) {
             this.isShimmering = false;
@@ -363,6 +364,7 @@ export default class Enemy extends Entity {
         EventBus.on("enemy-luckout", this.luckoutUpdate);
         EventBus.on("convert-enemy", this.enemyConversion);
         EventBus.on("update-enemy-health", this.healthUpdate);
+        EventBus.on("remove-computer-enemy", this.removeComputerEnemy);
     };
 
     ping = () => {
@@ -475,6 +477,15 @@ export default class Enemy extends Entity {
         };
         return newSheet;
     };
+
+    removeComputerEnemy = (id: string) => {
+        if (this.currentTarget && this.currentTarget.enemyID === id) {
+            console.log("removing computer enemy");
+            this.clearComputerCombatWin(id);
+        };
+        this.enemies = this.enemies.filter(e => e.id !== id);
+    };
+
     /*
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
     */
@@ -1180,12 +1191,13 @@ export default class Enemy extends Entity {
             const newId = this.enemies[0].id;
             const newEnemy = this.scene.enemies.find((e) => newId === e.enemyID);
             const newPartyEnemy = this.scene.party.find((e) => newId === e.enemyID);
-            if (newEnemy && newEnemy.health > 0) {
+            if (this.isValidTarget(newEnemy)) {
                 this.currentTarget = newEnemy;
-            } else if (newPartyEnemy && newPartyEnemy.health > 0) {
+            } else if (this.isValidTarget(newPartyEnemy as Party)) {
                 this.currentTarget = newPartyEnemy;
             } else if (this.scene.player.playerID === newId && this.scene.player.health > 0) {
                 this.currentTarget = this.scene.player;
+                if (!this.computerEnemies()) this.inComputerCombat = false;
             } else {
                 this.clearComputerCombatWin(newId);
             };
@@ -1662,7 +1674,7 @@ export default class Enemy extends Entity {
             delay: 500,
             callback: () => {
                 // this.scene.navMesh.debugDrawClear();
-                if (!this.currentTarget || !this.currentTarget.body || !this.scene?.navMesh || this.isDeleting) {
+                if (!this.currentTarget || !this.currentTarget.body || !this.currentTarget.position || !this.scene?.navMesh || this.isDeleting) {
                     this.path = [];
                     return;
                 };
@@ -1687,7 +1699,7 @@ export default class Enemy extends Entity {
         }); 
     }; 
     onChaseUpdate = (_dt: number) => {
-        if (!this.currentTarget || !this.currentTarget.body) {
+        if (!this.currentTarget || !this.currentTarget.body  || !this.currentTarget.position) {
             this.stateMachine.setState(States.LEASH);
             return;
         };
@@ -1725,12 +1737,31 @@ export default class Enemy extends Entity {
         };
     };
 
+    computerEnemies = () => this.enemies.some((e: Enemy) => e.name === "enemy");
+
     onCombatEnter = () => {
-        if ((this.inCombat === false && this.inComputerCombat === false) || !this.currentTarget || this.health <= 0 || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || (this.inComputerCombat && this.currentTarget?.health <= 0)) {
+        if (!this.currentTarget || this.health <= 0) {
             this.inCombat = false;
             this.inComputerCombat = false;
+            // this.currentTarget = undefined;
             return;
         };
+        if (this.inCombat && this.scene.state.newPlayerHealth <= 0) {
+            this.inCombat = false;
+        };
+        if (this.inComputerCombat && this.currentTarget?.name === "enemy" && this.currentTarget?.health <= 0) {
+            this.clearComputerCombatWin(this.currentTarget.enemyID);
+            if (!this.computerEnemies()) this.inComputerCombat = false;
+        };
+        if (this.inCombat === false && this.inComputerCombat === false) {
+            // this.currentTarget = undefined;
+            return;
+        };
+        // if ((this.inCombat === false && this.inComputerCombat === false) || !this.currentTarget || this.health <= 0 || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || (this.inComputerCombat && this.currentTarget?.health <= 0)) {
+        //     this.inCombat = false;
+        //     this.inComputerCombat = false;
+        //     return;
+        // };
         this.frameCount = 0;
         this.enemyAnimation();
         if (this.healthbar.visible === false) this.healthbar.setVisible(true);
@@ -3785,7 +3816,7 @@ export default class Enemy extends Entity {
         this.consumedTimer = this.scene.time.addEvent({
             delay: 400,
             callback: () => {
-                if (this.currentTarget && this.currentTarget.body) {
+                if (this.currentTarget && this.currentTarget.body && this.currentTarget.position) {
                     const direction = this.currentTarget.position.subtract(this.position);
                     direction.normalize();
                     this.setVelocity(direction.x * (this.speed / 2), direction.y * (this.speed / 2)); // 0.75
@@ -4359,28 +4390,48 @@ export default class Enemy extends Entity {
         };
         return false;  // Clear line of sight
     };
-
+    canEvaluateCombat = () => {
+        return !this.isCasting && !this.isSuffering() && !this.isHurt && !this.isContemplating && !this.isDeleting && !this.isDefeated; // && this.currentTarget?.body?.position && this.scene?.children.exists(this.currentTarget)
+    };
+    cleanUpCombat() {
+        if (this.inComputerCombat && this.currentTarget && this.health > 0) {
+            const enemy = this.computerEnemyAttacker();
+            if (enemy) {
+                this.checkComputerEnemyCombatEnter(enemy);
+                return;
+            };
+        };
+        if (this.inCombat || this.inComputerCombat) { // Making a pass through
+            this.clearComputerCombatWin("NULL");
+        };
+        if (!this.isValidTarget(this.currentTarget) && this.health > 0 && !this.stateMachine.isCurrentState(States.LEASH)) {
+            this.stateMachine.setState(States.LEASH);
+        };
+        this.inCombat = false;
+        this.inComputerCombat = false;
+        this.currentAction = "";
+        this.enemies = [];
+    };
+    getCombatDirection() {
+        try {
+            return this.currentTarget.position.clone().subtract(this.position);
+        } catch (e) {
+            console.error("Combat direction error:", e);
+            this.cleanUpCombat();
+            return null;
+        };
+    };
+    isValidTarget(target: Enemy | Party | Player) {
+        return target?.active && target?.body?.position && target.health > 0 && !target.isDeleting && !target.isDefeated; // && this.scene?.children.exists(target);
+    };
     evaluateCombatDistance = () => {
-        if (this.isCasting || this.isSuffering() || this.isHurt || this.isContemplating || this.isDeleting || this.isDefeated || this.stateMachine.isCurrentState(States.DEFEATED)) return;
-        if (this.currentTarget === undefined || this.currentTarget.body === undefined || (this.inCombat === false && this.inComputerCombat === false) || (this.inCombat && this.scene.state.newPlayerHealth <= 0) || this.health <= 0) {
-            if (this.inComputerCombat || this.currentTarget) {
-                const enemy = this.computerEnemyAttacker();
-                if (enemy) {
-                    this.checkComputerEnemyCombatEnter(enemy);
-                    return;
-                };
-            };
-            if (this.health > 0 && !this.stateMachine.isCurrentState(States.LEASH)) {
-                // console.log(`${this.ascean.name} LEASHING in evaluateCombatDistance. State: ${this.stateMachine.getCurrentState()?.toUpperCase()}`);
-                this.stateMachine.setState(States.LEASH);
-            };
-            this.inCombat = false;
-            this.inComputerCombat = false;
-            this.currentAction = "";
-            this.enemies = [];
+        if (!this.canEvaluateCombat()) return;
+        if (!this.isValidTarget(this.currentTarget)) {
+            this.cleanUpCombat();
             return;
         };
-        let direction = this.currentTarget.position.subtract(this.position);
+        const direction = this.getCombatDirection();
+        if (!direction) return;
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
         if (direction.length() >= DISTANCE.CHASE * multiplier) { // Switch to CHASE MODE.

@@ -701,7 +701,7 @@ export const ENEMY_ENEMIES = {
     "Leaf": ["Kingsman", "Northren Wanderer"],
     "Lorian": ["Mavrios Ilios"],
     "Mavrios Ilios": ["Laetrois Ath'Shaorah", "Lorian"],
-    "Mirio": ["Evrio Lorian Peroumes"],
+    "Mirio Lorian Kyr'na": ["Evrio Lorian Peroumes"],
     "Sera Lorian": ["Evrio Lorian Peroumes", "Dorien Caderyn"],
     "Synaethi Spiras": ["Fierous Ashfyre", "Torreous Ashfyre"],
     "Torreous Ashfyre": ["Synaethi Spiras"],

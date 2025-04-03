@@ -120,10 +120,10 @@ export class AoEPool {
             this.typePools.set(aoe.name, []);
         };
         this.typePools.get(aoe.name)!.push(aoe);
-        console.debug(`[Pool] Released ${aoe.name}`, {
-            activeCount: this.activeAoEs.length,
-            typePoolSize: this.typePools.get(aoe.name)?.length || 0
-        });
+        // console.log(`[Pool] Released ${aoe.name}`, {
+        //     activeCount: this.activeAoEs.length,
+        //     typePoolSize: this.typePools.get(aoe.name)?.length || 0
+        // });
     };
 
     releaseAll() {
@@ -143,15 +143,15 @@ export class AoEPool {
 };
 
 export default class AoE extends Phaser.Physics.Matter.Sprite {
-    name: string = "";
-    count: number = 1;
-    bless: any[] = [];
-    hit: any[] = [];
-    enhanced: boolean = false;
-    manual: boolean = false;
-    scene: Play;
-    sensor: MatterJS.BodyType | undefined = undefined;
-    timer: Phaser.Time.TimerEvent | undefined = undefined;
+    private count: number = 1;
+    private bless: any[] = [];
+    private hit: any[] = [];
+    private enhanced: boolean = false;
+    private manual: boolean = false;
+    private sensor: MatterJS.BodyType | undefined = undefined;
+    private timer: Phaser.Time.TimerEvent | undefined = undefined;
+    public name: string = "";
+    public scene: Play;
 
     constructor(scene: Play) {
         super(scene.matter.world, 0, 6, "target");

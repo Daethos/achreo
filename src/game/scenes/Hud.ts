@@ -491,27 +491,7 @@ export class Hud extends Phaser.Scene {
             };
         });
         EventBus.on("add-postfx", this.addPostFxPipeline);
-        EventBus.on("switch-scene", (data: {current: string, next: string}) => {
-            const { current, next } = data;
-            this.prevScene = current;
-            this.currScene = next;
-            this.logger.log(`Console: Moving from ${current} to ${next}.`);
-            const currentScene = this.scene.get(current) as Play;
-            const nextScene = this.scene.get(next) as Play;
-            currentScene.switchScene(current);
-            this.time.delayedCall(1250, () => {
-                const asleep = this.scene.isSleeping(next);
-                const paused = this.scene.isPaused(next);
-                const active = this.scene.isActive(next);
-                if (active || asleep || paused) {
-                    nextScene.resumeScene();
-                    this.setPostFx(this.settings.postFx.enable);
-                } else {
-                    this.scene.launch(next, this);
-                };
-                this.scene.bringToTop(this);
-            });
-        });
+        EventBus.on("switch-scene", this.switchScene);
         EventBus.on("update-joystick-color", (data: { color: number, side: string, type: string }) => {
             const { side, color, type } = data;
             switch (side) {
@@ -606,5 +586,28 @@ export class Hud extends Phaser.Scene {
     showDialog = (dialogTag: boolean) => {
         EventBus.emit("blend-game", { dialogTag });
         this.smallHud.activate("dialog", dialogTag);
+    };
+
+    switchScene = (data: {current: string; next: string;}) => {
+        const { current, next } = data;
+        this.prevScene = current;
+        this.currScene = next;
+        this.logger.log(`Console: Moving from ${current} to ${next}.`);
+        const currentScene = this.scene.get(current) as Play;
+        const nextScene = this.scene.get(next) as Play;
+        currentScene.switchScene(current);
+        this.time.delayedCall(1250, () => {
+            const asleep = this.scene.isSleeping(next);
+            const paused = this.scene.isPaused(next);
+            const active = this.scene.isActive(next);
+            if (active || asleep || paused) {
+                nextScene.resumeScene();
+                this.setPostFx(this.settings.postFx.enable);
+            } else {
+                this.scene.launch(next, this);
+            };
+            this.scene.bringToTop(this);
+            EventBus.emit("update-enemies", []);
+        });
     };
 };

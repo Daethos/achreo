@@ -478,6 +478,35 @@ export default class Enemy extends Entity {
         return newSheet;
     };
 
+    checkConfuse = () => {
+        if (!this.specialConfuse) {
+            this.isConfused = false;
+        } else {
+            const chance = Math.random() < 0.1 + this.confuseCount;
+            if (chance) {
+                this.specialCombatText = this.scene.showCombatText("Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
+                this.isConfused = false;
+            } else {
+                this.confuseCount += 0.1;
+            };
+        };
+    };
+
+    checkFear = () => {
+        const strength = this.specialFear ? 0.05 : 0.1;
+        const chance = Math.random() < strength + this.fearCount;
+        if (chance) {
+            this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
+            this.isFeared = false;
+        } else {
+            this.fearCount += strength;
+        };
+    };
+
+    checkHurt = () => {
+        if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
+    };
+
     removeComputerEnemy = (id: string) => {
         if (this.currentTarget && this.currentTarget.enemyID === id) {
             console.log("removing computer enemy");
@@ -500,30 +529,9 @@ export default class Enemy extends Entity {
         this.health = Math.max(this.health - damage, 0);
         this.updateHealthBar(this.health);
         this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => this.scrollingCombatText = undefined);
-        if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
-        if (this.isFeared) {
-            const strength = this.specialFear ? 0.05 : 0.1;
-            const chance = Math.random() < strength + this.fearCount;
-            if (chance) {
-                this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                this.isFeared = false;
-            } else {
-                this.fearCount += strength;
-            };
-        };
-        if (this.isConfused) {
-            if (!this.specialConfuse) {
-                this.isConfused = false;
-            } else {
-                const chance = Math.random() < 0.1 + this.confuseCount;
-                if (chance) {
-                    this.specialCombatText = this.scene.showCombatText("Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                    this.isConfused = false;
-                } else {
-                    this.confuseCount += 0.1;
-                };
-            };
-        };
+        this.checkHurt();
+        if (this.isFeared) this.checkFear();
+        if (this.isConfused) this.checkConfuse();
         if (this.isPolymorphed) this.isPolymorphed = false;
         if (this.isMalicing) this.malice(origin);
         if (this.isMending) this.mend(origin);
@@ -640,29 +648,9 @@ export default class Enemy extends Entity {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, "bone", e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
-            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
-            if (this.isFeared) {
-                const chance = Math.random() < 0.1 + this.fearCount;
-                if (chance) {
-                    this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                    this.isFeared = false;
-                } else {
-                    this.fearCount += 0.1;
-                };
-            };
-            if (this.isConfused) {
-                if (!this.specialConfuse) {
-                    this.isConfused = false;
-                } else {
-                    const chance = Math.random() < 0.1 + this.confuseCount;
-                    if (chance) {
-                        this.specialCombatText = this.scene.showCombatText("Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                        this.isConfused = false;
-                    } else {
-                        this.confuseCount += 0.1;
-                    };
-                };
-            };
+            this.checkHurt();
+            if (this.isFeared) this.checkFear();
+            if (this.isConfused) this.checkConfuse();
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend(enemyID);
@@ -716,29 +704,9 @@ export default class Enemy extends Entity {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = criticalSuccess ? `${damage} (Critical)` : glancingBlow ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, "bone", criticalSuccess, false, () => this.scrollingCombatText = undefined);
-            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
-            if (this.isFeared) {
-                const chance = Math.random() < 0.1 + this.fearCount;
-                if (chance) {
-                    this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                    this.isFeared = false;
-                } else {
-                    this.fearCount += 0.1;
-                };
-            };
-            if (this.isConfused) {
-                if (!this.specialConfuse) {
-                    this.isConfused = false;
-                } else {
-                    const chance = Math.random() < 0.1 + this.confuseCount;
-                    if (chance) {
-                        this.specialCombatText = this.scene.showCombatText("Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                        this.isConfused = false;
-                    } else {
-                        this.confuseCount += 0.1;
-                    };
-                };
-            };
+            this.checkHurt();
+            if (this.isFeared) this.checkFear();
+            if (this.isConfused) this.checkConfuse();
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.malice(this.scene.player.playerID);
             if (this.isMending) this.mend(this.scene.player.playerID);
@@ -4394,9 +4362,9 @@ export default class Enemy extends Entity {
         return !this.isCasting && !this.isSuffering() && !this.isHurt && !this.isContemplating && !this.isDeleting && !this.isDefeated; // && this.currentTarget?.body?.position && this.scene?.children.exists(this.currentTarget)
     };
     cleanUpCombat() {
-        if (this.inComputerCombat && this.currentTarget && this.health > 0) {
+        if (this.inComputerCombat && this.currentTarget?.active && this.health > 0) {
             const enemy = this.computerEnemyAttacker();
-            if (enemy) {
+            if (enemy?.active) {
                 this.checkComputerEnemyCombatEnter(enemy);
                 return;
             };

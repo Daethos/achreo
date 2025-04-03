@@ -1,4 +1,4 @@
-import Party from "../entities/PartyComputer";
+import Party, { COLOR } from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
 import { FRAME_COUNT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
@@ -47,6 +47,7 @@ export default class PlayerMachine {
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate })
             .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
             .addState(States.LULL, { onEnter: this.onLullEnter }) // onUpdate: this.onLullUpdate
+            .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
             .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
             .addState(States.FOLLOW, { onEnter: this.onFollowEnter, onUpdate: this.onFollowUpdate, onExit: this.onFollowExit })
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
@@ -148,6 +149,29 @@ export default class PlayerMachine {
         } else {
             this.positiveMachine.setState(States.CLEAN);
         };
+    };
+
+    onHurtEnter = () => {
+        this.player.clearAnimations();
+        this.player.clearTint();
+        this.player.setStatic(true);
+        this.player.hurtTime = 0;
+    };
+    onHurtUpdate = (dt: number) => {
+        this.player.hurtTime += dt;
+        if (this.player.hurtTime >= 300) this.player.isHurt = false;
+        if (!this.player.isHurt) {
+            if (this.player.inComputerCombat === true && this.player.health > 0) {
+                this.stateMachine.setState(States.COMPUTER_COMBAT);
+            } else if (this.player.health > 0) {
+                this.stateMachine.setState(States.IDLE);
+            };
+        };
+    };
+    onHurtExit = () => {
+        this.player.isHurt = false;
+        this.player.setTint(COLOR);
+        this.player.setStatic(false);
     };
 
     onChaseEnter = () => {

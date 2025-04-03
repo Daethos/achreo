@@ -53,6 +53,7 @@ export default class PlayerMachine {
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
             .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter, onUpdate: this.onDefeatedUpdate, onExit: this.onDefeatedExit })
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
+            .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
@@ -393,6 +394,29 @@ export default class PlayerMachine {
                 this.stateMachine.setState(States.CHASE);
             };
         };
+    };
+
+    onHurtEnter = () => {
+        this.player.clearAnimations();
+        this.player.clearTint();
+        this.player.setStatic(true);
+        this.player.hurtTime = 0;
+    };
+    onHurtUpdate = (dt: number) => {
+        this.player.hurtTime += dt;
+        if (this.player.hurtTime >= 300) this.player.isHurt = false;
+        if (!this.player.isHurt) {
+            if (this.player.inCombat === true && this.player.health > 0) {
+                this.stateMachine.setState(States.COMBAT);
+            } else if (this.player.health > 0) {
+                this.stateMachine.setState(States.IDLE);
+            };
+        };
+    };
+    onHurtExit = () => {
+        this.player.isHurt = false;
+        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+        this.player.setStatic(false);
     };
 
     onChaseEnter = () => {

@@ -51,7 +51,7 @@ const ORIGIN = {
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 
-const COLOR = 0x00FF00;
+export const COLOR = 0x00FF00;
 const TARGET_COLOR = 0xFFC700;
 export default class Party extends Entity {
     playerID: string;
@@ -115,6 +115,7 @@ export default class Party extends Entity {
     combatSpecials: any[];
     enemies: ENEMY[] | any[] = [];
     partyPosition: number;
+    hurtTime: number = 0;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
@@ -1561,6 +1562,10 @@ export default class Party extends Entity {
         };
         if (this.isFeared && !this.sansSuffering("isFeared") && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isHurt && !this.sansSuffering("isHurt") && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
+            this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
         if (this.isParalyzed && !this.sansSuffering("isParalyzed") && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {

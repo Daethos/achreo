@@ -311,7 +311,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             text = faction[concern.toLowerCase()] as string;
         };
     
-        // console.log(text, concern, "Text?");
         const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000
         return <div class="skill-bar animate-flicker">
             <p class="skill-bar-text fadeInScale">{text}: {positive ? `${Math.floor(faction.reputation)} / ${num}` : `${Math.floor(faction.reputation)} / -${num}`}</p>
@@ -752,13 +751,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             <p>Get Exp</p>
                         </button> */}
                         <div class="animate-flicker" style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
-                        
                         <Show when={ascean().experience >= ascean().level * 1000}>
                             <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
                             </button>
                         </Show>
-                        {/* margin: 5% auto 2.5% */}
                         <div class="gold" style={dimensions().ORIENTATION === "landscape" ? { "font-size": dimensions().WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
                             {combat()?.player?.name}
                         </div>
@@ -767,13 +764,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 <HealthBar combat={combat} enemy={false} game={game} />
                             </div>
                         </Suspense>
-                        {/* margin-top: 7.5% */}
                         <div style={dimensions().ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "7.5%" : "2.5%", transform: dimensions().WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                             </Suspense>
                         </div>
-                        {/* margin-top: -5% */}
                         <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "-2%" : "-5%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <ExperienceBar ascean={ascean} game={game} />

@@ -505,7 +505,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             ease: Phaser.Math.Easing.Expo.Out,
             x: target.x + Math.cos(angle) * force,
             y: target.y + Math.sin(angle) * force,
-            duration: 250,
+            duration: 300,
             // onComplete: () => target.anims.resume()
         });
     };

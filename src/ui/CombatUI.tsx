@@ -14,21 +14,18 @@ import StaminaModal from "../components/StaminaModal";
 import GraceModal from "../components/GraceModal";
 import { createHealthDisplay } from "../utility/health";
 import Settings from "../models/settings";
-import { Store } from "solid-js/store";
-import { IRefPhaserGame } from "../game/PhaserGame";
 import { useResizeListener } from "../utility/dimensions";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
 interface Props {
-    instance: Store<IRefPhaserGame>;
     state: Accessor<Combat>;
     game: Accessor<GameState>;
     settings: Accessor<Settings>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
 };
-export default function CombatUI({ instance, state, game, settings, stamina, grace }: Props) {
+export default function CombatUI({ state, game, settings, stamina, grace }: Props) {
     const dimensions = useResizeListener();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
@@ -67,6 +64,7 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
         return {
             "background": caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? "linear-gradient(#000, #444)" : "black",
             "border": border(borderColor(state()?.playerBlessing), 0.15),
+            "--glow-color": borderColor(state()?.playerBlessing),
             "height": "7.5vh",
             "mix-blend-mode": "multiply",
             transition: "background 0.5s ease-out",
@@ -112,8 +110,8 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
     //         state().playerBlessing
     //     );
     //     EventBus.emit("create-prayer", exists);
-    // }; // , "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#800080"}`
-    // top(state().player?.name.length as number)
+    // };
+
     return <div class="playerCombatUi" classList={{
         "animate-texty": previousHealth().show && previousHealth().positive,
         "animate-flicker": previousHealth().show && !previousHealth().positive,
@@ -146,7 +144,11 @@ export default function CombatUI({ instance, state, game, settings, stamina, gra
         <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
-        <div class="combatUiWeapon" onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic, state().isStealth) as any}>
+        <div class="combatUiWeapon" classList={{
+                "animate-texty": previousHealth().show && previousHealth().positive,
+                "animate-flicker": previousHealth().show && !previousHealth().positive,
+                "reset-animation": !previousHealth().show
+            }} onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic, state().isStealth) as any}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
         <Show when={state().isStalwart}>

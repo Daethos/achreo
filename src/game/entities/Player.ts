@@ -105,6 +105,7 @@ export default class Player extends Entity {
     prevInstinct: number = 0;
     currentEnemies: string[] | [] = [];
     chasing: boolean = false;
+    hurtTime: number = 0;
 
     constructor(data: any) {
         const { scene } = data;
@@ -523,6 +524,7 @@ export default class Player extends Entity {
             let damage: number | string = Math.round(this.health - newPlayerHealth);
             // damage = computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
             this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating && !this.isPraying) this.isHurt = true;
             if (this.isConfused) this.isConfused = false;
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.reactiveBubble) {
@@ -980,7 +982,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "duel") {
                     EventBus.emit("alert", { 
                         header: "Ancient Eulex", 
-                        body: `You have the option of summoning enemies to the dueling grounds. \n Would you like to see the roster?`, 
+                        body: `You have the option of summoning enemies to the dueling grounds. \n\n Would you like to see the roster?`, 
                         delay: 3000, 
                         key: "Roster",
                         arg: other.gameObjectB?.properties?.key
@@ -989,7 +991,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "cave") {
                     EventBus.emit("alert", { 
                         header: "Underground", 
-                        body: `You have encountered a cave! \n Would you like to enter?`, 
+                        body: `You have encountered a cave! \n\n Would you like to enter?`, 
                         delay: 3000, 
                         key: "Enter Underground"
                     });
@@ -999,7 +1001,7 @@ export default class Player extends Entity {
                         case "north":
                             EventBus.emit("alert", { 
                                 header: "North Port", 
-                                body: `This is the Northren Port \n Would you like to enter?`, 
+                                body: `This is the Northren Port \n\n Would you like to enter?`, 
                                 delay: 3000,
                                 key: "Enter North Port"
                             });
@@ -1007,7 +1009,7 @@ export default class Player extends Entity {
                         case "south":
                             EventBus.emit("alert", { 
                                 header: "South Port", 
-                                body: `This is the Southron Port \n Would you like to enter?`, 
+                                body: `This is the Southron Port \n\n Would you like to enter?`, 
                                 delay: 3000,
                                 key: "Enter South Port"
                             });
@@ -1015,7 +1017,7 @@ export default class Player extends Entity {
                         case "east":
                             EventBus.emit("alert", { 
                                 header: "East Port", 
-                                body: `This is the Eastern Port \n Would you like to enter?`, 
+                                body: `This is the Eastern Port \n\n Would you like to enter?`, 
                                 delay: 3000,
                                 key: "Enter East Port"
                             });
@@ -1023,7 +1025,7 @@ export default class Player extends Entity {
                         case "west":
                             EventBus.emit("alert", { 
                                 header: "West Port", 
-                                body: `This is the Western Port \n Would you like to enter?`, 
+                                body: `This is the Western Port \n\n Would you like to enter?`, 
                                 delay: 3000,
                                 key: "Enter West Port"
                             });
@@ -1034,7 +1036,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "stairs") {
                     EventBus.emit("alert", { 
                         header: "Exit", 
-                        body: `You are at the stairs that lead back to the surface. \n Would you like to exit the cave and head up to the world?`, 
+                        body: `You are at the stairs that lead back to the surface. \n\n Would you like to exit the cave and head up to the world?`, 
                         delay: 3000, 
                         key: "Exit Underground"
                     });
@@ -1042,7 +1044,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
                     EventBus.emit("alert", { 
                         header: "Exit", 
-                        body: `You are near the exit. \n Would you like to head back to the world?`, 
+                        body: `You are near the exit. \n\n Would you like to head back to the world?`, 
                         delay: 3000, 
                         key: "Exit World"
                     });
@@ -1050,7 +1052,7 @@ export default class Player extends Entity {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "Enter Tutorial") {
                     EventBus.emit("alert", { 
                         header: "Tutorial", 
-                        body: `You are near the entrance to the tutorial. \n Would you like to head back to area?`, 
+                        body: `You are near the entrance to the tutorial. \n\n Would you like to head back to area?`, 
                         delay: 3000, 
                         key: "Enter Tutorial"
                     });
@@ -1335,6 +1337,7 @@ export default class Player extends Entity {
                     return;
                 };
                 if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.playerID); 
+                if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.playerID); 
                 if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.playerID); 
                 if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.playerID); 
                 if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.playerID);
@@ -1370,6 +1373,7 @@ export default class Player extends Entity {
                     return;    
                 };
                 if (this.attackedTarget.isMenacing === true) this.attackedTarget.menace(this.playerID);
+                if (this.attackedTarget.isModerating === true) this.attackedTarget.moderate(this.playerID); 
                 if (this.attackedTarget.isMultifaring === true) this.attackedTarget.multifarious(this.playerID);
                 if (this.attackedTarget.isMystifying === true) this.attackedTarget.mystify(this.playerID);
                 if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.playerID);
@@ -1547,6 +1551,8 @@ export default class Player extends Entity {
         } else if (this.isAttacking) {
             sprint(this.scene);
             this.anims.play(FRAMES.ATTACK, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
+        } else if (this.isHurt) {
+            this.anims.play(FRAMES.HURT, true);
         } else if (this.moving()) {
             this.handleMovementAnimations();
             this.isMoving = true;
@@ -1592,6 +1598,10 @@ export default class Player extends Entity {
         };
         if (this.isFeared && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isHurt && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
+            this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
         if (this.isParalyzed && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
@@ -1681,18 +1691,18 @@ export default class Player extends Entity {
                 this.playerVelocity.y = 0;
             };
         } else {
-            if (this.scene.hud.joystickKeys.right.isDown) {
+            if (input.right.isDown) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
             };
-            if (this.scene.hud.joystickKeys.left.isDown) {
+            if (input.left.isDown) {
                 this.playerVelocity.x -= this.acceleration;
                 this.flipX = true;
             };
-            if (this.scene.hud.joystickKeys.up.isDown) {
+            if (input.up.isDown) {
                 this.playerVelocity.y -= this.acceleration;
             }; 
-            if (this.scene.hud.joystickKeys.down.isDown) {
+            if (input.down.isDown) {
                 this.playerVelocity.y += this.acceleration;
             };
             if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {

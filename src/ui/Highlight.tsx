@@ -176,13 +176,13 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 `Influence: ${highlighted()?.item?.influences?.[0]}` : undefined;
 
         return (
-            <table class="animate-flicker" style={dimensions().ORIENTATION === "landscape" ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none", "--glow-color":"#000" } : { width: `${dimensions().WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
+            <table class="" style={dimensions().ORIENTATION === "landscape" ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none", "--glow-color":"#000" } : { width: `${dimensions().WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
             <tbody>
                 <tr>
-                    <td class="compare-border gold" style={{ "font-size": responsiveSizeStyle(asceanName?.length) }}>{asceanName}
+                    <td class="compare-border gold animate-flicker" style={{ "font-size": responsiveSizeStyle(asceanName?.length), "--glow-color":"gold" }}>{asceanName}
                     <img src={ascean()[inventoryType()]?.imgUrl} />
                     </td>
-                    <td class="compare-border gold" style={{ "font-size": responsiveSizeStyle(inventoryName?.length) }}>{inventoryName}
+                    <td class="compare-border gold animate-flicker" style={{ "font-size": responsiveSizeStyle(inventoryName?.length), "--glow-color":"gold" }}>{inventoryName}
                     <img src={highlighted()?.item?.imgUrl} />
                     </td>
                 </tr>

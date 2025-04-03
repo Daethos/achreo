@@ -4,7 +4,7 @@ import { EventBus } from "../game/EventBus";
 const SETTINGS = { NUMBER: "PERCENTAGE", PERCENTAGE: "OFF", OFF: "NUMBER" };
 export default function StaminaModal({ setShow, settings }: { setShow: Setter<boolean>; settings: Accessor<Settings>; }) {
     const poly = window.innerWidth * 0.45;
-    return <div class="border superCenter" style={{ width: "50%", "border-color": "green", "box-shadow": "inset #000 0 0 0 0.2em, inset green 0 0 0 0.3em" }} onClick={() => setShow(false)}> 
+    return <div class="border superCenter borderTalent" style={{ width: "50%", "border-color": "green", "box-shadow": "inset #000 0 0 0 0.2em, inset green 0 0 0 0.3em", "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"green" }} onClick={() => setShow(false)}> 
         <div class="creature-heading wrap" style={{ height: "100%" }}>
                 <button class="cornerTR highlight" onClick={() => EventBus.emit("save-this-setting", { stamina: SETTINGS[settings().stamina as keyof typeof SETTINGS] })}>{settings().stamina.charAt(0) + settings().stamina.slice(1).toLowerCase()}</button>
                 <h1 style={{ "text-align": "center", width: "100%" }}>Stamina</h1>

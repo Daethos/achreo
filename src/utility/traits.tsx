@@ -432,7 +432,7 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
             </div>
         </div>
         </Show>
-        <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%" }} onClick={() => setShow(!show())}>[ {">>>"} Persuasive Alternative(s) Explanation {"<<<"} ]</button>
+        <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3% auto 0" }} onClick={() => setShow(!show())}>[ {">>>"} Persuasive Alternative(s) Explanation {"<<<"} ]</button>
         {traits().map((trait: any) => {
             return (
                 <div style={{ margin: "5%" }}>
@@ -474,7 +474,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
             </div>
         </div>
         </Show>
-        <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%" }} onClick={() => setShow(!show())}>[ {">>>"} Quests {"<<<"} ]</button>
+        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "--glow-color":"#fdf6d8" }} onClick={() => setShow(!show())}>Show Available Quests</button>
         </>
     );
 };

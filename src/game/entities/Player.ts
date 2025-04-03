@@ -1557,7 +1557,6 @@ export default class Player extends Entity {
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
-            // walk(this.scene);
             this.anims.play(FRAMES.CAST, true);
         } else if (this.isPraying) {
             this.anims.play(FRAMES.PRAY, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isPraying = false);

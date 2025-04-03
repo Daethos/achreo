@@ -18,7 +18,7 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
         setAlert(undefined as unknown as { header: string; body: string, delay: number, arg: any });
     };
     const toast: any = {"position": alert()?.key !== "" ? "absolute" : "", "bottom": alert()?.extra ? "25vh" : alert()?.key !== "" ? "45vh" : "0" };
-    return <div class="cornerBL realize" style={{ width: "30%", "z-index": 1 }}>
+    return <div class="cornerBL realize" style={{ width: "30%", "z-index": 3 }}>
         <Toast class="toast" onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
             <p class="toastHeader">{alert()?.header}</p>
             <svg height="5" width="100%" class="tapered-rule mt-2"><polyline points="0,0 200,2.5 0,5"></polyline></svg>

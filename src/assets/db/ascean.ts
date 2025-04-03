@@ -49,7 +49,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -103,7 +103,7 @@ export const Asceans: any[] = [
         name: "Empty Trinket Slot",
         rarity: 'Default',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -157,7 +157,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -211,7 +211,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -265,7 +265,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -319,7 +319,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":32,"max":32}
@@ -373,7 +373,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -427,7 +427,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":39,"max":39}
@@ -481,7 +481,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -535,7 +535,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -589,7 +589,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -643,7 +643,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -697,7 +697,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -751,7 +751,7 @@ export const Asceans: any[] = [
         name: "Empty Trinket Slot",
         rarity: 'Default',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -805,7 +805,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -859,7 +859,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -913,7 +913,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -967,7 +967,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":32,"max":32}
@@ -1021,7 +1021,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -1075,7 +1075,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":39,"max":39}
@@ -1129,7 +1129,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1183,7 +1183,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -1237,7 +1237,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1291,7 +1291,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1345,7 +1345,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1399,7 +1399,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -1453,7 +1453,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1507,7 +1507,7 @@ export const Asceans: any[] = [
         name: "Empty Trinket Slot",
         rarity: 'Default',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -1561,7 +1561,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -1615,7 +1615,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -1669,7 +1669,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -1723,7 +1723,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -1777,7 +1777,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -1831,7 +1831,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -1885,7 +1885,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":32,"max":32}
@@ -1939,7 +1939,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -1993,7 +1993,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":39,"max":39}
@@ -2047,7 +2047,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -2101,7 +2101,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -2155,7 +2155,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -2209,7 +2209,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -2263,7 +2263,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -2317,7 +2317,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -2371,7 +2371,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -2425,7 +2425,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -2479,7 +2479,7 @@ export const Asceans: any[] = [
         name: 'Empty Trinket Slot',
         rarity: 'Default',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -2533,7 +2533,7 @@ export const Asceans: any[] = [
         name: "Sage Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -2587,7 +2587,7 @@ export const Asceans: any[] = [
         name: "Ashtre Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -2641,7 +2641,7 @@ export const Asceans: any[] = [
         name: "Astral Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -2695,7 +2695,7 @@ export const Asceans: any[] = [
         name: "Achreon Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -2749,7 +2749,7 @@ export const Asceans: any[] = [
         name: 'Cambiren Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -2803,7 +2803,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -2857,7 +2857,7 @@ export const Asceans: any[] = [
         name: "Daethic Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -2911,7 +2911,7 @@ export const Asceans: any[] = [
         name: 'Kyrison Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -2965,7 +2965,7 @@ export const Asceans: any[] = [
         name: 'Fang Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -3019,7 +3019,7 @@ export const Asceans: any[] = [
         name: "Fireland Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3073,7 +3073,7 @@ export const Asceans: any[] = [
         name: "Fyers Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -3127,7 +3127,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -3181,7 +3181,7 @@ export const Asceans: any[] = [
         name: "Knight's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3235,7 +3235,7 @@ export const Asceans: any[] = [
         name: "Kyrison Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -3289,7 +3289,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3343,7 +3343,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3397,7 +3397,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":32,"max":32}
@@ -3451,7 +3451,7 @@ export const Asceans: any[] = [
         name: 'Ilian Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -3505,7 +3505,7 @@ export const Asceans: any[] = [
         name: "Soverain Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
@@ -3559,7 +3559,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":39,"max":39}
@@ -3613,7 +3613,7 @@ export const Asceans: any[] = [
         name: 'Sage Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -3667,7 +3667,7 @@ export const Asceans: any[] = [
         name: "Kyrnaic Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3721,7 +3721,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
@@ -3775,7 +3775,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":29,"max":29}
@@ -3829,7 +3829,7 @@ export const Asceans: any[] = [
         name: 'Rahvric Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -3883,7 +3883,7 @@ export const Asceans: any[] = [
         name: "Shrieker's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -3937,7 +3937,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -3991,7 +3991,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -4045,7 +4045,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4099,7 +4099,7 @@ export const Asceans: any[] = [
         name: 'Achreon Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -4153,7 +4153,7 @@ export const Asceans: any[] = [
         name: 'Kyrison Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -4207,7 +4207,7 @@ export const Asceans: any[] = [
         name: "Soverain Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4261,7 +4261,7 @@ export const Asceans: any[] = [
         name: "Achreon Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -4315,7 +4315,7 @@ export const Asceans: any[] = [
         name: "Ashtre Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4369,7 +4369,7 @@ export const Asceans: any[] = [
         name: 'Cambiren Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -4423,7 +4423,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -4477,7 +4477,7 @@ export const Asceans: any[] = [
         name: "Daethic Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -4531,7 +4531,7 @@ export const Asceans: any[] = [
         name: "Fireland Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4585,7 +4585,7 @@ export const Asceans: any[] = [
         name: "Fyers Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -4639,7 +4639,7 @@ export const Asceans: any[] = [
         name: "Fang Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
@@ -4693,7 +4693,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -4747,7 +4747,7 @@ export const Asceans: any[] = [
         name: "Kyrison Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -4801,7 +4801,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4855,7 +4855,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4909,7 +4909,7 @@ export const Asceans: any[] = [
         name: "Shrieker's Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -4963,7 +4963,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -5017,7 +5017,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -5071,7 +5071,7 @@ export const Asceans: any[] = [
         name: "Soverain Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -5125,7 +5125,7 @@ export const Asceans: any[] = [
         name: "Knight's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -5179,7 +5179,7 @@ export const Asceans: any[] = [
         name: 'Ilian Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -5233,7 +5233,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":39,"max":39}
@@ -5287,7 +5287,7 @@ export const Asceans: any[] = [
         name: 'Sage Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -5341,7 +5341,7 @@ export const Asceans: any[] = [
         name: "Kyrnaic Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -5395,7 +5395,7 @@ export const Asceans: any[] = [
         name: 'Achreon Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -5449,7 +5449,7 @@ export const Asceans: any[] = [
         name: 'Rahvric Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -5503,7 +5503,7 @@ export const Asceans: any[] = [
         name: 'Kyrison Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -5557,7 +5557,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Uncommon',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -5611,7 +5611,7 @@ export const Asceans: any[] = [
         name: "Achreon Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -5665,7 +5665,7 @@ export const Asceans: any[] = [
         name: "Ashtre Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -5719,7 +5719,7 @@ export const Asceans: any[] = [
         name: 'Cambiren Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -5773,7 +5773,7 @@ export const Asceans: any[] = [
         name: 'Achreon Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -5827,7 +5827,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -5881,7 +5881,7 @@ export const Asceans: any[] = [
         name: "Daethic Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -5935,7 +5935,7 @@ export const Asceans: any[] = [
         name: "Daethic Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -5989,7 +5989,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -6043,7 +6043,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -6097,7 +6097,7 @@ export const Asceans: any[] = [
         name: 'Fyers Trinket',
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":399,"max":399}
@@ -6151,7 +6151,7 @@ export const Asceans: any[] = [
         name: "Fireland Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -6205,7 +6205,7 @@ export const Asceans: any[] = [
         name: "Fyers Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -6259,7 +6259,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -6313,7 +6313,7 @@ export const Asceans: any[] = [
         name: 'Achreon Trinket',
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -6367,7 +6367,7 @@ export const Asceans: any[] = [
         name: 'Astral Trinket',
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -6421,7 +6421,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
@@ -6475,7 +6475,7 @@ export const Asceans: any[] = [
         name: "Kyrison Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
@@ -6529,7 +6529,7 @@ export const Asceans: any[] = [
         name: "Dae Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -6583,7 +6583,7 @@ export const Asceans: any[] = [
         name: "Achreon Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -6637,7 +6637,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -6691,7 +6691,7 @@ export const Asceans: any[] = [
         name: "Fang Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":139,"max":139}
@@ -6745,7 +6745,7 @@ export const Asceans: any[] = [
         name: "Knight's Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -6799,7 +6799,7 @@ export const Asceans: any[] = [
         name: 'Sage Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -6853,7 +6853,7 @@ export const Asceans: any[] = [
         name: "Kyrnaic Trinket",
         rarity: 'Rare',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -6907,7 +6907,7 @@ export const Asceans: any[] = [
         name: 'Rahvric Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -6961,7 +6961,7 @@ export const Asceans: any[] = [
         name: "Shrieker's Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -7015,7 +7015,7 @@ export const Asceans: any[] = [
         name: 'Dae Trinket',
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":399,"max":399}
@@ -7069,7 +7069,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -7123,7 +7123,7 @@ export const Asceans: any[] = [
         name: 'Senarian Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":36,"max":36}
@@ -7177,7 +7177,7 @@ export const Asceans: any[] = [
         name: 'Kyrison Trinket',
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":33,"max":33}
@@ -7231,7 +7231,7 @@ export const Asceans: any[] = [
         name: "Soverain Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -7285,7 +7285,7 @@ export const Asceans: any[] = [
         name: "Occult Trinket",
         rarity: 'Epic',
     },
-    "faith":"devoted",
+    "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
@@ -7339,7 +7339,7 @@ export const Asceans: any[] = [
         name: 'Fyers Trinket',
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":399,"max":399}
@@ -7393,7 +7393,7 @@ export const Asceans: any[] = [
         name: "Marauder's Trinket",
         rarity: 'Rare',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
@@ -7447,7 +7447,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Trinket",
         rarity: 'Epic',
     },
-    "faith":"adherent",
+    "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":423,"max":423}

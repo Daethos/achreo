@@ -746,10 +746,10 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
 };
 
 function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment, faithTwo: number, weaponTwo: Equipment, amuletInfluence: string, trinketInfluence: string): { faithOne: number, faithTwo: number }{
-    if (player.faith === 'Devoted' && weaponOne?.influences?.[0] === DEITIES.DAETHOS) faithOne += 3;
-    if (player.faith === 'Adherent' && weaponOne?.influences?.[0] !== DEITIES.DAETHOS) faithOne += 3;
-    if (player.faith === 'Devoted' && weaponTwo?.influences?.[0] === DEITIES.DAETHOS) faithTwo += 3;
-    if (player.faith === 'Adherent' && weaponTwo?.influences?.[0] !== DEITIES.DAETHOS) faithTwo += 3;
+    if (player.faith === "Devoted" && weaponOne?.influences?.[0] === DEITIES.DAETHOS) faithOne += 3;
+    if (player.faith === "Adherent" && weaponOne?.influences?.[0] !== DEITIES.DAETHOS) faithOne += 3;
+    if (player.faith === "Devoted" && weaponTwo?.influences?.[0] === DEITIES.DAETHOS) faithTwo += 3;
+    if (player.faith === "Adherent" && weaponTwo?.influences?.[0] !== DEITIES.DAETHOS) faithTwo += 3;
     const addRarity = (rarity: string, faith: number): number => {
         faith += FAITH_RARITY[rarity as keyof typeof FAITH_RARITY]; 
         return faith;
@@ -772,7 +772,7 @@ function faithModCompiler(player: Ascean, faithOne: number, weaponOne: Equipment
 };
 
 function faithCompiler(combat: Combat): Combat { // The influence will add a chance to have a special effect occur
-    if (combat.playerWin === true || combat.computerWin === true || combat.playerBlessing === '') return combat;
+    if (combat.playerWin === true || combat.computerWin === true || combat.playerBlessing === "") return combat;
     let faithNumber = Math.floor(Math.random() * 101);
     let faithNumberTwo = Math.floor(Math.random() * 101); 
     let computerFaithNumber = Math.floor(Math.random() * 101);
@@ -788,19 +788,19 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
     const playerFaith = faithModCompiler(combat.player as Ascean, faithNumber, combat.weapons[0] as Equipment, faithNumberTwo, combat.weapons[1] as Equipment, combat.player?.amulet?.influences?.[0] as string, combat.player?.trinket?.influences?.[0] as string);
     const computerFaith = faithModCompiler(combat.computer as Ascean, computerFaithNumber, combat.computerWeapons[0], computerFaithNumberTwo, combat.computerWeapons[1], combat.computer?.amulet?.influences?.[0] as string, combat.computer?.trinket?.influences?.[0] as string);
     if (playerFaith.faithOne > 95) {
-        combat.actionData.push('prayer');
-        faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
+        combat.actionData.push("prayer");
+        faithSuccess(combat, "player", combat.weapons[0] as Equipment, 0);
     };
     if (combat.dualWielding === true && playerFaith.faithTwo > 95) {
-        combat.actionData.push('prayer');    
-        faithSuccess(combat, 'player', combat.weapons[1] as Equipment, 1);
+        combat.actionData.push("prayer");    
+        faithSuccess(combat, "player", combat.weapons[1] as Equipment, 1);
     };
-    if (!combat.playerEffects.find(effect => effect.prayer === 'Silence')) {
+    if (!combat.playerEffects.find(effect => effect.prayer === "Silence")) {
         if (computerFaith.faithOne > 95) {
-            faithSuccess(combat, 'computer', combat.computerWeapons[0], 0);
+            faithSuccess(combat, "computer", combat.computerWeapons[0], 0);
         };
         if (combat.computerDualWielding === true && computerFaith.faithTwo > 95) {
-            faithSuccess(combat, 'computer', combat.computerWeapons[1], 1);
+            faithSuccess(combat, "computer", combat.computerWeapons[1], 1);
         };
     };
     return combat;

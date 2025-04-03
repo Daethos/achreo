@@ -57,7 +57,7 @@ export default class QuestManager {
 
 export const initQuests = new QuestManager("quest");
 export const createQuests = (id: string): QuestManager => new QuestManager(id);
-
+export type Condition = {key: string; operator: string; value: number | string;}
 export class Quest {
     public _id: string;
     public title: string;
@@ -74,6 +74,7 @@ export class Quest {
         dialog?: string,
         action: { name: string, key: string, value: string },
         technical: FETCH | SOLVE,
+        conditions?: Condition;
     };
     public rewards: {
         currency: { silver: number, gold: number },
@@ -376,7 +377,16 @@ export const QUEST_TEMPLATES = [
         requirements: {
             description: "Become Devoted to Daethos.",
             technical: initSolve,
-            dialog: "",
+            dialog: "I am stricken by the mercy of Laetrois, I give myself over to Daethos. I am no longer adherent to the past and primal, I am fully Devoted.",
+            action: {
+                key: "faith",
+                value: "Devoted"
+            },
+            conditions: {
+                key: "faith",
+                operator: "=",
+                value: "Adherent"
+            }
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
@@ -416,7 +426,16 @@ export const QUEST_TEMPLATES = [
         requirements: {
             description: "Become Adherent to the Ancients.",
             technical: initSolve,
-            dialog: "",
+            dialog: "I am stricken with the ancient and the primal, I give myself to the Ancients and their ways.",
+            action: {
+                key: "faith",
+                value: "Adherent"
+            },
+            conditions: {
+                key: "faith",
+                operator: "=",
+                value: "Devoted"
+            }
         },
         reward: [CHIOMIC, DISEASE, FREEZE, HOWL, RENEWAL, SCREAM, WRITHE],
     }, {
@@ -430,6 +449,11 @@ export const QUEST_TEMPLATES = [
             action: {
                 key: "_id",
                 name: "convert",
+                value: "Adherent"
+            },
+            conditions: {
+                key: "faith",
+                operator: "=",
                 value: "Adherent"
             }
         },
@@ -445,6 +469,11 @@ export const QUEST_TEMPLATES = [
             action: {
                 key: "_id",
                 name: "convert",
+                value: "Devoted"
+            },
+            conditions: {
+                key: "faith",
+                operator: "=",
                 value: "Devoted"
             }
         },
@@ -470,7 +499,8 @@ export const getQuest = (title: string, enemy: Ascean, ascean: Ascean): Quest | 
                 description: template.requirements.description,
                 technical: template.requirements.technical,
                 action: template.requirements?.action,
-                dialog: template.requirements?.dialog
+                dialog: template.requirements?.dialog,
+                conditions: template.requirements?.conditions
             },
             rewards    
         };

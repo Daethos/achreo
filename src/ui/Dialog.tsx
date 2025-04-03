@@ -13,7 +13,7 @@ import Equipment, { determineMutation, getArmorEquipment, getClothEquipment, get
 import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, sellRarity } from "../utility/styling";
 import ItemModal, { attrSplitter } from "../components/ItemModal";
-import QuestManager, { getQuests, Quest, replaceChar } from "../utility/quests";
+import QuestManager, { Condition, getQuests, Quest, replaceChar } from "../utility/quests";
 import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
 import Thievery from "./Thievery";
 import Merchant from "./Merchant";
@@ -341,6 +341,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [prospectiveQuests, setProspectiveQuests] = createSignal<any[]>([]);
     const [showQuests, setShowQuests] = createSignal<boolean>(false);
     const [fetchQuests, setFetchQuests] = createSignal<any>([]);
+    const [solveQuests, setSolveQuests] = createSignal<any>([]);
     const [showQuestComplete, setShowQuestComplete] = createSignal<any>(false);
     const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
@@ -466,10 +467,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
         if (!enemy) return;
-        setNamedEnemy(namedNameCheck(enemy.name));
+        setNamedEnemy(namedNameCheck(enemy.name.split("(Converted)")[0].trim()));
         setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
         setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
-        const rep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name) as FACTION;
+        const rep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name.split("(Converted)")[0].trim()) as FACTION;
         if (rep) setRep(rep);
         checkQuests(enemy, manager().quests);
     };
@@ -481,9 +482,30 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setParty(par.party.length < 2);
     }; 
 
+    function checkCondition(conditions: Condition) {
+        let { key, operator, value } = conditions;
+        switch (operator) {
+            case ">":
+                return ascean()[key] > value;
+            case ">=":
+                return ascean()[key] >= value;
+            case "<":
+                return ascean()[key] < value;
+            case "<=":
+                return ascean()[key] <= value;
+            case "=":
+                return ascean()[key] === value;
+            default:
+                return false;
+        };
+    };
+
     const checkQuests = (enemy: Ascean, quest: Quest[]) => {
+        // TODO: This will create quests for a (Converted) version of the enemy. Good for the future, but not right now for archtecting and general functionality.
+        // const name = enemy.name.split("(Converted)")[0].trim();
         const completedQuests = [];
         const fetch = [];
+        const solve = [];
         for (const q of quest) {
             const completed = q.requirements.technical.id === "fetch" ? q.requirements.technical.current === q.requirements.technical.total : q.requirements.technical.solved;
             const qRep = rep().reputation >= q.requirements.reputation;
@@ -494,20 +516,23 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             if (q.requirements.technical.id === "fetch") {
                 fetch.push(q);
             };
+            if (q.requirements.technical.id === "solve") {
+                solve.push(q);
+            };
         };
         setCompleteQuests(completedQuests);
         setFetchQuests(fetch);
+        setSolveQuests(solve);
 
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
-        if (enemyQuests.length === 0) return;        
-        if (quest.length === 0) {
-            setProspectiveQuests(enemyQuests);
-            return;
-        };
+        if (enemyQuests.length === 0) return;
         const playerQuests = new Set(quest.map(q => q.title)); // Convert player quests to a set for easy lookup
         const questGiverCheck = (enemyQuest: any) => {
             let check = true;
+            if (enemyQuest.requirements?.conditions !== undefined) {
+                check = checkCondition(enemyQuest.requirements.conditions as Condition);
+            };
             for (let i = 0; i < quest.length; ++i) {
                 if (quest[i].title === enemyQuest.title && quest[i].giver === enemy.name) {
                     check = false;
@@ -1072,7 +1097,35 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         //     weaponThree: {...combat().weapons[2], rarity: combat().weapons[2]?.name.includes("Default") ? "Default" :  combat().computerWeapons[2].rarity},
         // };
     };
+    function convertPlayer(quest: Quest) {
+        const newQuests = quests().quests.map((q: Quest) => {
+            const newQ = q._id === quest._id 
+                ? {
+                    ...q, 
+                    requirements: {
+                        ...q.requirements,
+                        technical: {
+                            ...q.requirements.technical,
+                            solved: true
+                        }
+                    },
+                } 
+                : q;
+            return newQ;
+        });
+        const newQuestManager = {
+            ...quests(),
+            quests: newQuests
+        };
+        
+        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted from ${ascean().faith} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
+        EventBus.emit("update-quests", newQuestManager);
+        EventBus.emit("update-ascean", {
+            ...ascean(),
+            faith: quest.requirements.action.value
+        });
 
+    };
     function specialMerchantStyle(animation: string) {
         return {
             "font-weight": 700,
@@ -1411,6 +1464,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "persuasion" ? (
                     <>
+                        <Show when={combat()?.computer?.name?.includes("(Converted)")}>
+                            <Typewriter stringText={`"I sure do love being ${combat()?.computer?.faith} now! Thank you so much for showing me the proper path, ${ascean().name}. Don't tell anyone though, my old comrades may not take kind to me if they find out about my new faith."`} styling={{...typewriterStyling, "color":"gold", margin:"0 auto 3%"}} performAction={hollowClick} />
+                        </Show>
                         { combat().playerWin ? (
                             <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
                         ) : combat().computerWin ? (
@@ -1438,8 +1494,42 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             </div>
                         ) : ( "" ) }
                         <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
+                        <Show when={fetchQuests().length > 0}>
+                            <div class="creature-heading">
+                                <For each={fetchQuests()}>{(quest) => {
+                                    // console.log(quest.title, quest.requirements.dialog, quest.requirements.action, combat().computer?.faith, "Value")
+                                    if (!quest.requirements.dialog) return;
+                                    return <Switch>
+                                        <Match when={(quest.title === "Adherence" || quest.title === "Providence") && (rep().reputation >= 15 || combat().playerWin) && !combat().computer?.name.includes("(Converted)") && quest.requirements.action.value !== combat().computer?.faith}>
+                                            <div class="wrap" style={{ margin: "2.5% auto" }}>
+                                                <button class="highlight" onClick={() => convertEnemy(quest)}>
+                                                    <Typewriter stringText={`${combat().computer?.name}: "${quest.requirements.dialog as string} ${combat().computer?.faith ? `Perhaps I may strike up an affection for ${combat().weapons[0]?.influences?.[0]}, as you have.` : ""}"`} styling={typewriterStyling} performAction={hollowClick} />
+                                                </button>
+                                            </div>
+                                        </Match> 
+                                    </Switch>
+                                }}</For>
+                            </div>
+                        </Show>
+                        <Show when={solveQuests().length > 0}>
+                            <div class="creature-heading">
+                                <For each={solveQuests()}>{(quest) => {
+                                    // console.log(quest, "Quest", ascean().faith)
+                                    if (!quest.requirements.dialog) return;
+                                    return <Switch>
+                                        <Match when={(quest.title === "Primal Nature" || quest.title === "Seek Devotion") && quest.requirements.action.value !== ascean()?.faith}>
+                                            <div class="wrap" style={{ margin: "2.5% auto" }}>
+                                                <button class="highlight gold" onClick={() => convertPlayer(quest)}>
+                                                    <Typewriter stringText={`"${quest.requirements.dialog as string}"`} styling={typewriterStyling} performAction={hollowClick} />
+                                                </button>
+                                            </div>
+                                        </Match> 
+                                    </Switch>
+                                }}</For>
+                            </div>
+                        </Show>
                         <Show when={completeQuests().length > 0}>
-                            <h1>Completed Quests</h1>
+                            <h1 class="gold">Completed Quests</h1>
                             <div class="creature-heading">
                             <For each={completeQuests()}>{(quest) => {
                                 return <div class="border juice wrap creature-heading">
@@ -1450,22 +1540,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 }}>{quest.title}</div>
                                 </div>
                             }}</For>
-                            </div>
-                        </Show>
-                        <Show when={fetchQuests().length > 0}>
-                            <div class="creature-heading">
-                                <For each={fetchQuests()}>{(quest) => {
-                                    if (!quest.requirements.dialog) return;
-                                    return <Switch>
-                                        <Match when={(quest.title === "Adherence" || quest.title === "Providence") && (combat().playerWin || rep().reputation >= 25) && !combat().computer?.name.includes("(Converted)") && quest.requirements.action.value.toLowerCase() !== combat().computer?.faith}>
-                                            <div class="wrap">
-                                                <button class="highlight" onClick={() => convertEnemy(quest)}>
-                                                    <Typewriter stringText={`${combat().computer?.name}: "${quest.requirements.dialog as string}"`} styling={typewriterStyling} performAction={hollowClick} />
-                                                </button>
-                                            </div>
-                                        </Match> 
-                                    </Switch>
-                                }}</For>
                             </div>
                         </Show>
                     </>
@@ -1735,8 +1809,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={showQuestComplete()}>
             <div class="modal">
-                <div class="creature-heading superCenter" style={{ width: "65%" }}>
-                    <div class="border moisten">
+                <div class="creature-heading superCenter" style={{ width: "65%", "--glow-color":"#fdf6d8", "--base-shadow":"#000 0 0 0 0.2em" }}>
+                    <div class="border moisten borderTalent">
                     <h1 class="center" style={{ margin: "3%", color: showQuestSave() ? "gold" : "#fdf6d8" }}>
                         {showCompleteQuest().title} {showQuestSave() ? "(Completed)" : ""} <br />
                     </h1>
@@ -1771,17 +1845,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         {showCompleteQuest()?.special ? <><br /> Special: <span class="gold">{showCompleteQuest()?.special}</span></> : ""}
                     </p>
                     </div>
-                    <h2 style={{ "text-align":"center", color: "gold" }}>
+                    <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "2.5% auto" }}>
                         {replaceChar(showCompleteQuest()?.requirements.description, showCompleteQuest()?.giver)}
                     </h2>
                     </div>
                 </div>
                     <Show when={!showQuestSave()}>
-                        <button class="highlight cornerTR" style={{ right: "0", "color": "green", "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
-                            <p style={font("0.75em")}>Complete Quest</p>
+                        <button class="highlight cornerTR animate" style={{ right: "0", "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
+                            <p style={font("1em")}>Complete Quest</p>
                         </button>
                     </Show>
-                    <button class="highlight cornerBR" style={{ bottom: "0", right: "0", "color": "red" }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
+                    <button class={`highlight cornerBR ${showQuestSave() ? "animate" : ""}`} style={{ "color": "red" }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
                         <p style={font("0.75em")}>X</p>
                     </button>
             </div>

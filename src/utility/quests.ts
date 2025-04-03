@@ -144,6 +144,56 @@ export class Quest {
     };
 };
 
+/*
+{
+    name: [MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST],
+    title: "Mist of the Moon",
+    description: "Gain the Ma'ier’s trust by either aiding their rituals or betraying their rivals.",
+    requirements: {
+        // Dynamic steps:
+        steps: [
+            { type: "KILL", target: ILIRE_OCCULTIST, count: 3 }, // Option A
+            { type: "FETCH_ITEM", item: MOON_RELIC, for: MAIER_OCCULTIST }, // Option B
+        ],
+        completed: false,
+    },
+    reward: [BLINK, MAIERETH],
+    onComplete: () => {
+        // WORLD REACTION:
+        ILIRE_FACTION.anger += 20; // Ilire now ambush you
+        SPAWN_ENEMIES(ILIRE_ZEALOT, nearPlayer); // Retribution squad
+    }
+}
+
+// When recruiting a bandit:
+player.recruitedBandits.push({ id: BANDIT_JACK, formerGang: "RedClaws" });
+
+// Later, during world traversal:
+function checkAmbushes() {
+    player.recruitedBandits.forEach(bandit => {
+        if (Math.random() < 0.3) { // 30% chance per trip
+            spawnAmbush(bandit.formerGang);
+            // Log for save file:
+            player.worldFlags.push(`AMBUSH_${bandit.formerGang}_PENDING`); 
+        }
+    });
+}
+
+const MAIER_FACTION = {
+    trust: 0, // 0-100
+    knownPlayers: [], // Track who you’ve helped/harmed
+    globalBehavior: {
+        hostility: "NEUTRAL", // Changes to "HOSTILE" if you betray them
+        patrolRoutes: [] // Dynamically adjusted if they’re hunting you
+    },
+    update() {
+        if (this.trust < 30) {
+            SPAWN_ENEMIES(MAIER_ASSASSIN, nearPlayer);
+        }
+    }
+};
+*/
+
 export const QUEST_TEMPLATES = [
     {
         name: [ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE],

@@ -1249,12 +1249,12 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    const specific = [States.CHIOMIC];
-                    const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(test)) {
-                        this.stateMachine.setState(test);
-                    } else if (this.positiveMachine.isState(test)) {
-                        this.positiveMachine.setState(test);
+                    // const specific = [States.CHIOMIC];
+                    // const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(special)) {
+                        this.stateMachine.setState(special);
+                    } else if (this.positiveMachine.isState(special)) {
+                        this.positiveMachine.setState(special);
                     };
                     this.setSpecialCombat(true);
                 },
@@ -2184,7 +2184,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} bleeds and laughs at you with tendrils of Chiomyr.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) {
@@ -2297,7 +2297,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} seizes into this world with Nyrolean tendrils, slowing you.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) {
@@ -2373,7 +2373,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} rips into this world with Ilian tendrils entwining.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) this.chiomic(100, this.targetID);
@@ -2412,7 +2412,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} bleeds and bewitches you with tendrils of Kyrisos.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) {
@@ -2545,7 +2545,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} blends caeren into this world with Likyrish tendrils.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) this.suture(20, this.targetID);
@@ -2583,7 +2583,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} bleeds and strikes you with tendrils of Ma"anre.`
                 });
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             if (this.castingSuccess === true) {
@@ -4272,6 +4272,9 @@ export default class Enemy extends Entity {
             SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] 
             * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] 
             * SWING_FORCE[action as keyof typeof SWING_FORCE]);
+        
+        // if (this.inCombat) hitStop(this.scene);
+        
         this.attackedTarget = undefined;
     };
 

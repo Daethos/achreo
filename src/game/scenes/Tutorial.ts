@@ -432,7 +432,6 @@ export class Tutorial extends Phaser.Scene {
                 enemy.setPosition(this.player.x - 50, this.player.y);
                 this.time.delayedCall(1500, () => {
                     enemy.checkEnemyCombatEnter();
-                    // this.player.targets.push(enemy);
                     this.player.targetEngagement(enemy.enemyID);
                 }, undefined, this);
             };

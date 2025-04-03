@@ -234,7 +234,7 @@ export default class Player extends Entity {
         this.isCaerenic = this.isCaerenic ? false : true;
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume / 3 });
         if (this.isCaerenic) {
-            screenShake(this.scene, 96);
+            screenShake(this.scene, 64);
             this.scene.tweens.add({
                 targets: this.scene.cameras.main,
                 zoom: this.scene.cameras.main.zoom * 2,
@@ -1399,6 +1399,7 @@ export default class Player extends Entity {
         } else {
             this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };
+        // hitStop(this.scene);
     };
 
     playerDodge = () => {

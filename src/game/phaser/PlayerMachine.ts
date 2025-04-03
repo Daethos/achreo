@@ -577,7 +577,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText("Defeated", 3000, "damage", false, true, () => this.player.specialCombatText = undefined);
         this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED;
         this.player.setCollisionCategory(0);
-        screenShake(this.scene, 120, 0.005);
+        screenShake(this.scene, 80, 0.0035);
     };
     onDefeatedUpdate = (dt: number) => {
         this.player.defeatedDuration -= dt;
@@ -993,7 +993,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.sound.play("wild", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.ACHIRE, PLAYER.STAMINA.ACHIRE);
-            screenShake(this.scene, 96, 0.004);
+            screenShake(this.scene, 80, 0.0035);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -1081,7 +1081,7 @@ export default class PlayerMachine {
     };
     onArcExit = () => {
         if (this.player.castingSuccess === true) {
-            screenShake(this.scene, 96, 0.004);
+            screenShake(this.scene, 80, 0.0035);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.ARC, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.player.checkTalentCost(States.ARC, PLAYER.STAMINA.ARC);
@@ -1977,7 +1977,7 @@ export default class PlayerMachine {
             }, undefined, this);
         };
         this.player.flickerCaerenic(750);
-        screenShake(this.scene, 96);
+        screenShake(this.scene, 64);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
             zoom: this.scene.cameras.main.zoom * 1.5,
@@ -2020,7 +2020,7 @@ export default class PlayerMachine {
             this.player.checkTalentCost(States.QUOR, PLAYER.STAMINA.QUOR);
             this.player.castingSuccess = false;
             this.scene.sound.play("freeze", { volume: this.scene.hud.settings.volume });
-            screenShake(this.scene, 180, 0.006);
+            screenShake(this.scene, 128, 0.0045);
         };
         this.player.isCasting = false;
         this.player.castbar.reset();
@@ -3654,7 +3654,7 @@ export default class PlayerMachine {
         EventBus.emit("special-combat-text", {
             playerSpecialDescription: `You've been stunned.`
         });
-        screenShake(this.scene, 96);
+        screenShake(this.scene, 64);
     };
     onStunnedUpdate = (dt: number) => {
         this.player.setVelocity(0);

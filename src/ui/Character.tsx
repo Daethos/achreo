@@ -1024,7 +1024,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""}
                     </p>
                     </div>
-                    <h2 style={{ "text-align":"center", color: "gold" }}>
+                    <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "2.5% auto" }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>
                     </div>

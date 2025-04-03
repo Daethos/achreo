@@ -7,6 +7,9 @@ import { masteryColor } from "../utility/styling";
 import { Attributes } from "../utility/attributes";
 import AttributeModal from "./Attributes";
 import { click } from "../App";
+import { ArmorModal, preferenceState } from "./Preference";
+import { FaithModal } from "./Faith";
+import { OriginModal } from "./Origin";
 const Character = lazy(async () => await import("./Character"));
 const Sex = lazy(async () => await import("./Sex"));
 const Origin = lazy(async () => await import("./Origin"));
@@ -20,6 +23,9 @@ const Preview = lazy(async () => await import("./Preview"));
 export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, menu: Accessor<Menu> }) {
     const [prevMastery, setPrevMastery] = createSignal("");
     const [attrShow, setAttrShow] = createSignal(false);
+    const [armorShow, setArmorShow] = createSignal(false);
+    const [showFaith, setShowFaith] = createSignal(false);
+    const [showOrigin, setShowOrigin] = createSignal(false);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const dimensions = useResizeListener();
     const photo = { 
@@ -121,9 +127,9 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <div class="creature-heading center" style={{ width: "90%" }}>
                             <h1>{newAscean().name}</h1>
                             <h2>{newAscean().description}</h2>
-                            <img src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id="origin-pic" style={{ "border-color": masteryColor(newAscean().mastery) }} />
-                            <p style={{margin:"2%"}}>Armor: <span class="gold">{newAscean().preference}</span></p>
-                            <p style={{margin:"2%"}}>Faith: <span class="gold">{newAscean().faith}</span> | Mastery: <span class="gold">{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
+                            <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id="origin-pic" style={{ "border-color": masteryColor(newAscean().mastery) }} />
+                            <p onClick={() => setArmorShow(!armorShow())} style={{margin:"2%"}}>Armor: <span class="gold">{newAscean().preference}</span></p>
+                            <p style={{margin:"2%"}}>Faith: <span class="gold" onClick={() => setShowFaith(!showFaith())}>{newAscean().faith}</span> | Mastery: <span class="gold" onClick={() => toggle(newAscean().mastery)}>{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
                             <div style={{ display: "inline-flex", "justify-content":"center" }}>
                                 <div style={inline}>
                                     <div class="" onClick={() => toggle("constitution")} style={font}>Con</div>
@@ -198,10 +204,25 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                 </Match>
             </Switch> 
         </Show>
+        <Show when={armorShow()}>
+        <div class="modal" onClick={() => setArmorShow(!armorShow())}>
+            <ArmorModal armor={preferenceState.find(pref => pref.name === newAscean().preference) as { name: string; description: string; }}/>
+        </div> 
+        </Show>
         <Show when={attrShow()}>
         <div class="modal" onClick={() => setAttrShow(!attrShow())}>
             <AttributeModal attribute={attribute()}/>
         </div> 
+        </Show>
+        <Show when={showFaith()}>
+            <div class="modal" onClick={() => setShowFaith(!showFaith())}>
+                <FaithModal faith={newAscean().faith} />
+            </div>
+        </Show> 
+        <Show when={showOrigin()}>
+            <div class="modal" onClick={() => setShowOrigin(!showOrigin())}>
+                <OriginModal origin={newAscean().origin} />
+            </div>
         </Show>
     </div>;
 };

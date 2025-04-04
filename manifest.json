@@ -3,7 +3,6 @@
     "short_name": "Ascean",
     "start_url": "https://achreo.vercel.app",
     "display": "fullscreen",
-    "display_override": ["window-controls-overlay"],
     "background_color": "#000",
     "description": "Fantasy Action Role-Playing Game.",
     "icons": [

@@ -1,3 +1,11 @@
+:root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    
+    --samsung-cutout: 35px;
+}
 @font-face {
     font-family: "Cinzel-Regular";
     src: url("/assets/fonts/Cinzel-Regular.ttf") format("truetype");
@@ -10,7 +18,16 @@
     font-weight: bold;
     font-style: normal;
 }
-body {margin:0; padding: 0; color: rgba(253, 246, 216, 0.87); background-color: #000; font-family: "Cinzel-Regular", "Cinzel-Bold", Arial, Helvetica, sans-serif; scrollbar-width: none;overflow: hidden; }
+body {
+    margin:0; padding: 0; 
+    color: rgba(253, 246, 216, 0.87); 
+    background-color: #000; 
+    font-family: "Cinzel-Regular", "Cinzel-Bold", Arial, Helvetica, sans-serif; 
+    scrollbar-width: none;
+    overflow: hidden;
+    padding-left: var(--safe-left, 0px);
+    padding-right: var(--safe-right, 0px); 
+}
 #app {display: fixed; overflow: hidden; justify-content: center; align-items: center;}
 #overlay {display: flex; position: absolute; justify-content: center; align-items: center; width: 100vw; height: 100vh; z-index: 1;}
 .button {font-family: "Cinzel-Regular"; width: 10em; margin: 0.5em; padding: 0.5em; background-color: #000; border-radius: 5; color: rgba(253, 246, 216, 0.87); border: 0.15rem solid rgba(253, 246, 216, 0.87); cursor: pointer; transition: all 0.3s;

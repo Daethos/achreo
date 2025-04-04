@@ -588,6 +588,7 @@ export default class PlayerMachine {
         this.player.clearEnemies();
         this.player.disengage();
         this.player.health = 0;
+        this.player.isHurt = false;
         this.player.isDefeated = true;
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);

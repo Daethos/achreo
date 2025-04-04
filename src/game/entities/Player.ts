@@ -1272,17 +1272,6 @@ export default class Player extends Entity {
         };
     };
 
-    // computerActionsClear = () => {
-    //     return (
-    //         // !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
-    //         // !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
-    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
-    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&    
-    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_POSTURE) &&    
-    //         !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_THRUST)    
-    //     );
-    // };
-    
     movementClear = () => {
         return (
             !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
@@ -1354,7 +1343,7 @@ export default class Player extends Entity {
                     combatStats: this.attackedTarget.combatStats, 
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
-                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    actionData: { action: "", parry: "" }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
                 }});
             };
         } else {
@@ -1390,7 +1379,7 @@ export default class Player extends Entity {
                     combatStats: this.attackedTarget.combatStats, 
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
-                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
                 }});
             };
         };
@@ -1403,7 +1392,6 @@ export default class Player extends Entity {
         } else {
             this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };
-        // hitStop(this.scene);
     };
 
     playerDodge = () => {
@@ -1587,10 +1575,20 @@ export default class Player extends Entity {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
+
+        if (this.scene.combat === true && !this.currentTarget) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
+        if (this.healthbar) this.healthbar.update(this);
+        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
+        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
+        if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
+        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
+        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+        this.functionality("player", this.currentTarget as Enemy);
+
         if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
-        }
+        };
         if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -1599,7 +1597,7 @@ export default class Player extends Entity {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
-        if (this.isHurt && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
+        if (this.isHurt && !this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
             this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
@@ -1627,14 +1625,6 @@ export default class Player extends Entity {
             this.playerMachine.negativeMachine.setState(States.SNARED); 
             return;    
         };
-        if (this.scene.combat === true && (!this.currentTarget)) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
-        if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
-        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
-        if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
-        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality("player", this.currentTarget as Enemy);
     };
 
     handleMovement = () => {

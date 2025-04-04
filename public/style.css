@@ -10,9 +10,9 @@
     font-weight: bold;
     font-style: normal;
 }
-body {margin:0; padding: 0; color: rgba(253, 246, 216, 0.87); background-color: #000; font-family: "Cinzel-Regular", "Cinzel-Bold", Arial, Helvetica, sans-serif; scrollbar-width: none;overflow: hidden; }
+body {margin:0; padding:0; color: rgba(253, 246, 216, 0.87); background-color: #000; font-family: "Cinzel-Regular", "Cinzel-Bold", Arial, Helvetica, sans-serif; scrollbar-width: none; overflow: hidden; }
 #app {display: fixed; overflow: hidden; justify-content: center; align-items: center;}
-#overlay {display: flex; position: absolute; justify-content: center; align-items: center; width: 100vw; height: 100vh; z-index: 1;}
+#overlay {display: flex; position: absolute; justify-content: center; align-items: center; width: 100%; height: 100vh; z-index: 1;}
 .button {font-family: "Cinzel-Regular"; width: 10em; margin: 0.5em; padding: 0.5em; background-color: #000; border-radius: 5; color: rgba(253, 246, 216, 0.87); border: 0.15rem solid rgba(253, 246, 216, 0.87); cursor: pointer; transition: all 0.3s;
     &:hover {border: 0.15rem solid gold; color: gold;}
     &:active {border: 0.15rem solid gold; color: gold;}

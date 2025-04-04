@@ -4229,7 +4229,7 @@ export default class Enemy extends Entity {
                 action = this.currentAction;
             }; 
             this.scene.combatManager.useStamina(1);
-            if (this.attackedTarget.isMenacing || this.attackedTarget.isModerating || this.attackedTarget.isMultifaring || this.attackedTarget.isMystifying) {
+            if (this.attackedTarget.isMalcing || this.attackedTarget.isMenacing || this.attackedTarget.isModerating || this.attackedTarget.isMultifaring || this.attackedTarget.isMystifying) {
                 this.attackedTarget.reactiveTarget = this.enemyID;
             };
             if (this.attackedTarget.isShadowing === true) this.attackedTarget.playerMachine.pursue(this.enemyID);

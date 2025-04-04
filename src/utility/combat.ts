@@ -316,9 +316,9 @@ export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Eq
 };
 
 export function criticalCompiler(player: boolean, ascean: Ascean, critChance: number, critClearance: number, weapon: Equipment, physicalDamage: number, magicalDamage: number, _weather: string, glancingBlow: boolean, criticalSuccess: boolean, isSeering: boolean = false):{ criticalSuccess: boolean, glancingBlow: boolean, physicalDamage: number, magicalDamage: number, isSeering: boolean } {
-    // if (weather === 'Alluring Isles') critChance -= 10;
-    // if (weather === 'Astralands') critChance += 10;
-    // if (weather === 'Kingdom') critChance += 5;
+    // if (weather === "Alluring Isles") critChance -= 10;
+    // if (weather === "Astralands") critChance += 10;
+    // if (weather === "Kingdom") critChance += 5;
     if (player === true) {
         if (critChance >= critClearance || isSeering === true) {
             physicalDamage *= weapon.criticalDamage;
@@ -328,7 +328,7 @@ export function criticalCompiler(player: boolean, ascean: Ascean, critChance: nu
         } else {
             const skills = ascean.skills;
             let skill: number = 1;
-            if (weapon.type === 'Spell') {
+            if (weapon.type === "Spell") {
                 skill = skills[weapon.damageType?.[0] as keyof typeof skills];
             } else {
                 skill = skills[weapon.type as keyof typeof skills];
@@ -415,17 +415,17 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //     let magicalDamage = magDam;
 //     let physicalDamage = physDam;
 //     switch (weather) {
-//         case 'Alluring Isles':
+//         case "Alluring Isles":
 //             if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
 //                 physicalDamage *= DAMAGE.LOW;
 //                 magicalDamage *= DAMAGE.LOW;
 //             };
 //             break;
-//         case 'Astralands':
+//         case "Astralands":
 //             magicalDamage *= DAMAGE.LOW;
 //             physicalDamage *= DAMAGE.LOW;
 //             break;
-//         case 'Fangs': 
+//         case "Fangs": 
 //             if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
 //                 if (weapon.type !== WEAPON_TYPES.BOW && weapon.type !== WEAPON_TYPES.GREATBOW) {
 //                     physicalDamage *= DAMAGE.LOW; // +10% Physical Melee Damage
@@ -441,7 +441,7 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //                 magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
 //             };
 //             break;
-//         case 'Firelands':
+//         case "Firelands":
 //             physicalDamage *= DAMAGE.LOW;
 //             magicalDamage *= DAMAGE.LOW;
 //             if (critical === true) {
@@ -449,14 +449,14 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //                 physicalDamage *= DAMAGE.HIGH;
 //             };
 //             break;
-//         case 'Kingdom':
+//         case "Kingdom":
 //             physicalDamage *= DAMAGE.LOW;
 //             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
 //                 magicalDamage *= DAMAGE.LOW;
 //                 physicalDamage *= DAMAGE.LOW;
 //             };
 //             break;
-//         case 'Licivitas':
+//         case "Licivitas":
 //             if (weapon?.influences?.[0] === DEITIES.DAETHOS) {
 //                 magicalDamage *= DAMAGE.MID;
 //                 physicalDamage *= DAMAGE.MID;
@@ -466,7 +466,7 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //                 physicalDamage *= DAMAGE.HIGH;
 //             };
 //             break;
-//         case 'Sedyrus':
+//         case "Sedyrus":
 //             magicalDamage *= DAMAGE.LOW;
 //             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
 //                 magicalDamage *= DAMAGE.LOW;
@@ -481,7 +481,7 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //                 physicalDamage *= DAMAGE.LOW;
 //             };
 //             break;
-//         case 'Soverains':
+//         case "Soverains":
 //             magicalDamage *= DAMAGE.LOW;
 //             if (weapon.influences?.[0] !== DEITIES.DAETHOS) {
 //                 magicalDamage *= DAMAGE.LOW;
@@ -629,8 +629,8 @@ function stripEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, 
 };
 
 function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: number): Combat {
-    const desc = index === 0 ? '' : 'Two'
-    if (name === 'player') {
+    const desc = index === 0 ? "" : "Two"
+    if (name === "player") {
         const blessing = combat.playerBlessing;
         combat.prayerData.push(blessing);
         combat.deityData.push(weapon.influences?.[0] as string);
@@ -987,7 +987,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
             combat.computerWin = true;
         };
     };
-    combat.computerActionDescription = `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ''}${weapons[1]?.damageType?.[1] ? ' / ' + weapons[1].damageType?.[1] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`;
+    combat.computerActionDescription = `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ""}${weapons[1]?.damageType?.[1] ? " / " + weapons[1].damageType?.[1] : ""} ${firstWeaponCrit === true && secondWeaponCrit === true ? "damage (Critical)" : firstWeaponCrit === true || secondWeaponCrit === true ? "damage (Partial Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
     return combat;
 };
 
@@ -1132,7 +1132,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
     criticalChance -= (combat.playerAttributes?.kyosirMod as number / 2);
-    // if (combat.weather === 'Astralands') criticalChance += 10;
+    // if (combat.weather === "Astralands") criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
@@ -1158,7 +1158,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
-    combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? 'damage (Critical)' : combat.computerGlancingBlow === true ? 'damage (Glancing)' : 'damage'}.`;
+    combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? "damage (Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
     if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
@@ -1176,21 +1176,21 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 function computerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat {
     let computerRoll = combat.computerWeapons[0].roll;
     let rollCatch = Math.floor(Math.random() * 101) + (combat.playerAttributes?.kyosirMod as number);
-    // if (combat.weather === 'Alluring Isles') {
+    // if (combat.weather === "Alluring Isles") {
     //     computerRoll -= 10;
     // };
-    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") {
     //     computerRoll -= 5;
     // };
-    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    // if (combat.weather === "Fangs" || combat.weather === "Roll") {
     //     computerRoll += 5;
     // };
     if (computerRoll > rollCatch && !combat.astrication.active) {
         combat.computerRollSuccess = true;
-        combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === ACTION_TYPES.ATTACK ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} successfully rolls against you, avoiding your ${playerAction === ACTION_TYPES.ATTACK ? "focused" : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
         computerAttackCompiler(combat, computerAction);
     } else {
-        combat.computerSpecialDescription = `${combat.computer?.name} fails to roll against your ${  playerAction === ACTION_TYPES.ATTACK ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
+        combat.computerSpecialDescription = `${combat.computer?.name} fails to roll against your ${  playerAction === ACTION_TYPES.ATTACK ? "focused" : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`
         return combat;
     };
     return combat;
@@ -1344,15 +1344,15 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(weapons[0]?.attackType as string, weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = weapons[0]?.type === 'Spell' ? weapons[0]?.damageType?.[0] : weapons[0]?.type;
+    const skill = weapons[0]?.type === "Spell" ? weapons[0]?.damageType?.[0] : weapons[0]?.type;
     combat.skillData.push(skill as string);
-    const skillTwo = weapons[1]?.type === 'Spell' ? weapons[1]?.damageType?.[0] : weapons[1]?.type;
+    const skillTwo = weapons[1]?.type === "Spell" ? weapons[1]?.damageType?.[0] : weapons[1]?.type;
     combat.skillData.push(skillTwo as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
     // ==================== STATISTIC LOGIC ====================
     
     combat.playerActionDescription = 
-        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ''} ${firstWeaponCrit === true && secondWeaponCrit === true ? 'damage (Critical)' : firstWeaponCrit === true || secondWeaponCrit === true ? 'damage (Partial Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+        `You dual-wield ${combat.action} ${computer?.name} with ${weapons[0]?.name} and ${weapons[1]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} and ${weapons[1]?.damageType?.[0] ? weapons[1]?.damageType?.[0] : ""} ${firstWeaponCrit === true && secondWeaponCrit === true ? "damage (Critical)" : firstWeaponCrit === true || secondWeaponCrit === true ? "damage (Partial Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
         
     return combat;
 };
@@ -1545,10 +1545,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === 'Spell' ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
+    const skill = combat.weapons[0]?.type === "Spell" ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
-    combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? 'damage (Critical)' : combat.glancingBlow === true ? 'damage (Glancing)' : 'damage'}.`    
+    combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
         combat.playerWin = true;
@@ -1559,23 +1559,23 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 function playerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat { 
     let playerRoll = combat.weapons[0]?.roll as number;
     let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
-    // if (combat.weather === 'Alluring Isles') {
+    // if (combat.weather === "Alluring Isles") {
     //     playerRoll -= 10;
     // };
-    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") {
     //     playerRoll -= 5;
     // };
-    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    // if (combat.weather === "Fangs" || combat.weather === "Roll") {
     //     playerRoll += 5;
     // };
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 
-            `You successfully roll and evade ${combat.computer?.name}, avoiding their ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
+            `You successfully roll and evade ${combat.computer?.name}, avoiding their ${ computerAction === ACTION_TYPES.ATTACK ? "focused" : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
         attackCompiler(combat, playerAction);
     } else {
         combat.playerSpecialDescription =
-        `You failed to roll and evade against ${combat.computer?.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`
+        `You failed to roll and evade against ${combat.computer?.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? "focused" : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`
          
     };
     return combat;
@@ -1586,15 +1586,15 @@ function doubleRollCompiler(combat: Combat, playerInitiative: number, computerIn
     let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
     let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
-    // if (combat.weather === 'Alluring Isles') {
+    // if (combat.weather === "Alluring Isles") {
     //     playerRoll -= 10;
     //     computerRoll -= 10;
     // };
-    // if (combat.weather === 'Kingdom' || combat.weather === 'Sedyrus') {
+    // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") {
     //     playerRoll -= 5;
     //     computerRoll -= 5;
     // };
-    // if (combat.weather === 'Fangs' || combat.weather === 'Roll') {
+    // if (combat.weather === "Fangs" || combat.weather === "Roll") {
     //     playerRoll += 5;
     //     computerRoll += 5;
     // };
@@ -1706,31 +1706,31 @@ function dualActionSplitter(combat: Combat): Combat {
     // computerActionCompiler(newCombat, playerAction);
 
     newCombat.computerStartDescription = 
-        `${newCombat.computer.name} sets to ${computerAction === '' ? 'defend' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? '-' + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ''} against you.`
+        `${newCombat.computer.name} sets to ${computerAction === "" ? "defend" : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? "-" + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ""} against you.`
 
     newCombat.playerStartDescription = 
-        `You attempt to ${playerAction === '' ? 'defend' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newCombat.computer.name}.`
+        `You attempt to ${playerAction === "" ? "defend" : playerAction.charAt(0).toUpperCase() + playerAction.slice(1)} against ${newCombat.computer.name}.`
 
     if (playerAction === ACTION_TYPES.PARRY && computerAction === ACTION_TYPES.PARRY) {
         if (playerParry === computerParry && playerParry === ACTION_TYPES.PARRY) {
             if (playerInitiative > computerInitiative) {
                 newCombat.parrySuccess = true;
-                newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely Brutal`;
+                newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s parry-parry! Absolutely brutal`;
             } else if (!newCombat.astrication.active) {
                 newCombat.computerParrySuccess = true;
-                newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely Brutal`; 
+                newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your parry-parry! Absolutely brutal`; 
             };
             return newCombat;
         };
     };
     if (playerAction === ACTION_TYPES.PARRY && computerAction !== ACTION_TYPES.PARRY) {
         newCombat.parrySuccess = true;
-        newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? 'focused' : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
+        newCombat.playerSpecialDescription = `You successfully parried ${newCombat.computer.name}'s ${ computerAction === ACTION_TYPES.ATTACK ? "focused" : computerAction.charAt(0).toUpperCase() + computerAction.slice(1) } attack.`;
         return newCombat;
     };
     if (computerAction === ACTION_TYPES.PARRY && playerAction !== ACTION_TYPES.PARRY && !newCombat.astrication.active) {
         newCombat.computerParrySuccess = true;
-        newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === ACTION_TYPES.ATTACK ? 'focused' : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
+        newCombat.computerSpecialDescription = `${newCombat.computer.name} successfully parried your ${ newCombat.action === ACTION_TYPES.ATTACK ? "focused" : playerAction.charAt(0).toUpperCase() + playerAction.slice(1) } attack.`;
         return newCombat;    
     };
     if (playerAction === ACTION_TYPES.ROLL && computerAction === ACTION_TYPES.ROLL) { // If both choose Roll
@@ -1758,58 +1758,57 @@ function dualActionSplitter(combat: Combat): Combat {
 function weaponActionSplitter(combat: Combat): Combat {
     let cleanData = newDataCompiler(combat);
     let changes = { ...cleanData };
-    const playerActionLive = cleanData.action !== '' ? true : false;
-    const computerActionLive = cleanData.computerAction !== '' ? true : false;
+    const playerActionLive = cleanData.action !== "" ? true : false;
+    const computerActionLive = cleanData.computerAction !== "" ? true : false;
     if (playerActionLive && computerActionLive) {
         cleanData = dualActionSplitter(cleanData);
         changes = {
             ...changes,
-            'playerSpecialDescription': cleanData.playerSpecialDescription,
-            'playerStartDescription': cleanData.playerStartDescription,
-            'playerInfluenceDescription': cleanData.playerInfluenceDescription,
-            'playerInfluenceDescriptionTwo': cleanData.playerInfluenceDescriptionTwo,
-            'playerActionDescription': cleanData.playerActionDescription,
-            'realizedPlayerDamage': cleanData.realizedPlayerDamage,
-            'parrySuccess': cleanData.parrySuccess,
-            'rollSuccess': cleanData.rollSuccess,
-            'criticalSuccess': cleanData.criticalSuccess,
-            'religiousSuccess': cleanData.religiousSuccess,
-            'glancingBlow': cleanData.glancingBlow,
-            'dualWielding': cleanData.dualWielding,
+            "playerSpecialDescription": cleanData.playerSpecialDescription,
+            "playerStartDescription": cleanData.playerStartDescription,
+            "playerInfluenceDescription": cleanData.playerInfluenceDescription,
+            "playerInfluenceDescriptionTwo": cleanData.playerInfluenceDescriptionTwo,
+            "playerActionDescription": cleanData.playerActionDescription,
+            "realizedPlayerDamage": cleanData.realizedPlayerDamage,
+            "parrySuccess": cleanData.parrySuccess,
+            "rollSuccess": cleanData.rollSuccess,
+            "criticalSuccess": cleanData.criticalSuccess,
+            "religiousSuccess": cleanData.religiousSuccess,
+            "glancingBlow": cleanData.glancingBlow,
+            "dualWielding": cleanData.dualWielding,
 
-            'computerSpecialDescription': cleanData.computerSpecialDescription,
-            'computerStartDescription': cleanData.computerStartDescription,
-            'computerInfluenceDescription': cleanData.computerInfluenceDescription,
-            'computerInfluenceDescriptionTwo': cleanData.computerInfluenceDescriptionTwo,
-            'computerActionDescription': cleanData.computerActionDescription,
-            'realizedComputerDamage': cleanData.realizedComputerDamage,
-            'computerDamageType': cleanData.computerDamageType,
-            'computerParrySuccess': cleanData.computerParrySuccess,
-            'computerRollSuccess': cleanData.computerRollSuccess,
-            'computerCriticalSuccess': cleanData.computerCriticalSuccess,
-            'computerReligiousSuccess': cleanData.computerReligiousSuccess,
-            'computerGlancingBlow': cleanData.computerGlancingBlow,
-            'computerDualWielding': cleanData.computerDualWielding, 
+            "computerSpecialDescription": cleanData.computerSpecialDescription,
+            "computerStartDescription": cleanData.computerStartDescription,
+            "computerInfluenceDescription": cleanData.computerInfluenceDescription,
+            "computerInfluenceDescriptionTwo": cleanData.computerInfluenceDescriptionTwo,
+            "computerActionDescription": cleanData.computerActionDescription,
+            "realizedComputerDamage": cleanData.realizedComputerDamage,
+            "computerDamageType": cleanData.computerDamageType,
+            "computerParrySuccess": cleanData.computerParrySuccess,
+            "computerRollSuccess": cleanData.computerRollSuccess,
+            "computerCriticalSuccess": cleanData.computerCriticalSuccess,
+            "computerReligiousSuccess": cleanData.computerReligiousSuccess,
+            "computerGlancingBlow": cleanData.computerGlancingBlow,
+            "computerDualWielding": cleanData.computerDualWielding, 
         };
     } else if (playerActionLive && !computerActionLive) {
         if (cleanData.action === ACTION_TYPES.PARRY) return cleanData;
-        // computerActionCompiler(cleanData, cleanData.action);
         attackCompiler(cleanData, cleanData.action);
         changes = {
             ...changes,
-            'playerSpecialDescription': cleanData.playerSpecialDescription,
-            'playerStartDescription': cleanData.playerStartDescription,
-            'playerInfluenceDescription': cleanData.playerInfluenceDescription,
-            'playerInfluenceDescriptionTwo': cleanData.playerInfluenceDescriptionTwo,
-            'playerActionDescription': cleanData.playerActionDescription,
-            'realizedPlayerDamage': cleanData.realizedPlayerDamage,
-            'potentialPlayerDamage': cleanData.potentialPlayerDamage,
-            'parrySuccess': cleanData.parrySuccess,
-            'rollSuccess': cleanData.rollSuccess,
-            'criticalSuccess': cleanData.criticalSuccess,
-            'religiousSuccess': cleanData.religiousSuccess,
-            'glancingBlow': cleanData.glancingBlow,
-            'dualWielding': cleanData.dualWielding,
+            "playerSpecialDescription": cleanData.playerSpecialDescription,
+            "playerStartDescription": cleanData.playerStartDescription,
+            "playerInfluenceDescription": cleanData.playerInfluenceDescription,
+            "playerInfluenceDescriptionTwo": cleanData.playerInfluenceDescriptionTwo,
+            "playerActionDescription": cleanData.playerActionDescription,
+            "realizedPlayerDamage": cleanData.realizedPlayerDamage,
+            "potentialPlayerDamage": cleanData.potentialPlayerDamage,
+            "parrySuccess": cleanData.parrySuccess,
+            "rollSuccess": cleanData.rollSuccess,
+            "criticalSuccess": cleanData.criticalSuccess,
+            "religiousSuccess": cleanData.religiousSuccess,
+            "glancingBlow": cleanData.glancingBlow,
+            "dualWielding": cleanData.dualWielding,
         };
     } else if (!playerActionLive && computerActionLive) {
         if (cleanData.computerAction === ACTION_TYPES.PARRY) return cleanData;
@@ -1817,83 +1816,83 @@ function weaponActionSplitter(combat: Combat): Combat {
         computerAttackCompiler(cleanData, cleanData.computerAction);
         changes = {
             ...changes,
-            'computerSpecialDescription': cleanData.computerSpecialDescription,
-            'computerStartDescription': cleanData.computerStartDescription,
-            'computerInfluenceDescription': cleanData.computerInfluenceDescription,
-            'computerInfluenceDescriptionTwo': cleanData.computerInfluenceDescriptionTwo,
-            'computerActionDescription': cleanData.computerActionDescription,
-            'realizedComputerDamage': cleanData.realizedComputerDamage,
-            'potentialComputerDamage': cleanData.potentialComputerDamage,
-            'computerDamageType': cleanData.computerDamageType,
-            'computerParrySuccess': cleanData.computerParrySuccess,
-            'computerRollSuccess': cleanData.computerRollSuccess,
-            'computerCriticalSuccess': cleanData.computerCriticalSuccess,
-            'computerReligiousSuccess': cleanData.computerReligiousSuccess,
-            'computerGlancingBlow': cleanData.computerGlancingBlow,
-            'computerDualWielding': cleanData.computerDualWielding,    
+            "computerSpecialDescription": cleanData.computerSpecialDescription,
+            "computerStartDescription": cleanData.computerStartDescription,
+            "computerInfluenceDescription": cleanData.computerInfluenceDescription,
+            "computerInfluenceDescriptionTwo": cleanData.computerInfluenceDescriptionTwo,
+            "computerActionDescription": cleanData.computerActionDescription,
+            "realizedComputerDamage": cleanData.realizedComputerDamage,
+            "potentialComputerDamage": cleanData.potentialComputerDamage,
+            "computerDamageType": cleanData.computerDamageType,
+            "computerParrySuccess": cleanData.computerParrySuccess,
+            "computerRollSuccess": cleanData.computerRollSuccess,
+            "computerCriticalSuccess": cleanData.computerCriticalSuccess,
+            "computerReligiousSuccess": cleanData.computerReligiousSuccess,
+            "computerGlancingBlow": cleanData.computerGlancingBlow,
+            "computerDualWielding": cleanData.computerDualWielding,    
         };
     };
     faithCompiler(cleanData);
     if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated.`;
     if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated.`;
-    cleanData.action = '';
-    cleanData.computerAction = '';
+    cleanData.action = "";
+    cleanData.computerAction = "";
     cleanData.combatRound += 1;
     cleanData.sessionRound += 1;
     if (cleanData.playerWin === true || cleanData.computerWin === true) statusEffectCheck(cleanData);
     changes = {
         ...changes,
-        'action': cleanData.action,
-        'computerAction': cleanData.computerAction,
-        'combatRound': cleanData.combatRound,
-        'sessionRound': cleanData.sessionRound,
-        'playerDamaged': cleanData.realizedComputerDamage > 0,
-        'computerDamaged': cleanData.realizedPlayerDamage > 0,
+        "action": cleanData.action,
+        "computerAction": cleanData.computerAction,
+        "combatRound": cleanData.combatRound,
+        "sessionRound": cleanData.sessionRound,
+        "playerDamaged": cleanData.realizedComputerDamage > 0,
+        "computerDamaged": cleanData.realizedPlayerDamage > 0,
         
-        'newPlayerHealth': cleanData.newPlayerHealth,
-        'playerDefense': cleanData.playerDefense,
-        'playerEffects': cleanData.playerEffects,
-        'weapons': cleanData.weapons,
+        "newPlayerHealth": cleanData.newPlayerHealth,
+        "playerDefense": cleanData.playerDefense,
+        "playerEffects": cleanData.playerEffects,
+        "weapons": cleanData.weapons,
         
-        'newComputerHealth': cleanData.newComputerHealth,
-        'computerDefense': cleanData.computerDefense,
-        'computerEffects': cleanData.computerEffects,
-        'computerWeapons': cleanData.computerWeapons,
-        'computerBlessing': cleanData.computerBlessing,
+        "newComputerHealth": cleanData.newComputerHealth,
+        "computerDefense": cleanData.computerDefense,
+        "computerEffects": cleanData.computerEffects,
+        "computerWeapons": cleanData.computerWeapons,
+        "computerBlessing": cleanData.computerBlessing,
         
-        'actionData': cleanData.actionData,
-        'typeAttackData': cleanData.typeAttackData,
-        'typeDamageData': cleanData.typeDamageData,
-        'totalDamageData': cleanData.totalDamageData,
-        'deityData': cleanData.deityData,
-        'prayerData': cleanData.prayerData,
-        'skillData': cleanData.skillData,
+        "actionData": cleanData.actionData,
+        "typeAttackData": cleanData.typeAttackData,
+        "typeDamageData": cleanData.typeDamageData,
+        "totalDamageData": cleanData.totalDamageData,
+        "deityData": cleanData.deityData,
+        "prayerData": cleanData.prayerData,
+        "skillData": cleanData.skillData,
 
-        // 'attackWeight': cleanData.attackWeight,
-        // 'parryWeight': cleanData.parryWeight,
-        // 'dodgeWeight': cleanData.dodgeWeight,
-        // 'postureWeight': cleanData.postureWeight,
-        // 'rollWeight': cleanData.rollWeight,
-        // 'parryAttackWeight': cleanData.parryAttackWeight,
-        // 'parryParryWeight': cleanData.parryParryWeight,
-        // 'parryDodgeWeight': cleanData.parryDodgeWeight,
-        // 'parryPostureWeight': cleanData.parryPostureWeight,
-        // 'parryRollWeight': cleanData.parryRollWeight,
+        // "attackWeight": cleanData.attackWeight,
+        // "parryWeight": cleanData.parryWeight,
+        // "dodgeWeight": cleanData.dodgeWeight,
+        // "postureWeight": cleanData.postureWeight,
+        // "rollWeight": cleanData.rollWeight,
+        // "parryAttackWeight": cleanData.parryAttackWeight,
+        // "parryParryWeight": cleanData.parryParryWeight,
+        // "parryDodgeWeight": cleanData.parryDodgeWeight,
+        // "parryPostureWeight": cleanData.parryPostureWeight,
+        // "parryRollWeight": cleanData.parryRollWeight,
 
-        'playerDeathDescription': cleanData.playerDeathDescription,
-        'computerDeathDescription': cleanData.computerDeathDescription,
-        'playerWin': cleanData.playerWin,
-        'computerWin': cleanData.computerWin,
+        "playerDeathDescription": cleanData.playerDeathDescription,
+        "computerDeathDescription": cleanData.computerDeathDescription,
+        "playerWin": cleanData.playerWin,
+        "computerWin": cleanData.computerWin,
 
-        'isSeering': cleanData.isSeering,
-        'isCaerenic': cleanData.isCaerenic,
-        'isStalwart': cleanData.isStalwart,
-        'isStealth': cleanData.isStealth,
-        'isInsight': cleanData.isInsight,
-        'isQuicken': cleanData.isQuicken,
-        'astrication': cleanData.astrication,
-        'berserk': cleanData.berserk,
-        'conviction': cleanData.conviction,
+        "isSeering": cleanData.isSeering,
+        "isCaerenic": cleanData.isCaerenic,
+        "isStalwart": cleanData.isStalwart,
+        "isStealth": cleanData.isStealth,
+        "isInsight": cleanData.isInsight,
+        "isQuicken": cleanData.isQuicken,
+        "astrication": cleanData.astrication,
+        "berserk": cleanData.berserk,
+        "conviction": cleanData.conviction,
     };
     return changes;
 };
@@ -1931,18 +1930,18 @@ function newDataCompiler(combat: Combat): any {
         realizedComputerDamage: 0, // Computer Damage - Player Defenses
         playerDamaged: false,
         computerDamaged: false,
-        playerStartDescription: '',
-        computerStartDescription: '',
-        playerSpecialDescription: '',
-        computerSpecialDescription: '',
-        playerActionDescription: '', 
-        computerActionDescription: '',
-        playerInfluenceDescription: '',
-        computerInfluenceDescription: '',
-        playerInfluenceDescriptionTwo: '',
-        computerInfluenceDescriptionTwo: '',
-        playerDeathDescription: '',
-        computerDeathDescription: '',
+        playerStartDescription: "",
+        computerStartDescription: "",
+        playerSpecialDescription: "",
+        computerSpecialDescription: "",
+        playerActionDescription: "", 
+        computerActionDescription: "",
+        playerInfluenceDescription: "",
+        computerInfluenceDescription: "",
+        playerInfluenceDescriptionTwo: "",
+        computerInfluenceDescriptionTwo: "",
+        playerDeathDescription: "",
+        computerDeathDescription: "",
         newPlayerHealth: combat.newPlayerHealth, // New player health post-combat action
         newComputerHealth: combat.newComputerHealth, // New computer health post-combat action
         // attackWeight: combat.attackWeight,
@@ -2040,7 +2039,7 @@ function computerDispel(combat: Combat): Combat {
 function prayerSplitter(combat: Combat, prayer: string): Combat {
     let originalPrayer = combat.playerBlessing;
     combat.playerBlessing = prayer; 
-    faithSuccess(combat, 'player', combat.weapons[0] as Equipment, 0);
+    faithSuccess(combat, "player", combat.weapons[0] as Equipment, 0);
     combat.playerBlessing = originalPrayer;
     return combat;
 };
@@ -2049,8 +2048,8 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
-    combat.playerAction = 'invoke';
-    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
+    combat.playerAction = "invoke";
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}"s caeren with your ${combat.player?.mastery}"s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
     return combat;
 };
 
@@ -2058,29 +2057,29 @@ function talentPrayer(combat: Combat, prayer: string) {
     prayerSplitter(combat, prayer);
     if (combat.playerWin) statusEffectCheck(combat);
     const changes = {
-        'actionData': combat.actionData,
-        'deityData': combat.deityData,
-        'prayerData': combat.prayerData,
-        'skillData': combat.skillData,
+        "actionData": combat.actionData,
+        "deityData": combat.deityData,
+        "prayerData": combat.prayerData,
+        "skillData": combat.skillData,
 
-        'weapons': combat.weapons,
-        'computerWeapons': combat.computerWeapons,
-        'playerEffects': combat.playerEffects,
-        'computerEffects': combat.computerEffects,
-        'playerDefense': combat.playerDefense,
-        'computerDefense': combat.computerDefense,
+        "weapons": combat.weapons,
+        "computerWeapons": combat.computerWeapons,
+        "playerEffects": combat.playerEffects,
+        "computerEffects": combat.computerEffects,
+        "playerDefense": combat.playerDefense,
+        "computerDefense": combat.computerDefense,
 
-        'newPlayerHealth': combat.newPlayerHealth,
-        'newComputerHealth': combat.newComputerHealth,
+        "newPlayerHealth": combat.newPlayerHealth,
+        "newComputerHealth": combat.newComputerHealth,
         
-        'realizedPlayerDamage': combat.realizedPlayerDamage,
-        'computerDamaged': combat.computerDamaged,
-        'playerWin': combat.playerWin,
-        'playerActionDescription': combat.playerActionDescription,
-        'playerInfluenceDescription': combat.playerInfluenceDescription,
+        "realizedPlayerDamage": combat.realizedPlayerDamage,
+        "computerDamaged": combat.computerDamaged,
+        "playerWin": combat.playerWin,
+        "playerActionDescription": combat.playerActionDescription,
+        "playerInfluenceDescription": combat.playerInfluenceDescription,
 
-        'isInsight': combat.isInsight,
-        'isQuicken': combat.isQuicken,
+        "isInsight": combat.isInsight,
+        "isQuicken": combat.isQuicken,
     };
     return changes;
 };
@@ -2115,7 +2114,7 @@ function instantActionSplitter(combat: Combat): any {
             break;
     };
 
-    combat.actionData.push('invoke'); 
+    combat.actionData.push("invoke"); 
         
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
@@ -2124,40 +2123,40 @@ function instantActionSplitter(combat: Combat): any {
     if (combat.playerWin === true) statusEffectCheck(combat);
 
     const changes = {
-        'actionData': combat.actionData,
-        'deityData': combat.deityData,
-        'prayerData': combat.prayerData,
-        'skillData': combat.skillData,
+        "actionData": combat.actionData,
+        "deityData": combat.deityData,
+        "prayerData": combat.prayerData,
+        "skillData": combat.skillData,
 
-        'weapons': combat.weapons,
-        'computerWeapons': combat.computerWeapons,
-        'playerEffects': combat.playerEffects,
-        'computerEffects': combat.computerEffects,
-        'playerDefense': combat.playerDefense,
-        'computerDefense': combat.computerDefense,
+        "weapons": combat.weapons,
+        "computerWeapons": combat.computerWeapons,
+        "playerEffects": combat.playerEffects,
+        "computerEffects": combat.computerEffects,
+        "playerDefense": combat.playerDefense,
+        "computerDefense": combat.computerDefense,
 
-        'newPlayerHealth': combat.newPlayerHealth,
-        'newComputerHealth': combat.newComputerHealth,
+        "newPlayerHealth": combat.newPlayerHealth,
+        "newComputerHealth": combat.newComputerHealth,
         
-        'realizedPlayerDamage': combat.realizedPlayerDamage,
-        'computerDamaged': combat.computerDamaged,
-        'playerWin': combat.playerWin,
-        'playerActionDescription': combat.playerActionDescription,
-        'playerInfluenceDescription': combat.playerInfluenceDescription,
+        "realizedPlayerDamage": combat.realizedPlayerDamage,
+        "computerDamaged": combat.computerDamaged,
+        "playerWin": combat.playerWin,
+        "playerActionDescription": combat.playerActionDescription,
+        "playerInfluenceDescription": combat.playerInfluenceDescription,
 
-        'isInsight': combat.isInsight,
-        'isQuicken': combat.isQuicken,
+        "isInsight": combat.isInsight,
+        "isQuicken": combat.isQuicken,
     };
     return changes;
 };
 
 function consumePrayerSplitter(combat: Combat): any {
-    if (combat.prayerSacrificeId === '') {
+    if (combat.prayerSacrificeId === "") {
         combat.prayerSacrifice = combat.playerEffects[0].prayer;
         combat.prayerSacrificeId = combat.playerEffects[0].id;
         combat.prayerSacrificeName = combat.playerEffects[0].name;
     };
-    combat.actionData.push('consume');
+    combat.actionData.push("consume");
     combat.prayerData.push(combat.prayerSacrifice);
     combat.playerEffects = combat.playerEffects.filter(effect => {
         if (effect.id !== combat.prayerSacrificeId) return true; // || effect.enemyName !== combat.computer.name
@@ -2206,11 +2205,11 @@ function consumePrayerSplitter(combat: Combat): any {
         return false;
     });
 
-    combat.playerAction = 'prayer';
-    combat.prayerSacrifice = '';
-    combat.prayerSacrificeId = '';
-    combat.prayerSacrificeName = '';
-    combat.action = '';
+    combat.playerAction = "prayer";
+    combat.prayerSacrifice = "";
+    combat.prayerSacrificeId = "";
+    combat.prayerSacrificeName = "";
+    combat.action = "";
 
     if (combat.prayerSacrifice !== PRAYERS.HEAL && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
     if (combat.playerWin === true) statusEffectCheck(combat);
@@ -2269,21 +2268,21 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     };
 
     const changes = {
-        'actionData': combat.actionData,
-        'prayerData': combat.prayerData,
+        "actionData": combat.actionData,
+        "prayerData": combat.prayerData,
 
-        'playerEffects': combat.playerEffects,
-        'computerEffects': combat.computerEffects,
-        'weapons': combat.weapons,
-        'computerWeapons': combat.computerWeapons,
-        'playerDefense': combat.playerDefense,
-        'computerDefense': combat.computerDefense,
+        "playerEffects": combat.playerEffects,
+        "computerEffects": combat.computerEffects,
+        "weapons": combat.weapons,
+        "computerWeapons": combat.computerWeapons,
+        "playerDefense": combat.playerDefense,
+        "computerDefense": combat.computerDefense,
 
-        'newPlayerHealth': combat.newPlayerHealth,
-        'newComputerHealth': combat.newComputerHealth,
+        "newPlayerHealth": combat.newPlayerHealth,
+        "newComputerHealth": combat.newComputerHealth,
 
-        'playerWin': combat.playerWin,
-        'computerWin': combat.computerWin,
+        "playerWin": combat.playerWin,
+        "computerWin": combat.computerWin,
     };
     return changes;
 };
@@ -2357,7 +2356,7 @@ function instantActionCompiler(combat: Combat): Combat | undefined {
         const res = instantActionSplitter(combat);
         return res;
     } catch (err) {
-        console.warn(err, 'Error in the Instant Action Compiler of Game Services');
+        console.warn(err, "Error in the Instant Action Compiler of Game Services");
     };
 };
 
@@ -2377,7 +2376,7 @@ function consumePrayer(combat: Combat): Combat | undefined {
         const res = consumePrayerSplitter(combat);
         return res;
     } catch (err) {
-        console.warn(err, 'Error in the Consume Prayer of Game Services');
+        console.warn(err, "Error in the Consume Prayer of Game Services");
     };
 };
 
@@ -2387,7 +2386,7 @@ function weaponActionCompiler(combat: Combat): Combat | undefined {
         const res = weaponActionSplitter(combat);
         return res as Combat;
     } catch (err) {
-        console.warn(err, 'Error in the Phaser Action Compiler of Game Services');
+        console.warn(err, "Error in the Phaser Action Compiler of Game Services");
     };
 };
 
@@ -2397,7 +2396,7 @@ function prayerEffectTick(data: { combat: Combat; effect: StatusEffect; effectTi
         const res = prayerEffectTickSplitter(data);
         return res;
     } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, "Error in the Phaser Effect Tick of Game Services");
     };
 };
 
@@ -2406,7 +2405,7 @@ function prayerRemoveTick(combat: Combat, statusEffect: StatusEffect): Combat | 
         const res = prayerRemoveTickSplitter(combat, statusEffect);
         return res;
     } catch (err) {
-        console.warn(err, 'Error in the Phaser Effect Tick of Game Services');
+        console.warn(err, "Error in the Phaser Effect Tick of Game Services");
     };
 };
 

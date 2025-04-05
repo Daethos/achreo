@@ -18,6 +18,8 @@ export class CombatManager {
     constructor(scene: Play) {
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
+        EventBus.on("use-stamina", this.useStamina);
+        EventBus.on("use-grace", this.useGrace);
     };
         
     checkPlayerSuccess = (): void => {
@@ -28,8 +30,9 @@ export class CombatManager {
         return this.context.player[concern];
     };
 
-    playerCaerenicNeg = () => this.context.player.isCaerenic ? 1.25 : 1;
-    playerCaerenicPro = () => this.context.player.isCaerenic ? 1.15 : 1;
+    playerCaerenicNeg = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.efficient ? 1.15 : 1.25) : 1;
+    playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
+    playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
     // ============================ Computer Combat ============================= \\
     computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {

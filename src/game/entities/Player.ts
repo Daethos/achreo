@@ -246,12 +246,12 @@ export default class Player extends Entity {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, "weapon");
             this.setGlow(this.spriteShield, true, "shield"); 
-            this.adjustSpeed(PLAYER.SPEED.CAERENIC);
+            this.adjustSpeed(PLAYER.SPEED.CAERENIC * (this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1));
         } else {
             this.setGlow(this, false);
             this.setGlow(this.spriteWeapon, false, "weapon")
             this.setGlow(this.spriteShield, false, "shield"); 
-            this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
+            this.adjustSpeed(-PLAYER.SPEED.CAERENIC * (this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1));
         };
     };
 
@@ -1272,13 +1272,20 @@ export default class Player extends Entity {
         };
     };
 
+    // movementClear = (): boolean => {
+    //     return (
+    //         !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
+    //         !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
+    //         !this.playerMachine.stateMachine.isCurrentState(States.PARRY) &&
+    //         (this.isStalwart ? !this.scene.hud.talents.talents.stalwart.enhanced : true)
+    //     );
+    // };
     movementClear = () => {
-        return (
-            !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
-            !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
-            !this.playerMachine.stateMachine.isCurrentState(States.PARRY) &&
-            !this.isStalwart
-        );
+        const inRestrictedState = this.playerMachine.stateMachine.isCurrentState(States.ROLL) || this.playerMachine.stateMachine.isCurrentState(States.DODGE) || this.playerMachine.stateMachine.isCurrentState(States.PARRY);
+        if (this.isStalwart) {
+            return this.scene.hud.talents.talents.stalwart.enhanced && !inRestrictedState;
+        };
+        return !inRestrictedState;
     };
 
     killParticle = () => {

@@ -420,7 +420,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         "animate-flicker-infinite":talents().points.spent !== talents().points.total,
                         "animate-texty-infinite":talents().points.spent === talents().points.total,
                     }} style={{color:"#fdf6d8", "--glow-color":"#fdf6d8", "margin":"2.5% 0 5%"}}>{talents().points.spent} / {talents().points.total}</h3>
-                    <For each={specials()}>{(special) => {
+                    <For each={["Caerenic", "Stalwart", "Stealth"].concat(specials())}>{(special) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
                         const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;

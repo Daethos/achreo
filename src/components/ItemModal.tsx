@@ -70,22 +70,22 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 <Show when={item?.influences && item?.influences?.length > 0}>
                     Influence: <span class="gold">{item?.influences?.[0]}</span>
                 </Show>
-                <div style={{ color: getRarityColor(item?.rarity as string), "font-size": "1.5em", "margin-top": "3%", "margin-bottom": "4%" }}>
+                <div style={{ color: getRarityColor(item?.rarity as string), "font-size": "1.5em", "margin": "2% auto 3%" }}>
                     {item?.rarity}
                 </div>
                 <Show when={stalwart}>
                     <p class="gold" style={{ "font-size": "0.75em" }}>
                         Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 
                         {/* You receive 50% less poise damage.  */}
-                        You receive 15% less damage. 
-                        You cannot dodge or roll.
+                        You receive 15% less damage (25% if Enhanced). 
+                        You cannot dodge or roll (Capable if Optimized).
                     </p>
                 </Show>
                 <Show when={caerenic}>
                     <p class="gold" style={{ "font-size": "0.75em" }}>
-                        Caerenic - You attempt to harness your caer with your achre, increasing your damage by 15%. 
+                        Caerenic - You attempt to harness your caer with your achre, increasing your damage by 15% (25% if Enhanced). 
                         You move significantly faster. 
-                        You receive 25% more damage. 
+                        You receive 25% more damage (15% if Optimized). 
                     </p>
                 </Show>
             </div> 

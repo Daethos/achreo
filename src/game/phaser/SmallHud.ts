@@ -414,14 +414,20 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                         };
                         this.switches.stealth = !this.switches.stealth;
                         EventBus.emit('update-stealth');
+                        if (this.switches.stealth) {
+                            EventBus.emit("use-stamina", 10);             
+                            if (this.scene.talents.talents.stealth.enhanced) EventBus.emit("disengage");
+                        };
                         break;
                     case 'stalwart':
                         this.switches.stalwart = !this.switches.stalwart;
-                        EventBus.emit('update-stalwart', this.switches.stalwart);                        
+                        EventBus.emit('update-stalwart', this.switches.stalwart);
+                        if (this.switches.stalwart) EventBus.emit("use-stamina", 10);             
                         break;
                     case 'caerenic':
                         this.switches.caerenic = !this.switches.caerenic;
                         EventBus.emit('update-caerenic');                
+                        if (this.switches.caerenic) EventBus.emit("use-grace", 10);             
                         break; 
                     case 'strafe':
                         this.switches.strafe = !this.switches.strafe;

@@ -62,6 +62,38 @@ export const ACTION_ORIGIN = {
         talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
     },
 
+    CAERENIC: {
+        name: "Caerenic",
+        description: "You attempt to harness your caer with your achre, increasing your damage by 15%. You move significantly faster. You receive 25% more damage.",
+        cooldown: `0s`,
+        cost: `10 Grace`,
+        time: "Instant",
+        special: "(Self)",
+        svg: "INVOKE",
+        talent: "Optimized: Lowers Damage Received (15%). Enhanced: Increases Damage Performed (25%) and Increases Speed.",
+    },
+    STALWART: {
+        name: "Stalwart",
+        description: "You are engaged in combat with your shield raised, adding it to your passive defense. You receive 15% less damage. You cannot dodge or roll.",
+        cooldown: `0s`,
+        cost: `10 Stamina`,
+        time: "Instant",
+        special: "(Self)",
+        svg: "INVOKE",
+        talent: "Optimized: Increases Defense (25%). Enhanced: Can Dodge and Roll.",
+    },
+    STEALTH: {
+        name: "Stealth",
+        description: "You fade from this world, obscuring your form. You are undetectable by enemies. You move slower.",
+        cooldown: `0s`,
+        cost: `10 Stamina`,
+        time: "Instant",
+        special: "(Self)",
+        svg: "INVOKE",
+        talent: "Optimized: Increases Speed (Normal). Enhanced: Can Disengage From Combat.",
+    },
+
+
     INVOKE: {
         name: "Invoke",
         description: "Your mastery and adherence or devotion dictate what you can pray for in an instant, calling it from your weapon's influence regardless of given favor.",

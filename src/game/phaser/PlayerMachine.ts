@@ -162,8 +162,6 @@ export default class PlayerMachine {
         };
     };
 
-    caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
-
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
 
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
@@ -175,7 +173,7 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -194,7 +192,7 @@ export default class PlayerMachine {
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Tshaeral", data: 4 });
         } else {
-            const drained = Math.round(this.scene.state.playerHealth * power * this.caerenicDamage() * this.levelModifier());
+            const drained = Math.round(this.scene.state.playerHealth * power * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
             const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -216,7 +214,7 @@ export default class PlayerMachine {
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: this.player.entropicMultiplier(power) }); 
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.caerenicDamage() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -233,10 +231,10 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const sacrifice = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
-            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1));
+            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
+            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart()) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart());
             let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
-            const playerActionDescription = `You sacrifice ${sacrifice / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
+            const playerActionDescription = `You sacrifice ${sacrifice / 2 * this.scene.combatManager.playerStalwart()} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSacrifice, id } });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySacrifice, id } });
@@ -252,7 +250,7 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * power / 100) * 0.8;
+            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * this.levelModifier()) * (1 * power / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your suture ${enemy.ascean?.name}"s caeren into you, absorbing and healing for ${suture}.`;
@@ -895,7 +893,7 @@ export default class PlayerMachine {
     onPostureExit = () => {if (this.scene.state.action === "posture") this.scene.combatManager.combatMachine.input("action", ""); this.player.spriteShield.setVisible(this.player.isStalwart); this.player.computerAction = false;};
 
     onDodgeEnter = () => {
-        if (this.player.isStalwart || this.player.isStorming || this.player.isRolling) return;
+        if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming || this.player.isRolling) return;
         this.player.isDodging = true;
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_DODGE : PLAYER.STAMINA.DODGE);
         if (!this.player.isComputer) this.player.swingReset(States.DODGE, true);
@@ -913,7 +911,7 @@ export default class PlayerMachine {
     };
     onDodgeUpdate = (_dt: number) => this.player.combatChecker(this.player.isDodging);
     onDodgeExit = () => {
-        if (this.player.isStalwart || this.player.isStorming) return;
+        if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming) return;
         this.player.spriteWeapon.setVisible(true);
         this.player.computerAction = false;
         this.player.dodgeCooldown = 0;
@@ -929,7 +927,7 @@ export default class PlayerMachine {
     };
 
     onRollEnter = () => {
-        if (this.player.isStalwart || this.player.isStorming || this.player.isDodging) return;
+        if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming || this.player.isDodging) return;
         this.player.isRolling = true;
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_ROLL : PLAYER.STAMINA.ROLL);
         if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
@@ -947,7 +945,7 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isRolling);
     };
     onRollExit = () => {
-        if (this.player.isStalwart || this.player.isStorming) return;
+        if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming) return;
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
         if (this.scene.state.action !== "") {
@@ -2946,6 +2944,7 @@ export default class PlayerMachine {
 
     stealthEffect = (stealth: boolean) => {
         this.scene.stealthEngaged(stealth);
+        const speed = this.scene.hud.talents.talents.stealth.efficient ? 0 : PLAYER.SPEED.STEALTH;
         if (stealth) {
             const getStealth = (object: any) => {
                 object.setAlpha(0.5); 
@@ -2958,7 +2957,7 @@ export default class PlayerMachine {
                     repeat: -1,
                 }); 
             };
-            this.player.adjustSpeed(-PLAYER.SPEED.STEALTH);
+            this.player.adjustSpeed(-speed);
             getStealth(this.player);
             getStealth(this.player.spriteWeapon);
             getStealth(this.player.spriteShield);
@@ -2969,7 +2968,7 @@ export default class PlayerMachine {
                 object.clearTint();
                 object.setBlendMode(BlendModes.NORMAL);
             };
-            this.player.adjustSpeed(PLAYER.SPEED.STEALTH);
+            this.player.adjustSpeed(speed);
             clearStealth(this.player);
             clearStealth(this.player.spriteWeapon);
             clearStealth(this.player.spriteShield);

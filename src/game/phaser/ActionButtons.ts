@@ -503,7 +503,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private stalwartButtons = (stalwart: boolean) => {
-        if (stalwart === true) {
+        if (stalwart === true && this.scene.talents.talents.stalwart.enhanced === false) {
             this.actionButtons = this.actionButtons.map((button: ActionButton) => {
                 if (button.name === "DODGE" || button.name === "ROLL") {
                     button.graphic.clear();
@@ -759,7 +759,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 const centerActionX = width * x; // / 1.25
                 const centerActionY = height * y; // / 1.35
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
-                    if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true) return button; // this.scene.player
+                    if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true && !this.scene.talents.talents.stalwart.enhanced) return button; // this.scene.player
                     button.graphic.clear();
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, this.scene.settings.positions.actionButtons.display, this.scene.settings.positions.actionButtons.spacing, index, centerActionX, centerActionY, height);
@@ -849,7 +849,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     public setCurrent = (current: number, limit: number, name: string) => {
         this.actionButtons = this.actionButtons.map((button) => {
-            if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true) return button; // this.scene.player
+            if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true && !this.scene.talents.talents.stalwart.enhanced) return button; // this.scene.player
             if (button.name === name.toUpperCase()) {
                 const progressPercentage = current / limit;
                 if (current / limit >= 1) {
@@ -949,7 +949,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     };
 
     private scaleButton = (button: ActionButton, scale: number, opacity: number, border: number): ActionButton => {
-        if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true) return button; // this.scene.player
+        if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true && !this.scene.talents.talents.stalwart.enhanced) return button; // this.scene.player
         if (button.current / button.total >= 1) {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, opacity);

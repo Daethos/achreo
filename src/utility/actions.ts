@@ -9,7 +9,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "ATTACK",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     DODGE: {
         name: "Dodge",
@@ -19,7 +19,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "DODGE",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     PARRY: {
         name: "Parry",
@@ -29,7 +29,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "PARRY",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     POSTURE: {
         name: "Posture",
@@ -39,7 +39,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "POSTURE",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     ROLL: {
         name: "Roll",
@@ -49,7 +49,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "ROLL",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     THRUST: {
         name: "Thrust",
@@ -59,7 +59,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "THRUST",
-        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Doubles Amount Healed.",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
 
     CAERENIC: {

@@ -643,7 +643,7 @@ export default class Enemy extends Entity {
 
     computerCombatUpdate = (e: ComputerCombat) => {
         if (this.enemyID !== e.personalID) return;
-        const { computerDamageType, enemyID, computerWeapons, computerWin, computerHealth, newComputerHealth } = e;
+        const { computerDamageType, enemyID, computerWeapons, computerWin, computerHealth, newComputerHealth, computerEnemyParrySuccess, rollSuccess } = e;
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
@@ -669,7 +669,14 @@ export default class Enemy extends Entity {
         } else if (this.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - this.health);
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-        }; 
+        };
+        if (rollSuccess) {
+            this.specialCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "heal", false, false, () => this.specialCombatText = undefined);
+        };
+        if (computerEnemyParrySuccess) {
+            this.isStunned = true;
+            this.specialCombatText = this.scene.showCombatText("Parried", PLAYER.DURATIONS.TEXT, "heal", false, false, () => this.specialCombatText = undefined);
+        };
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
         if (this.healthbar.getTotal() < computerHealth) this.healthbar.setTotal(computerHealth);
@@ -681,6 +688,8 @@ export default class Enemy extends Entity {
         this.currentWeaponCheck();
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
+        this.computerCombatSheet.rollSuccess = false;
+        this.computerCombatSheet.computerEnemyParrySuccess = false;
         this.computerCombatSheet.computerWin = computerWin;
         if (e.newComputerEnemyHealth <= 0 && this.computerCombatSheet.computerWin) {
             this.computerCombatSheet.computerWin = false;
@@ -721,7 +730,7 @@ export default class Enemy extends Entity {
         } else if (this.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - this.health);
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-        }; 
+        };
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
         if (this.healthbar.getTotal() < computerHealth) this.healthbar.setTotal(computerHealth);

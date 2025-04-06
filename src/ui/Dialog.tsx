@@ -27,6 +27,7 @@ import { IRefPhaserGame, rebalanceCurrency } from "../game/PhaserGame";
 import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
 import { roundToTwoDecimals } from "../utility/combat";
+
 const GET_ETCH_COST = {
     Common: 0.1,
     Uncommon: 0.25,
@@ -327,7 +328,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [institution, setInstitution] = createSignal<any>(institutions["Ascea"]);
     const [local, setLocal] = createSignal<any>(localLore["Astralands"]);
     const [region, setRegion] = createSignal<any>(provincialInformation["Astralands"]);
-    const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Ahn'are"]);
+    const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Hybrida"]);
+    const [entityPreamble, setEntityPreamble] = createSignal<any>(SupernaturalEntityLore["Hybrida"].Preamble);
+    const [currentEntity, setCurrentEntity] = createSignal<any>("Ahn'are");
+    const [entityConcept, setEntityConcept] = createSignal<any>(SupernaturalEntityLore["Hybrida"]["Ahn'are"]);
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
     const [currentWhisper, setCurrentWhisper] = createSignal<any>("Ancients");
     const [whisper, setWhisper] = createSignal<any>(whispers["Ancients"]);
@@ -788,11 +792,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("blend-game", { currentIntent: clean });
     };
 
-    const handleInstitutionalConcept = (con: string) => {
+    const handleInstitutionalConcept = (con: string): void => {
         setConcept(institution()[con]);
     };
+
+    const handleEntityConcept = (con: string): void => {
+        setEntityConcept(entity()[con]);
+    };
     
-    const handleWhisperConcept = (con: string) => {
+    const handleWhisperConcept = (con: string): void => {
         setWhisperConcept(whisper()[con]);
     };
 
@@ -810,8 +818,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setRegion(provincialInformation[region]);
     };
     
-    const handleEntity = (entity: keyof SupernaturalEntity) => {
-        setEntity(SupernaturalEntityLore[entity]);
+    const handleEntity = (ent: keyof SupernaturalEntity) => {
+        setCurrentEntity(ent);
+        setEntity(SupernaturalEntityLore[ent]);
+        setEntityPreamble(entity().Preamble);
     };
 
     const handlePhenomena = (phenomena: keyof SupernaturalPhenomena) => {
@@ -1191,7 +1201,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
                 </Show>
                 <Show when={game().currentIntent === "entities"}>
-                    <SupernaturalEntityButtons options={SupernaturalEntityLore} handleEntity={handleEntity} />
+                    <SupernaturalEntityButtons current={currentEntity} options={SupernaturalEntityLore} handleEntity={handleEntity} handleConcept={handleEntityConcept} />
                 </Show>
                 <Show when={game().currentIntent === "phenomena"}>
                     <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
@@ -1561,10 +1571,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "entities" ? (
                     <>
-                        <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        {/* <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        <br /> */}
+                        <Typewriter stringText={entityPreamble} styling={{...typewriterStyling, "white-space":"pre-wrap"}} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={entity} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={entityConcept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : game().currentIntent === "phenomena" ? (

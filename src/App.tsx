@@ -53,19 +53,6 @@ export default function App() {
     var tips: string | number | NodeJS.Timeout | undefined =  undefined;
     onMount(() => fetchAsceans());
     const currentScene = (scene: Scene) => setScene(scene.scene.key);
-    function resetGame(): void {
-        setTips(false);
-        (phaserRef.scene as any)?.cleanUp();
-        if (phaserRef.scene?.scene.key === "Game") {
-            const scene = phaserRef.scene?.scene.get("Underground");
-            if (scene.scene.isSleeping()) (scene as any)?.cleanUp();
-        } else { // Underground
-            const scene = phaserRef.scene?.scene.get("Game");
-            if (scene?.scene.isSleeping()) (scene as any)?.cleanUp();
-        };
-        phaserRef.game?.destroy(false);
-        setStartGame(false);
-    };
     function fetchAsceans(): void {
         const fetch = async () => {
             try {
@@ -483,7 +470,6 @@ export default function App() {
     usePhaserEvent("loading-ascean", loadingAscean);
     usePhaserEvent("quick-ascean", quickAscean);
     usePhaserEvent("fetch-inventory", fetchInventory);
-    usePhaserEvent("reset-game", resetGame);
     usePhaserEvent("save-ascean", saveAscean);
     usePhaserEvent("silent-save", silentSave);
     usePhaserEvent("update-ascean", updateAscean);
@@ -631,7 +617,7 @@ export default function App() {
             </>
         ) : ( 
             <div class="menu-bg">
-                <canvas id="lightning"></canvas>
+            <canvas id="lightning"></canvas>
             <Suspense fallback={<Puff color="gold"/>}>
             <div class="cornerTL super" style={{ "text-shadow": "0em 0em 0.1em #ffd700" }}>The Ascean v0.0.1</div>
             <Show when={menu().loading === false} fallback={<div class="superCenter"><Puff color="gold"/></div>}>

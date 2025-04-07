@@ -106,6 +106,8 @@ export default class Player extends Entity {
     currentEnemies: string[] | [] = [];
     chasing: boolean = false;
     hurtTime: number = 0;
+    collider: any;
+    jumpTime: number = 0;
 
     constructor(data: any) {
         const { scene } = data;
@@ -149,7 +151,6 @@ export default class Player extends Entity {
         this.setScale(PLAYER.SCALE.SELF);
         let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
             isSensor: false, label: "playerCollider", 
-            // collisionFilter: {category: ENTITY_FLAGS.PLAYER, mask: ENTITY_FLAGS.ENEMY}
         }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "playerSensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
@@ -159,6 +160,7 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = playerSensor;
+        this.collider = playerCollider;
         // this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
         // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC, ENTITY_FLAGS.WORLD]);
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
@@ -204,7 +206,7 @@ export default class Player extends Entity {
         });
         this.beam = new Beam(this);
         scene.registry.set("player", this);
-    };   
+    };
 
     getAscean = () => {
         EventBus.on("player-ascean-ready", (ascean: Ascean) => this.ascean = ascean);
@@ -1536,6 +1538,8 @@ export default class Player extends Entity {
         } else if (this.isDodging) { 
             this.anims.play(FRAMES.DODGE, true);
             if (this.dodgeCooldown === 0) this.playerDodge();
+        } else if (this.isJumping) {
+            this.anims.play(FRAMES.JUMP, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isJumping = false); // () => this.anims.play(FRAMES.LAND).on(FRAMES.ANIMATION_COMPLETE,
         } else if (this.isRolling) {
             sprint(this.scene);
             this.anims.play(FRAMES.ROLL, true);
@@ -1722,7 +1726,7 @@ export default class Player extends Entity {
                 this.playerVelocity.y = 0;
             };
         };
-        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting) speed += 1;
+        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed += 1;
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);

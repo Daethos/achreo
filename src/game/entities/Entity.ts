@@ -45,6 +45,8 @@ export const FRAMES = {
     PRAY: "player_pray",
     ATTACK: "player_attack_1",
     DODGE: "player_slide",
+    JUMP: "player_jump",
+    LAND: "player_landing",
     PARRY: "player_attack_1",
     POSTURE: "player_attack_3",
     ROLL: "player_roll",
@@ -123,6 +125,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     isAttacking: boolean = false;
     isDodging: boolean = false;
+    isJumping: boolean = false;
     isParrying: boolean = false;
     isPosturing: boolean = false;
     isRolling: boolean = false;
@@ -264,18 +267,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     aoeMask: EntityFlag = ENTITY_FLAGS.NONE;
 
     static preload(scene: Phaser.Scene) {
-        scene.load.atlas(`player_actions`, "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
-        scene.load.animation(`player_actions_anim`, "../assets/gui/player_actions_anim.json");
-        scene.load.atlas(`player_actions_two`, "../assets/gui/player_actions_two.png", "../assets/gui/player_actions_two_atlas.json");
-        scene.load.animation(`player_actions_two_anim`, "../assets/gui/player_actions_two_anim.json");
-        scene.load.atlas(`player_actions_three`, "../assets/gui/player_actions_three.png", "../assets/gui/player_actions_three_atlas.json");
-        scene.load.animation(`player_actions_three_anim`, "../assets/gui/player_actions_three_anim.json");
-        scene.load.atlas(`player_attacks`, "../assets/gui/player_attacks.png", "../assets/gui/player_attacks_atlas.json");
-        scene.load.animation(`player_attacks_anim`, "../assets/gui/player_attacks_anim.json");   
-        scene.load.atlas(`running`, "../assets/gui/running.png", "../assets/gui/running_atlas.json");
-        scene.load.animation(`running_anim`, "../assets/gui/running_anim.json");   
-        scene.load.atlas(`swimming`, "../assets/gui/swimming.png", "../assets/gui/swimming_atlas.json");
-        scene.load.animation(`swimming_anim`, "../assets/gui/swimming_anim.json");   
+        scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
+        scene.load.animation("player_actions_anim", "../assets/gui/player_actions_anim.json");
+        scene.load.atlas("player_actions_two", "../assets/gui/player_actions_two.png", "../assets/gui/player_actions_two_atlas.json");
+        scene.load.animation("player_actions_two_anim", "../assets/gui/player_actions_two_anim.json");
+        scene.load.atlas("player_actions_three", "../assets/gui/player_actions_three.png", "../assets/gui/player_actions_three_atlas.json");
+        scene.load.animation("player_actions_three_anim", "../assets/gui/player_actions_three_anim.json");
+        scene.load.atlas("player_attacks", "../assets/gui/player_attacks.png", "../assets/gui/player_attacks_atlas.json");
+        scene.load.animation("player_attacks_anim", "../assets/gui/player_attacks_anim.json");   
+        scene.load.atlas("running", "../assets/gui/running.png", "../assets/gui/running_atlas.json");
+        scene.load.animation("running_anim", "../assets/gui/running_anim.json");   
+        scene.load.atlas("swimming", "../assets/gui/swimming.png", "../assets/gui/swimming_atlas.json");
+        scene.load.animation("swimming_anim", "../assets/gui/swimming_anim.json");   
         scene.load.atlas("rabbit_idle", "../assets/gui/rabbit_idle.png", "../assets/gui/rabbit_idle_atlas.json");
         scene.load.animation("rabbit_idle_anim", "../assets/gui/rabbit_idle_anim.json");
         scene.load.atlas("rabbit_movement", "../assets/gui/rabbit_movement.png", "../assets/gui/rabbit_movement_atlas.json");

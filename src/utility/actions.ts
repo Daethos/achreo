@@ -21,6 +21,16 @@ export const ACTION_ORIGIN = {
         svg: "DODGE",
         talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
+    JUMP: {
+        name: "Jump",
+        description: "A flexible action to get over obstacles.",
+        cooldown: `1.25s`,
+        cost: `${PLAYER.STAMINA.JUMP} Stamina`,
+        time: "Instant",
+        special: "(Physical)",
+        svg: "DODGE",
+        talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
+    },
     PARRY: {
         name: "Parry",
         description: "If melee, can parry enemy strikes and projectiles. If ranged, can counterspell the casting and channeling of enemies.",

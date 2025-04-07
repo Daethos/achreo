@@ -1,4 +1,4 @@
-export const ACTIONS = ["Attack", "Posture", "Roll", "Dodge", "Parry", "Thrust"];
+export const ACTIONS = ["Attack", "Posture", "Roll", "Dodge", "Jump", "Parry", "Thrust"];
 export const SPECIALS = [
     "Invoke",
     "Consume",

@@ -84,6 +84,7 @@ export const PLAYER = {
         // Physical
         ATTACK: 20,
         DODGE: 10, // 25
+        JUMP: 10, // 25
         PARRY: 10,
         POSTURE: 15,
         ROLL: 15, // 25
@@ -596,7 +597,7 @@ export const OFFENSIVE_INSTINCTS = {
     "kyosir": [States.INVOKE, States.CHIOMISM, States.DISPEL, States.ILIRECH, States.KYRNAICISM, States.MALICE, States.SACRIFICE],
 };
 
-export const STAMINA = ["attack", "posture", "roll", "dodge", "parry", "thrust"];
+export const STAMINA = ["attack", "posture", "roll", "dodge", "jump", "parry", "thrust"];
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };

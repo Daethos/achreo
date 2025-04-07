@@ -58,6 +58,7 @@ export default class PlayerMachine {
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
+            .addState(States.JUMP, { onEnter: this.onJumpEnter, onUpdate: this.onJumpUpdate, onExit: this.onJumpExit })
             .addState(States.POSTURE, { onEnter: this.onPostureEnter, onUpdate: this.onPostureUpdate, onExit: this.onPostureExit })
             .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit })
             .addState(States.THRUST, { onEnter: this.onThrustEnter, onUpdate: this.onThrustUpdate, onExit: this.onThrustExit })
@@ -823,7 +824,7 @@ export default class PlayerMachine {
     };
 
     onAttackEnter = () => {
-        if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) {return};
+        if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) return;
         if (this.player.isRanged === true && this.player.inCombat === true) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
@@ -835,6 +836,7 @@ export default class PlayerMachine {
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.frameCount = 0;
+
     }; 
     onAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
@@ -843,6 +845,68 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isAttacking);
     }; 
     onAttackExit = () => {if (this.scene.state.action === "attack") this.scene.combatManager.combatMachine.input("action", "");  this.player.computerAction = false;};
+
+
+    onJumpEnter = () => {
+        screenShake(this.scene);
+        this.player.swingReset(States.JUMP, true);
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.JUMP);
+        this.player.frameCount = 0;
+        this.player.isJumping = true;
+        const force = 0.5;
+        const forceX = this.player.velocity?.x as number === 0 ? 0 : this.player.velocity?.x as number > 0 ? force : -force;
+        const forceY = this.player.velocity?.y as number === 0 ? 0 : this.player.velocity?.y as number > 0 ? force : -force;
+        const body = this.player.body as MatterJS.Body;
+        this.scene.matter.world.remove(body, false);
+        const vertical = forceX === 0;
+        const hop = forceY === 0;
+        this.scene.tweens.add({
+            targets: this.player.spriteWeapon,
+            scale: this.player.spriteWeapon.scale * 1.2,
+            duration: 500,
+            ease: 'Power1',
+            yoyo: true,
+        });
+        this.scene.tweens.add({
+            targets: this.player.spriteShield,
+            scale: this.player.spriteShield.scale * 1.2,
+            duration: 500,
+            ease: 'Power1',
+            yoyo: true,
+        });
+        this.scene.tweens.add({
+            targets: this.player,
+            scaleY: 0.9,
+            scaleX: 1.1,
+            duration: 500,
+            ease: 'Power1',
+            yoyo: true,
+            onUpdate: () => {
+                if (vertical) {
+                    this.player.x += (this.player.jumpTime <= 633 ? forceX : -forceX);
+                } else {
+                    this.player.x += forceX;
+                };
+                if (hop) {
+                    this.player.y += (this.player.jumpTime <= 633 ? -force : force);
+                } else {
+                    this.player.y += forceY;
+                };
+            },
+            onComplete: () => {
+                this.scene.matter.world.add(body);
+            }
+        });
+    };
+    onJumpUpdate = (dt: number) => {
+        this.player.jumpTime += dt;
+        this.player.combatChecker(this.player.isJumping);
+    };
+    onJumpExit = () => {
+        this.player.frameCount = 0;
+        this.player.jumpTime = 0;
+        this.player.isJumping = false;
+    };
 
     onParryEnter = () => {
         this.player.isParrying = true;    

@@ -24,6 +24,7 @@ export const States = {
     ATTACK: "attack",
     PARRY: "parry",
     DODGE: "dodge",
+    JUMP: "jump",
     POSTURE: "posture",
     ROLL: "roll",
     THRUST: "thrust",

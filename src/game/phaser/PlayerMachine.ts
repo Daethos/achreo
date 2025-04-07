@@ -846,7 +846,6 @@ export default class PlayerMachine {
     }; 
     onAttackExit = () => {if (this.scene.state.action === "attack") this.scene.combatManager.combatMachine.input("action", "");  this.player.computerAction = false;};
 
-
     onJumpEnter = () => {
         screenShake(this.scene);
         this.player.swingReset(States.JUMP, true);
@@ -862,39 +861,40 @@ export default class PlayerMachine {
         const hop = forceY === 0;
         this.scene.tweens.add({
             targets: this.player.spriteWeapon,
-            scale: this.player.spriteWeapon.scale * 1.2,
+            scale: this.player.spriteWeapon.scale * 1.25,
             duration: 500,
             ease: 'Power1',
             yoyo: true,
         });
         this.scene.tweens.add({
             targets: this.player.spriteShield,
-            scale: this.player.spriteShield.scale * 1.2,
+            scale: this.player.spriteShield.scale * 1.25,
             duration: 500,
             ease: 'Power1',
             yoyo: true,
         });
         this.scene.tweens.add({
             targets: this.player,
-            scaleY: 0.9,
-            scaleX: 1.1,
+            scale: 0.95,
             duration: 500,
             ease: 'Power1',
             yoyo: true,
             onUpdate: () => {
-                if (vertical) {
-                    this.player.x += (this.player.jumpTime <= 633 ? forceX : -forceX);
-                } else {
-                    this.player.x += forceX;
-                };
-                if (hop) {
-                    this.player.y += (this.player.jumpTime <= 633 ? -force : force);
-                } else {
-                    this.player.y += forceY;
-                };
+                this.player.x += vertical ? (this.player.jumpTime <= 633 ? forceX : -forceX) : forceX;
+                this.player.y += hop ? (this.player.jumpTime <= 633 ? -force : force) : forceY;
             },
             onComplete: () => {
                 this.scene.matter.world.add(body);
+                if (this.player.x as number > this.scene.map.widthInPixels) {
+                    this.player.setPosition(this.scene.map.widthInPixels, this.player.y);
+                } else if (this.player.x as number < 0) {
+                    this.player.setPosition(0, this.player.y);
+                };
+                if (this.player.y as number > this.scene.map.heightInPixels) {
+                    this.player.setPosition(this.player.x, this.scene.map.heightInPixels);
+                } else if (this.player.y as number < 0) {
+                    this.player.setPosition(this.player.x, 0);
+                };
             }
         });
     };

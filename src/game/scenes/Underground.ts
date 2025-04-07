@@ -75,6 +75,7 @@ export class Underground extends Scene {
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     aoePool: AoEPool;
+    lastSafePosition: {x:number;y:number;};
 
     constructor () {
         super("Underground");
@@ -144,9 +145,6 @@ export class Underground extends Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
-        // var postFxPlugin = this.plugins.get("rexHorrifiPipeline");
-        // this.postFxPipeline = (postFxPlugin as any)?.add(this.cameras.main);
-        // this.setPostFx(this.hud.settings?.postFx, this.hud.settings?.postFx.enable);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         
         this.player.inputKeys = {
@@ -169,7 +167,6 @@ export class Underground extends Scene {
         if (this.hud.settings?.music === true) this.musicBackground.play();
         this.musicCombat = this.sound.add("industrial", { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
-        // this.postFxEvent();
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
         this.minimap = new MiniMap(this);
@@ -298,6 +295,7 @@ export class Underground extends Scene {
         this.scene.wake();
         EventBus.emit("current-scene-ready", this);
     };
+
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
@@ -529,6 +527,7 @@ export class Underground extends Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
     killEnemy = (enemy: Enemy) => {
         if (enemy.isCurrentTarget) {
             this.player.disengage();
@@ -539,6 +538,7 @@ export class Underground extends Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
     summonEnemy = (summons: number) => {
         for (let i = 0; i < summons; i++) {
             const enemy = this.createEnemy();
@@ -550,8 +550,80 @@ export class Underground extends Scene {
         };
     };
 
-    playerUpdate = (delta: number): void => {
-        this.player.update(delta); 
+    // private checkWallCollision(): void {
+    //     const tileX = this.map.worldToTileX(this.player.x) as number;
+    //     const tileY = this.map.worldToTileY(this.player.y) as number;
+        
+    //     if (this.isWallTile(tileX, tileY)) {
+    //         console.log("SHUNNING PLAYER!");
+    //         this.shunPlayerFromWall(tileX, tileY);
+    //     };
+    // };
+
+    // private isWallTile(x: number, y: number): boolean {
+    //     // Check if coordinates are within layer bounds
+    //     if (x < 0 || y < 0 || x >= this.groundLayer.width || y >= this.groundLayer.height) {
+    //         console.log("Initial Attempt (coords) to check isWallTile");
+    //         return true; // Treat out-of-bounds as walls
+    //     };
+        
+    //     const tile = this.groundLayer.getTileAt(x, y);
+    //     if (!tile) {
+    //         console.log("Second Attempt (!tile) to check isWallTile");
+    //         return true; // Treat missing tiles as walls (safer)
+    //     };
+        
+    //     console.log("Last Attempt (collides) to check isWallTile");
+    //     return tile.properties.collides || tile.collides;
+    // };
+
+    // private shunPlayerFromWall(wallX: number, wallY: number): void {
+    //     for (let radius = 1; radius <= 3; radius++) {
+    //         for (let y = -radius; y <= radius; y++) {
+    //             for (let x = -radius; x <= radius; x++) {
+    //                 if (Math.abs(x) < radius && Math.abs(y) < radius) continue;
+                    
+    //                 const checkX = wallX + x;
+    //                 const checkY = wallY + y;
+                    
+    //                 if (!this.isWallTile(checkX, checkY)) {
+    //                     if (!Number.isInteger(checkX) || !Number.isInteger(checkY)) {
+    //                         console.error("Non-integer tile coordinates:", checkX, checkY);
+    //                         return;
+    //                     };
+                    
+    //                     if (!this.groundLayer || !this.groundLayer.tileToWorldX) {
+    //                         console.error("Ground layer not properly initialized");
+    //                         return;
+    //                     };
+                    
+    //                     const worldX = this.groundLayer.tileToWorldX(checkX); // + 16
+    //                     const worldY = this.groundLayer.tileToWorldY(checkY); // + 16
+                    
+    //                     console.log("Conversion:", {
+    //                         tileX: checkX,
+    //                         tileY: checkY,
+    //                         worldX,
+    //                         worldY,
+    //                     });
+                    
+    //                     if (isNaN(worldX) || isNaN(worldY)) {
+    //                         console.error("Failed conversion to world coordinates - check your map setup");
+    //                         return;
+    //                     };
+                    
+    //                     this.player.setPosition(worldX, worldY);
+    //                     return;
+    //                 };
+    //             };
+    //         };
+    //     };
+        
+    // };
+
+    playerUpdate = (delta: number): void => {// In your playerUpdate method, before any movement:
+        this.player.update(delta);
+        // this.checkWallCollision();
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();

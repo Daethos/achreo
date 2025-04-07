@@ -23,12 +23,12 @@ export const ACTION_ORIGIN = {
     },
     JUMP: {
         name: "Jump",
-        description: "A flexible action to get over obstacles.",
+        description: "A flexible action to leap over enemies, obstacles, and projectiles.",
         cooldown: `1.25s`,
         cost: `${PLAYER.STAMINA.JUMP} Stamina`,
         time: "Instant",
         special: "(Physical)",
-        svg: "DODGE",
+        svg: "JUMP",
         talent: "Optimized: Lowers Cooldown, Lowers Stamina. Enhanced: Doubles Damage.",
     },
     PARRY: {

@@ -13,7 +13,7 @@ export default function MerchantTable({ table, ascean, steal, thievery, }: Props
     const [show, setShow] = createSignal<boolean>(false);
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     return (
-        <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(3, 1fr)" }}>
+        <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(4, 1fr)" }}>
         <For each={table()}>
             {(item: any, _index: Accessor<number>) => (
                 <MerchantLoot item={item} ascean={ascean} setShow={setShow} setHighlight={setHighlight} thievery={thievery} steal={steal} />

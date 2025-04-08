@@ -748,7 +748,7 @@ async function upgradeEquipment(data: any) {
 async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             const rarity = determineRarityByLevel(level);
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Physical')))[0];
             const cloneItem = deepClone(item);
@@ -766,7 +766,7 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
 async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             const rarity = determineRarityByLevel(level);
             let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Magic')))[0];
             const cloneItem = deepClone(item);
@@ -784,7 +784,7 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
 async function getArmorEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {        
+        for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
             let types = ['Shield', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs'];
@@ -827,7 +827,7 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
 async function getJewelryEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {        
+        for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
             let types = ['Ring', 'Amulet', 'Trinket'];
@@ -860,7 +860,7 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
 async function getMerchantEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             const item = await getOneRandom(level);
             const clone = deepClone(item)
             merchantEquipment.push(clone);
@@ -874,7 +874,7 @@ async function getMerchantEquipment(level: number): Promise<Equipment[] | undefi
 async function getClothEquipment(level: number): Promise<Equipment[] | undefined> {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {        
+        for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
             let types = ['Helmet', 'Chest', 'Legs'];
@@ -906,7 +906,7 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
 async function getSpecificArmor(level: number, type: string) {
     try {
         let merchantEquipment = [];
-        for (let i = 0; i < 9; i++) {
+        for (let i = 0; i < 12; i++) {
             let item: any = undefined,
                 armorType: string = '',
                 armorTypes: string[] = ["Helmet", "Chest", "Legs"],

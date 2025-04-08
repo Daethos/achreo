@@ -7,7 +7,7 @@ interface Props {
     item: Equipment;
     ascean: Accessor<Ascean>;
     setShow: Setter<boolean>;
-    setHighlight: Setter<Equipment | undefined>;
+    setHighlight: Setter<Equipment | undefined> | any;
     thievery: Accessor<boolean>;
     steal(item: Equipment): void;
 };
@@ -16,7 +16,6 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
     createEffect(() => determineCost(item?.rarity as string));
     function determineCost(rarity: string): void {
-        console.log(item, "Item?")
         try {
             let cost = { silver: 0, gold: 0 };
             switch (rarity) {
@@ -70,8 +69,8 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
 
     return <div style={{ margin: "3%" }}>
         <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
-        <div style={{ "font-size": "0.75em", "margin-top": "4%", "margin-bottom": "0" }}>
-            {purchaseSetting()?.cost?.gold && `${purchaseSetting().cost.gold}g${" "}`}
+        <div style={{ color:"", "font-size": "0.75em", "margin-top": "4%", "margin-bottom": "0" }}>
+            <span style={{color:"gold"}}>{purchaseSetting()?.cost?.gold && `${purchaseSetting().cost.gold}g${" "}`}</span>
             {purchaseSetting()?.cost?.silver && `${purchaseSetting().cost.silver}s${" "}`}
         </div>
         <button class="highlight super" onClick={purchaseItem} style={{ "font-size": "0.65em", "font-weight": 700, color: "green", padding: "0.75em", "z-index": 999 }}>

@@ -10,6 +10,9 @@
     font-weight: bold;
     font-style: normal;
 }
+* {
+    touch-action: manipulation;
+}
 body {margin:0; padding:0; color: rgba(253, 246, 216, 0.87); background-color: #000; font-family: "Cinzel-Regular", "Cinzel-Bold", Arial, Helvetica, sans-serif; scrollbar-width: none; overflow: hidden; }
 #app {display: fixed; overflow: hidden; justify-content: center; align-items: center;}
 #overlay {display: flex; position: absolute; justify-content: center; align-items: center; width: 100%; height: 100vh; z-index: 1;}

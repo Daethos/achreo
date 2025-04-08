@@ -1,9 +1,9 @@
 export const Helmets = [
     {
-        _id: '',
-        name: 'Daethic Legion Helm',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Daethic Legion Helm",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -18,12 +18,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/daethiclegion-helm.png'
+        imgUrl: "../assets/images/daethiclegion-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Helm',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Legion Helm",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -38,12 +38,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/daethiclegion-helm.png'
+        imgUrl: "../assets/images/daethiclegion-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Helm',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Legion Helm",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -58,12 +58,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/daethiclegion-helm.png'
+        imgUrl: "../assets/images/daethiclegion-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Helm',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Legion Helm",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -78,12 +78,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 7,
-        imgUrl: '../assets/images/daethiclegion-helm.png'
+        imgUrl: "../assets/images/daethiclegion-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Helm',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Legion Helm",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -98,12 +98,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 16,
-        imgUrl: '../assets/images/daethiclegion-helm.png'
+        imgUrl: "../assets/images/daethiclegion-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -118,12 +118,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/lilos-hood.png'
+        imgUrl: "../assets/images/lilos-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -138,12 +138,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 3,
-        imgUrl: '../assets/images/lilos-hood.png'
+        imgUrl: "../assets/images/lilos-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -158,12 +158,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 6,
-        imgUrl: '../assets/images/lilos-hood.png'
+        imgUrl: "../assets/images/lilos-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -178,12 +178,12 @@ export const Helmets = [
         achre: 0,
         caeren: 9,
         kyosir: 9,
-        imgUrl: '../assets/images/lilos-hood.png'
+        imgUrl: "../assets/images/lilos-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -198,12 +198,12 @@ export const Helmets = [
         achre: 0,
         caeren: 20,
         kyosir: 20,
-        imgUrl: '../assets/images/lilos-hood.png'
+        imgUrl: "../assets/images/lilos-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -218,12 +218,12 @@ export const Helmets = [
         achre: 2,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/kyrna-helm.png'
+        imgUrl: "../assets/images/kyrna-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -238,12 +238,12 @@ export const Helmets = [
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/kyrna-helm.png'
+        imgUrl: "../assets/images/kyrna-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -258,12 +258,12 @@ export const Helmets = [
         achre: 6,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/kyrna-helm.png'
+        imgUrl: "../assets/images/kyrna-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -278,12 +278,12 @@ export const Helmets = [
         achre: 9,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/kyrna-helm.png'
+        imgUrl: "../assets/images/kyrna-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -298,12 +298,12 @@ export const Helmets = [
         achre: 20,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/kyrna-helm.png'
+        imgUrl: "../assets/images/kyrna-helm.png"
     },{
-        _id: '',
-        name: 'Tshaeral Helm',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Tshaeral Helm",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -318,12 +318,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/tshaeral-helm.png'
+        imgUrl: "../assets/images/tshaeral-helm.png"
     },{
-        _id: '',
-        name: 'Tshaeral Helm',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Tshaeral Helm",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -338,12 +338,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/tshaeral-helm.png'
+        imgUrl: "../assets/images/tshaeral-helm.png"
     },{
-        _id: '',
-        name: 'Tshaeral Helm',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Tshaeral Helm",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -358,12 +358,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/tshaeral-helm.png'
+        imgUrl: "../assets/images/tshaeral-helm.png"
     },{
-        _id: '',
-        name: 'Tshaeral Helm',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Tshaeral Helm",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -378,12 +378,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/tshaeral-helm.png'
+        imgUrl: "../assets/images/tshaeral-helm.png"
     },{
-        _id: '',
-        name: 'Tshaeral Helm',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Tshaeral Helm",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -398,12 +398,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/tshaeral-helm.png'
+        imgUrl: "../assets/images/tshaeral-helm.png"
     },{
-        _id: '',
-        name: 'Cambiren Helm',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Cambiren Helm",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -418,12 +418,12 @@ export const Helmets = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-helm.png'
+        imgUrl: "../assets/images/cambiren-helm.png"
     },{
-        _id: '',
-        name: 'Cambiren Helm',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Cambiren Helm",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -438,12 +438,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-helm.png'
+        imgUrl: "../assets/images/cambiren-helm.png"
     },{
-        _id: '',
-        name: 'Cambiren Helm',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Cambiren Helm",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -458,12 +458,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-helm.png'
+        imgUrl: "../assets/images/cambiren-helm.png"
     },{
-        _id: '',
-        name: 'Cambiren Helm',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Cambiren Helm",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -478,12 +478,12 @@ export const Helmets = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-helm.png'
+        imgUrl: "../assets/images/cambiren-helm.png"
     },{
-        _id: '',
-        name: 'Cambiren Helm',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Cambiren Helm",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -498,12 +498,12 @@ export const Helmets = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-helm.png'
+        imgUrl: "../assets/images/cambiren-helm.png"
     },{
-        _id: '',
-        name: 'Sedyrus Helm',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Sedyrus Helm",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -518,12 +518,12 @@ export const Helmets = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-helm.png'
+        imgUrl: "../assets/images/sedyrus-helm.png"
     },{
-        _id: '',
-        name: 'Sedyrus Helm',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sedyrus Helm",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -538,12 +538,12 @@ export const Helmets = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-helm.png'
+        imgUrl: "../assets/images/sedyrus-helm.png"
     },{
-        _id: '',
-        name: 'Sedyrus Helm',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sedyrus Helm",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -558,12 +558,12 @@ export const Helmets = [
         achre: 6,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/sedyrus-helm.png'
+        imgUrl: "../assets/images/sedyrus-helm.png"
     },{
-        _id: '',
-        name: 'Sedyrus Helm',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sedyrus Helm",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -578,12 +578,12 @@ export const Helmets = [
         achre: 9,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/sedyrus-helm.png'
+        imgUrl: "../assets/images/sedyrus-helm.png"
     },{
-        _id: '',
-        name: 'Sedyrus Helm',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sedyrus Helm",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -598,12 +598,12 @@ export const Helmets = [
         achre: 15,
         caeren: 0,
         kyosir: 10,
-        imgUrl: '../assets/images/sedyrus-helm.png'
+        imgUrl: "../assets/images/sedyrus-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Helm",
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -618,12 +618,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-helm.png'
+        imgUrl: "../assets/images/knight-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Helm",
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -638,12 +638,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-helm.png'
+        imgUrl: "../assets/images/knight-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Helm",
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -658,12 +658,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-helm.png'
+        imgUrl: "../assets/images/knight-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Helm",
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -678,12 +678,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-helm.png'
+        imgUrl: "../assets/images/knight-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Helm",
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -698,12 +698,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-helm.png'
+        imgUrl: "../assets/images/knight-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: 'Daethic Helm',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -720,10 +720,10 @@ export const Helmets = [
         kyosir: 0,
         imgUrl: '../assets/images/daethic-helm.png'
     },{
-        _id: '',
-        name: 'Daethic Helm',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Helm",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -738,12 +738,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-helm.png'
+        imgUrl: "../assets/images/daethic-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Helm',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Helm",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -758,12 +758,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/daethic-helm.png'
+        imgUrl: "../assets/images/daethic-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Helm',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Helm",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -778,12 +778,12 @@ export const Helmets = [
         achre: 0,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/daethic-helm.png'
+        imgUrl: "../assets/images/daethic-helm.png"
     },{
-        _id: '',
-        name: 'Daethic Helm',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Helm",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -798,12 +798,12 @@ export const Helmets = [
         achre: 0,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/daethic-helm.png'
+        imgUrl: "../assets/images/daethic-helm.png"
     },{
-        _id: '',
-        name: 'Achreon Helm',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Achreon Helm",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -818,12 +818,12 @@ export const Helmets = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-helm.png'
+        imgUrl: "../assets/images/achreon-helm.png"
     },{
-        _id: '',
-        name: 'Achreon Helm',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Achreon Helm",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -838,12 +838,12 @@ export const Helmets = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-helm.png'
+        imgUrl: "../assets/images/achreon-helm.png"
     },{
-        _id: '',
-        name: 'Achreon Helm',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Achreon Helm",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -858,12 +858,12 @@ export const Helmets = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-helm.png'
+        imgUrl: "../assets/images/achreon-helm.png"
     },{
-        _id: '',
-        name: 'Achreon Helm',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Achreon Helm",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -878,12 +878,12 @@ export const Helmets = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-helm.png'
+        imgUrl: "../assets/images/achreon-helm.png"
     },{
-        _id: '',
-        name: 'Achreon Helm',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Achreon Helm",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -898,12 +898,12 @@ export const Helmets = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-helm.png'
+        imgUrl: "../assets/images/achreon-helm.png"
     },{
-        _id: '',
-        name: 'Licivitan Helm',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Licivitan Helm",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -918,12 +918,12 @@ export const Helmets = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/legion-helm.png'
+        imgUrl: "../assets/images/legion-helm.png"
     },{
-        _id: '',
-        name: 'Licivitan Helm',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Licivitan Helm",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -938,12 +938,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 2,
-        imgUrl: '../assets/images/legion-helm.png'
+        imgUrl: "../assets/images/legion-helm.png"
     },{
-        _id: '',
-        name: 'Licivitan Helm',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Licivitan Helm",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -958,12 +958,12 @@ export const Helmets = [
         achre: 0,
         caeren: 5,
         kyosir: 3,
-        imgUrl: '../assets/images/legion-helm.png'
+        imgUrl: "../assets/images/legion-helm.png"
     },{
-        _id: '',
-        name: 'Licivitan Helm',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Licivitan Helm",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11.5,
@@ -978,12 +978,12 @@ export const Helmets = [
         achre: 0,
         caeren: 8,
         kyosir: 6,
-        imgUrl: '../assets/images/legion-helm.png'
+        imgUrl: "../assets/images/legion-helm.png"
     },{
-        _id: '',
-        name: 'Licivitan Helm',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Licivitan Helm",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -998,12 +998,12 @@ export const Helmets = [
         achre: 0,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/legion-helm.png'
+        imgUrl: "../assets/images/legion-helm.png"
     },{
-        _id: '',
-        name: 'Ashtre Helm',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Ashtre Helm",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -1018,12 +1018,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-helm.png'
+        imgUrl: "../assets/images/ashtre-helm.png"
     },{
-        _id: '',
-        name: 'Ashtre Helm',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Ashtre Helm",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -1038,12 +1038,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-helm.png'
+        imgUrl: "../assets/images/ashtre-helm.png"
     },{
-        _id: '',
-        name: 'Ashtre Helm',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Ashtre Helm",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -1058,12 +1058,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-helm.png'
+        imgUrl: "../assets/images/ashtre-helm.png"
     },{
-        _id: '',
-        name: 'Ashtre Helm',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Ashtre Helm",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -1078,12 +1078,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-helm.png'
+        imgUrl: "../assets/images/ashtre-helm.png"
     },{
-        _id: '',
-        name: 'Ashtre Helm',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Ashtre Helm",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -1098,12 +1098,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-helm.png'
+        imgUrl: "../assets/images/ashtre-helm.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Helm',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Chain-Knight Helm",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -1118,12 +1118,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-helm.png'
+        imgUrl: "../assets/images/chain-helm.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Helm',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Chain-Knight Helm",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -1138,12 +1138,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-helm.png'
+        imgUrl: "../assets/images/chain-helm.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Helm',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Chain-Knight Helm",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -1158,12 +1158,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-helm.png'
+        imgUrl: "../assets/images/chain-helm.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Helm',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Chain-Knight Helm",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -1178,12 +1178,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-helm.png'
+        imgUrl: "../assets/images/chain-helm.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Helm',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Chain-Knight Helm",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -1198,12 +1198,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-helm.png'
+        imgUrl: "../assets/images/chain-helm.png"
     },{
-        _id: '',
-        name: 'Fang Helm',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fang Helm",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -1218,12 +1218,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-helm.png'
+        imgUrl: "../assets/images/fang-helm.png"
     },{
-        _id: '',
-        name: 'Fang Helm',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fang Helm",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -1238,12 +1238,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-helm.png'
+        imgUrl: "../assets/images/fang-helm.png"
     },{
-        _id: '',
-        name: 'Fang Helm',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fang Helm",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -1258,12 +1258,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-helm.png'
+        imgUrl: "../assets/images/fang-helm.png"
     },{
-        _id: '',
-        name: 'Fang Helm',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fang Helm",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13,
@@ -1278,12 +1278,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-helm.png'
+        imgUrl: "../assets/images/fang-helm.png"
     },{
-        _id: '',
-        name: 'Fang Helm',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fang Helm",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -1298,12 +1298,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-helm.png'
+        imgUrl: "../assets/images/fang-helm.png"
     },{
-        _id: '',
-        name: 'Fireland Helm',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fireland Helm",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -1318,12 +1318,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-helm.png'
+        imgUrl: "../assets/images/fireland-helm.png"
     },{
-        _id: '',
-        name: 'Fireland Helm',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fireland Helm",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -1338,12 +1338,12 @@ export const Helmets = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-helm.png'
+        imgUrl: "../assets/images/fireland-helm.png"
     },{
-        _id: '',
-        name: 'Fireland Helm',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fireland Helm",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -1358,12 +1358,12 @@ export const Helmets = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-helm.png'
+        imgUrl: "../assets/images/fireland-helm.png"
     },{
-        _id: '',
-        name: 'Fireland Helm',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fireland Helm",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -1378,12 +1378,12 @@ export const Helmets = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-helm.png'
+        imgUrl: "../assets/images/fireland-helm.png"
     },{
-        _id: '',
-        name: 'Fireland Helm',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fireland Helm",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -1398,12 +1398,12 @@ export const Helmets = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-helm.png'
+        imgUrl: "../assets/images/fireland-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Helm",
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -1418,12 +1418,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-helm.png'
+        imgUrl: "../assets/images/marauder-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Helm",
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -1438,12 +1438,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-helm.png'
+        imgUrl: "../assets/images/marauder-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Helm",
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -1458,12 +1458,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-helm.png'
+        imgUrl: "../assets/images/marauder-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Helm",
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -1478,12 +1478,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-helm.png'
+        imgUrl: "../assets/images/marauder-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Helm",
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 14,
@@ -1498,12 +1498,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-helm.png'
+        imgUrl: "../assets/images/marauder-helm.png"
     },{
-        _id: '',
-        name: 'Soverain Helm',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Soverain Helm",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -1518,12 +1518,12 @@ export const Helmets = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-helm.png'
+        imgUrl: "../assets/images/soverain-helm.png"
     },{
-        _id: '',
-        name: 'Soverain Helm',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Soverain Helm",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -1538,12 +1538,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-helm.png'
+        imgUrl: "../assets/images/soverain-helm.png"
     },{
-        _id: '',
-        name: 'Soverain Helm',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Soverain Helm",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -1558,12 +1558,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-helm.png'
+        imgUrl: "../assets/images/soverain-helm.png"
     },{
-        _id: '',
-        name: 'Soverain Helm',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Soverain Helm",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -1578,12 +1578,12 @@ export const Helmets = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-helm.png'
+        imgUrl: "../assets/images/soverain-helm.png"
     },{
-        _id: '',
-        name: 'Soverain Helm',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Soverain Helm",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -1598,12 +1598,12 @@ export const Helmets = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-helm.png'
+        imgUrl: "../assets/images/soverain-helm.png"
     },{
-        _id: '',
-        name: 'Occult Helm',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Occult Helm",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -1618,12 +1618,12 @@ export const Helmets = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-helm.png'
+        imgUrl: "../assets/images/occult-helm.png"
     },{
-        _id: '',
-        name: 'Occult Helm',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Occult Helm",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -1638,12 +1638,12 @@ export const Helmets = [
         achre: 4,
         caeren: 4,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-helm.png'
+        imgUrl: "../assets/images/occult-helm.png"
     },{
-        _id: '',
-        name: 'Occult Helm',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Occult Helm",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -1658,12 +1658,12 @@ export const Helmets = [
         achre: 8,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-helm.png'
+        imgUrl: "../assets/images/occult-helm.png"
     },{
-        _id: '',
-        name: 'Occult Helm',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Occult Helm",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -1678,12 +1678,12 @@ export const Helmets = [
         achre: 12,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-helm.png'
+        imgUrl: "../assets/images/occult-helm.png"
     },{
-        _id: '',
-        name: 'Occult Helm',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Occult Helm",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -1698,12 +1698,12 @@ export const Helmets = [
         achre: 30,
         caeren: 30,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-helm.png'
+        imgUrl: "../assets/images/occult-helm.png"
     },{
-        _id: '',
-        name: 'Fyers Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Fyers Hood",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -1718,12 +1718,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-hood.png'
+        imgUrl: "../assets/images/fyers-hood.png"
     },{
-        _id: '',
-        name: 'Fyers Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fyers Hood",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -1738,12 +1738,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-hood.png'
+        imgUrl: "../assets/images/fyers-hood.png"
     },{
-        _id: '',
-        name: 'Fyers Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fyers Hood",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -1758,12 +1758,12 @@ export const Helmets = [
         achre: 4,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-hood.png'
+        imgUrl: "../assets/images/fyers-hood.png"
     },{
-        _id: '',
-        name: 'Fyers Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fyers Hood",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -1778,12 +1778,12 @@ export const Helmets = [
         achre: 6,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-hood.png'
+        imgUrl: "../assets/images/fyers-hood.png"
     },{
-        _id: '',
-        name: 'Fyers Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fyers Hood",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -1798,12 +1798,12 @@ export const Helmets = [
         achre: 16,
         caeren: 28,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-hood.png'
+        imgUrl: "../assets/images/fyers-hood.png"
     },{
-        _id: '',
-        name: 'Astral Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Astral Hood",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -1818,12 +1818,12 @@ export const Helmets = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-hood.png'
+        imgUrl: "../assets/images/astral-hood.png"
     },{
-        _id: '',
-        name: 'Astral Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Astral Hood",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -1838,12 +1838,12 @@ export const Helmets = [
         achre: 6,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-hood.png'
+        imgUrl: "../assets/images/astral-hood.png"
     },{
-        _id: '',
-        name: 'Astral Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Astral Hood",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -1858,12 +1858,12 @@ export const Helmets = [
         achre: 8,
         caeren: 4,
         kyosir: 4,
-        imgUrl: '../assets/images/astral-hood.png'
+        imgUrl: "../assets/images/astral-hood.png"
     },{
-        _id: '',
-        name: 'Astral Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Astral Hood",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -1878,12 +1878,12 @@ export const Helmets = [
         achre: 12,
         caeren: 6,
         kyosir: 6,
-        imgUrl: '../assets/images/astral-hood.png'
+        imgUrl: "../assets/images/astral-hood.png"
     },{
-        _id: '',
-        name: 'Astral Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Astral Hood",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -1898,12 +1898,12 @@ export const Helmets = [
         achre: 32,
         caeren: 16,
         kyosir: 16,
-        imgUrl: '../assets/images/astral-hood.png'
+        imgUrl: "../assets/images/astral-hood.png"
     },{
-        _id: '',
-        name: 'Dae Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Dae Hood",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -1918,12 +1918,12 @@ export const Helmets = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-hood.png'
+        imgUrl: "../assets/images/dae-hood.png"
     },{
-        _id: '',
-        name: 'Dae Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Dae Hood",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -1938,12 +1938,12 @@ export const Helmets = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-hood.png'
+        imgUrl: "../assets/images/dae-hood.png"
     },{
-        _id: '',
-        name: 'Dae Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Dae Hood",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -1958,12 +1958,12 @@ export const Helmets = [
         achre: 6,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/dae-hood.png'
+        imgUrl: "../assets/images/dae-hood.png"
     },{
-        _id: '',
-        name: 'Dae Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Dae Hood",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -1978,12 +1978,12 @@ export const Helmets = [
         achre: 9,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/dae-hood.png'
+        imgUrl: "../assets/images/dae-hood.png"
     },{
-        _id: '',
-        name: 'Dae Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Dae Hood",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -1998,12 +1998,12 @@ export const Helmets = [
         achre: 18,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/dae-hood.png'
+        imgUrl: "../assets/images/dae-hood.png"
     },{
-        _id: '',
-        name: 'Sage Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Sage Hood",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -2018,12 +2018,12 @@ export const Helmets = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-hood.png'
+        imgUrl: "../assets/images/sage-hood.png"
     },{
-        _id: '',
-        name: 'Sage Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sage Hood",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -2038,12 +2038,12 @@ export const Helmets = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-hood.png'
+        imgUrl: "../assets/images/sage-hood.png"
     },{
-        _id: '',
-        name: 'Sage Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sage Hood",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -2058,12 +2058,12 @@ export const Helmets = [
         achre: 6,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-hood.png'
+        imgUrl: "../assets/images/sage-hood.png"
     },{
-        _id: '',
-        name: 'Sage Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sage Hood",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2078,12 +2078,12 @@ export const Helmets = [
         achre: 9,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-hood.png'
+        imgUrl: "../assets/images/sage-hood.png"
     },{
-        _id: '',
-        name: 'Sage Hood',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sage Hood",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -2098,12 +2098,12 @@ export const Helmets = [
         achre: 20,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-hood.png'
+        imgUrl: "../assets/images/sage-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -2118,12 +2118,12 @@ export const Helmets = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-hood.png'
+        imgUrl: "../assets/images/wind-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -2138,12 +2138,12 @@ export const Helmets = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-hood.png'
+        imgUrl: "../assets/images/wind-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2158,12 +2158,12 @@ export const Helmets = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-hood.png'
+        imgUrl: "../assets/images/wind-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7,
@@ -2178,12 +2178,12 @@ export const Helmets = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-hood.png'
+        imgUrl: "../assets/images/wind-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -2198,12 +2198,12 @@ export const Helmets = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-hood.png'
+        imgUrl: "../assets/images/wind-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -2218,12 +2218,12 @@ export const Helmets = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-hood.png'
+        imgUrl: "../assets/images/earth-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2238,12 +2238,12 @@ export const Helmets = [
         achre: 4,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-hood.png'
+        imgUrl: "../assets/images/earth-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -2258,12 +2258,12 @@ export const Helmets = [
         achre: 7,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-hood.png'
+        imgUrl: "../assets/images/earth-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -2278,12 +2278,12 @@ export const Helmets = [
         achre: 10,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-hood.png'
+        imgUrl: "../assets/images/earth-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Hood",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -2298,12 +2298,12 @@ export const Helmets = [
         achre: 21,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-hood.png'
+        imgUrl: "../assets/images/earth-hood.png"
     },{
-        _id: '',
+        _id: "",
         name: "Plate Helm (Starter)",
-        type: 'Plate-Mail',
-        rarity: 'Default',
+        type: "Plate-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -2318,12 +2318,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-plate-mail-helm.png'
+        imgUrl: "../assets/images/default-plate-mail-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Chain Helm (Starter)",
-        type: 'Chain-Mail',
-        rarity: 'Default',
+        type: "Chain-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2338,12 +2338,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-chain-mail-helm.png'
+        imgUrl: "../assets/images/default-chain-mail-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Leather Helm (Starter)",
-        type: 'Leather-Mail',
-        rarity: 'Default',
+        type: "Leather-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2.5,
@@ -2358,12 +2358,12 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-mail-helm.png'
+        imgUrl: "../assets/images/default-leather-mail-helm.png"
     },{
-        _id: '',
+        _id: "",
         name: "Cloth Helm (Starter)",
-        type: 'Leather-Cloth',
-        rarity: 'Default',
+        type: "Leather-Cloth",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -2378,16 +2378,16 @@ export const Helmets = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-cloth-helm.png'
+        imgUrl: "../assets/images/default-leather-cloth-helm.png"
     },
 ];
 
 export const Chests = [
     {
-        _id: '',
-        name: 'Daethic Legion Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Daethic Legion Cuirass",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -2402,12 +2402,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/daethiclegion-armor.png'
+        imgUrl: "../assets/images/daethiclegion-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Legion Cuirass",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -2422,12 +2422,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/daethiclegion-armor.png'
+        imgUrl: "../assets/images/daethiclegion-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Legion Cuirass",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -2442,12 +2442,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/daethiclegion-armor.png'
+        imgUrl: "../assets/images/daethiclegion-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Legion Cuirass",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -2462,12 +2462,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 7,
-        imgUrl: '../assets/images/daethiclegion-armor.png'
+        imgUrl: "../assets/images/daethiclegion-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Legion Cuirass",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -2482,12 +2482,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 16,
-        imgUrl: '../assets/images/daethiclegion-armor.png'
+        imgUrl: "../assets/images/daethiclegion-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -2502,12 +2502,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/lilos-robes.png'
+        imgUrl: "../assets/images/lilos-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -2522,12 +2522,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 3,
-        imgUrl: '../assets/images/lilos-robes.png'
+        imgUrl: "../assets/images/lilos-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2542,12 +2542,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 6,
-        imgUrl: '../assets/images/lilos-robes.png'
+        imgUrl: "../assets/images/lilos-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -2562,12 +2562,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 9,
-        imgUrl: '../assets/images/lilos-robes.png'
+        imgUrl: "../assets/images/lilos-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -2582,12 +2582,12 @@ export const Chests = [
         achre: 0,
         caeren: 20,
         kyosir: 20,
-        imgUrl: '../assets/images/lilos-robes.png'
+        imgUrl: "../assets/images/lilos-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -2602,12 +2602,12 @@ export const Chests = [
         achre: 2,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/kyrna-armor.png'
+        imgUrl: "../assets/images/kyrna-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -2622,12 +2622,12 @@ export const Chests = [
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/kyrna-armor.png'
+        imgUrl: "../assets/images/kyrna-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -2642,12 +2642,12 @@ export const Chests = [
         achre: 6,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/kyrna-armor.png'
+        imgUrl: "../assets/images/kyrna-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -2662,12 +2662,12 @@ export const Chests = [
         achre: 9,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/kyrna-armor.png'
+        imgUrl: "../assets/images/kyrna-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -2682,12 +2682,12 @@ export const Chests = [
         achre: 20,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/kyrna-armor.png'
+        imgUrl: "../assets/images/kyrna-armor.png"
     },{
-        _id: '',
-        name: 'Tshaeral Armor',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Tshaeral Armor",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -2702,12 +2702,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/tshaeral-armor.png'
+        imgUrl: "../assets/images/tshaeral-armor.png"
     },{
-        _id: '',
-        name: 'Tshaeral Armor',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Tshaeral Armor",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -2722,12 +2722,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/tshaeral-armor.png'
+        imgUrl: "../assets/images/tshaeral-armor.png"
     },{
-        _id: '',
-        name: 'Tshaeral Armor',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Tshaeral Armor",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -2742,12 +2742,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/tshaeral-armor.png'
+        imgUrl: "../assets/images/tshaeral-armor.png"
     },{
-        _id: '',
-        name: 'Tshaeral Armor',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Tshaeral Armor",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -2762,12 +2762,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/tshaeral-armor.png'
+        imgUrl: "../assets/images/tshaeral-armor.png"
     },{
-        _id: '',
-        name: 'Tshaeral Armor',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Tshaeral Armor",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -2782,12 +2782,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/tshaeral-armor.png'
+        imgUrl: "../assets/images/tshaeral-armor.png"
     },{
-        _id: '',
-        name: 'Cambiren Armor',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Cambiren Armor",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -2802,12 +2802,12 @@ export const Chests = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-armor.png'
+        imgUrl: "../assets/images/cambiren-armor.png"
     },{
-        _id: '',
-        name: 'Cambiren Armor',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Cambiren Armor",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -2822,12 +2822,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-armor.png'
+        imgUrl: "../assets/images/cambiren-armor.png"
     },{
-        _id: '',
-        name: 'Cambiren Armor',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Cambiren Armor",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -2842,12 +2842,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-armor.png'
+        imgUrl: "../assets/images/cambiren-armor.png"
     },{
-        _id: '',
-        name: 'Cambiren Armor',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Cambiren Armor",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -2862,12 +2862,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-armor.png'
+        imgUrl: "../assets/images/cambiren-armor.png"
     },{
-        _id: '',
-        name: 'Cambiren Armor',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Cambiren Armor",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -2882,12 +2882,12 @@ export const Chests = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-armor.png'
+        imgUrl: "../assets/images/cambiren-armor.png"
     },{
-        _id: '',
-        name: 'Sedyrus Armor',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Sedyrus Armor",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -2902,12 +2902,12 @@ export const Chests = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-armor.png'
+        imgUrl: "../assets/images/sedyrus-armor.png"
     },{
-        _id: '',
-        name: 'Sedyrus Armor',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sedyrus Armor",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -2922,12 +2922,12 @@ export const Chests = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-armor.png'
+        imgUrl: "../assets/images/sedyrus-armor.png"
     },{
-        _id: '',
-        name: 'Sedyrus Armor',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sedyrus Armor",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -2942,12 +2942,12 @@ export const Chests = [
         achre: 6,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/sedyrus-armor.png'
+        imgUrl: "../assets/images/sedyrus-armor.png"
     },{
-        _id: '',
-        name: 'Sedyrus Armor',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sedyrus Armor",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -2962,12 +2962,12 @@ export const Chests = [
         achre: 9,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/sedyrus-armor.png'
+        imgUrl: "../assets/images/sedyrus-armor.png"
     },{
-        _id: '',
-        name: 'Sedyrus Armor',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sedyrus Armor",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -2982,12 +2982,12 @@ export const Chests = [
         achre: 16,
         caeren: 0,
         kyosir: 16,
-        imgUrl: '../assets/images/sedyrus-armor.png'
+        imgUrl: "../assets/images/sedyrus-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Plate Cuirass (Starter)",
-        type: 'Plate-Mail',
-        rarity: 'Default',
+        type: "Plate-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -3002,12 +3002,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-plate-mail-armor.png'
+        imgUrl: "../assets/images/default-plate-mail-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Chain Armor (Starter)",
-        type: 'Chain-Mail',
-        rarity: 'Default',
+        type: "Chain-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -3022,12 +3022,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-chain-mail-armor.png'
+        imgUrl: "../assets/images/default-chain-mail-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Leather Brigandine (Starter)",
-        type: 'Leather-Mail',
-        rarity: 'Default',
+        type: "Leather-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2.5,
@@ -3042,12 +3042,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-mail-armor.png'
+        imgUrl: "../assets/images/default-leather-mail-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Cloth Robes (Starter)",
-        type: 'Leather-Cloth',
-        rarity: 'Default',
+        type: "Leather-Cloth",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -3062,12 +3062,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-cloth-armor.png'
+        imgUrl: "../assets/images/default-leather-cloth-armor.png"
     },{
-        _id: '',
-        name: 'Licivitan Cuirass',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Licivitan Cuirass",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -3082,12 +3082,12 @@ export const Chests = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/legion-armor.png'
+        imgUrl: "../assets/images/legion-armor.png"
     },{
-        _id: '',
-        name: 'Licivitan Cuirass',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Licivitan Cuirass",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -3102,12 +3102,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/legion-armor.png'
+        imgUrl: "../assets/images/legion-armor.png"
     },{
-        _id: '',
-        name: 'Licivitan Cuirass',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Licivitan Cuirass",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -3122,12 +3122,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/legion-armor.png'
+        imgUrl: "../assets/images/legion-armor.png"
     },{
-        _id: '',
-        name: 'Licivitan Cuirass',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Licivitan Cuirass",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11.5,
@@ -3142,12 +3142,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/legion-armor.png'
+        imgUrl: "../assets/images/legion-armor.png"
     },{
-        _id: '',
-        name: 'Licivitan Cuirass',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Licivitan Cuirass",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -3162,12 +3162,12 @@ export const Chests = [
         achre: 0,
         caeren: 16,
         kyosir: 16,
-        imgUrl: '../assets/images/legion-armor.png'
+        imgUrl: "../assets/images/legion-armor.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Chain-Knight Cuirass",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -3182,12 +3182,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-armor.png'
+        imgUrl: "../assets/images/chain-armor.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Chain-Knight Cuirass",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -3202,12 +3202,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-armor.png'
+        imgUrl: "../assets/images/chain-armor.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Chain-Knight Cuirass",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -3222,12 +3222,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-armor.png'
+        imgUrl: "../assets/images/chain-armor.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Chain-Knight Cuirass",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -3242,12 +3242,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-armor.png'
+        imgUrl: "../assets/images/chain-armor.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Cuirass',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Chain-Knight Cuirass",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -3262,12 +3262,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-armor.png'
+        imgUrl: "../assets/images/chain-armor.png"
     },{
-        _id: '',
-        name: 'Fang Armor',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fang Armor",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -3282,12 +3282,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-armor.png'
+        imgUrl: "../assets/images/fang-armor.png"
     },{
-        _id: '',
-        name: 'Fang Armor',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fang Armor",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -3302,12 +3302,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-armor.png'
+        imgUrl: "../assets/images/fang-armor.png"
     },{
-        _id: '',
-        name: 'Fang Armor',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fang Armor",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -3322,12 +3322,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-armor.png'
+        imgUrl: "../assets/images/fang-armor.png"
     },{
-        _id: '',
-        name: 'Fang Armor',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fang Armor",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13,
@@ -3342,12 +3342,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-armor.png'
+        imgUrl: "../assets/images/fang-armor.png"
     },{
-        _id: '',
-        name: 'Fang Armor',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fang Armor",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -3362,12 +3362,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-armor.png'
+        imgUrl: "../assets/images/fang-armor.png"
     },{
-        _id: '',
-        name: 'Fireland Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fireland Cuirass",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -3382,12 +3382,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-armor.png'
+        imgUrl: "../assets/images/fireland-armor.png"
     },{
-        _id: '',
-        name: 'Fireland Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fireland Cuirass",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -3402,12 +3402,12 @@ export const Chests = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-armor.png'
+        imgUrl: "../assets/images/fireland-armor.png"
     },{
-        _id: '',
-        name: 'Fireland Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fireland Cuirass",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -3422,12 +3422,12 @@ export const Chests = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-armor.png'
+        imgUrl: "../assets/images/fireland-armor.png"
     },{
-        _id: '',
-        name: 'Fireland Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fireland Cuirass",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -3442,12 +3442,12 @@ export const Chests = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-armor.png'
+        imgUrl: "../assets/images/fireland-armor.png"
     },{
-        _id: '',
-        name: 'Fireland Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fireland Cuirass",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -3462,12 +3462,12 @@ export const Chests = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-armor.png'
+        imgUrl: "../assets/images/fireland-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Armor",
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -3482,12 +3482,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-armor.png'
+        imgUrl: "../assets/images/marauder-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Armor",
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -3502,12 +3502,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-armor.png'
+        imgUrl: "../assets/images/marauder-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Armor",
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -3522,12 +3522,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-armor.png'
+        imgUrl: "../assets/images/marauder-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Armor",
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -3542,12 +3542,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-armor.png'
+        imgUrl: "../assets/images/marauder-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Armor",
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 14,
@@ -3562,12 +3562,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-armor.png'
+        imgUrl: "../assets/images/marauder-armor.png"
     },{
-        _id: '',
-        name: 'Soverain Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Soverain Cuirass",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -3582,12 +3582,12 @@ export const Chests = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-armor.png'
+        imgUrl: "../assets/images/soverain-armor.png"
     },{
-        _id: '',
-        name: 'Soverain Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Soverain Cuirass",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -3602,12 +3602,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-armor.png'
+        imgUrl: "../assets/images/soverain-armor.png"
     },{
-        _id: '',
-        name: 'Soverain Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Soverain Cuirass",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -3622,12 +3622,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-armor.png'
+        imgUrl: "../assets/images/soverain-armor.png"
     },{
-        _id: '',
-        name: 'Soverain Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Soverain Cuirass",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -3642,12 +3642,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-armor.png'
+        imgUrl: "../assets/images/soverain-armor.png"
     },{
-        _id: '',
-        name: 'Soverain Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Soverain Cuirass",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -3662,12 +3662,12 @@ export const Chests = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-armor.png'
+        imgUrl: "../assets/images/soverain-armor.png"
     },{
-        _id: '',
-        name: 'Occult Armor',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Occult Armor",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -3682,12 +3682,12 @@ export const Chests = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-armor.png'
+        imgUrl: "../assets/images/occult-armor.png"
     },{
-        _id: '',
-        name: 'Occult Armor',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Occult Armor",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -3702,12 +3702,12 @@ export const Chests = [
         achre: 4,
         caeren: 4,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-armor.png'
+        imgUrl: "../assets/images/occult-armor.png"
     },{
-        _id: '',
-        name: 'Occult Armor',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Occult Armor",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -3722,12 +3722,12 @@ export const Chests = [
         achre: 8,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-armor.png'
+        imgUrl: "../assets/images/occult-armor.png"
     },{
-        _id: '',
-        name: 'Occult Armor',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Occult Armor",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -3742,12 +3742,12 @@ export const Chests = [
         achre: 12,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-armor.png'
+        imgUrl: "../assets/images/occult-armor.png"
     },{
-        _id: '',
-        name: 'Occult Armor',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Occult Armor",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -3762,12 +3762,12 @@ export const Chests = [
         achre: 30,
         caeren: 30,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-armor.png'
+        imgUrl: "../assets/images/occult-armor.png"
     },{
-        _id: '',
-        name: 'Fyers Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Fyers Robes",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -3782,12 +3782,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-robes.png'
+        imgUrl: "../assets/images/fyers-robes.png"
     },{
-        _id: '',
-        name: 'Fyers Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fyers Robes",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -3802,12 +3802,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-robes.png'
+        imgUrl: "../assets/images/fyers-robes.png"
     },{
-        _id: '',
-        name: 'Fyers Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fyers Robes",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -3822,12 +3822,12 @@ export const Chests = [
         achre: 4,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-robes.png'
+        imgUrl: "../assets/images/fyers-robes.png"
     },{
-        _id: '',
-        name: 'Fyers Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fyers Robes",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -3842,12 +3842,12 @@ export const Chests = [
         achre: 6,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-robes.png'
+        imgUrl: "../assets/images/fyers-robes.png"
     },{
-        _id: '',
-        name: 'Fyers Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fyers Robes",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -3862,12 +3862,12 @@ export const Chests = [
         achre: 16,
         caeren: 28,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-robes.png'
+        imgUrl: "../assets/images/fyers-robes.png"
     },{
-        _id: '',
-        name: 'Astral Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Astral Robes",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -3882,12 +3882,12 @@ export const Chests = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-robes.png'
+        imgUrl: "../assets/images/astral-robes.png"
     },{
-        _id: '',
-        name: 'Astral Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Astral Robes",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -3902,12 +3902,12 @@ export const Chests = [
         achre: 6,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-robes.png'
+        imgUrl: "../assets/images/astral-robes.png"
     },{
-        _id: '',
-        name: 'Astral Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Astral Robes",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -3922,12 +3922,12 @@ export const Chests = [
         achre: 8,
         caeren: 4,
         kyosir: 4,
-        imgUrl: '../assets/images/astral-robes.png'
+        imgUrl: "../assets/images/astral-robes.png"
     },{
-        _id: '',
-        name: 'Astral Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Astral Robes",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -3942,12 +3942,12 @@ export const Chests = [
         achre: 12,
         caeren: 6,
         kyosir: 6,
-        imgUrl: '../assets/images/astral-robes.png'
+        imgUrl: "../assets/images/astral-robes.png"
     },{
-        _id: '',
-        name: 'Astral Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Astral Robes",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -3962,12 +3962,12 @@ export const Chests = [
         achre: 28,
         caeren: 16,
         kyosir: 16,
-        imgUrl: '../assets/images/astral-robes.png'
+        imgUrl: "../assets/images/astral-robes.png"
     },{
-        _id: '',
-        name: 'Dae Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Dae Robes",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -3982,12 +3982,12 @@ export const Chests = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-robes.png'
+        imgUrl: "../assets/images/dae-robes.png"
     },{
-        _id: '',
-        name: 'Dae Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Dae Robes",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -4002,12 +4002,12 @@ export const Chests = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-robes.png'
+        imgUrl: "../assets/images/dae-robes.png"
     },{
-        _id: '',
-        name: 'Dae Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Dae Robes",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -4022,12 +4022,12 @@ export const Chests = [
         achre: 6,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/dae-robes.png'
+        imgUrl: "../assets/images/dae-robes.png"
     },{
-        _id: '',
-        name: 'Dae Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Dae Robes",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -4042,12 +4042,12 @@ export const Chests = [
         achre: 9,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/dae-robes.png'
+        imgUrl: "../assets/images/dae-robes.png"
     },{
-        _id: '',
-        name: 'Dae Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Dae Robes",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -4062,12 +4062,12 @@ export const Chests = [
         achre: 18,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/dae-robes.png'
+        imgUrl: "../assets/images/dae-robes.png"
     },{
-        _id: '',
-        name: 'Sage Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Sage Robes",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -4082,12 +4082,12 @@ export const Chests = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-robes.png'
+        imgUrl: "../assets/images/sage-robes.png"
     },{
-        _id: '',
-        name: 'Sage Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sage Robes",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -4102,12 +4102,12 @@ export const Chests = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-robes.png'
+        imgUrl: "../assets/images/sage-robes.png"
     },{
-        _id: '',
-        name: 'Sage Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sage Robes",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -4122,12 +4122,12 @@ export const Chests = [
         achre: 6,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-robes.png'
+        imgUrl: "../assets/images/sage-robes.png"
     },{
-        _id: '',
-        name: 'Sage Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sage Robes",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -4142,12 +4142,12 @@ export const Chests = [
         achre: 10,
         caeren: 10,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-robes.png'
+        imgUrl: "../assets/images/sage-robes.png"
     },{
-        _id: '',
-        name: 'Sage Robes',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sage Robes",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -4162,12 +4162,12 @@ export const Chests = [
         achre: 20,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-robes.png'
+        imgUrl: "../assets/images/sage-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -4182,12 +4182,12 @@ export const Chests = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-robes.png'
+        imgUrl: "../assets/images/wind-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -4202,12 +4202,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-robes.png'
+        imgUrl: "../assets/images/wind-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -4222,12 +4222,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-robes.png'
+        imgUrl: "../assets/images/wind-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7,
@@ -4242,12 +4242,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-robes.png'
+        imgUrl: "../assets/images/wind-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -4262,12 +4262,12 @@ export const Chests = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-robes.png'
+        imgUrl: "../assets/images/wind-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -4282,12 +4282,12 @@ export const Chests = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-robes.png'
+        imgUrl: "../assets/images/earth-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -4302,12 +4302,12 @@ export const Chests = [
         achre: 4,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-robes.png'
+        imgUrl: "../assets/images/earth-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -4322,12 +4322,12 @@ export const Chests = [
         achre: 7,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-robes.png'
+        imgUrl: "../assets/images/earth-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -4342,12 +4342,12 @@ export const Chests = [
         achre: 10,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-robes.png'
+        imgUrl: "../assets/images/earth-robes.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Robes",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -4362,12 +4362,12 @@ export const Chests = [
         achre: 21,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-robes.png'
+        imgUrl: "../assets/images/earth-robes.png"
     },{
-        _id: '',
-        name: 'Achreon Armor',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Achreon Armor",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -4382,12 +4382,12 @@ export const Chests = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-armor.png'
+        imgUrl: "../assets/images/achreon-armor.png"
     },{
-        _id: '',
-        name: 'Achreon Armor',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Achreon Armor",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -4402,12 +4402,12 @@ export const Chests = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-armor.png'
+        imgUrl: "../assets/images/achreon-armor.png"
     },{
-        _id: '',
-        name: 'Achreon Armor',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Achreon Armor",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -4422,12 +4422,12 @@ export const Chests = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-armor.png'
+        imgUrl: "../assets/images/achreon-armor.png"
     },{
-        _id: '',
-        name: 'Achreon Armor',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Achreon Armor",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -4442,12 +4442,12 @@ export const Chests = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-armor.png'
+        imgUrl: "../assets/images/achreon-armor.png"
     },{
-        _id: '',
-        name: 'Achreon Armor',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Achreon Armor",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -4462,12 +4462,12 @@ export const Chests = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-armor.png'
+        imgUrl: "../assets/images/achreon-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Daethic Cuirass",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -4482,12 +4482,12 @@ export const Chests = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-armor.png'
+        imgUrl: "../assets/images/daethic-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Cuirass",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -4502,12 +4502,12 @@ export const Chests = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-armor.png'
+        imgUrl: "../assets/images/daethic-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Cuirass",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -4522,12 +4522,12 @@ export const Chests = [
         achre: 0,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/daethic-armor.png'
+        imgUrl: "../assets/images/daethic-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Cuirass",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -4542,12 +4542,12 @@ export const Chests = [
         achre: 0,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/daethic-armor.png'
+        imgUrl: "../assets/images/daethic-armor.png"
     },{
-        _id: '',
-        name: 'Daethic Cuirass',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Cuirass",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -4562,12 +4562,12 @@ export const Chests = [
         achre: 0,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/daethic-armor.png'
+        imgUrl: "../assets/images/daethic-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Cuirass",
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -4582,12 +4582,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-armor.png'
+        imgUrl: "../assets/images/knight-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Cuirass",
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -4602,12 +4602,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-armor.png'
+        imgUrl: "../assets/images/knight-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Cuirass",
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -4622,12 +4622,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-armor.png'
+        imgUrl: "../assets/images/knight-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Cuirass",
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -4642,12 +4642,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-armor.png'
+        imgUrl: "../assets/images/knight-armor.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Cuirass",
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -4662,12 +4662,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-armor.png'
+        imgUrl: "../assets/images/knight-armor.png"
     },{
-        _id: '',
-        name: 'Ashtre Armor',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Ashtre Armor",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -4682,12 +4682,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-armor.png'
+        imgUrl: "../assets/images/ashtre-armor.png"
     },{
-        _id: '',
-        name: 'Ashtre Armor',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Ashtre Armor",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -4702,12 +4702,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-armor.png'
+        imgUrl: "../assets/images/ashtre-armor.png"
     },{
-        _id: '',
-        name: 'Ashtre Armor',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Ashtre Armor",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -4722,12 +4722,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-armor.png'
+        imgUrl: "../assets/images/ashtre-armor.png"
     },{
-        _id: '',
-        name: 'Ashtre Armor',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Ashtre Armor",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -4742,12 +4742,12 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-armor.png'
+        imgUrl: "../assets/images/ashtre-armor.png"
     },{
-        _id: '',
-        name: 'Ashtre Armor',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Ashtre Armor",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -4762,16 +4762,16 @@ export const Chests = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-armor.png'
+        imgUrl: "../assets/images/ashtre-armor.png"
     },
 ];
 
 export const Legs = [
     {
-        _id: '',
-        name: 'Daethic Legion Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Daethic Legion Greaves",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -4786,12 +4786,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/daethiclegion-legs.png'
+        imgUrl: "../assets/images/daethiclegion-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Legion Greaves",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -4806,12 +4806,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/daethiclegion-legs.png'
+        imgUrl: "../assets/images/daethiclegion-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Legion Greaves",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -4826,12 +4826,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/daethiclegion-legs.png'
+        imgUrl: "../assets/images/daethiclegion-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Legion Greaves",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -4846,12 +4846,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 7,
-        imgUrl: '../assets/images/daethiclegion-legs.png'
+        imgUrl: "../assets/images/daethiclegion-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Legion Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Legion Greaves",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -4866,12 +4866,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 16,
-        imgUrl: '../assets/images/daethiclegion-legs.png'
+        imgUrl: "../assets/images/daethiclegion-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -4886,12 +4886,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/lilos-legs.png'
+        imgUrl: "../assets/images/lilos-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -4906,12 +4906,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 3,
-        imgUrl: '../assets/images/lilos-legs.png'
+        imgUrl: "../assets/images/lilos-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -4926,12 +4926,12 @@ export const Legs = [
         achre: 0,
         caeren: 6,
         kyosir: 6,
-        imgUrl: '../assets/images/lilos-legs.png'
+        imgUrl: "../assets/images/lilos-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -4946,12 +4946,12 @@ export const Legs = [
         achre: 0,
         caeren: 9,
         kyosir: 9,
-        imgUrl: '../assets/images/lilos-legs.png'
+        imgUrl: "../assets/images/lilos-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Lilosian Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -4966,12 +4966,12 @@ export const Legs = [
         achre: 0,
         caeren: 20,
         kyosir: 20,
-        imgUrl: '../assets/images/lilos-legs.png'
+        imgUrl: "../assets/images/lilos-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -4986,12 +4986,12 @@ export const Legs = [
         achre: 2,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/kyrna-legs.png'
+        imgUrl: "../assets/images/kyrna-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -5006,12 +5006,12 @@ export const Legs = [
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/kyrna-legs.png'
+        imgUrl: "../assets/images/kyrna-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -5026,12 +5026,12 @@ export const Legs = [
         achre: 6,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/kyrna-legs.png'
+        imgUrl: "../assets/images/kyrna-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -5046,12 +5046,12 @@ export const Legs = [
         achre: 9,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/kyrna-legs.png'
+        imgUrl: "../assets/images/kyrna-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Li'kyr Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -5066,12 +5066,12 @@ export const Legs = [
         achre: 20,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/kyrna-legs.png'
+        imgUrl: "../assets/images/kyrna-legs.png"
     },{
-        _id: '',
-        name: 'Tshaeral Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Tshaeral Greaves",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -5086,12 +5086,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/tshaeral-legs.png'
+        imgUrl: "../assets/images/tshaeral-legs.png"
     },{
-        _id: '',
-        name: 'Tshaeral Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Tshaeral Greaves",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -5106,12 +5106,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/tshaeral-legs.png'
+        imgUrl: "../assets/images/tshaeral-legs.png"
     },{
-        _id: '',
-        name: 'Tshaeral Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Tshaeral Greaves",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -5126,12 +5126,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 6,
-        imgUrl: '../assets/images/tshaeral-legs.png'
+        imgUrl: "../assets/images/tshaeral-legs.png"
     },{
-        _id: '',
-        name: 'Tshaeral Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Tshaeral Greaves",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -5146,12 +5146,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 9,
-        imgUrl: '../assets/images/tshaeral-legs.png'
+        imgUrl: "../assets/images/tshaeral-legs.png"
     },{
-        _id: '',
-        name: 'Tshaeral Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Tshaeral Greaves",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -5166,12 +5166,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 20,
-        imgUrl: '../assets/images/tshaeral-legs.png'
+        imgUrl: "../assets/images/tshaeral-legs.png"
     },{
-        _id: '',
-        name: 'Cambiren Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Cambiren Greaves",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -5186,12 +5186,12 @@ export const Legs = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-legs.png'
+        imgUrl: "../assets/images/cambiren-legs.png"
     },{
-        _id: '',
-        name: 'Cambiren Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Cambiren Greaves",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -5206,12 +5206,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-legs.png'
+        imgUrl: "../assets/images/cambiren-legs.png"
     },{
-        _id: '',
-        name: 'Cambiren Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Cambiren Greaves",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -5226,12 +5226,12 @@ export const Legs = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-legs.png'
+        imgUrl: "../assets/images/cambiren-legs.png"
     },{
-        _id: '',
-        name: 'Cambiren Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Cambiren Greaves",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -5246,12 +5246,12 @@ export const Legs = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-legs.png'
+        imgUrl: "../assets/images/cambiren-legs.png"
     },{
-        _id: '',
-        name: 'Cambiren Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Cambiren Greaves",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -5266,12 +5266,12 @@ export const Legs = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/cambiren-legs.png'
+        imgUrl: "../assets/images/cambiren-legs.png"
     },{
-        _id: '',
-        name: 'Sedyrus Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Sedyrus Greaves",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -5286,12 +5286,12 @@ export const Legs = [
         achre: 1,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-legs.png'
+        imgUrl: "../assets/images/sedyrus-legs.png"
     },{
-        _id: '',
-        name: 'Sedyrus Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sedyrus Greaves",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -5306,12 +5306,12 @@ export const Legs = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/sedyrus-legs.png'
+        imgUrl: "../assets/images/sedyrus-legs.png"
     },{
-        _id: '',
-        name: 'Sedyrus Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sedyrus Greaves",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -5326,12 +5326,12 @@ export const Legs = [
         achre: 4,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/sedyrus-legs.png'
+        imgUrl: "../assets/images/sedyrus-legs.png"
     },{
-        _id: '',
-        name: 'Sedyrus Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sedyrus Greaves",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -5346,12 +5346,12 @@ export const Legs = [
         achre: 4,
         caeren: 0,
         kyosir: 4,
-        imgUrl: '../assets/images/sedyrus-legs.png'
+        imgUrl: "../assets/images/sedyrus-legs.png"
     },{
-        _id: '',
-        name: 'Sedyrus Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sedyrus Greaves",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -5366,12 +5366,12 @@ export const Legs = [
         achre: 14,
         caeren: 0,
         kyosir: 10,
-        imgUrl: '../assets/images/sedyrus-legs.png'
+        imgUrl: "../assets/images/sedyrus-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Plate Greaves (Starter)",
-        type: 'Plate-Mail',
-        rarity: 'Default',
+        type: "Plate-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -5386,12 +5386,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-plate-mail-legs.png'
+        imgUrl: "../assets/images/default-plate-mail-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Chain Greaves (Starter)",
-        type: 'Chain-Mail',
-        rarity: 'Default',
+        type: "Chain-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -5406,12 +5406,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-chain-mail-legs.png'
+        imgUrl: "../assets/images/default-chain-mail-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Leather Sandals (Starter)",
-        type: 'Leather-Mail',
-        rarity: 'Default',
+        type: "Leather-Mail",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2.5,
@@ -5426,12 +5426,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-mail-legs.png'
+        imgUrl: "../assets/images/default-leather-mail-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Cloth Skirt (Starter)",
-        type: 'Leather-Cloth',
-        rarity: 'Default',
+        type: "Leather-Cloth",
+        rarity: "Default",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -5446,12 +5446,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/default-leather-cloth-legs.png'
+        imgUrl: "../assets/images/default-leather-cloth-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Greaves",
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -5466,12 +5466,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-legs.png'
+        imgUrl: "../assets/images/knight-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Greaves",
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -5486,12 +5486,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-legs.png'
+        imgUrl: "../assets/images/knight-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Greaves",
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -5506,12 +5506,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-legs.png'
+        imgUrl: "../assets/images/knight-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Greaves",
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -5526,12 +5526,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-legs.png'
+        imgUrl: "../assets/images/knight-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Knight's Greaves",
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 30,
@@ -5546,12 +5546,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/knight-legs.png'
+        imgUrl: "../assets/images/knight-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Daethic Greaves",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -5566,12 +5566,12 @@ export const Legs = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: "../assets/images/daethic-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Daethic Greaves",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -5586,12 +5586,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: "../assets/images/daethic-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Daethic Greaves",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -5606,12 +5606,12 @@ export const Legs = [
         achre: 0,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: "../assets/images/daethic-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Daethic Greaves",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -5626,12 +5626,12 @@ export const Legs = [
         achre: 0,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: "../assets/images/daethic-legs.png"
     },{
-        _id: '',
-        name: 'Daethic Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Daethic Greaves",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 25,
@@ -5646,12 +5646,12 @@ export const Legs = [
         achre: 0,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/daethic-legs.png'
+        imgUrl: "../assets/images/daethic-legs.png"
     },{
-        _id: '',
-        name: 'Achreon Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Achreon Greaves",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -5666,12 +5666,12 @@ export const Legs = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-legs.png'
+        imgUrl: "../assets/images/achreon-legs.png"
     },{
-        _id: '',
-        name: 'Achreon Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Achreon Greaves",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -5686,12 +5686,12 @@ export const Legs = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-legs.png'
+        imgUrl: "../assets/images/achreon-legs.png"
     },{
-        _id: '',
-        name: 'Achreon Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Achreon Greaves",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -5706,12 +5706,12 @@ export const Legs = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-legs.png'
+        imgUrl: "../assets/images/achreon-legs.png"
     },{
-        _id: '',
-        name: 'Achreon Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Achreon Greaves",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -5726,12 +5726,12 @@ export const Legs = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-legs.png'
+        imgUrl: "../assets/images/achreon-legs.png"
     },{
-        _id: '',
-        name: 'Achreon Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Achreon Greaves",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -5746,12 +5746,12 @@ export const Legs = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/achreon-legs.png'
+        imgUrl: "../assets/images/achreon-legs.png"
     },{
-        _id: '',
-        name: 'Licivitan Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Licivitan Greaves",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -5766,12 +5766,12 @@ export const Legs = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/legion-legs.png'
+        imgUrl: "../assets/images/legion-legs.png"
     },{
-        _id: '',
-        name: 'Licivitan Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Licivitan Greaves",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6.5,
@@ -5786,12 +5786,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/legion-legs.png'
+        imgUrl: "../assets/images/legion-legs.png"
     },{
-        _id: '',
-        name: 'Licivitan Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Licivitan Greaves",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 9,
@@ -5806,12 +5806,12 @@ export const Legs = [
         achre: 0,
         caeren: 4,
         kyosir: 4,
-        imgUrl: '../assets/images/legion-legs.png'
+        imgUrl: "../assets/images/legion-legs.png"
     },{
-        _id: '',
-        name: 'Licivitan Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Licivitan Greaves",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11.5,
@@ -5826,12 +5826,12 @@ export const Legs = [
         achre: 0,
         caeren: 7,
         kyosir: 7,
-        imgUrl: '../assets/images/legion-legs.png'
+        imgUrl: "../assets/images/legion-legs.png"
     },{
-        _id: '',
-        name: 'Licivitan Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Licivitan Greaves",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -5846,12 +5846,12 @@ export const Legs = [
         achre: 0,
         caeren: 16,
         kyosir: 16,
-        imgUrl: '../assets/images/legion-legs.png'
+        imgUrl: "../assets/images/legion-legs.png"
     },{
-        _id: '',
-        name: 'Ashtre Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Ashtre Greaves",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -5866,12 +5866,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-legs.png'
+        imgUrl: "../assets/images/ashtre-legs.png"
     },{
-        _id: '',
-        name: 'Ashtre Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Ashtre Greaves",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -5886,12 +5886,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-legs.png'
+        imgUrl: "../assets/images/ashtre-legs.png"
     },{
-        _id: '',
-        name: 'Ashtre Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Ashtre Greaves",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -5906,12 +5906,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-legs.png'
+        imgUrl: "../assets/images/ashtre-legs.png"
     },{
-        _id: '',
-        name: 'Ashtre Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Ashtre Greaves",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -5926,12 +5926,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-legs.png'
+        imgUrl: "../assets/images/ashtre-legs.png"
     },{
-        _id: '',
-        name: 'Ashtre Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Ashtre Greaves",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -5946,12 +5946,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/ashtre-legs.png'
+        imgUrl: "../assets/images/ashtre-legs.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Chain-Knight Greaves",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -5966,12 +5966,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-legs.png'
+        imgUrl: "../assets/images/chain-legs.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Chain-Knight Greaves",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -5986,12 +5986,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-legs.png'
+        imgUrl: "../assets/images/chain-legs.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Chain-Knight Greaves",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -6006,12 +6006,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-legs.png'
+        imgUrl: "../assets/images/chain-legs.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Chain-Knight Greaves",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -6026,12 +6026,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-legs.png'
+        imgUrl: "../assets/images/chain-legs.png"
     },{
-        _id: '',
-        name: 'Chain-Knight Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Chain-Knight Greaves",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -6046,12 +6046,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/chain-legs.png'
+        imgUrl: "../assets/images/chain-legs.png"
     },{
-        _id: '',
-        name: 'Fang Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fang Greaves",
+        type: "Chain-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5.5,
@@ -6066,12 +6066,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-legs.png'
+        imgUrl: "../assets/images/fang-legs.png"
     },{
-        _id: '',
-        name: 'Fang Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fang Greaves",
+        type: "Chain-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8,
@@ -6086,12 +6086,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-legs.png'
+        imgUrl: "../assets/images/fang-legs.png"
     },{
-        _id: '',
-        name: 'Fang Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fang Greaves",
+        type: "Chain-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10.5,
@@ -6106,12 +6106,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-legs.png'
+        imgUrl: "../assets/images/fang-legs.png"
     },{
-        _id: '',
-        name: 'Fang Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fang Greaves",
+        type: "Chain-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13,
@@ -6126,12 +6126,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-legs.png'
+        imgUrl: "../assets/images/fang-legs.png"
     },{
-        _id: '',
-        name: 'Fang Greaves',
-        type: 'Chain-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fang Greaves",
+        type: "Chain-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -6146,12 +6146,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fang-legs.png'
+        imgUrl: "../assets/images/fang-legs.png"
     },{
-        _id: '',
-        name: 'Fireland Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Fireland Greaves",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -6166,12 +6166,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-legs.png'
+        imgUrl: "../assets/images/fireland-legs.png"
     },{
-        _id: '',
-        name: 'Fireland Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fireland Greaves",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -6186,12 +6186,12 @@ export const Legs = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-legs.png'
+        imgUrl: "../assets/images/fireland-legs.png"
     },{
-        _id: '',
-        name: 'Fireland Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fireland Greaves",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -6206,12 +6206,12 @@ export const Legs = [
         achre: 6,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-legs.png'
+        imgUrl: "../assets/images/fireland-legs.png"
     },{
-        _id: '',
-        name: 'Fireland Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fireland Greaves",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -6226,12 +6226,12 @@ export const Legs = [
         achre: 9,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-legs.png'
+        imgUrl: "../assets/images/fireland-legs.png"
     },{
-        _id: '',
-        name: 'Fireland Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fireland Greaves",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -6246,12 +6246,12 @@ export const Legs = [
         achre: 20,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/fireland-legs.png'
+        imgUrl: "../assets/images/fireland-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Greaves",
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -6266,12 +6266,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-legs.png'
+        imgUrl: "../assets/images/marauder-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Greaves",
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -6286,12 +6286,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-legs.png'
+        imgUrl: "../assets/images/marauder-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Greaves",
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -6306,12 +6306,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-legs.png'
+        imgUrl: "../assets/images/marauder-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Greaves",
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -6326,12 +6326,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-legs.png'
+        imgUrl: "../assets/images/marauder-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Marauder's Greaves",
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 14,
@@ -6346,12 +6346,12 @@ export const Legs = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/marauder-legs.png'
+        imgUrl: "../assets/images/marauder-legs.png"
     },{
-        _id: '',
-        name: 'Soverain Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Soverain Greaves",
+        type: "Plate-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -6366,12 +6366,12 @@ export const Legs = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-legs.png'
+        imgUrl: "../assets/images/soverain-legs.png"
     },{
-        _id: '',
-        name: 'Soverain Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Soverain Greaves",
+        type: "Plate-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -6386,12 +6386,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-legs.png'
+        imgUrl: "../assets/images/soverain-legs.png"
     },{
-        _id: '',
-        name: 'Soverain Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Soverain Greaves",
+        type: "Plate-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -6406,12 +6406,12 @@ export const Legs = [
         achre: 0,
         caeren: 5,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-legs.png'
+        imgUrl: "../assets/images/soverain-legs.png"
     },{
-        _id: '',
-        name: 'Soverain Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Soverain Greaves",
+        type: "Plate-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -6426,12 +6426,12 @@ export const Legs = [
         achre: 0,
         caeren: 10,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-legs.png'
+        imgUrl: "../assets/images/soverain-legs.png"
     },{
-        _id: '',
-        name: 'Soverain Greaves',
-        type: 'Plate-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Soverain Greaves",
+        type: "Plate-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -6446,12 +6446,12 @@ export const Legs = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/soverain-legs.png'
+        imgUrl: "../assets/images/soverain-legs.png"
     },{
-        _id: '',
-        name: 'Occult Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Common',
+        _id: "",
+        name: "Occult Greaves",
+        type: "Leather-Mail",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3.5,
@@ -6466,12 +6466,12 @@ export const Legs = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-legs.png'
+        imgUrl: "../assets/images/occult-legs.png"
     },{
-        _id: '',
-        name: 'Occult Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Occult Greaves",
+        type: "Leather-Mail",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -6486,12 +6486,12 @@ export const Legs = [
         achre: 4,
         caeren: 4,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-legs.png'
+        imgUrl: "../assets/images/occult-legs.png"
     },{
-        _id: '',
-        name: 'Occult Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Rare',
+        _id: "",
+        name: "Occult Greaves",
+        type: "Leather-Mail",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -6506,12 +6506,12 @@ export const Legs = [
         achre: 8,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-legs.png'
+        imgUrl: "../assets/images/occult-legs.png"
     },{
-        _id: '',
-        name: 'Occult Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Epic',
+        _id: "",
+        name: "Occult Greaves",
+        type: "Leather-Mail",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 11,
@@ -6526,12 +6526,12 @@ export const Legs = [
         achre: 12,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-legs.png'
+        imgUrl: "../assets/images/occult-legs.png"
     },{
-        _id: '',
-        name: 'Occult Greaves',
-        type: 'Leather-Mail',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Occult Greaves",
+        type: "Leather-Mail",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 13.5,
@@ -6546,12 +6546,12 @@ export const Legs = [
         achre: 30,
         caeren: 30,
         kyosir: 0,
-        imgUrl: '../assets/images/occult-legs.png'
+        imgUrl: "../assets/images/occult-legs.png"
     },{
-        _id: '',
-        name: 'Fyers Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Fyers Pants",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -6566,12 +6566,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-legs.png'
+        imgUrl: "../assets/images/fyers-legs.png"
     },{
-        _id: '',
-        name: 'Fyers Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Fyers Pants",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -6586,12 +6586,12 @@ export const Legs = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-legs.png'
+        imgUrl: "../assets/images/fyers-legs.png"
     },{
-        _id: '',
-        name: 'Fyers Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Fyers Pants",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -6606,12 +6606,12 @@ export const Legs = [
         achre: 4,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-legs.png'
+        imgUrl: "../assets/images/fyers-legs.png"
     },{
-        _id: '',
-        name: 'Fyers Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Fyers Pants",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -6626,12 +6626,12 @@ export const Legs = [
         achre: 6,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-legs.png'
+        imgUrl: "../assets/images/fyers-legs.png"
     },{
-        _id: '',
-        name: 'Fyers Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Fyers Pants",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -6646,12 +6646,12 @@ export const Legs = [
         achre: 14,
         caeren: 28,
         kyosir: 0,
-        imgUrl: '../assets/images/fyers-legs.png'
+        imgUrl: "../assets/images/fyers-legs.png"
     },{
-        _id: '',
-        name: 'Astral Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Astral Pants",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -6666,12 +6666,12 @@ export const Legs = [
         achre: 3,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-legs.png'
+        imgUrl: "../assets/images/astral-legs.png"
     },{
-        _id: '',
-        name: 'Astral Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Astral Pants",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -6686,12 +6686,12 @@ export const Legs = [
         achre: 6,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/astral-legs.png'
+        imgUrl: "../assets/images/astral-legs.png"
     },{
-        _id: '',
-        name: 'Astral Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Astral Pants",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -6706,12 +6706,12 @@ export const Legs = [
         achre: 8,
         caeren: 4,
         kyosir: 4,
-        imgUrl: '../assets/images/astral-legs.png'
+        imgUrl: "../assets/images/astral-legs.png"
     },{
-        _id: '',
-        name: 'Astral Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Astral Pants",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -6726,12 +6726,12 @@ export const Legs = [
         achre: 16,
         caeren: 8,
         kyosir: 8,
-        imgUrl: '../assets/images/astral-legs.png'
+        imgUrl: "../assets/images/astral-legs.png"
     },{
-        _id: '',
-        name: 'Astral Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Astral Pants",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -6746,12 +6746,12 @@ export const Legs = [
         achre: 32,
         caeren: 16,
         kyosir: 16,
-        imgUrl: '../assets/images/astral-legs.png'
+        imgUrl: "../assets/images/astral-legs.png"
     },{
-        _id: '',
-        name: 'Dae Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Dae Pants",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -6766,12 +6766,12 @@ export const Legs = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-legs.png'
+        imgUrl: "../assets/images/dae-legs.png"
     },{
-        _id: '',
-        name: 'Dae Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Dae Pants",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 4,
@@ -6786,12 +6786,12 @@ export const Legs = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/dae-legs.png'
+        imgUrl: "../assets/images/dae-legs.png"
     },{
-        _id: '',
-        name: 'Dae Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Dae Pants",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 6,
@@ -6806,12 +6806,12 @@ export const Legs = [
         achre: 6,
         caeren: 6,
         kyosir: 4,
-        imgUrl: '../assets/images/dae-legs.png'
+        imgUrl: "../assets/images/dae-legs.png"
     },{
-        _id: '',
-        name: 'Dae Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Dae Pants",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 8.5,
@@ -6826,12 +6826,12 @@ export const Legs = [
         achre: 9,
         caeren: 9,
         kyosir: 6,
-        imgUrl: '../assets/images/dae-legs.png'
+        imgUrl: "../assets/images/dae-legs.png"
     },{
-        _id: '',
-        name: 'Dae Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Dae Pants",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12,
@@ -6846,12 +6846,12 @@ export const Legs = [
         achre: 18,
         caeren: 18,
         kyosir: 14,
-        imgUrl: '../assets/images/dae-legs.png'
+        imgUrl: "../assets/images/dae-legs.png"
     },{
-        _id: '',
-        name: 'Sage Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        _id: "",
+        name: "Sage Pants",
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -6866,12 +6866,12 @@ export const Legs = [
         achre: 2,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-legs.png'
+        imgUrl: "../assets/images/sage-legs.png"
     },{
-        _id: '',
-        name: 'Sage Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Sage Pants",
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -6886,12 +6886,12 @@ export const Legs = [
         achre: 3,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-legs.png'
+        imgUrl: "../assets/images/sage-legs.png"
     },{
-        _id: '',
-        name: 'Sage Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        _id: "",
+        name: "Sage Pants",
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -6906,12 +6906,12 @@ export const Legs = [
         achre: 6,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-legs.png'
+        imgUrl: "../assets/images/sage-legs.png"
     },{
-        _id: '',
-        name: 'Sage Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        _id: "",
+        name: "Sage Pants",
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -6926,12 +6926,12 @@ export const Legs = [
         achre: 9,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-legs.png'
+        imgUrl: "../assets/images/sage-legs.png"
     },{
-        _id: '',
-        name: 'Sage Pants',
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Sage Pants",
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -6946,12 +6946,12 @@ export const Legs = [
         achre: 20,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/sage-legs.png'
+        imgUrl: "../assets/images/sage-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 1,
@@ -6966,12 +6966,12 @@ export const Legs = [
         achre: 0,
         caeren: 2,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-legs.png'
+        imgUrl: "../assets/images/wind-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 3,
@@ -6986,12 +6986,12 @@ export const Legs = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-legs.png'
+        imgUrl: "../assets/images/wind-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -7006,12 +7006,12 @@ export const Legs = [
         achre: 0,
         caeren: 6,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-legs.png'
+        imgUrl: "../assets/images/wind-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7,
@@ -7026,12 +7026,12 @@ export const Legs = [
         achre: 0,
         caeren: 9,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-legs.png'
+        imgUrl: "../assets/images/wind-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Ahn'vel Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -7046,12 +7046,12 @@ export const Legs = [
         achre: 0,
         caeren: 20,
         kyosir: 0,
-        imgUrl: '../assets/images/wind-legs.png'
+        imgUrl: "../assets/images/wind-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Common',
+        type: "Leather-Cloth",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2,
@@ -7066,12 +7066,12 @@ export const Legs = [
         achre: 2,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-legs.png'
+        imgUrl: "../assets/images/earth-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Uncommon',
+        type: "Leather-Cloth",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -7086,12 +7086,12 @@ export const Legs = [
         achre: 4,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-legs.png'
+        imgUrl: "../assets/images/earth-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Rare',
+        type: "Leather-Cloth",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -7106,12 +7106,12 @@ export const Legs = [
         achre: 7,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-legs.png'
+        imgUrl: "../assets/images/earth-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Epic',
+        type: "Leather-Cloth",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -7126,12 +7126,12 @@ export const Legs = [
         achre: 10,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-legs.png'
+        imgUrl: "../assets/images/earth-legs.png"
     },{
-        _id: '',
+        _id: "",
         name: "Quor'eite Pants",
-        type: 'Leather-Cloth',
-        rarity: 'Legendary',
+        type: "Leather-Cloth",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -7146,16 +7146,16 @@ export const Legs = [
         achre: 21,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/earth-legs.png'
+        imgUrl: "../assets/images/earth-legs.png"
     },
 ];
 
 export const Shields = [
     {
-        _id: 'ess_001',
-        name: 'Empty Shield Slot',
-        rarity: 'Default',
-        type: '',
+        _id: "ess_001",
+        name: "Empty Shield Slot",
+        rarity: "Default",
+        type: "",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 0,
@@ -7170,12 +7170,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/GUI_Shield.png'
+        imgUrl: "../assets/images/GUI_Shield.png"
     },{
-        _id: '',
-        name: 'Shaorahi',
-        type: 'Medium Shield',
-        rarity: 'Common',
+        _id: "",
+        name: "Shaorahi",
+        type: "Medium Shield",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -7190,12 +7190,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/golden-shield.png'
+        imgUrl: "../assets/images/golden-shield.png"
     },{
-        _id: '',
-        name: 'Shaorahi',
-        type: 'Medium Shield',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Shaorahi",
+        type: "Medium Shield",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -7210,12 +7210,12 @@ export const Shields = [
         achre: 3,
         caeren: 0,
         kyosir: 2,
-        imgUrl: '../assets/images/golden-shield.png'
+        imgUrl: "../assets/images/golden-shield.png"
     },{
-        _id: '',
-        name: 'Shaorahi',
-        type: 'Medium Shield',
-        rarity: 'Rare',
+        _id: "",
+        name: "Shaorahi",
+        type: "Medium Shield",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -7230,12 +7230,12 @@ export const Shields = [
         achre: 5,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/golden-shield.png'
+        imgUrl: "../assets/images/golden-shield.png"
     },{
-        _id: '',
-        name: 'Shaorahi',
-        type: 'Medium Shield',
-        rarity: 'Epic',
+        _id: "",
+        name: "Shaorahi",
+        type: "Medium Shield",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -7250,12 +7250,12 @@ export const Shields = [
         achre: 8,
         caeren: 0,
         kyosir: 5,
-        imgUrl: '../assets/images/golden-shield.png'
+        imgUrl: "../assets/images/golden-shield.png"
     },{
-        _id: '',
-        name: 'Shaorahi',
-        type: 'Medium Shield',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Shaorahi",
+        type: "Medium Shield",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -7270,12 +7270,12 @@ export const Shields = [
         achre: 0,
         caeren: 12,
         kyosir: 8,
-        imgUrl: '../assets/images/golden-shield.png'
+        imgUrl: "../assets/images/golden-shield.png"
     },{
-        _id: '',
-        name: 'Heater',
-        type: 'Medium Shield',
-        rarity: 'Common',
+        _id: "",
+        name: "Heater",
+        type: "Medium Shield",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -7290,12 +7290,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/heater-shield.png'
+        imgUrl: "../assets/images/heater-shield.png"
     },{
-        _id: '',
-        name: 'Heater',
-        type: 'Medium Shield',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Heater",
+        type: "Medium Shield",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -7310,12 +7310,12 @@ export const Shields = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/heater-shield.png'
+        imgUrl: "../assets/images/heater-shield.png"
     },{
-        _id: '',
-        name: 'Heater',
-        type: 'Medium Shield',
-        rarity: 'Rare',
+        _id: "",
+        name: "Heater",
+        type: "Medium Shield",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -7330,12 +7330,12 @@ export const Shields = [
         achre: 0,
         caeren: 5,
         kyosir: 0,
-        imgUrl: '../assets/images/heater-shield.png'
+        imgUrl: "../assets/images/heater-shield.png"
     },{
-        _id: '',
-        name: 'Heater',
-        type: 'Medium Shield',
-        rarity: 'Epic',
+        _id: "",
+        name: "Heater",
+        type: "Medium Shield",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -7350,12 +7350,12 @@ export const Shields = [
         achre: 0,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/heater-shield.png'
+        imgUrl: "../assets/images/heater-shield.png"
     },{
-        _id: '',
-        name: 'Heater',
-        type: 'Medium Shield',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Heater",
+        type: "Medium Shield",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -7370,12 +7370,12 @@ export const Shields = [
         achre: 0,
         caeren: 14,
         kyosir: 0,
-        imgUrl: '../assets/images/heater-shield.png'
+        imgUrl: "../assets/images/heater-shield.png"
     },{
-        _id: '',
-        name: 'Scutum',
-        type: 'Large Shield',
-        rarity: 'Common',
+        _id: "",
+        name: "Scutum",
+        type: "Large Shield",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -7390,12 +7390,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/scutum.png'
+        imgUrl: "../assets/images/scutum.png"
     },{
-        _id: '',
-        name: 'Scutum',
-        type: 'Large Shield',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Scutum",
+        type: "Large Shield",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 15,
@@ -7410,12 +7410,12 @@ export const Shields = [
         achre: 0,
         caeren: 3,
         kyosir: 0,
-        imgUrl: '../assets/images/scutum.png'
+        imgUrl: "../assets/images/scutum.png"
     },{
-        _id: '',
-        name: 'Scutum',
-        type: 'Large Shield',
-        rarity: 'Rare',
+        _id: "",
+        name: "Scutum",
+        type: "Large Shield",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -7430,12 +7430,12 @@ export const Shields = [
         achre: 0,
         caeren: 5,
         kyosir: 0,
-        imgUrl: '../assets/images/scutum.png'
+        imgUrl: "../assets/images/scutum.png"
     },{
-        _id: '',
-        name: 'Scutum',
-        type: 'Large Shield',
-        rarity: 'Epic',
+        _id: "",
+        name: "Scutum",
+        type: "Large Shield",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -7450,12 +7450,12 @@ export const Shields = [
         achre: 0,
         caeren: 8,
         kyosir: 0,
-        imgUrl: '../assets/images/scutum.png'
+        imgUrl: "../assets/images/scutum.png"
     },{
-        _id: '',
-        name: 'Scutum',
-        type: 'Large Shield',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Scutum",
+        type: "Large Shield",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -7470,12 +7470,12 @@ export const Shields = [
         achre: 0,
         caeren: 12,
         kyosir: 0,
-        imgUrl: '../assets/images/scutum.png'
+        imgUrl: "../assets/images/scutum.png"
     },{
-        _id: '',
-        name: 'Pavise',
-        type: 'Great Shield',
-        rarity: 'Common',
+        _id: "",
+        name: "Pavise",
+        type: "Great Shield",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 17.5,
@@ -7490,12 +7490,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/pavise.png'
+        imgUrl: "../assets/images/pavise.png"
     },{
-        _id: '',
-        name: 'Pavise',
-        type: 'Great Shield',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Pavise",
+        type: "Great Shield",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 20,
@@ -7510,12 +7510,12 @@ export const Shields = [
         achre: 2,
         caeren: 1,
         kyosir: 1,
-        imgUrl: '../assets/images/pavise.png'
+        imgUrl: "../assets/images/pavise.png"
     },{
-        _id: '',
-        name: 'Pavise',
-        type: 'Great Shield',
-        rarity: 'Rare',
+        _id: "",
+        name: "Pavise",
+        type: "Great Shield",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 22.5,
@@ -7530,12 +7530,12 @@ export const Shields = [
         achre: 3,
         caeren: 2,
         kyosir: 2,
-        imgUrl: '../assets/images/pavise.png'
+        imgUrl: "../assets/images/pavise.png"
     },{
-        _id: '',
-        name: 'Pavise',
-        type: 'Great Shield',
-        rarity: 'Epic',
+        _id: "",
+        name: "Pavise",
+        type: "Great Shield",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 27.5,
@@ -7550,12 +7550,12 @@ export const Shields = [
         achre: 5,
         caeren: 3,
         kyosir: 3,
-        imgUrl: '../assets/images/pavise.png'
+        imgUrl: "../assets/images/pavise.png"
     },{
-        _id: '',
-        name: 'Pavise',
-        type: 'Great Shield',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Pavise",
+        type: "Great Shield",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 35,
@@ -7570,12 +7570,12 @@ export const Shields = [
         achre: 9,
         caeren: 5,
         kyosir: 5,
-        imgUrl: '../assets/images/pavise.png'
+        imgUrl: "../assets/images/pavise.png"
     },{
-        _id: '',
-        name: 'Parma',
-        type: 'Small Shield',
-        rarity: 'Common',
+        _id: "",
+        name: "Parma",
+        type: "Small Shield",
+        rarity: "Common",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 2.5,
@@ -7590,12 +7590,12 @@ export const Shields = [
         achre: 0,
         caeren: 0,
         kyosir: 0,
-        imgUrl: '../assets/images/buckler.png'
+        imgUrl: "../assets/images/buckler.png"
     },{
-        _id: '',
-        name: 'Parma',
-        type: 'Small Shield',
-        rarity: 'Uncommon',
+        _id: "",
+        name: "Parma",
+        type: "Small Shield",
+        rarity: "Uncommon",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 5,
@@ -7610,12 +7610,12 @@ export const Shields = [
         achre: 3,
         caeren: 0,
         kyosir: 3,
-        imgUrl: '../assets/images/buckler.png'
+        imgUrl: "../assets/images/buckler.png"
     },{
-        _id: '',
-        name: 'Parma',
-        type: 'Small Shield',
-        rarity: 'Rare',
+        _id: "",
+        name: "Parma",
+        type: "Small Shield",
+        rarity: "Rare",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 7.5,
@@ -7630,12 +7630,12 @@ export const Shields = [
         achre: 5,
         caeren: 0,
         kyosir: 5,
-        imgUrl: '../assets/images/buckler.png'
+        imgUrl: "../assets/images/buckler.png"
     },{
-        _id: '',
-        name: 'Parma',
-        type: 'Small Shield',
-        rarity: 'Epic',
+        _id: "",
+        name: "Parma",
+        type: "Small Shield",
+        rarity: "Epic",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 10,
@@ -7650,12 +7650,12 @@ export const Shields = [
         achre: 8,
         caeren: 0,
         kyosir: 8,
-        imgUrl: '../assets/images/buckler.png'
+        imgUrl: "../assets/images/buckler.png"
     },{
-        _id: '',
-        name: 'Parma',
-        type: 'Small Shield',
-        rarity: 'Legendary',
+        _id: "",
+        name: "Parma",
+        type: "Small Shield",
+        rarity: "Legendary",
         physicalDamage: 1,
         magicalDamage: 1,
         physicalResistance: 12.5,
@@ -7670,6 +7670,6 @@ export const Shields = [
         achre: 14,
         caeren: 0,
         kyosir: 14,
-        imgUrl: '../assets/images/buckler.png'
+        imgUrl: "../assets/images/buckler.png"
     }
 ];

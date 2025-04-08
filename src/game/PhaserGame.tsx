@@ -302,6 +302,53 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    function sellItems(items: {id:string,rarity:string}[]) {
+        try {
+            let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+            let currency = {silver:props.ascean().currency.silver,gold:props.ascean().currency.gold};
+            let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
+            for (let i = 0; i < items.length; ++i) {
+                let item = items[i];
+                let gold: number = 0, silver: number = 0;
+                switch (item.rarity) {
+                    case "Common": silver = 0.1; break;
+                    case "Uncommon": gold = 1; break;
+                    case "Rare": gold = 3; break;
+                    case "Epic": gold = 12; break;
+                    case "Legendary": gold = 50; break;
+                    default: break;
+                };
+                currency.silver += silver;
+                currency.gold += gold;
+                const found = inventory.find((eqp: any) => eqp._id === item.id);
+                if (found) {
+                    merchantEquipment.push(found);
+                };
+                inventory = inventory.filter((eqp: any) => eqp._id !== item.id);
+            };
+            currency = rebalanceCurrency(currency);
+            const clean = { ...game().inventory, inventory };
+            const update = {
+                ...props.ascean(),
+                currency: currency,
+                health: {
+                    current: combat().newPlayerHealth,
+                    max: combat().playerHealth
+                }
+            };
+            setGame({
+                ...game(),
+                inventory: clean,
+                merchantEquipment // : [ ...game().merchantEquipment, item ]
+            });
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-inventory", clean);
+            EventBus.emit("purchase-sound");
+        } catch(err: any) {
+            console.warn(err, "Error Selling Item");
+        };
+    };
+
     function recordCombat(stats: any): Statistics {
         let { wins, losses, total, actionData, typeAttackData, typeDamageData, totalDamageData, prayerData, deityData } = stats;
         let statistic = props.statistics().combat;
@@ -1129,6 +1176,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("create-enemy-prayer", (e: any) => setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] }));
         EventBus.on("purchase-item", purchaseItem);
         EventBus.on("sell-item", sellItem);
+        EventBus.on("sell-items", sellItems);
         EventBus.on("steal-item", stealItem);
         EventBus.on("luckout", (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;

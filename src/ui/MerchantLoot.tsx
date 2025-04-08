@@ -16,6 +16,7 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
     createEffect(() => determineCost(item?.rarity as string));
     function determineCost(rarity: string): void {
+        console.log(item, "Item?")
         try {
             let cost = { silver: 0, gold: 0 };
             switch (rarity) {

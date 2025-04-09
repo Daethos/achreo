@@ -1012,11 +1012,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 const cost = determineItemCost(item);
                 const key = getItemKey(item);
                 stitch[key] = cost;
-                // setItemCosts(prev => ({ ...prev, [key]: cost }));
             };
         };
         setItemCosts(prev => ({ ...prev, ...stitch }));
-
         EventBus.emit("alert", { header: "Selling Item(s) In Inventory", body: `You have sold ${massLootSell().length} items for ${totalLoot(massLootSell).gold}g ${totalLoot(massLootSell).silver}s!` });
         EventBus.emit("sell-items", massLootSell());
         setMassLootSell([]);
@@ -1880,9 +1878,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </Show>
                 
                 <Show when={merchantSell()} fallback={<>
-                <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "48%", "margin-bottom": "5%", overflow: "scroll", "scrollbar-width": "none" }}>
-                    <div class="center" style={{margin:"3%"}}>
-                    <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(4, 1fr)" }}>
+                <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "48%", "margin-bottom": "5%" }}>
+                    <div class="center" style={{margin:"2%", height: "98%"}}>
+                    <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(4, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
                     <For each={merchantTable()}>
                         {(item: any, _index: Accessor<number>) => {
                             const cost = getItemCost(item);
@@ -1892,13 +1890,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </div>
                     </div>
                 </div>
-                <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"50%", width: "48%", "margin-bottom": "5%", overflow: "scroll", "scrollbar-width": "none" }}> 
+                <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"50%", width: "48%", "margin-bottom": "5%" }}>
+                    <div style={{ margin: "2%", height:"96%", overflow: "scroll", "scrollbar-width": "none" }}>
                     <Show when={toggleInventorySell()} fallback={
                         <For each={game()?.inventory.inventory}>{(item, _index) => {
                         if (item === undefined || item === undefined) return;
                         return (
                             <div class="row menu-item-3d center" style={{ width: "95%", height: "25%" }}>
-                                <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%", padding: "0.5em",width: "10%", height: "40%" }}>
+                                <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "0 5%", padding: "0.5em",width: "10%", height: "40%" }}>
                                     <img src={item?.imgUrl} alt={item?.name} />
                                 </div>|
                                 <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
@@ -1924,11 +1923,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         }}</For>
                     </div>
                     </Show>
+                    </div>
                 </div>
                 </>}>
-                    <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%", overflow: "scroll", "scrollbar-width": "none" }}>
-                    <div class="center" style={{margin:"3%"}}>
-                    <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
+                    <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
+                    <div class="center" style={{margin:"1%", height: "98%"}}>
+                    <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(6, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
                     <For each={merchantTable()}>
                         {(item: any, _index: Accessor<number>) => {
                             const cost = getItemCost(item);
@@ -1942,21 +1942,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </div>
                     </div>
                 </Show>
-                    {/* <For each={game()?.inventory.inventory}>{(item, _index) => {
-                        if (item === undefined || item === undefined) return;
-                        return (
-                            <div class="row menu-item-3d center" style={{ width: "95%", height: "25%" }}>
-                                <div class="" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%", padding: "0.5em",width: "10%", height: "40%" }}>
-                                    <img src={item?.imgUrl} alt={item?.name} />
-                                </div>|
-                                <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
-                                <span>|
-                                <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>|
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "✗"}</button>
-                                </span>
-                            </div>
-                        );
-                    }}</For> */}
                 <br /><br />
                 </div>
                 <button class="cornerTL highlight" style={{color:"green"}} onClick={() => refreshLoot()}>Refresh</button>
@@ -2004,29 +1989,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setSpecialMerchant(false)}>x</button>
             </div>
         </Show>
-        {/* <Show when={showSell()}>
-            <div class="modal" style={{ background: "rgba(0, 0, 0, 0.5)" }}>
-                <div class="creature-heading" style={{  position: "absolute",left: "20%",top: "2.5%",height: "95%",width: "60%",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll", "scrollbar-width":"none"}}>
-                    <h1 class="center" style={{ "margin-bottom": "3%" }}>Sell Items</h1>
-                <div class="center">
-                <Currency ascean={ascean} />
-                </div>
-                <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
-                    <For each={game()?.inventory.inventory}>{(item, _index) => {
-                        if (item === undefined || item === undefined) return;
-                        return (
-                            <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
-                                <img src={item?.imgUrl} alt={item?.name} />
-                            </div>
-                        );
-                    }}</For>
-                </div>
-                <br /><br />
-                </div>
-                <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => switchToBuy()}>Buy Loot</button>
-                <button class="cornerBR highlight" onClick={() => setShowSell(false)} style={{ "background-color": "red" }}>X</button>
-            </div>
-        </Show> */}
         <Show when={showItemBuy()}>
             <div class="modal" onClick={() => setShowItemBuy(false)} style={{ background: "rgba(0, 0, 0, 0)" }}> 
                 <ItemModal item={sellItem()} caerenic={false} stalwart={false} />

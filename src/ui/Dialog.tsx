@@ -1,4 +1,4 @@
-import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX, Switch, Match } from "solid-js"
+import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX, Switch, Match, batch } from "solid-js"
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 import Ascean from "../models/ascean";
@@ -59,11 +59,8 @@ const GET_NEXT_RARITY = {
     Rare: "Epic",
     Epic: "Legendary",
 };
-type Currency = {gold:number; silver:number;};
-export type Purchase = {
-    item: Equipment;
-    cost: Currency;
-};
+export type Currency = {gold:number; silver:number;};
+export type Purchase = {item: Equipment;cost: Currency;};
 
 const SANITIZE = {
     criticalChance: "Critical Chance",
@@ -377,8 +374,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
     const [rep, setRep] = createSignal<FACTION>(initFaction);
     const [party, setParty] = createSignal(false);
-    const [purchaseSetting, setPurchaseSetting] = createSignal<any>([]);
+    const [itemCosts, setItemCosts] = createSignal<Record<string, {silver: number, gold: number}>>({});
     const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
+    const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
             border: `0.15em solid ${getRarityColor(rarity)}`,
@@ -386,6 +384,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
+    function generateAllCostsImmediately(items: Equipment[]) {        
+        const newCosts: Record<string, {silver: number, gold: number}> = {};
+        for (const item of items) {
+            newCosts[getItemKey(item)] = determineItemCost(item);
+        };
+        setItemCosts(newCosts);
+    };
     createEffect(() => setMerchantTable(game().merchantEquipment));
     createEffect(() => { 
         checkEnemy(combat()?.computer as Ascean, quests);
@@ -396,10 +401,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkParty();
     });
 
-    createEffect(() => {
-        const costs = determineCost(merchantTable());
-        setPurchaseSetting(costs);
-    });
     const KEYS = {
         "Traveling Senarian":"magical-weapon",
         "Traveling Sevasi":"physical-weapon",
@@ -449,35 +450,26 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setStealing({ stealing: true, item });
     };
 
-    function determineCost(items: Equipment[]): {item: Equipment, cost: {silver: number, gold: number}}[] {
-        try {
-            return items.map(item => {
-                let cost = { silver: 0, gold: 0 };
-                switch (item.rarity) {
-                    case "Common": 
-                        cost = { silver: Math.floor(Math.random() * 15) + 10, gold: 0 }; 
-                        break;
-                    case "Uncommon": 
-                        cost = { silver: Math.floor(Math.random() * 99) + 1, gold: 1 };
-                        break;
-                    case "Rare": 
-                        cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 3) + 3 };
-                        break;
-                    case "Epic": 
-                        cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 5) + 10 };
-                        break;
-                    default: 
-                        cost = { silver: 10, gold: 0 }; 
-                        break;
-                };
-                return {item, cost};
-            });
-        } catch (err) {
-            console.warn(err, "Error Determining Cost!");
-            return [];
+    function determineItemCost(item: Equipment): {silver: number, gold: number} {
+        switch (item.rarity) {
+            case "Common": 
+                return { silver: Math.floor(Math.random() * 15) + 10, gold: 0 };
+            case "Uncommon": 
+                return { silver: Math.floor(Math.random() * 99) + 1, gold: 1 };
+            case "Rare": 
+                return { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 3) + 3 };
+            case "Epic": 
+                return { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 5) + 10 };
+            default: 
+                return { silver: 10, gold: 0 };
         };
     };
-    
+
+    const getItemCost = (item: Equipment) => {
+        const costs = itemCosts();
+        const key = getItemKey(item);
+        return costs[key] || {silver: 0, gold: 0};
+    };
     
     function checkUpgrades() {
         if (game().inventory.inventory.length < 3) return;
@@ -926,7 +918,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             } else if (armor) {
                 merchantEquipment = await getSpecificArmor(combat()?.player?.level as number, armor);
             };
-            setMerchantTable(merchantEquipment);
+            batch(() => {
+                setMerchantTable(merchantEquipment);
+                generateAllCostsImmediately(merchantEquipment); // Sync cost calculation
+            });
             if (!showBuy()) setShowBuy(true);
             EventBus.emit("blend-game", { merchantEquipment });
         } catch (err) {
@@ -965,7 +960,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         if (massLootBuy().find((loot: {id:string,cost:Currency}) => loot.id === item._id) !== undefined) {
             setMassLootBuy((prev) => prev.filter((p: {id:string, cost:Currency}) => p.id !== item._id));
         } else {
-            const cost = purchaseSetting().find((purchase: Purchase) => purchase.item._id === item._id).cost
+            const cost = getItemCost(item);
             setMassLootBuy([
                 ...massLootBuy(),
                 {id:item._id, cost}
@@ -992,16 +987,36 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
     
     function sellIitem(item: Equipment) {
+        const cost = determineItemCost(item);
+        const key = getItemKey(item);
+        setItemCosts(prev => ({ ...prev, [key]: cost }));
+        
         EventBus.emit("alert", { header: "Selling Item In Inventory", body: `You have sold your ${item?.name} for ${sellRarity(item?.rarity as string)}` })
         EventBus.emit("sell-item", item);
     };
 
     function sellInventory() {
+        const cost = determineItemCost(sellItem() as Equipment);
+        const key = getItemKey(sellItem() as Equipment);
+        setItemCosts(prev => ({ ...prev, [key]: cost }));
+        
         EventBus.emit("alert", { header: "Selling Item In Inventory", body: `You have sold your ${sellItem()?.name} for ${sellRarity(sellItem()?.rarity as string)}` })
         EventBus.emit("sell-item", sellItem());
     };
 
     function sellMassLoot() {
+        const stitch: any = {};
+        for (let i = 0; i < massLootSell().length; ++i) {
+            const item = game().inventory.inventory.find((inventory: Equipment) => inventory._id === massLootSell()[i].id);
+            if (item) {
+                const cost = determineItemCost(item);
+                const key = getItemKey(item);
+                stitch[key] = cost;
+                // setItemCosts(prev => ({ ...prev, [key]: cost }));
+            };
+        };
+        setItemCosts(prev => ({ ...prev, ...stitch }));
+
         EventBus.emit("alert", { header: "Selling Item(s) In Inventory", body: `You have sold ${massLootSell().length} items for ${totalLoot(massLootSell).gold}g ${totalLoot(massLootSell).silver}s!` });
         EventBus.emit("sell-items", massLootSell());
         setMassLootSell([]);
@@ -1728,21 +1743,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
-        {/* && merchantTable()?.length > 0 */}
-        {/* <Show when={showBuy()}>
-            <div class="modal">
-            <div class="creature-heading" style={{ position: "absolute", left: "20%", top: "2.5%", height: "95%", width: "60%",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "inset #000 0 0 0 0.2em, inset gold 0 0 0 0.3em",overflow: "scroll","text-align": "center", "scrollbar-width":"none" }}>
-            <h1 class="center" style={{ "margin-bottom": "0%" }}>Buy Items</h1>
-            <div class="center">
-                <Currency ascean={ascean} />
-                </div>
-                <MerchantTable table={merchantTable} ascean={ascean} steal={steal} thievery={thievery} />
-            </div>
-            <button class="highlight cornerTR" style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={() => refreshLoot()}>Refresh Loot Table</button>
-            <button class="highlight cornerTL" style={{ "background-color": "gold", color: "#000", "font-weight": 700 }} onClick={() => setShowSell(true)}>Sell Loot</button>
-            <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setShowBuy(false)}>x</button>
-            </div>
-        </Show> */}
         <Show when={reforge().show}> 
             <div class="modal">
                 <div class="border left moisten" style={{width: "48%", height: "94%" }}>
@@ -1884,9 +1884,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <div class="center" style={{margin:"3%"}}>
                     <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(4, 1fr)" }}>
                     <For each={merchantTable()}>
-                        {(item: any, _index: Accessor<number>) => (
-                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} purchaseSetting={purchaseSetting().find((purchase: Purchase) => purchase.item._id === item._id)} />
-                        )}
+                        {(item: any, _index: Accessor<number>) => {
+                            const cost = getItemCost(item);
+                            return <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />;
+                        }}
                     </For>
                     </div>
                     </div>
@@ -1929,14 +1930,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <div class="center" style={{margin:"3%"}}>
                     <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
                     <For each={merchantTable()}>
-                        {(item: any, _index: Accessor<number>) => (
-                            <div>
-                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} purchaseSetting={purchaseSetting().find((purchase: Purchase) => purchase.item._id === item._id)} />
-                            <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "✗"}</button>
-                            </div>
-                        )}
+                        {(item: any, _index: Accessor<number>) => {
+                            const cost = getItemCost(item);
+                            return <div>
+                                <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />
+                                <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "✗"}</button>
+                            </div>;
+                        }}
                     </For>
-
                     </div>
                     </div>
                     </div>

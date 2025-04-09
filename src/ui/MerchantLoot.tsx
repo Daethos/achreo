@@ -3,7 +3,7 @@ import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
 import { font, getRarityColor } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
-import { Purchase } from "./Dialog";
+import { Currency } from "./Dialog";
 interface Props {
     item: Equipment;
     ascean: Accessor<Ascean>;
@@ -11,22 +11,22 @@ interface Props {
     setHighlight: Setter<Equipment | undefined> | any;
     thievery: Accessor<boolean>;
     steal(item: Equipment): void;
-    purchaseSetting: Purchase;
+    cost: Currency;
 };
-export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal, purchaseSetting }: Props) {
+export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal, cost }: Props) {
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
-    const purchaseItem = async (): Promise<void> => {
+    const purchaseLoot = (): void => {
         let asceanTotal = 0;
         let costTotal = 0;
         asceanTotal = ascean().currency.silver + (ascean().currency.gold * 100);
-        costTotal = purchaseSetting.cost.silver + (purchaseSetting.cost.gold * 100);
+        costTotal = cost.silver + (cost.gold * 100);
         if (asceanTotal < costTotal) {
             EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. You require ${costTotal - asceanTotal} more silver to purchase the ${item.name}.` });
             return;
         };
         try {
-            EventBus.emit("alert", { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${purchaseSetting.cost.gold}g, ${purchaseSetting.cost.silver}s.`});
-            EventBus.emit("purchase-item", purchaseSetting);
+            EventBus.emit("alert", { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${cost.gold}g, ${cost.silver}s.`});
+            EventBus.emit("purchase-item", {item,cost});
         } catch (err) {
             console.warn(err, "Error Purchasing Item!");
         };
@@ -47,10 +47,10 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
     return <div style={{ margin: "3%" }}>
         <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
         <div style={{ color:"", "font-size": "0.75em", "margin-top": "4%", "margin-bottom": "0" }}>
-            <span style={{color:"gold"}}>{purchaseSetting?.cost?.gold > 0 && `${purchaseSetting.cost.gold}g${" "}`}</span>
-            {purchaseSetting?.cost?.silver > 0 && `${purchaseSetting.cost.silver}s${" "}`}
+            <span style={{color:"gold"}}>{cost?.gold > 0 && `${cost.gold}g${" "}`}</span>
+            {cost?.silver > 0 && `${cost.silver}s${" "}`}
         </div>
-        <button class="highlight super" onClick={purchaseItem} style={{ "font-size": "0.65em", "font-weight": 700, color: "green", padding: "0.75em", "z-index": 999 }}>
+        <button class="highlight super" onClick={purchaseLoot} style={{ "font-size": "0.675em", "font-weight": 700, color: "green", padding: "0.5em", "z-index": 999 }}>
             Purchase {item?.name}
         </button>
         <Show when={thievery()}>

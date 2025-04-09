@@ -9,16 +9,16 @@ interface Props {
     ascean: Accessor<Ascean>;
     steal: any;
     thievery: Accessor<boolean>;
-    purchaseSetting: Accessor<Purchase[]>;
+    cost: any;
 };
-export default function MerchantTable({ table, ascean, steal, thievery, purchaseSetting }: Props) {
+export default function MerchantTable({ table, ascean, steal, thievery, cost }: Props) {
     const [show, setShow] = createSignal<boolean>(false);
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     return (
         <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(4, 1fr)" }}>
         <For each={table()}>
             {(item: any, _index: Accessor<number>) => (
-                <MerchantLoot item={item} ascean={ascean} setShow={setShow} setHighlight={setHighlight} thievery={thievery} steal={steal} purchaseSetting={purchaseSetting().find((purchase: any) => purchase.item._id === item._id) as Purchase} />
+                <MerchantLoot item={item} ascean={ascean} setShow={setShow} setHighlight={setHighlight} thievery={thievery} steal={steal} cost={cost} />
             )}
         </For>
         <Show when={show()}>

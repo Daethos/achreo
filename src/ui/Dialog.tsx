@@ -1799,7 +1799,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <br /><br /> [<span class="gold">Gold: Locked</span> | <span style={{ color: "red" }}>Red: Rerolled</span>]
                         </p>
                         <div>
-                            <For each={Object.keys(reforgeConcerns(reforge().item as Equipment))}>{(type: string, i: Accessor<number>) => {
+                            <For each={Object.keys(reforgeConcerns(reforge().item as Equipment))}>{(type: string) => {
                                 const concern = reforgeConcerns(reforge().item as Equipment);
                                 if (concern[type as keyof typeof concern] === undefined) return;
                                 return <button class="highlight" style={{ color: sans().includes(type) ? "gold" : "red", "font-weight": 600, "font-size": "1em" }} 
@@ -1813,7 +1813,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         );
                                         setReforge({...reforge(), cost: roundToTwoDecimals(reforge().cost + (length > sans().length ? -cost : cost))});
                                     }}>
-                                    {SANITIZE[type as keyof typeof SANITIZE]} {sans().includes(type) ? "✓" : "✗"} 
+                                    {SANITIZE[type as keyof typeof SANITIZE]} {sans().includes(type) ? "✓" : "✗"}
                                 </button>
                             }}</For>
                         <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => {setReforge({show:false,item:undefined,cost:0}); setSans([])}}>x</button>
@@ -1872,9 +1872,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </div>
                 <span onClick={() => setMerchantSell(!merchantSell())} style={{ float: "left", "margin-left": "2%", "margin-top":"-4%", color:"gold" }}>Merchant Loot <span style={{color:"#fdf6d8"}}></span></span>
                 <Show when={merchantSell()} fallback={
-                    <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span onClick={() => setToggleInventorySell(!toggleInventorySell())} style={{color:"green"}}>Quick Sell</span> | <span onClick={sellMassLoot} style={{color:"red"}}>Mass Sell</span> | <span class="" onClick={sellMassLoot} style={{color:"gold"}}>({totalLoot(massLootSell).gold}g {totalLoot(massLootSell).silver}s)</span></span>
+                    <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span onClick={() => setToggleInventorySell(!toggleInventorySell())} style={{color:"green"}}>Quick Sell</span> | <span onClick={sellMassLoot} style={{color:"red"}}>Mass Sell <span style={{color:"red"}}>{massLootSell().length > 0 && `(${massLootSell().length})`}</span> </span> | <span class="" onClick={sellMassLoot} style={{color:"gold"}}>({totalLoot(massLootSell).gold}g {totalLoot(massLootSell).silver}s)</span></span>
                 }>
-                    <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span style={{color:"green"}}>Quick Buy</span> | <span onClick={buyMassLoot} style={{color:"red"}}>Mass Buy</span> | <span onClick={buyMassLoot} style={{color:"gold"}}>({totalBuyLoot().gold}g {totalBuyLoot().silver}s)</span></span>
+                    <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span style={{color:"green"}}>Quick Buy</span> | <span onClick={buyMassLoot} style={{color:"red"}}>Mass Buy <span style={{color:"red"}}>{massLootBuy().length > 0 && `(${massLootBuy().length})`}</span></span> | <span onClick={buyMassLoot} style={{color:"gold"}}>({totalBuyLoot().gold}g {totalBuyLoot().silver}s)</span></span>
                 </Show>
                 
                 <Show when={merchantSell()} fallback={<>
@@ -1903,7 +1903,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
                                 <span>|
                                 <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>|
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "✗"}</button>
+                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "□"}</button>
                                 </span>
                             </div>
                         );
@@ -1917,7 +1917,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
                                     <img src={item?.imgUrl} alt={item?.name} />
                                 </div>
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "✗"}</button>
+                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "□"}</button>
                                 </div>
                             );
                         }}</For>
@@ -1934,7 +1934,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             const cost = getItemCost(item);
                             return <div>
                                 <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />
-                                <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "✗"}</button>
+                                <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "□"}</button>
                             </div>;
                         }}
                     </For>

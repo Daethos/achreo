@@ -260,6 +260,46 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    function buyItems(data: {items: {id:string,rarity:string}[], total: {gold:number,silver:number}}) {        
+        try {
+            const {items,total} = data;
+            let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+            let currency = {silver:props.ascean().currency.silver,gold:props.ascean().currency.gold};
+            let merchantEquipment = Array.isArray(game().merchantEquipment) ? (JSON.parse(JSON.stringify(game().merchantEquipment))) : [];
+            console.log(merchantEquipment, "Merchant Equipment");
+            for (let i = 0; i < items.length; ++i) {
+                let item = items[i];
+                const found = merchantEquipment.find((eqp: Equipment) => eqp._id === item.id);
+                if (found) {
+                    inventory.push(found);
+                };
+                merchantEquipment = merchantEquipment.filter((eqp: Equipment) => eqp._id !== item.id);
+            };
+            currency.silver -= total.silver;
+            currency.gold -= total.gold;
+            currency = rebalanceCurrency(currency);
+            const clean = { ...game().inventory, inventory };
+            const update = {
+                ...props.ascean(),
+                currency: currency,
+                health: {
+                    current: combat().newPlayerHealth,
+                    max: combat().playerHealth
+                }
+            };
+            setGame({
+                ...game(),
+                inventory: clean,
+                merchantEquipment // : [ ...game().merchantEquipment, item ]
+            });
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-inventory", clean);
+            EventBus.emit("purchase-sound");
+        } catch (err) {
+            console.warn(err, "Error Buying Items");
+        };
+    };
+
     function sellItem(item: Equipment) {
         try {
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
@@ -320,11 +360,11 @@ export default function PhaserGame (props: IProps) {
                 };
                 currency.silver += silver;
                 currency.gold += gold;
-                const found = inventory.find((eqp: any) => eqp._id === item.id);
+                const found = inventory.find((eqp: Equipment) => eqp._id === item.id);
                 if (found) {
                     merchantEquipment.push(found);
                 };
-                inventory = inventory.filter((eqp: any) => eqp._id !== item.id);
+                inventory = inventory.filter((eqp: Equipment) => eqp._id !== item.id);
             };
             currency = rebalanceCurrency(currency);
             const clean = { ...game().inventory, inventory };
@@ -1177,6 +1217,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("purchase-item", purchaseItem);
         EventBus.on("sell-item", sellItem);
         EventBus.on("sell-items", sellItems);
+        EventBus.on("buy-items", buyItems);
         EventBus.on("steal-item", stealItem);
         EventBus.on("luckout", (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;

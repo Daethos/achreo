@@ -1,8 +1,9 @@
-import { Accessor, Setter, Show, createEffect, createSignal } from "solid-js"
+import { Accessor, Setter, Show, createSignal } from "solid-js"
 import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
 import { font, getRarityColor } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
+import { Purchase } from "./Dialog";
 interface Props {
     item: Equipment;
     ascean: Accessor<Ascean>;
@@ -10,46 +11,22 @@ interface Props {
     setHighlight: Setter<Equipment | undefined> | any;
     thievery: Accessor<boolean>;
     steal(item: Equipment): void;
+    purchaseSetting: Purchase;
 };
-export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal }: Props) {
-    const [purchaseSetting, setPurchaseSetting] = createSignal({ item, cost: { silver: 0, gold: 0 }});
+export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal, purchaseSetting }: Props) {
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
-    createEffect(() => determineCost(item?.rarity as string));
-    function determineCost(rarity: string): void {
-        try {
-            let cost = { silver: 0, gold: 0 };
-            switch (rarity) {
-                case "Common": {
-                    cost = { silver: Math.floor(Math.random() * 15) + 10, gold: 0 }; break;
-                };
-                case "Uncommon": {
-                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: 1 }; break; // Math.floor(Math.random() * 2) + 
-                };
-                case "Rare": {
-                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 3) + 3 }; break;
-                };
-                case "Epic": {
-                    cost = { silver: Math.floor(Math.random() * 99) + 1, gold: Math.floor(Math.random() * 5) + 10 }; break;
-                };
-                default: cost = { silver: 10, gold: 0 }; break; 
-            };
-            setPurchaseSetting({item, cost});
-        } catch (err) {
-            console.warn(err, "Error Determining Cost!");
-        };
-    };
     const purchaseItem = async (): Promise<void> => {
         let asceanTotal = 0;
         let costTotal = 0;
         asceanTotal = ascean().currency.silver + (ascean().currency.gold * 100);
-        costTotal = purchaseSetting().cost.silver + (purchaseSetting().cost.gold * 100);
+        costTotal = purchaseSetting.cost.silver + (purchaseSetting.cost.gold * 100);
         if (asceanTotal < costTotal) {
             EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. You require ${costTotal - asceanTotal} more silver to purchase the ${item.name}.` });
             return;
         };
         try {
-            EventBus.emit("alert", { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${purchaseSetting().cost.gold}g, ${purchaseSetting().cost.silver}s.`});
-            EventBus.emit("purchase-item", purchaseSetting());
+            EventBus.emit("alert", { header: `Purchasing ${item?.name}`, body: `You have purchased the ${item?.name} for ${purchaseSetting.cost.gold}g, ${purchaseSetting.cost.silver}s.`});
+            EventBus.emit("purchase-item", purchaseSetting);
         } catch (err) {
             console.warn(err, "Error Purchasing Item!");
         };
@@ -70,8 +47,8 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
     return <div style={{ margin: "3%" }}>
         <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
         <div style={{ color:"", "font-size": "0.75em", "margin-top": "4%", "margin-bottom": "0" }}>
-            <span style={{color:"gold"}}>{purchaseSetting()?.cost?.gold && `${purchaseSetting().cost.gold}g${" "}`}</span>
-            {purchaseSetting()?.cost?.silver && `${purchaseSetting().cost.silver}s${" "}`}
+            <span style={{color:"gold"}}>{purchaseSetting?.cost?.gold > 0 && `${purchaseSetting.cost.gold}g${" "}`}</span>
+            {purchaseSetting?.cost?.silver > 0 && `${purchaseSetting.cost.silver}s${" "}`}
         </div>
         <button class="highlight super" onClick={purchaseItem} style={{ "font-size": "0.65em", "font-weight": 700, color: "green", padding: "0.75em", "z-index": 999 }}>
             Purchase {item?.name}

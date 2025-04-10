@@ -27,6 +27,8 @@ import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
 import { roundToTwoDecimals } from "../utility/combat";
 import MerchantLoot from "./MerchantLoot";
+export type Currency = {gold:number; silver:number;};
+export type Purchase = {item: Equipment;cost: Currency;};
 const GET_ETCH_COST = {
     Common: 0.1,
     Uncommon: 0.25,
@@ -52,16 +54,12 @@ const GET_PRICE = {
     Epic: 12,
     Legendary: 50
 };
-
 const GET_NEXT_RARITY = {
     Common: "Uncommon",
     Uncommon: "Rare",
     Rare: "Epic",
     Epic: "Legendary",
 };
-export type Currency = {gold:number; silver:number;};
-export type Purchase = {item: Equipment;cost: Currency;};
-
 const SANITIZE = {
     criticalChance: "Critical Chance",
     criticalDamage: "Critical Damage",
@@ -1903,7 +1901,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
                                 <span>|
                                 <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>|
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "□"}</button>
+                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
                                 </span>
                             </div>
                         );
@@ -1917,7 +1915,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
                                     <img src={item?.imgUrl} alt={item?.name} />
                                 </div>
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "□"}</button>
+                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
                                 </div>
                             );
                         }}</For>
@@ -1934,7 +1932,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             const cost = getItemCost(item);
                             return <div>
                                 <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />
-                                <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "□"}</button>
+                                <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "▢"}</button>
                             </div>;
                         }}
                     </For>

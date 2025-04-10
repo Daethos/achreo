@@ -31,8 +31,9 @@ interface Props {
     settings: Accessor<Settings>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
+    touching: Accessor<string[]>;
 };
-export default function CombatUI({ ascean, state, game, settings, stamina, grace }: Props) {
+export default function CombatUI({ ascean, state, game, settings, stamina, grace, touching }: Props) {
     const dimensions = useResizeListener();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
@@ -109,7 +110,6 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         let equipment: any[] = [];
         for (let i = 0; i < 3; ++i) {
             const item = getOneTemplate(state().computer?.level as number);
-            console.log(item, "Item?");
             equipment.push(item);
         };
         setPickpocketItems(equipment);
@@ -236,13 +236,15 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             )}</For>
         </div>
         </Show> 
-        <Show when={state().isStealth && state().computer && state().newComputerHealth > 0}> 
-        <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "0vw" }} onClick={() => disengage()}>
-            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
-        </button>
-        <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "10vw" }} onClick={checkPickpocket}>
-            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Steal</div>
-        </button>
+        <Show when={state().isStealth && state().computer}> 
+            <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "0vw" }} onClick={() => disengage()}>
+                <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
+            </button>
+            <Show when={state().newComputerHealth > 0 && touching().includes(state().enemyID)}>
+                <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "10vw" }} onClick={checkPickpocket}>
+                    <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Steal</div>
+                </button>
+            </Show>
         </Show>
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />

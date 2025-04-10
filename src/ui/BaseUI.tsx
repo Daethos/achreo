@@ -54,6 +54,7 @@ interface Props {
 };
 export default function BaseUI({ instance, ascean, combat, game, quests, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
+    const [touching, setTouching] = createSignal<string[]>([]);
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
         currency: ascean().currency,
@@ -460,6 +461,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     usePhaserEvent("remove-enemy", filterEnemies);
     usePhaserEvent("request-enemy", sendEnemyData);
     usePhaserEvent("update-enemies", (e: any) => setEnemies(e));
+    usePhaserEvent("add-touching", (e: string) => setTouching((prev) => [...prev, e]));
+    usePhaserEvent("remove-touching", (e: string) => setTouching((prev) => prev.filter((p:any) => p !== e)));
     usePhaserEvent("update-ascean-state" , (e: any) => setAsceanState(e));
     usePhaserEvent("show-roster", () => setArena({ ...arena(), show: true }));
     usePhaserEvent("set-tutorial-enemy", (enemy: Compiler) => {
@@ -488,7 +491,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     return <div id="base-ui">
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", "z-index": 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
-                <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
+                <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} touching={touching} />
             </Suspense>
             <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
             <Suspense fallback={<Puff color="gold" />}>

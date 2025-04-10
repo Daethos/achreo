@@ -114,7 +114,7 @@ async function defaultMutate(equipment: Equipment[]) {
         });
         return equipment;
     } catch (err) {
-        console.log(err, 'Error Mutating Equipment');
+        console.warn(err, 'Error Mutating Equipment');
     };
 };
 
@@ -504,7 +504,6 @@ function getOneTemplate(level: number = 1) {
             type = 'Legs';
         };
     };
-    console.log("Fetching!", equipment, rarity, type);
     (equipment as any) = fetcher((equipment as any), rarity, type, undefined);
     return equipment;
 };
@@ -643,7 +642,7 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
         total = await mutate(total, rarity) as Equipment[];
         return total;
     } catch (err: any) {
-        console.log(err, 'Error Aggregating Equipment');
+        console.warn(err, 'Error Aggregating Equipment');
     };
 };
 
@@ -656,7 +655,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Weapons.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment}; 
         case 'Shield':
             if (name) {
                 equipment = Shields.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -664,7 +662,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Shields.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Helmet':
             if (name) {
                 equipment = Helmets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -672,7 +669,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Helmets.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Chest':
             if (name) {
                 equipment = Chests.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -680,7 +676,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Chests.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Legs':
             if (name) {
                 equipment = Legs.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -688,7 +683,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Legs.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Ring':
             if (name) {
                 equipment = Rings.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -696,7 +690,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Rings.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Amulet':
             if (name) {
                 equipment = Amulets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -704,7 +697,6 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Amulets.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         case 'Trinket':
             if (name) {
                 equipment = Trinkets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
@@ -712,16 +704,13 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
                 equipment = shuffleArray(Trinkets.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-            // return {...equipment};
         default:
             const allEquipmentOfType = [...Weapons, ...Shields, ...Helmets /* add other types here */];
             const filteredEquipment = allEquipmentOfType.filter((eq) => eq.rarity === rarity);
             const randomIndex = randomIntFromInterval(0, filteredEquipment.length - 1);
-            // return equipment = {...filteredEquipment[randomIndex]};
             equipment = {...filteredEquipment[randomIndex]};
             break;
     };
-    console.log(equipment, "Equipment");
     return equipment;
 };
 
@@ -855,7 +844,7 @@ async function upgradeEquipment(data: any) {
         const clone = deepClone(item?.[0]);
         return [clone];
     } catch (err: any) {
-        console.log(err, 'err')
+        console.warn(err, 'err')
     };
 };
 
@@ -1033,13 +1022,11 @@ async function getSpecificArmor(level: number, type: string) {
             item = shuffleArray([armorType].filter((eq: any) => (eq.rarity === rarity && eq.type === type)))[0];
             
             if (item) {
-                console.log('the fully agnostic solution has worked');
                 let mutatedItems = await mutate([item], rarity) as Equipment[];
                 mutatedItems.forEach(item => new Equipment(item));
                 const clonedItem = deepClone(mutatedItems[0]);
                 merchantEquipment.push(clonedItem);
             } else {
-                console.log('deterministic =[');
                 if (armorType === "Helmet") {
                     item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
                 } else if (armorType === "Chest") {

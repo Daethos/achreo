@@ -923,7 +923,7 @@ export default class Player extends Entity {
         };
     };
     isValidTouching = (other: any): boolean => other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean;
- 
+    
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],

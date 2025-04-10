@@ -54,11 +54,11 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
             Purchase {item?.name}
         </button>
         <Show when={thievery()}>
-            <button class="highlight super" onClick={() => setThieveryModal(true)} style={{ "color": "red", padding: "0.75em" }}>Steal {item?.name}</button>
+            <button class="highlight super" onClick={() => setThieveryModal(true)} style={{ "font-size": "0.675em", "color": "red", padding: "0.5em" }}>Steal {item?.name}</button>
         </Show>
         <Show when={thieveryModal()}> 
             <div class="modal">
-            <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
+            <div class="button superCenter" style={{ "background-color": "black", width: "75%" }}>
                 <div class="">
                 <div class="center" style={font("1.5em")}>Do You Really Wish To Steal this Poor Merchant's  <span style={{ color: "gold" }}>{item?.name}?</span> <br /><br /><div>
                     <img style={{ transform: "scale(1.25)" }} src={item?.imgUrl} alt={item?.name} onClick={sneed} />

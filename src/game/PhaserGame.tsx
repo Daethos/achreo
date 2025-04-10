@@ -290,7 +290,6 @@ export default function PhaserGame (props: IProps) {
                 };
                 await deleteEquipment(item._id as string);
                 let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
-                // let merchantEquipment = [ ...game().merchantEquipment ];
                 merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), merchantEquipment });
                 EventBus.emit("update-statistics", newStats);
@@ -307,7 +306,6 @@ export default function PhaserGame (props: IProps) {
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
             let currency = {silver:props.ascean().currency.silver,gold:props.ascean().currency.gold};
             let merchantEquipment = Array.isArray(game().merchantEquipment) ? (JSON.parse(JSON.stringify(game().merchantEquipment))) : [];
-            console.log(merchantEquipment, "Merchant Equipment");
             for (let i = 0; i < items.length; ++i) {
                 let item = items[i];
                 const found = merchantEquipment.find((eqp: Equipment) => eqp._id === item.id);

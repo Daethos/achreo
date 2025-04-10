@@ -138,7 +138,6 @@ export default function Merchant({ ascean }: { ascean: Accessor<Ascean>; }) {
                 </button>
                 </Show>
                 </div>
-
             </div>
             </div>
         </Show>

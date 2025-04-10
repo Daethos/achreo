@@ -1,15 +1,16 @@
 import { Accessor, createEffect, createSignal, JSX, Setter, Show } from "solid-js";
-import { GameState } from "../stores/game";
 import { font } from "../utility/styling";
 import { ThreeDots } from "solid-spinner";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-export default function Thievery({ ascean, game, setThievery, stealing, setStealing }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; setThievery: Setter<boolean>; stealing: Accessor<{ stealing: boolean; item: any }>; setStealing: Setter<{ stealing: boolean; item: any }> }) {
-    const [thieveryAnimation, setThieveryAnimation] = createSignal<{ item: any, player: number, merchant: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
+import { Combat } from "../stores/combat";
+export default function Pickpocket({ ascean, combat, setThievery, stealing, setStealing, setItems, setShowPickpocket }: 
+    { ascean: Accessor<Ascean>; combat: Accessor<Combat>; setThievery: Setter<boolean>; stealing: Accessor<{ stealing: boolean; item: any }>; setStealing: Setter<{ stealing: boolean; item: any }>; setItems: Setter<any[]>; setShowPickpocket:Setter<boolean>;}) {
+    const [thieveryAnimation, setThieveryAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:"",name:""},
         player: 0,
-        merchant: 0,
+        enemy: 0,
         dialog: "",
         on: false,
         cancel: false,
@@ -25,15 +26,15 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
                     dialog = <div><i>Calculating</i> the ability of <span class="gold">{ascean().name}</span>. <br /><br /></div>;
                     break;
                 case 2: // <span class="gold">{ascean().name}</span>, y 
-                    dialog = <div>You have a <span class="gold">{thieveryAnimation().player}</span>% of succeeding. <br /><br /> <i>Calculating</i> Merchant's Awareness</div>;
+                    dialog = <div>You have a <span class="gold">{thieveryAnimation().player}</span>% of succeeding. <br /><br /> <i>Calculating</i> {combat().computer?.name}'s Awareness</div>;
                     break;
                 case 3:
-                    dialog = <div><i>Comparing</i> your <span class="gold">guile</span> with the Merchant's</div>;
+                    dialog = <div><i>Comparing</i> your <span class="gold">guile</span> with {combat().computer?.name}'s</div>;
                     break;
                 case 4:
                     dialog = <div>Player: <span class="gold">{thieveryAnimation().player}</span>% <br /> <br />
-                        The Merchant's current awareness is rated at <span class="gold">{thieveryAnimation().merchant}</span>% <br /> <br />
-                        {thieveryAnimation().merchant > thieveryAnimation().player ? "Aww, well. Better luck next time, Fiend! Hah Hah Hah!" : `You rapscallion, you did it; the ${thieveryAnimation().item.name} is yours!`}</div> ;
+                        {combat().computer?.name}'s current awareness is rated at <span class="gold">{thieveryAnimation().enemy}</span>% <br /> <br />
+                        {thieveryAnimation().enemy > thieveryAnimation().player ? "Aww, well. Better luck next time, Fiend! Hah Hah Hah!" : `You rapscallion, you did it; the ${thieveryAnimation().item.name} is yours!`}</div> ;
                     break;
                 default: break;
             };
@@ -49,14 +50,7 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
         };
     });
     function checkThievery(): void {
-        const traits = {
-            primary: game()?.traits?.primary,
-            secondary: game()?.traits?.secondary,
-            tertiary: game()?.traits?.tertiary,
-        };
-        const thieveryTraits = ["Ma'anreic"];
-        const matchingTraits = Object.values(traits).filter(trait => thieveryTraits.includes(trait.name));
-        setThievery(matchingTraits.length > 0);
+        setThievery(combat().isStealth);
     };
     function checkStatisticalValue(rarity: string): number {
         switch (rarity) {
@@ -68,15 +62,13 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
             default: return 0;
         };
     };
-    function getFine(rarity: string): number | string {
-        switch (rarity) {
-            case "Common": return "5 silver";
-            case "Uncommon": return "25 silver";
-            case "Rare": return "1 gold";
-            case "Epic": return "3 gold";
-            case "Legendary": return "100 gold";
-            default: return 0;
-        };
+    function engage() {
+        EventBus.emit("aggressive-enemy", { id: combat().enemyID, isAggressive: true });
+        EventBus.emit("blend-combat", { isStealth: false });
+        EventBus.emit("blend-game", { showDialog: false });
+        // EventBus.emit("update-pause", false);
+        EventBus.emit("action-button-sound");
+        EventBus.emit("engage");
     };
     function steal(item: Equipment): void {
         try {
@@ -87,9 +79,9 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
                 Epic: 25,
                 Legendary: 50,
             };
-            const merchant = Math.floor(Math.random() * 101) + weight[item.rarity as keyof typeof weight];
+            const enemy = Math.floor(Math.random() * 101) + weight[item.rarity as keyof typeof weight];
             const player = ascean().agility + ascean().achre + Math.round(Math.random() * 5 * (Math.random() > 0.5 ? 1 : -1));
-            const success = player > merchant;
+            const success = player > enemy;
             const value = checkStatisticalValue(item.rarity as string);
             setThieveryAnimation({ ...thieveryAnimation(), item, on: true, rolling: true, step: 1 });
             setTimeout(() => {
@@ -103,31 +95,29 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
                         setThieveryAnimation({ ...thieveryAnimation(), cancel: false, rolling: false, step: 0 });
                         return;    
                     };
-                    setThieveryAnimation({ ...thieveryAnimation(), merchant, rolling: true, step: 3 });
+                    setThieveryAnimation({ ...thieveryAnimation(), enemy, rolling: true, step: 3 });
                     setTimeout(() => {
                         if (thieveryAnimation().cancel === true) {
                             setThieveryAnimation({  ...thieveryAnimation(),  cancel: false,  rolling: false,  step: 0 });
                             return;    
                         };
-                        setThieveryAnimation({ ...thieveryAnimation(), merchant, rolling: true, step: 4 });
-                        if (success) {
-                            EventBus.emit("steal-item", { success: true, item: item, value });
-                        } else {
-                            EventBus.emit("steal-item", { success: false, item: item, value });
-                        };
+                        setThieveryAnimation({ ...thieveryAnimation(), enemy, rolling: true, step: 4 });
+                        EventBus.emit("pocket-item", { success, item, value });
                         setTimeout(() => {
                             if (thieveryAnimation().cancel === true) {
                                 setThieveryAnimation({ ...thieveryAnimation(), cancel: false, rolling: false, step: 0 });
-                                return;    
+                                return;
                             };
                             if (success) { // Failure
-                                EventBus.emit("alert", { header: "You Have Appropriated Goods!", body: `You have successfully lifted the item from the table. The merchant has no idea they no longer possess the ${item.name}. Good job, criminal scum!`, delay: 6000, key: "Close"});    
+                                EventBus.emit("alert", { header: "You Have Picked the Pocket!", body: `You have successfully lifted the item from their pocket. The enemy, ${combat().computer?.name} has no idea they no longer possess the ${item.name}. Good job, criminal scum!`, delay: 6000, key: "Close"});    
                             } else {
-                                const fineCost = getFine(item.rarity as string); 
-                                EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The merchant protested your censure, and have simply been fined ${fineCost} instead. The item has subsequently been pulled from the table.`, delay: 6000, key: "Close"});    
+                                EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The item has subsequently been alerted to your abhorrent presence.`, delay: 6000, key: "Close"});    
                                 setThievery(false);
+                                setTimeout(() => engage(), 3000);
                             };
+                            setItems((prev: any[]) => prev.filter((i: any) => i.name !== item.name));
                             setThieveryAnimation({ ...thieveryAnimation(), on: false, step: 0 });
+                            setShowPickpocket(false);
                         }, 3000);
                     }, 3000);
                 }, 3000);
@@ -141,7 +131,6 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
             <div class="modal" style={{ "z-index": 99 }}>
             <div class="button superCenter" style={{ "background-color": "black", width: "30%" }}>
                 <div class="wrap" style={{ margin: "5%" }}>
-
                 <div class="center" style={font("1.15em")}>Lets see if you can successfully swipe  <span style={{ color: "gold" }}>{thieveryAnimation()?.item?.name}!</span> <br /><br /><div>
                     <img style={{ transform: "scale(1.25)" }} src={thieveryAnimation()?.item?.imgUrl} alt={thieveryAnimation()?.item?.name} />
                 </div>

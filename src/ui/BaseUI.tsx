@@ -488,7 +488,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     return <div id="base-ui">
         <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", "z-index": 1 }}>
             <Suspense fallback={<Puff color="gold" />}>
-                <CombatUI state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
+                <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} />
             </Suspense>
             <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
             <Suspense fallback={<Puff color="gold" />}>

@@ -1,7 +1,7 @@
 import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from "solid-js";
 import { createStore } from "solid-js/store";
 import Ascean from "../models/ascean";
-import Equipment, { getOneRandom, upgradeEquipment } from "../models/equipment";
+import Equipment, { getOneDetermined, getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
 import Settings from "../models/settings";
 import Statistics from "../utility/statistics";
 import StartGame from "./main";
@@ -212,6 +212,47 @@ export default function PhaserGame (props: IProps) {
             EventBus.emit("purchase-sound");
         } catch (err: any) {
             console.warn("Error Purchasing Item", err.message);
+        };
+    };
+
+    
+    async function pocketItem(data: {success: boolean, item: Equipment, value: any}) {
+        const { success, item, value } = data;
+        try {
+            if (success === true) {
+                const trueItem = await getOneSpecific(item);
+                if (trueItem) {
+                    let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+                    inventory.push(trueItem[0]);
+                    const clean = { ...game().inventory, inventory };
+                    EventBus.emit("update-inventory", clean);
+                    setGame({ ...game(), inventory: clean });
+                };
+                const newStats = {
+                    ...props.statistics(),
+                    thievery: {
+                        ...props.statistics().thievery,
+                        successes: props.statistics().thievery.successes + 1,
+                        total: props.statistics().thievery.total + 1,
+                        totalValue: props.statistics().thievery.totalValue + value
+                    },
+                };
+                EventBus.emit("update-statistics", newStats);
+                EventBus.emit("stealth-sound");
+            } else {
+                const newStats = {
+                    ...props.statistics(),
+                    thievery: {
+                        ...props.statistics().thievery,
+                        failures: props.statistics().thievery.failures + 1,
+                        total: props.statistics().thievery.total + 1,
+                    },
+                };
+                EventBus.emit("update-statistics", newStats);
+                EventBus.emit("death-sound");
+            };
+        } catch (err) {
+            console.warn(err, "Error Stealing Item");
         };
     };
 
@@ -1219,6 +1260,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("sell-items", sellItems);
         EventBus.on("buy-items", buyItems);
         EventBus.on("steal-item", stealItem);
+        EventBus.on("pocket-item", pocketItem);
         EventBus.on("luckout", (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
             EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });

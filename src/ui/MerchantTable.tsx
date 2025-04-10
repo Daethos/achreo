@@ -3,7 +3,6 @@ import MerchantLoot from "./MerchantLoot";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import ItemModal from "../components/ItemModal";
-import { Purchase } from "./Dialog";
 interface Props {
     table: Accessor<Equipment[]>;
     ascean: Accessor<Ascean>;

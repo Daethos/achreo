@@ -1,6 +1,6 @@
-import { Accessor, Setter, createEffect, createSignal } from "solid-js"
+import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js"
 import ItemModal from "../components/ItemModal";
-import { border, borderColor, itemStyle, masteryColor } from "../utility/styling";
+import { border, borderColor, font, itemStyle, masteryColor } from "../utility/styling";
 import PrayerEffects from "./PrayerEffects";
 import { EventBus } from "../game/EventBus";
 import { For, Show } from "solid-js";
@@ -15,17 +15,24 @@ import GraceModal from "../components/GraceModal";
 import { createHealthDisplay } from "../utility/health";
 import Settings from "../models/settings";
 import { useResizeListener } from "../utility/dimensions";
+import { ThreeDots } from "solid-spinner";
+import Thievery from "./Thievery";
+import Equipment, { getOneTemplate } from "../models/equipment";
+import Ascean from "../models/ascean";
+import Pickpocket from "./Pickpocket";
+import PickpocketLoot from "./PickpocketLoot";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
 interface Props {
+    ascean: Accessor<Ascean>;
     state: Accessor<Combat>;
     game: Accessor<GameState>;
     settings: Accessor<Settings>;
     stamina: Accessor<number>;
     grace: Accessor<number>;
 };
-export default function CombatUI({ state, game, settings, stamina, grace }: Props) {
+export default function CombatUI({ ascean, state, game, settings, stamina, grace }: Props) {
     const dimensions = useResizeListener();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal(false);
@@ -34,7 +41,51 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
     const [staminaShow, setStaminaShow] = createSignal(false);
     const [graceShow, setGraceShow] = createSignal(false);
     const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
+    const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
+    const [thievery, setThievery] = createSignal<boolean>(false);
+    const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
+    const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
+    const [showPickpocket, setShowPickpocket] = createSignal(false); // setShowPickpocketItems
+    const [showPickpocketItems, setShowPickpocketItems] = createSignal(false); // setShowPickpocketItems
+    const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
+    const [stealAnimation, setStealAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
+        item: {imgUrl:"", name:""},
+        player: 0,
+        enemy: 0,
+        dialog: "",
+        on: false,
+        cancel: false,
+        rolling: false,
+        step: 0,
+    });
+    createEffect(() => {
+        if (stealAnimation().on && stealAnimation().rolling) {
+            let dialog: JSX.Element | string = "";
+            switch (stealAnimation().step) {
+                case 1:
+                    dialog = <div><i>Calculating</i> the ability of <span class="gold">{state().player?.name as string}</span>. <br /><br /></div>;
+                    break;
+                case 2:
+                    dialog = <div>You have a <span class="gold">{stealAnimation().player}</span>% of succeeding. <br /><br /> <i>Calculating</i> {state().computer?.name}'s Awareness</div>;
+                    break;
+                case 3:
+                    dialog = <div><i>Comparing</i> your <span class="gold">guile</span> with {state().computer?.name}'s</div>;
+                    break;
+                case 4:
+                    dialog = <div>Player: <span class="gold">{stealAnimation().player}</span>% <br /> <br />
+                        {state().computer?.name}'s current awareness is rated at <span class="gold">{stealAnimation().enemy}</span>% <br /> <br />
+                        {stealAnimation().enemy > stealAnimation().player ? "Aww, well. Better luck next time, Fiend! Hah Hah Hah!" : `You rapscallion, you did it; the ${stealAnimation().item.name} is yours!`}</div> ;
+                    break;
+                default: break;
+            };
+            setStealAnimation({
+                ...stealAnimation(),
+                dialog,
+                rolling: false,
+            });
+        };
+    });
     createEffect(() => {
         const currentHealth = state().newPlayerHealth;
         const prevHealth = previousHealth().health;
@@ -54,6 +105,16 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             }, 1000);
         }
     });
+    function checkPickpocket() {
+        let equipment: any[] = [];
+        for (let i = 0; i < 3; ++i) {
+            const item = getOneTemplate(state().computer?.level as number);
+            console.log(item, "Item?");
+            equipment.push(item);
+        };
+        setPickpocketItems(equipment);
+        setShowPickpocketItems(true);
+    };
     const disengage = () => EventBus.emit("disengage");
     const showPlayer = () => {
         EventBus.emit("action-button-sound");
@@ -98,7 +159,9 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             default: return "3vh";
         };
     };
-    
+    function steal(item: Equipment): void {
+        setStealing({ stealing: true, item });
+    };
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(
@@ -173,10 +236,13 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
             )}</For>
         </div>
         </Show> 
-        <Show when={state().isStealth && state().computer}> 
+        <Show when={state().isStealth && state().computer && state().newComputerHealth > 0}> 
         <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "0vw" }} onClick={() => disengage()}>
             <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
-        </button> 
+        </button>
+        <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "10vw" }} onClick={checkPickpocket}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Steal</div>
+        </button>
         </Show>
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
@@ -196,5 +262,77 @@ export default function CombatUI({ state, game, settings, stamina, grace }: Prop
                 Create Prayer
             </div>
         </button> */}
+        <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
+        <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
+            <div class="modal">
+            <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
+                <div class="center creature-heading" style={{ height: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
+                    <h1 style={{margin:"5%"}}>Pickpocketing</h1>
+                    <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal the items of consequence?</h2>
+                    <For each={pickpocketItems()}>{(item) => (
+                        <PickpocketLoot item={item} setShow={setShowPickpocket} setHighlight={setHighlight} thievery={thievery} steal={steal} />
+                    )}</For>
+                </div>
+            </div>
+            <button class="highlight cornerBR" onClick={() => setPickpocketItems([])} style={{color:"red"}}>X</button>
+            </div>
+        </Show>
+       
+        {/* <Show when={thievery()}>
+            <button class="highlight super" onClick={() => setThieveryModal(true)} style={{ "color": "red", padding: "0.75em" }}>Steal {stealAnimation().item?.name}</button>
+        </Show> */}
+        <Show when={thieveryModal()}> 
+            <div class="modal">
+            <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
+                <div class="">
+                {/* <div class="center" style={font("1.5em")}>Do You Really Wish To Steal this Poor Merchant's  <span style={{ color: "gold" }}>{item?.name}?</span> <br /><br /><div>
+                    <img style={{ transform: "scale(1.25)" }} src={item?.imgUrl} alt={item?.name} onClick={() => sneed(item)} />
+                </div>
+                </div> */}
+                </div>
+                <br /><br /><br />
+                <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setThieveryModal(false)}>
+                    <p style={font("0.5em")}>X</p>
+                </button>
+            </div>
+            </div> 
+        </Show>
+
+        <Show when={showPickpocket() && highlight()}>
+            <div class="modal" onClick={() => setShowPickpocket(false)}>
+                <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
+            </div>
+        </Show>
+        {/* <Show when={stealAnimation().on}>
+            <div class="modal" style={{ "z-index": 99 }}>
+            <div class="button superCenter" style={{ "background-color": "black", width: "30%" }}>
+                <div class="wrap" style={{ margin: "5%" }}>
+                <div class="center" style={font("1.15em")}>Lets see if you can successfully swipe <span style={{ color: "gold" }}>{stealAnimation()?.item?.name}!</span> <br /><br /><div>
+                    <img style={{ transform: "scale(1.25)" }} src={stealAnimation()?.item?.imgUrl} alt={stealAnimation()?.item?.name} />
+                </div>
+                <div class="center" style={{...font("1em"), "margin-top": "7.5%"}}>
+                    {stealAnimation()?.dialog}
+                </div>
+                </div>
+                <Show when={stealAnimation().step !== 4} fallback={<>
+                    <br />
+                </>}>
+                <br /> Please Stand By <br />
+                <ThreeDots color="gold" width="30" />
+                <br />
+                <br />
+                <div class="gold">Press X to Cancel</div>
+                <br />
+                <button class="highlight cornerBR" onClick={() => setStealAnimation({...stealAnimation(), on:false, cancel: true})} 
+                    style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red", 
+                        "white-space": "normal"
+                    }}>
+                    <p style={font("0.5em")}>X</p>
+                </button>
+                </Show>
+                </div>
+            </div>
+            </div>
+        </Show> */}
     </div>;
 };

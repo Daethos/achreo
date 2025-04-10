@@ -1954,34 +1954,34 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={specialMerchant()}>
             <div class="modal">
-            <div class="superCenter creature-heading" style={{ position: "absolute",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",overflow: "scroll","text-align": "center", "scrollbar-width":"none", width: "25%" }}>
+            <div class="superCenter creature-heading textGlow" style={{ position: "absolute",background: "#000",border: "0.1em solid gold","border-radius": "0.25em","box-shadow": "0 0 0.5em #FFC700",height:"80%", overflow: "scroll","text-align": "center", "scrollbar-width":"none", width: "25%" }}>
                 {combat().computer?.name === "Traveling Kyrisian" && ( <> 
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button></>)}
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button></>)}
                 {combat().computer?.name === "Traveling Sedyreal" && ( <> 
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
                 </>)}
                 {combat().computer?.name === "Ashreu'ul" && ( <> 
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
-                    {/* <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button> */}
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button>
                 </>)}
                 {combat().computer?.name === "Kreceus" && ( <> 
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
-                    {/* <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
-                    <button class="highlight animate center" style={specialMerchantStyle("gradient 1.5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button> */}
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("armor"); setSpecialMerchant(false);}}>Armor + Shields</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("cloth"); setSpecialMerchant(false);}}>Soft Cloth</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("physical-weapon"); setSpecialMerchant(false);}}>Physical Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("magical-weapon"); setSpecialMerchant(false);}}>Other Weapons</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("jewelry"); setSpecialMerchant(false);}}>Jewelry</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("", "Plate-Mail"); setSpecialMerchant(false);}}>Plate Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 2.5s ease infinite")} onClick={async () => {await getLoot("", "Chain-Mail"); setSpecialMerchant(false);}}>Chain Armor</button>
+                    <button class="highlight animate center" style={specialMerchantStyle("gradient 5s ease infinite")} onClick={async () => {await getLoot("", "Leather-Mail"); setSpecialMerchant(false);}}>Leather Mail</button>
                 </>)}
             </div>
             <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setSpecialMerchant(false)}>x</button>

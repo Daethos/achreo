@@ -390,7 +390,7 @@ export default function PhaserGame (props: IProps) {
                 let item = items[i];
                 let gold: number = 0, silver: number = 0;
                 switch (item.rarity) {
-                    case "Common": silver = 0.1; break;
+                    case "Common": silver = 10; break;
                     case "Uncommon": gold = 1; break;
                     case "Rare": gold = 3; break;
                     case "Epic": gold = 12; break;
@@ -409,7 +409,7 @@ export default function PhaserGame (props: IProps) {
             const clean = { ...game().inventory, inventory };
             const update = {
                 ...props.ascean(),
-                currency: currency,
+                currency,
                 health: {
                     current: combat().newPlayerHealth,
                     max: combat().playerHealth
@@ -1332,6 +1332,9 @@ export default function PhaserGame (props: IProps) {
             
             EventBus.removeListener("purchase-item");
             EventBus.removeListener("persuasion");
+            EventBus.removeListener("sell-items");
+            EventBus.removeListener("buy-items");
+            EventBus.removeListener("pocket-item");
             
             EventBus.removeListener("record-statistics");
             EventBus.removeListener("record-loss");

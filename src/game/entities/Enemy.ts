@@ -869,7 +869,11 @@ export default class Enemy extends Entity {
                         } else {
                             this.stateMachine.setState(States.IDLE);
                         };
-                        if (this.isCurrentTarget === true && !this.inCombat) this.scene.hud.clearNonAggressiveEnemy();
+                        if (this.isCurrentTarget === true && !this.inCombat) {
+                            this.scene.hud.clearNonAggressiveEnemy();
+                            this.scene.player.currentTarget = undefined;
+                            this.scene.player.removeHighlight();
+                        };
                     };
                 } else if (other.gameObjectB && (other.gameObjectB.name === NAME || other.gameObjectB.name === "party")) {
                     this.touching = this.touching.filter((target) => target !== other.gameObjectB);
@@ -1636,6 +1640,7 @@ export default class Enemy extends Entity {
     onAwarenessEnter = () => {
         this.setVelocity(0);
         this.enemyAnimation();
+        this.currentTargetCheck();
         if (this.isCurrentTarget) {
             this.scene.hud.showDialog(true);
         };

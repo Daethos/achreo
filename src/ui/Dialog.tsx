@@ -528,6 +528,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function checkCondition(conditions: Condition) {
         let { key, operator, value } = conditions;
+        // console.log(key, operator, value, "Key --- Operator --- Value");
         switch (operator) {
             case ">":
                 return ascean()[key] > value;
@@ -571,7 +572,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         const enemyQuests = getQuests(enemy.name);
         const prospectiveQuests = [];
         if (enemyQuests.length === 0) return;
-        const playerQuests = new Set(quest.map(q => q.title)); // Convert player quests to a set for easy lookup
+        // const playerQuests = new Set(quest.map(q => q.title)); // Convert player quests to a set for easy lookup
         const questGiverCheck = (enemyQuest: any) => {
             let check = true;
             if (enemyQuest.requirements?.conditions !== undefined) {
@@ -585,7 +586,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             return check;
         };
         for (const enemyQuest of enemyQuests) {
-            if (!playerQuests.has(enemyQuest.title) || questGiverCheck(enemyQuest)) { // && enemyQuest.giver !== computer().name
+            if (questGiverCheck(enemyQuest)) { // && enemyQuest.giver !== computer().name || !playerQuests.has(enemyQuest.title) || 
                 prospectiveQuests.push(enemyQuest);
             };
         };

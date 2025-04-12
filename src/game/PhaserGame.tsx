@@ -1,7 +1,7 @@
 import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from "solid-js";
 import { createStore } from "solid-js/store";
 import Ascean from "../models/ascean";
-import Equipment, { getOneDetermined, getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
+import Equipment, { getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
 import Settings from "../models/settings";
 import Statistics from "../utility/statistics";
 import StartGame from "./main";

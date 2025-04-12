@@ -307,6 +307,7 @@ export default class Enemy extends Entity {
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
+                this.scene.hud.showDialog(this.checkTouching()); 
                 if (this.scene.player) {
                     const newEnemy = this.isNewEnemy(this.scene.player);
                     if (newEnemy) this.scene.player.addEnemy(this);
@@ -803,6 +804,10 @@ export default class Enemy extends Entity {
         } else {
             return false;
         };
+    };
+
+    checkTouching = (): boolean => {
+        return this.scene.player.touching.some((t: any) => t.particleID === this.particleID);
     };
 
     collision = (enemySensor: any) => {
@@ -1631,14 +1636,18 @@ export default class Enemy extends Entity {
     onAwarenessEnter = () => {
         this.setVelocity(0);
         this.enemyAnimation();
-        this.scene.hud.showDialog(true);
+        if (this.isCurrentTarget) {
+            this.scene.hud.showDialog(true);
+        };
     };
     onAwarenessUpdate = (_dt: number) => {
         this.enemyAnimation();
     };
     onAwarenessExit = () => {
         this.enemyAnimation();
-        this.scene.hud.showDialog(false);
+        if (this.isCurrentTarget) {
+            this.scene.hud.showDialog(false);
+        };
     };
 
     onChaseEnter = () => {

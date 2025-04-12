@@ -15,8 +15,6 @@ import GraceModal from "../components/GraceModal";
 import { createHealthDisplay } from "../utility/health";
 import Settings from "../models/settings";
 import { useResizeListener } from "../utility/dimensions";
-import { ThreeDots } from "solid-spinner";
-import Thievery from "./Thievery";
 import Equipment, { getOneTemplate } from "../models/equipment";
 import Ascean from "../models/ascean";
 import Pickpocket from "./Pickpocket";
@@ -279,18 +277,10 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <button class="highlight cornerBR" onClick={() => setPickpocketItems([])} style={{color:"red"}}>X</button>
             </div>
         </Show>
-       
-        {/* <Show when={thievery()}>
-            <button class="highlight super" onClick={() => setThieveryModal(true)} style={{ "color": "red", padding: "0.75em" }}>Steal {stealAnimation().item?.name}</button>
-        </Show> */}
         <Show when={thieveryModal()}> 
             <div class="modal">
             <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
                 <div class="">
-                {/* <div class="center" style={font("1.5em")}>Do You Really Wish To Steal this Poor Merchant's  <span style={{ color: "gold" }}>{item?.name}?</span> <br /><br /><div>
-                    <img style={{ transform: "scale(1.25)" }} src={item?.imgUrl} alt={item?.name} onClick={() => sneed(item)} />
-                </div>
-                </div> */}
                 </div>
                 <br /><br /><br />
                 <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setThieveryModal(false)}>
@@ -305,36 +295,5 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
             </div>
         </Show>
-        {/* <Show when={stealAnimation().on}>
-            <div class="modal" style={{ "z-index": 99 }}>
-            <div class="button superCenter" style={{ "background-color": "black", width: "30%" }}>
-                <div class="wrap" style={{ margin: "5%" }}>
-                <div class="center" style={font("1.15em")}>Lets see if you can successfully swipe <span style={{ color: "gold" }}>{stealAnimation()?.item?.name}!</span> <br /><br /><div>
-                    <img style={{ transform: "scale(1.25)" }} src={stealAnimation()?.item?.imgUrl} alt={stealAnimation()?.item?.name} />
-                </div>
-                <div class="center" style={{...font("1em"), "margin-top": "7.5%"}}>
-                    {stealAnimation()?.dialog}
-                </div>
-                </div>
-                <Show when={stealAnimation().step !== 4} fallback={<>
-                    <br />
-                </>}>
-                <br /> Please Stand By <br />
-                <ThreeDots color="gold" width="30" />
-                <br />
-                <br />
-                <div class="gold">Press X to Cancel</div>
-                <br />
-                <button class="highlight cornerBR" onClick={() => setStealAnimation({...stealAnimation(), on:false, cancel: true})} 
-                    style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red", 
-                        "white-space": "normal"
-                    }}>
-                    <p style={font("0.5em")}>X</p>
-                </button>
-                </Show>
-                </div>
-            </div>
-            </div>
-        </Show> */}
     </div>;
 };

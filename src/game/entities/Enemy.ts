@@ -689,8 +689,10 @@ export default class Enemy extends Entity {
         this.currentWeaponCheck();
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
+        this.computerCombatSheet.parrySuccess = false;
         this.computerCombatSheet.rollSuccess = false;
         this.computerCombatSheet.computerEnemyParrySuccess = false;
+        this.computerCombatSheet.computerEnemyCriticalSuccess = false;
         this.computerCombatSheet.computerWin = computerWin;
         if (e.newComputerEnemyHealth <= 0 && this.computerCombatSheet.computerWin) {
             this.computerCombatSheet.computerWin = false;

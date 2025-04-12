@@ -85,6 +85,7 @@ export default function Pickpocket({ ascean, combat, setThievery, stealing, setS
             ratio = Math.min(ratio, 2);
             ratio = Math.max(0.5, ratio);
             player *= ratio;
+            Math.round(player);
             const success = player > enemy;
             const value = checkStatisticalValue(item.rarity as string);
             setThieveryAnimation({ ...thieveryAnimation(), item, on: true, rolling: true, step: 1 });

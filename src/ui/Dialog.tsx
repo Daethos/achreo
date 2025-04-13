@@ -363,7 +363,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [etchings, setEtchings] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
-    const [forgings, setForgings] = createSignal<{show:boolean;items:Equipment[];}>({show:false,items:[]});
+    const [forgings, setForgings] = createSignal<{highlight:string;show:boolean;items:Equipment[];}>({highlight:"",show:false,items:[]});
     const [reforge, setReforge] = createSignal<{show:boolean;item:Equipment|undefined;cost:number;}>({show:false,item:undefined,cost:0});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [rewardItem, setRewardItem] = createSignal<{show:boolean,item:any}>({show:false,item:undefined});
@@ -506,7 +506,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     function checkForgings() {
         let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket]
             .filter((i: Equipment) => !i.rarity?.includes("Default"));
-        setForgings({show:true,items});
+        setForgings({...forgings(),show:true,items});
     };
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
@@ -1172,12 +1172,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         } else { // On Player
             EventBus.emit("fetch-ascean", ascean()._id);
         };
+        setForgings({...forgings(),highlight:reforge().item?._id as string});
         setReforge({show:false,item:undefined,cost:0});
         setSans([]);
         EventBus.emit("purchase-sound");
         setTimeout(() => {
             EventBus.emit("update-currency", currency);
             checkForgings();
+            setTimeout(() => {
+                setForgings({
+                    ...forgings(),
+                    highlight: ""
+                });
+            }, 1500);
         }, 500);
     };
 
@@ -1382,9 +1389,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     {forgings().items.concat(game().inventory.inventory).map((item: any) => {
                         if (item === undefined) return;
                         return (
-                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
+                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
                                 <img src={item?.imgUrl} alt={item?.name} />
-                                <span style={{ "font-size":"0.75em" }}>Reforge</span>
+                                <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
                             </div>
                         );
                     })}

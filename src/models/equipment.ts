@@ -121,6 +121,7 @@ async function defaultMutate(equipment: Equipment[]) {
 function determineMutation(item: Equipment, sans: string[]): Equipment | undefined {
     try {
         const base = getSpecificItem(item);
+        // console.log(base, "Base Item");
         for (const attribute of ATTRIBUTES) {
             if (sans.includes(attribute)) continue;
             if (base![attribute as keyof typeof base] > 0) {

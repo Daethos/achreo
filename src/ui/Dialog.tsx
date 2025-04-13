@@ -1276,7 +1276,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("update-pause", false);
         EventBus.emit("show-dialog-false");
     };
-
+    function checkConditions() {
+        const name = combat().computer?.name.split("(Converted)")[0];
+        const enemies = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`})
+        return enemies;
+    };
     function checkReward(item: string | Equipment) {
         if (typeof item === "string") {
             return item;
@@ -1501,7 +1505,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "conditions" ? (
                     <>
-                    <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of${ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[combat().computer?.name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`}) }."`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
+                    <Typewriter stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of${checkConditions()}."`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                     <br />
                     {rep()?.reputation >= 25 && party() ? (
                         <div style={{ color: "gold" }}>

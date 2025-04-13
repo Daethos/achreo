@@ -640,7 +640,7 @@ export default class PlayerMachine {
         };
 
         this.player.specialCombatText = this.scene.showCombatText("Instinct", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
-        this.scene.hud.logger.log(`${this.player.ascean.name}"s instinct leads them to ${value}.`);
+        this.scene.hud.logger.log(`${this.player.ascean.name}'s instinct leads them to ${value}.`);
         this.player.prevInstinct = instinct;
         (this as any)[key].setState(value);
         if (key === "positiveMachine") this.stateMachine.setState(States.CHASE);

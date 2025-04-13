@@ -675,7 +675,7 @@ export default function PhaserGame (props: IProps) {
         const newStats = recordCombat(stat);
         const newReputation = recordCombatReputation(record.computer as Ascean);
         const newSkills = recordSkills(record.skillData);
-        recordQuestUpdate(record.computer as Ascean);
+        if (record.computer) recordQuestUpdate(record.computer as Ascean);
         let silver: number = 0, gold: number = 0, experience: number = levelSheet.opponentExp, firewater = { ...props.ascean().firewater };
         let computerLevel: number = levelSheet.opponent;
         if (levelSheet.avarice === true) experience *= 1.2;

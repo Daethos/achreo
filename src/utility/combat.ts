@@ -328,7 +328,7 @@ export function criticalCompiler(player: boolean, ascean: Ascean, critChance: nu
         } else {
             const skills = ascean.skills;
             let skill: number = 1;
-            if (weapon.type === "Spell") {
+            if (weapon.type === "Ancient Shard") {
                 skill = skills[weapon.damageType?.[0] as keyof typeof skills];
             } else {
                 skill = skills[weapon.type as keyof typeof skills];
@@ -1344,9 +1344,9 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     // ==================== STATISTIC LOGIC ====================
     combat.typeAttackData.push(weapons[0]?.attackType as string, weapons[1]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = weapons[0]?.type === "Spell" ? weapons[0]?.damageType?.[0] : weapons[0]?.type;
+    const skill = weapons[0]?.type === "Ancient Shard" ? weapons[0]?.damageType?.[0] : weapons[0]?.type;
     combat.skillData.push(skill as string);
-    const skillTwo = weapons[1]?.type === "Spell" ? weapons[1]?.damageType?.[0] : weapons[1]?.type;
+    const skillTwo = weapons[1]?.type === "Ancient Shard" ? weapons[1]?.damageType?.[0] : weapons[1]?.type;
     combat.skillData.push(skillTwo as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
     // ==================== STATISTIC LOGIC ====================
@@ -1545,7 +1545,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === "Spell" ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
+    const skill = combat.weapons[0]?.type === "Ancient Shard" ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
     combat.skillData.push(skill as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
     combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    

@@ -1385,8 +1385,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 {forgings().show ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
-                    {forgings().items.concat(game().inventory.inventory).map((item: any) => {
+                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
+                    
+                    <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
                         if (item === undefined) return;
                         return (
                             <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
@@ -1394,7 +1395,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
                             </div>
                         );
-                    })}
+                    }}</For>
+                   
+                    {/* {forgings().items.concat(game().inventory.inventory).map((item: any) => {
+                        if (item === undefined) return;
+                        return (
+                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
+                                <img src={item?.imgUrl} alt={item?.name} />
+                                <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
+                            </div>
+                        );
+                    })} */}
                     </div>
                     </div> ) 
                 : forgings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}

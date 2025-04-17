@@ -1,5 +1,6 @@
 import { EventBus } from "../EventBus";
 import Equipment from "../../models/equipment";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 export const { Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -56,7 +57,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         const lootSensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "lootSensor" });
         this.setExistingBody(lootSensor);
         this.setStatic(true);
-        // this.setCollisionCategory(ENTITY_FLAGS.LOOT);
+        this.setCollisionCategory(ENTITY_FLAGS.LOOT);
         this.scene.matterCollision.addOnCollideStart({
             objectA: [lootSensor],
             callback: (other: any) => {

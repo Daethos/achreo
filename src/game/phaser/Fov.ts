@@ -61,6 +61,8 @@ export default class Fov {
                 if (tile2) updateTileAlpha(desiredAlpha, dt, tile2);
                 const tile3 = this.layers[2].getTileAt(x, y);
                 if (tile3) updateTileAlpha(desiredAlpha, dt, tile3);
+                const tile4 = this.layers[3].getTileAt(x, y);
+                if (tile4) updateTileAlpha(desiredAlpha, dt, tile4);
             };
         };
         if (this.scene.enemies.length > 0) this.updateEnemies();
@@ -96,6 +98,7 @@ export default class Fov {
 
                 const tile2 = this.layers[1].getTileAt(x, y);
                 const tile3 = this.layers[2].getTileAt(x, y);
+                const tile4 = this.layers[3].getTileAt(x, y);
                 if (tile2) {
                     tile2.desiredAlpha = alpha;
                     tile2.seen = true;
@@ -105,6 +108,11 @@ export default class Fov {
                     tile3.desiredAlpha = alpha;
                     tile3.seen = true;
                     tile3.tint = 0xffffff;
+                };
+                if (tile4) {
+                    tile4.desiredAlpha = alpha;
+                    tile4.seen = true;
+                    tile4.tint = 0xffffff;
                 };
             }
         );

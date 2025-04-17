@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { EventBus } from "../EventBus";
 import { vibrate } from "../phaser/ScreenShake";
 import { Compiler } from "../../utility/ascean";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const colliderWidth = 20; 
@@ -62,6 +63,7 @@ export default class DM extends Entity {
         this.setFixedRotation();
         this.npcSensor = npcSensor;
         this.npcCollision(npcSensor); 
+        this.setCollisionCategory(ENTITY_FLAGS.NPC);
         this.setStatic(true);
         this.setTint(0x0000FF);
         this.flipX = true;

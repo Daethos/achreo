@@ -26,6 +26,7 @@ import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.mi
 import { PARTY_OFFSET } from "../../utility/party";
 import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 
 export class Game extends Scene {
     overlay: Phaser.GameObjects.Graphics;
@@ -118,6 +119,17 @@ export class Game extends Scene {
             // layer?.setCollisionCategory(ENTITY_FLAGS.WORLD);
             // layer?.setCollidesWith([ENTITY_FLAGS.PLAYER, ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.PARTY])
             this.matter.world.convertTilemapLayer(layer!);
+            layer?.forEachTile(tile => {
+                if ((tile.physics as any).matterBody) {
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
+                    (tile.physics as any).matterBody.body.collisionFilter = {
+                        category: ENTITY_FLAGS.WORLD,
+                        mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
+                        group: 0, // -1, // Negative group prevents self-collisions
+                    };
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
+                };
+            });
             if (index < 5) return;
             layer?.setDepth(5);
         });
@@ -156,8 +168,12 @@ export class Game extends Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        if (this.hud.prevScene === "Underground") this.player.setPosition(1410,130);
-        if (this.hud.prevScene === "Tutorial") this.player.setPosition(38,72);
+        if (this.hud.prevScene === "Underground") {
+            this.player.setPosition(1410, 130);
+        };
+        if (this.hud.prevScene === "Tutorial") {
+            this.player.setPosition(38, 72);
+        };
         map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
             const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
             this.enemies.push(e);
@@ -207,7 +223,7 @@ export class Game extends Scene {
                 this.party.push(p);
                 if (this.hud.prevScene === "Underground") p.setPosition(1410, 130);
                 if (this.hud.prevScene === "Tutorial") p.setPosition(38, 72);
-                if (this.hud.prevScene === "") p.setPosition(200 + PARTY_OFFSET[i].x, 200 + PARTY_OFFSET[i].y);
+                if (this.hud.prevScene === "") p.setPosition(this.player.x + (PARTY_OFFSET[i].x / 2), this.player.y + (PARTY_OFFSET[i].y / 2));
             };
         };
 
@@ -236,8 +252,10 @@ export class Game extends Scene {
                     volume: 0,
                     duration: 4000,
                     onComplete: () => {
-                        this.musicNight.stop();
-                        this.musicDay.play("", { volume: this.hud.settings.volume });
+                        if (!this.player.isStealthing) {
+                            this.musicNight.stop();
+                            this.musicDay.play("", { volume: this.hud.settings.volume });
+                        };
                         this.aoePool.shrink(15);
                     }
                 });
@@ -276,8 +294,10 @@ export class Game extends Scene {
                     volume: 0,
                     duration: 4000,
                     onComplete: () => {
-                        this.musicDay.stop();
-                        this.musicNight.play("", { volume: this.hud.settings.volume });
+                        if (!this.player.isStealthing) {
+                            this.musicDay.stop();
+                            this.musicNight.play("", { volume: this.hud.settings.volume });
+                        };
                     }
                 });
             } else {
@@ -728,6 +748,7 @@ export class Game extends Scene {
         this.setCameraOffset();
         this.checkEnvironment(this.player);
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
+        // console.log(this.player.position);
     };
 
     setCameraOffset = () => {

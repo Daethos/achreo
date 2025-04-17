@@ -17,6 +17,7 @@ import DM from "../entities/DM";
 import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 export class Tutorial extends Phaser.Scene {
@@ -74,6 +75,15 @@ export class Tutorial extends Phaser.Scene {
         [layer0, layer1].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
+            layer?.forEachTile(tile => {
+                if ((tile.physics as any).matterBody) {
+                    (tile.physics as any).matterBody.body.collisionFilter = {
+                        category: ENTITY_FLAGS.WORLD,
+                        mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
+                        group: 0, // -1, // Negative group prevents self-collisions
+                    };
+                };
+            });
         });
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -88,7 +98,9 @@ export class Tutorial extends Phaser.Scene {
             const type = pillar.properties?.[0].value;
             const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
             const sensor = Bodies.circle(pillar.x, pillar.y, 16, { isSensor: true, label: `${type}PillarSensor` });
+            graphics.setOrigin(0.5);
             graphics.setExistingBody(sensor);
+            graphics.setCollisionCategory(ENTITY_FLAGS.WORLD);
             const body = 
                 type === "game" ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy, and trade with local merchants to yield better equipment and improve yourself.` :
                 type === "movement" ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
@@ -104,12 +116,22 @@ export class Tutorial extends Phaser.Scene {
             this.matterCollision.addOnCollideStart({
                 objectA: [sensor],
                 callback: (other: any) => {
+                    // console.log(other.gameObjectB, "Game Object?");
                     if (other.gameObjectB?.name !== "player") return;
                     EventBus.emit("alert", { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: "Close", extra });
                 },
                 context: this
             });
         });
+        
+        // if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
+        //     EventBus.emit("alert", { 
+        //         header: "Exit", 
+        //         body: `You are near the exit. \n\n Would you like to head back to the world?`, 
+        //         delay: 3000, 
+        //         key: "Exit World"
+        //     });
+        // };
         // for (let i = 0; i < 12; i++) {
         //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
         //     this.enemies.push(e);

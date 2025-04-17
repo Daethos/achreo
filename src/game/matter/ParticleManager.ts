@@ -7,6 +7,7 @@ import Enemy from "../entities/Enemy";
 import Entity, { ENEMY } from "../entities/Entity";
 import { Play } from "../main";
 import Party from "../entities/PartyComputer";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
@@ -80,6 +81,8 @@ export class Particle {
         this.velocity = this.setVelocity(action);
         const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 
+        this.effect.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
+        // this.effect.setCollidesWith(ENTITY_FLAGS.ALL);
         scene.add.existing(this.effect);
         this.sensorListener(player, effectSensor);
         this.effect.setVisible(true);
@@ -132,8 +135,8 @@ export class Particle {
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
-                };
-                if (other.bodyB.label === "playerCollider" && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "player" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                }; // (other.bodyB.label === "body" || other.bodyB.label === "legs") && 
+                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "player" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);

@@ -5,7 +5,7 @@ import { Compiler } from "../../utility/ascean";
 import { ENEMY_ATTACKS } from "../../utility/combatTypes";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { PARTY_SPECIAL } from "../../utility/party";
-import { PLAYER } from "../../utility/player";
+import { ENEMY_ENEMIES, PLAYER } from "../../utility/player";
 import { EventBus } from "../EventBus";
 import { Play } from "../main";
 import Beam from "../matter/Beam";
@@ -116,6 +116,7 @@ export default class Party extends Entity {
     enemies: ENEMY[] | any[] = [];
     partyPosition: number;
     hurtTime: number = 0;
+    potentialEnemies: string[] = []
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
@@ -152,6 +153,7 @@ export default class Party extends Entity {
         this.spriteShield.setVisible(false);
         this.playerVelocity = new Phaser.Math.Vector2();
         this.speed = this.startingSpeed(ascean);
+        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
         let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
@@ -166,8 +168,8 @@ export default class Party extends Entity {
         });
         this.setExistingBody(compoundBody);                                    
         this.sensor = partySensor;
-        // this.setCollisionCategory(ENTITY_FLAGS.PARTY);
-        // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.WORLD]);
+        this.setCollisionCategory(ENTITY_FLAGS.PARTY);
+        this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
         this.aoeMask = ENTITY_FLAGS.PARTY;
@@ -363,7 +365,7 @@ export default class Party extends Entity {
                 if (other.gameObjectB?.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
                 if (other.gameObjectB?.name === "enemy") this.touching.push(other.gameObjectB);
-                if (this.isValidEnemyCollision(other) || this.playerInCombat(other.gameObjectB)) {
+                if ((this.isValidEnemyCollision(other) || this.playerInCombat(other.gameObjectB)) && this.potentialEnemies.includes(other.gameObjectB.ascean.name)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
                     this.targets.push(other.gameObjectB);

@@ -332,6 +332,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             label
         });
         this.setExistingBody(sensor);
+        this.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
         this.setStatic(true);
         this.sensor = sensor;
         return sensor;

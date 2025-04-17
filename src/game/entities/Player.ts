@@ -149,20 +149,51 @@ export default class Player extends Entity {
         this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PlayerMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);
-        let playerCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
-            isSensor: false, label: "playerCollider", 
+        // let playerColliderFull = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
+        //     isSensor: false, label: "playerCollider", 
+        // }); // Y + 10 For Platformer
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena"
+        let playerColliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, { 
+            isSensor: !underground,
+            label: "body", 
+            // collisionFilter: {
+            //     category: ENTITY_FLAGS.UPPER_BODY, 
+            //     mask: ENTITY_FLAGS.ENEMY,
+            //     group: 0    
+            // }
+        }); // Y + 10 For Platformer
+        let playerColliderLower = Bodies.rectangle(this.x, this.y + 18, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, { 
+            isSensor: underground, 
+            label: "legs", 
+            // collisionFilter: {
+            //     category: ENTITY_FLAGS.LEGS, 
+            //     // mask: ENTITY_FLAGS.WORLD,
+            //     group: 0
+            // }
         }); // Y + 10 For Platformer
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "playerSensor" }); // Y + 2 For Platformer
+        playerColliderLower.depth = 1;
+        // playerColliderLower.collisionFilter = {...playerColliderLower.collisionFilter, category: ENTITY_FLAGS.PLAYER, mask: [ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC]};
+        // // playerColliderLower.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC]);
+
+        // playerColliderUpper.collisionFilter = {...playerColliderUpper.collisionFilter, category: ENTITY_FLAGS.PLAYER, mask: [ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.WORLD]};
+        // console.log(playerColliderLower, playerColliderUpper, "Colliders?");
+        // playerColliderUpper.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC, ENTITY_FLAGS.WORLD]);
+
         const compoundBody = Body.create({
-            parts: [playerCollider, playerSensor],
+            parts: [playerSensor, playerColliderLower, playerColliderUpper],
             frictionAir: 0.5,
             restitution: 0.2,
         });
-        this.setExistingBody(compoundBody);                                    
+        this.setExistingBody(compoundBody);
         this.sensor = playerSensor;
-        this.collider = playerCollider;
-        // this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
+        // this.collider = playerColliderFull;
+        
+        this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
+        this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.LOOT | ENTITY_FLAGS.NPC | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
+
         // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC, ENTITY_FLAGS.WORLD]);
+        
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
         this.aoeMask = ENTITY_FLAGS.PLAYER;
@@ -1043,14 +1074,14 @@ export default class Player extends Entity {
                         key: "Exit Underground"
                     });
                 };
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
-                    EventBus.emit("alert", { 
-                        header: "Exit", 
-                        body: `You are near the exit. \n\n Would you like to head back to the world?`, 
-                        delay: 3000, 
-                        key: "Exit World"
-                    });
-                };
+                // if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
+                //     EventBus.emit("alert", { 
+                //         header: "Exit", 
+                //         body: `You are near the exit. \n\n Would you like to head back to the world?`, 
+                //         delay: 3000, 
+                //         key: "Exit World"
+                //     });
+                // };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "Enter Tutorial") {
                     EventBus.emit("alert", { 
                         header: "Tutorial", 

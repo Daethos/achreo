@@ -287,8 +287,9 @@ export default class Enemy extends Entity {
         this.setFixedRotation();
         this.enemyStateListener();
         this.enemySensor = enemySensor;
-        // this.setCollisionCategory(ENTITY_FLAGS.ENEMY);
-        // this.setCollidesWith([ENTITY_FLAGS.PLAYER, ENTITY_FLAGS.PARTY, ENTITY_FLAGS.WORLD]);
+        this.setCollisionCategory(ENTITY_FLAGS.ENEMY);
+        // this.setCollisionGroup(-1);
+        this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.PLAYER | ENTITY_FLAGS.PARTY | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
         this.aoeMask = ENTITY_FLAGS.ENEMY;
         this.collision(enemySensor);
         

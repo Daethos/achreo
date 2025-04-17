@@ -23,6 +23,7 @@ import { ObjectPool } from "../phaser/ObjectPool";
 import ScrollingCombatText, { BONE } from "../phaser/ScrollingCombatText";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 
 export class Underground extends Scene {
     animatedTiles: any[];
@@ -65,6 +66,7 @@ export class Underground extends Scene {
     groundLayer?: any;
     layer2?: any;
     layer3?: any;
+    layer4?: any;
     north: any;
     south: any;
     east: any;
@@ -103,18 +105,32 @@ export class Underground extends Scene {
         const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);
         let layer1 = map.createLayer("Floors", castleInterior as Tilemaps.Tileset, 0, 0);
-        let layer2 = map.createLayer("Stairs", castleInterior as Tilemaps.Tileset, 0, 0);
-        let layer3 = map.createLayer("Decorations", castleDecorations as Tilemaps.Tileset, 0, 0);
+        let layer2 = map.createLayer("Back", castleInterior as Tilemaps.Tileset, 0, 0);
+        let layer3 = map.createLayer("Stairs", castleInterior as Tilemaps.Tileset, 0, 0);
+        let layer4 = map.createLayer("Decorations", castleDecorations as Tilemaps.Tileset, 0, 0);
         layer1?.setCollisionByProperty({ collides: true });
-        [layer1, layer2, layer3].forEach((layer) => {
+        [layer1, layer2, layer3, layer4].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
+            layer?.forEachTile(tile => {
+                if ((tile.physics as any).matterBody) {
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
+                    (tile.physics as any).matterBody.body.collisionFilter = {
+                        category: ENTITY_FLAGS.WORLD,
+                        mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
+                        group: 0, // -1, // Negative group prevents self-collisions
+                    };
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
+                };
+            });
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
         layer2?.setDepth(6);
+        layer3?.setDepth(6);
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
+        this.layer4 = layer4;
         this.layer3.forEachTile((tile: any) => {
             if (tile?.properties && tile.properties?.key === "north") {
                 this.north = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
@@ -128,8 +144,9 @@ export class Underground extends Scene {
             if (tile?.properties && tile.properties?.key === "west") {
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
+            
         });
-        this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
+        this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3, this.layer4]);
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;

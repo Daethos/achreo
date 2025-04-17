@@ -23,6 +23,7 @@ import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import Party from "../entities/PartyComputer";
 import { PARTY_OFFSET } from "../../utility/party";
 import { AoEPool } from "../phaser/AoE";
+import { ENTITY_FLAGS } from "../phaser/Collision";
 
 export class Arena extends Phaser.Scene {
     sceneKey: string = "";
@@ -65,6 +66,7 @@ export class Arena extends Phaser.Scene {
     groundLayer?: any;
     layer2?: any;
     layer3?: any;
+    layer4?: any;
     north: any;
     south: any;
     east: any;
@@ -107,19 +109,32 @@ export class Arena extends Phaser.Scene {
         const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);
         let layer1 = map.createLayer("Floors", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer2 = map.createLayer("Decorations", castleDecorations as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer3 = map.createLayer("Top Layer", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer2 = map.createLayer("Back", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer3 = map.createLayer("Decorations", castleDecorations as Phaser.Tilemaps.Tileset, 0, 0);
+        let layer4 = map.createLayer("Top Layer", castleInterior as Phaser.Tilemaps.Tileset, 0, 0);
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
+            layer?.forEachTile(tile => {
+                if ((tile.physics as any).matterBody) {
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
+                    (tile.physics as any).matterBody.body.collisionFilter = {
+                        category: ENTITY_FLAGS.WORLD,
+                        mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
+                        group: 0, // -1, // Negative group prevents self-collisions
+                    };
+                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
+                };
+            });
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
         layer3?.setDepth(6);
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
-        this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3]);
+        this.layer4 = layer4;
+        this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3, this.layer4]);
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;

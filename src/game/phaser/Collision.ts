@@ -6,8 +6,11 @@ export enum ENTITY_FLAGS {
     LOOT = 1 << 3,    // 8
     NPC = 1 << 4,     // 16
     WORLD = 1 << 5,   // 32
+    LEGS = 1 << 6,    // 64
+    UPPER_BODY = 1 << 7, // 128
+    PARTICLES = 1 << 8,
     GOOD = PLAYER | PARTY,
-    ENTITY = PLAYER | ENEMY | PARTY,
+    ENTITY = UPPER_BODY | ENEMY | PARTY,
     ALL = PLAYER | ENEMY | PARTY | LOOT | NPC | WORLD
 };
 

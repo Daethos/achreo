@@ -31,8 +31,8 @@ export const PLAYER = {
     },
     COLLIDER: {
         DISPLACEMENT: 16,
-        HEIGHT: 32,
-        WIDTH: 16,
+        HEIGHT: 32, // 32,
+        WIDTH: 12, // 16,
     },
     DISTANCE: {
         MIN: 0,

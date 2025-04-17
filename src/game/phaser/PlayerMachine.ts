@@ -975,19 +975,14 @@ export default class PlayerMachine {
             body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
             body.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-            
             legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
         } else {
             legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
-
             body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
         };
         legs.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-    
         legs.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.player.frameCount = 0;
@@ -1009,22 +1004,16 @@ export default class PlayerMachine {
             body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
             body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
-
             body.vertices[0].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
             body.vertices[1].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-
             legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
         } else {
             legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
-
             body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
         };
         legs.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-    
         legs.vertices[0].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
     };
@@ -1036,7 +1025,6 @@ export default class PlayerMachine {
         if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
         this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
         const body = (this.player.body as any).parts[3];
-        // console.log((this.player.body as any).parts);
         if (!body.isSensor) {
             body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -1045,8 +1033,6 @@ export default class PlayerMachine {
         } else {
             body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
         };
         (this.player.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
@@ -1070,22 +1056,20 @@ export default class PlayerMachine {
         this.player.computerAction = false;
         const body = (this.player.body as any).parts[3];
         if (!body.isSensor) {
-            (this.player.body as any).parts[3].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            (this.player.body as any).parts[3].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            (this.player.body as any).parts[3].vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            (this.player.body as any).parts[3].vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
         } else {
             body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
             body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            // body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
-        }
+        };
         (this.player.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
         (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
         (this.player.body as any).parts[2].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         (this.player.body as any).parts[2].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        (this.player.body as any).parts[3].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        (this.player.body as any).parts[3].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
     };
 
     onThrustEnter = () => {

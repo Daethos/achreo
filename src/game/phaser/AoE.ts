@@ -120,10 +120,6 @@ export class AoEPool {
             this.typePools.set(aoe.name, []);
         };
         this.typePools.get(aoe.name)!.push(aoe);
-        // console.log(`[Pool] Released ${aoe.name}`, {
-        //     activeCount: this.activeAoEs.length,
-        //     typePoolSize: this.typePools.get(aoe.name)?.length || 0
-        // });
     };
 
     releaseAll() {
@@ -349,7 +345,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             target.x -= offsetX / 5;
             target.y -= offsetY / 5;
         };
-        // this.scene.rotateTween(this, this.count, true);
+        this.scene.rotateTween(this, 1, true); // this.count
         this.setScale(scale);
         this.timer = this.scene.time.addEvent({
             delay: 50,
@@ -368,17 +364,17 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
             callback: (collision: any) => {
-                const { gameObjectB } = collision;
+                const { bodyB, gameObjectB } = collision;
                 for (const condition of conditions.hitConditions) {
                     if ((gameObjectB?.aoeMask & condition.mask) && condition.filter(gameObjectB)) {
-                        if (!this.hit.some(h => h.particleID === gameObjectB.particleID)) {
+                        if (!this.hit.some(h => h.particleID === gameObjectB.particleID) && bodyB.label === "legs") {
                             this.hit.push(gameObjectB);
                         };
                         break;
                     };
                 };
                 for (const condition of conditions.blessConditions) {
-                    if ((gameObjectB?.aoeMask & condition.mask) && condition.filter(gameObjectB)) {
+                    if ((gameObjectB?.aoeMask & condition.mask) && condition.filter(gameObjectB) && bodyB.label === "legs") {
                         if (!this.bless.some(b => b.particleID === gameObjectB.particleID)) {
                             this.bless.push(gameObjectB);
                         };

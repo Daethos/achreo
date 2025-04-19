@@ -152,7 +152,7 @@ export default class Player extends Entity {
         // let playerColliderFull = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, {
         //     isSensor: false, label: "playerCollider",
         // }); // Y + 10 For Platformer
-        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena"
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
         let playerColliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: !underground,
             label: "body",
@@ -169,12 +169,9 @@ export default class Player extends Entity {
         });
         this.setExistingBody(compoundBody);
         this.sensor = playerSensor;
-        // this.collider = playerColliderFull;
 
         this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
         this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.LOOT | ENTITY_FLAGS.NPC | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
-
-        // this.setCollidesWith([ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.LOOT, ENTITY_FLAGS.NPC, ENTITY_FLAGS.WORLD]);
         
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
@@ -926,8 +923,8 @@ export default class Player extends Entity {
 
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
-    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean);
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
+    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.ascean);
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {
@@ -935,7 +932,7 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
-    isValidTouching = (other: any): boolean => other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean;
+    isValidTouching = (other: any): boolean => other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.ascean;
     
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({

@@ -126,12 +126,12 @@ export class Particle {
                     this.collided = true;
                     return;
                 };
-                if (other.bodyB.label === "enemyCollider" && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "player") { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
+                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "player") { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };
-                if (other.bodyB.label === "partyCollider" && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "party" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
+                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "party" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
@@ -141,14 +141,14 @@ export class Particle {
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };
-                if (other.bodyB.label === "enemyCollider" && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "party") { // Party v Computer
+                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "party") { // Party v Computer
                     const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
                     if (!isEnemy) return;
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
                     this.scene.particleManager.impactEffect(this);
                 };
-                if (other.bodyB.label === "enemyCollider" && other.gameObjectB && player.particleEffect 
+                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect 
                     && other.gameObjectB.name === "enemy" && player.name === "enemy" 
                     && other.gameObjectB.enemyID !== (player as Enemy).enemyID) 
                 { // CvC

@@ -116,7 +116,6 @@ export class Tutorial extends Phaser.Scene {
             this.matterCollision.addOnCollideStart({
                 objectA: [sensor],
                 callback: (other: any) => {
-                    // console.log(other.gameObjectB, "Game Object?");
                     if (other.gameObjectB?.name !== "player") return;
                     EventBus.emit("alert", { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: "Close", extra });
                 },
@@ -124,14 +123,6 @@ export class Tutorial extends Phaser.Scene {
             });
         });
         
-        // if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
-        //     EventBus.emit("alert", { 
-        //         header: "Exit", 
-        //         body: `You are near the exit. \n\n Would you like to head back to the world?`, 
-        //         delay: 3000, 
-        //         key: "Exit World"
-        //     });
-        // };
         // for (let i = 0; i < 12; i++) {
         //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
         //     this.enemies.push(e);

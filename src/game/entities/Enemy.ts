@@ -263,21 +263,29 @@ export default class Enemy extends Entity {
         this.colliderDisp = 16; 
         this.beam = new Beam(this);
 
-        const colliderWidth = PLAYER.COLLIDER.WIDTH; 
-        const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
-        const paddingWidth = 10;         
-        const paddingHeight = 10; 
-        const paddedWidth = colliderWidth + 2 * paddingWidth;
-        const paddedHeight = colliderHeight + 2 * paddingHeight;
-
-        let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "enemyCollider" });
-        enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
+        // const colliderWidth = PLAYER.COLLIDER.WIDTH; 
+        // const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
+        // const paddingWidth = 10;         
+        // const paddingHeight = 10; 
+        // const paddedWidth = colliderWidth + 2 * paddingWidth;
+        // const paddedHeight = colliderHeight + 2 * paddingHeight;
+        // let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "enemyCollider" });
+        // enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
+        let colliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
+            isSensor: !underground,
+            label: "body",
+        }); // Y + 10 For Platformer
+        let colliderLower = Bodies.rectangle(this.x, this.y + 18, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
+            isSensor: underground,
+            label: "legs", 
+        }); // Y + 10 For Platformer
         let enemySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { 
             isSensor: true, label: "enemySensor", 
             // collisionFilter: {category: ENTITY_FLAGS.ENEMY, mask: ENTITY_FLAGS.GOOD}
         }); // Sensor was 48
         const compoundBody = Body.create({
-            parts: [enemyCollider, enemySensor],
+            parts: [enemySensor, colliderLower, colliderUpper],
             density: 0.0015,
             frictionAir: 0.1, 
             restitution: 0.3,
@@ -288,7 +296,6 @@ export default class Enemy extends Entity {
         this.enemyStateListener();
         this.enemySensor = enemySensor;
         this.setCollisionCategory(ENTITY_FLAGS.ENEMY);
-        // this.setCollisionGroup(-1);
         this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.PLAYER | ENTITY_FLAGS.PARTY | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
         this.aoeMask = ENTITY_FLAGS.ENEMY;
         this.collision(enemySensor);
@@ -843,15 +850,7 @@ export default class Enemy extends Entity {
                     this.isValidComputerRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
                     if (this.inCombat || this.inComputerCombat || other.gameObjectB.isDefeated || other.gameObjectB.health <= 0 || this.health <= 0 || this.isDefeated) return;                     
-                    // this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
                     this.checkComputerEnemyCombatEnter(other.gameObjectB);                    
-                    // if (this.ascean && this.computerEnemyAggressionCheck()) {
-                        // this.createComputerCombat(other);
-                    // } else if (this.computerStatusCheck(other.gameObjectB) && !this.isAggressive) {
-                    // } else {
-                        // const newEnemy = this.isNewComputerEnemy(other.gameObjectB);
-                        // const realEnemy = this.potentialEnemies.includes(other.gameObjectB.ascean.name);
-                    // };
                 };
             },
             context: this.scene,
@@ -1907,28 +1906,57 @@ export default class Enemy extends Entity {
     onDodgeEnter = () => {
         this.isDodging = true; 
         this.setTint(TARGET_COLOR);
-        this.wasFlipped = this.flipX; 
-        ((this.body as any).parts as any)[2].position.y += this.sensorDisp;
-        ((this.body as any).parts as any)[2].circleRadius = 21;
-        ((this.body as any).parts as any)[1].vertices[0].y += this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].y += this.colliderDisp; 
-        ((this.body as any).parts as any)[0].vertices[0].x += this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].x += this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[0].vertices[1].x += this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[0].x += this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
+        this.wasFlipped = this.flipX;
+        (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
+        (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
+        console.log((this.body as any).parts, "Parts");
+        const body = (this.body as any).parts[3];
+        const legs = (this.body as any).parts[2];
+        if (!body.isSensor) {
+            body.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+            body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[1].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+        } else {
+            legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+        };
+        legs.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[0].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[1].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.handleAnimations();
         this.frameCount = 0;
     };
     onDodgeUpdate = (_dt: number) => this.combatChecker(this.isDodging); 
     onDodgeExit = () => {
-        ((this.body as any).parts as any)[2].position.y -= this.sensorDisp;
-        ((this.body as any).parts as any)[2].circleRadius = 36;
-        ((this.body as any).parts as any)[1].vertices[0].y -= this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].y -= this.colliderDisp; 
-        ((this.body as any).parts as any)[0].vertices[0].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[0].vertices[1].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[0].x -= this.wasFlipped ? this.colliderDisp : -this.colliderDisp;
+        (this.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
+        (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
+        const body = (this.body as any).parts[3];
+        const legs = (this.body as any).parts[2];
+        if (!body.isSensor) {
+            body.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+            body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[1].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+        } else {
+            legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+        };
+        legs.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[0].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        legs.vertices[1].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
     };
@@ -1961,10 +1989,22 @@ export default class Enemy extends Entity {
     onRollEnter = () => {
         this.isRolling = true; 
         this.setTint(TARGET_COLOR);
-        ((this.body as any).parts as any)[2].position.y += this.sensorDisp;
-        ((this.body as any).parts as any)[2].circleRadius = 21;
-        ((this.body as any).parts as any)[1].vertices[0].y += this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].y += this.colliderDisp; 
+        const body = (this.body as any).parts[3];
+        if (!body.isSensor) {
+            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
+        } else {
+            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+        };
+        (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
+        (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
+        (this.body as any).parts[2].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        (this.body as any).parts[2].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.handleAnimations();
         this.currentAction = "";
         this.frameCount = 0;
@@ -1980,10 +2020,22 @@ export default class Enemy extends Entity {
     onRollExit = () => {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
-        ((this.body as any).parts as any)[2].position.y -= this.sensorDisp;
-        ((this.body as any).parts as any)[2].circleRadius = 36;
-        ((this.body as any).parts as any)[1].vertices[0].y -= this.colliderDisp;
-        ((this.body as any).parts as any)[1].vertices[1].y -= this.colliderDisp;
+        const body = (this.body as any).parts[3];
+        if (!body.isSensor) {
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
+        } else {
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+        };
+        (this.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
+        (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
+        (this.body as any).parts[2].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        (this.body as any).parts[2].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.setTint(ENEMY_COLOR);
         this.frameCount = 0;
         this.currentAction = "";

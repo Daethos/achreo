@@ -156,13 +156,22 @@ export default class Party extends Entity {
         this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
-        let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
-            isSensor: false, label: "partyCollider",
-            // collisionFilter: {category: ENTITY_FLAGS.PARTY, mask: ENTITY_FLAGS.ENEMY}
+        // let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
+        //     isSensor: false, label: "partyCollider",
+        //     // collisionFilter: {category: ENTITY_FLAGS.PARTY, mask: ENTITY_FLAGS.ENEMY}
+        // }); // Y + 10 For Platformer
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
+        let colliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
+            isSensor: !underground,
+            label: "body",
+        }); // Y + 10 For Platformer
+        let colliderLower = Bodies.rectangle(this.x, this.y + 18, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
+            isSensor: underground,
+            label: "legs", 
         }); // Y + 10 For Platformer
         let partySensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "partySensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
-            parts: [partyCollider, partySensor],
+            parts: [partySensor, colliderLower, colliderUpper],
             frictionAir: 0.5,
             restitution: 0.2,
         });
@@ -1214,7 +1223,7 @@ export default class Party extends Entity {
     getEnemyId = () => this.currentTarget?.enemyID;
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && other.bodyB.label === "enemyCollider" && other.gameObjectB.ascean); // && other.gameObjectB.isAggressive
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && (other.bodyB.label === "enemyCollider" || other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB.ascean); // && other.gameObjectB.isAggressive
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {

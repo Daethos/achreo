@@ -880,8 +880,8 @@ export default class PlayerMachine {
             ease: 'Power1',
             yoyo: true,
             onUpdate: () => {
-                this.player.x += vertical ? (this.player.jumpTime <= 633 ? forceX : -forceX) : forceX;
-                this.player.y += hop ? (this.player.jumpTime <= 633 ? -force : force) : forceY;
+                this.player.x += vertical ? (this.player.jumpTime <= 600 ? forceX : -forceX) : forceX;
+                this.player.y += hop ? (this.player.jumpTime <= 600 ? -force : force) : forceY;
             },
             onComplete: () => {
                 this.scene.matter.world.add(body);

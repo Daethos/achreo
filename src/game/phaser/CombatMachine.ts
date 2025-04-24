@@ -41,46 +41,118 @@ const ACTIONS: { [key: string]: ActionHandler } = {
 
 export default class CombatMachine {
     private combat: Combat;
-    private actionQueue: Action[];
-    private clearQueue: string[];
-    private inputQueue: KVI[];
+    private actionQueue: Action[] = [];
+    private clearQueue: string[] = [];
+    private inputQueue: KVI[] = [];
+    // Pointers for in-place compaction
+    private clearHash: Record<string, boolean> = Object.create(null);
+    private clearHashSize = 0;
+    private actionCount = 0;
+    private clearCount = 0;
+    private inputCount = 0;
 
     constructor(manager: CombatManager) { // dispatch: any
         this.combat = manager.context.state;
-        this.actionQueue = [];
-        this.clearQueue = [];
-        this.inputQueue = [];
     };
-
+    
     public process(): void {
-        if (this.clearQueue.length) {
-            const clearSet = new Set(this.clearQueue);
-            this.inputQueue = this.inputQueue.filter(({ id }) => !clearSet.has(id!));
-            this.actionQueue = this.actionQueue.filter(({ id }) => !clearSet.has(id!));
-            this.clearQueue = [];
+        if (this.clearCount > 0) {
+            // const clearHash: Record<string, boolean> = Object.create(null);
+            for (let i = 0; i < this.clearCount; ++i) {
+                this.clearHash[this.clearQueue[i]] = true;
+            };
+            this.clearHashSize = this.clearCount;
+
+            // In-Place Drop From InputQueue
+            let write = 0;
+            for (let read = 0; read < this.inputCount; ++read) {
+                const item = this.inputQueue[read];
+                if (!item.id || !this.clearHash[item.id]) {
+                    this.inputQueue[write++] = item;
+                };
+            };
+            this.inputCount = write;
+
+            // In-Place Drop From ActionQueue
+            write = 0;
+            for (let read = 0; read < this.actionCount; ++read) {
+                const item = this.actionQueue[read];
+                if (!item.id || !this.clearHash[item.id]) {
+                    this.actionQueue[write++] = item;
+                };
+            };
+            this.actionCount = write;
+
+            // Resetting Clear Buffer
+            this.clearCount = 0;
+
+            // Clear hash
+            for (let i = 0; i < this.clearHashSize; ++i) {
+                delete this.clearHash[this.clearQueue[i]];
+            };
         };
-        
-        if (this.inputQueue.length) {
-            const inputs = this.inputQueue;
-            this.inputQueue = [];
-            for (const { key, value, id } of inputs) {
+
+        // 2) Emit Inputs
+        if (this.inputCount > 0) {
+            for (let i = 0; i < this.inputCount; ++i) {
+                const { key, value, id } = this.inputQueue[i];
                 if (!id || this.combat.enemyID === id) {
                     EventBus.emit("update-combat-state", { key, value });
                 };
             };
+            this.inputCount = 0;
         };
-        
-        if (this.actionQueue.length) {
-            const actions = this.actionQueue;
-            this.actionQueue = [];
-            for (const action of actions) {
+
+        // 3) Dispatch Actions
+        if (this.actionCount > 0) {
+            for (let i = 0; i < this.actionCount; ++i) {
+                const action = this.actionQueue[i];
                 const handler = ACTIONS[action.type];
                 handler?.(action.data);
             };
+            this.actionCount = 0;
         };
     };
-
-    public action = (act: Action): number => this.actionQueue.push(act);
-    public clear = (id: string): number => this.clearQueue.push(id); 
-    public input = (key: string, value: string | number | boolean | any, id?: string): number => this.inputQueue.push({key, value, id}); 
+ 
+    public action(act: Action) {
+        this.actionQueue[this.actionCount++] = act;
+    };
+    public clear(id: string) {
+        this.clearQueue[this.clearCount++] = id;
+    };
+    public input(key: string, value: any | boolean | number | string, id?: string) {
+        this.inputQueue[this.inputCount++] = { key, value, id };
+    };
 };
+
+// public process(): void {
+//     if (this.clearQueue.length) {
+//         const clearSet = new Set(this.clearQueue);
+//         this.inputQueue = this.inputQueue.filter(({ id }) => !clearSet.has(id!));
+//         this.actionQueue = this.actionQueue.filter(({ id }) => !clearSet.has(id!));
+//         this.clearQueue = [];
+//     };
+    
+//     if (this.inputQueue.length) {
+//         const inputs = this.inputQueue;
+//         this.inputQueue = [];
+//         for (const { key, value, id } of inputs) {
+//             if (!id || this.combat.enemyID === id) {
+//                 EventBus.emit("update-combat-state", { key, value });
+//             };
+//         };
+//     };
+    
+//     if (this.actionQueue.length) {
+//         const actions = this.actionQueue;
+//         this.actionQueue = [];
+//         for (const action of actions) {
+//             const handler = ACTIONS[action.type];
+//             handler?.(action.data);
+//         };
+//     };
+// };
+
+// public action = (act: Action): number => this.actionQueue.push(act);
+// public clear = (id: string): number => this.clearQueue.push(id); 
+// public input = (key: string, value: string | number | boolean | any, id?: string): number => this.inputQueue.push({key, value, id}); 

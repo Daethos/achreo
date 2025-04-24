@@ -86,6 +86,7 @@ export class AoEPool {
     get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
         const typePool = this.typePools.get(type) || [];
         let aoe = typePool.pop() || this.pool.pop();
+        // console.log(aoe, "Aoe?");
         if (!aoe) {
             aoe = this.createNewAoE();
         };
@@ -156,6 +157,8 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setVisible(false);
         this.setActive(false);
         this.setOrigin(0.5);
+        this.sensor = this.setupSensor(0, 0, RADIUS, "aoeSensor");
+        this.hollowTimer();
     };
 
     public cleanAnimation = (scene: Play) => {
@@ -212,7 +215,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setPosition(0, 0);
         this.setAlpha(1);
         this.setAngle(0);
-
+        
         if (enemy !== undefined) {
             if (enemy.name === ENEMY) {
                 this.enemyAoe(type, positive, enemy, target);
@@ -244,7 +247,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     private enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined) {
-        this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
+        this.sensor = this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
         this.setupEnemyListener(enemy as Enemy);
         this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT); // *NEW*
         this.baseCount(type, !positive, enemy, {
@@ -261,7 +264,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     private particleAoe(particle: { effect: Particle; entity: Target }, positive: boolean) {
-        this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
+        this.sensor = this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
         this.setupParticleListener();
         this.scalingTimer(particle.effect.effect, PARTICLE_SCALE, 0, REPEAT); // *NEW*
         this.baseCount("magic", positive, particle.entity, {
@@ -270,7 +273,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     private partyAoe(type: string, positive: boolean, party: Party, target: Target | undefined) {
-        this.setupSensor(target ? target.x : party.x, target ? target.y : party.y, RADIUS, "aoeSensor");
+        this.sensor = this.setupSensor(target ? target.x : party.x, target ? target.y : party.y, RADIUS, "aoeSensor");
         this.setupPartyListener(party);
         this.scalingTimer(target ? target : party, SCALE, Y_OFFSET, REPEAT);
         this.baseCount(type, positive, party, {
@@ -283,7 +286,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     private playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
         this.enhanced = this.scene.hud.talents.talents[this.name as keyof typeof this.scene.hud.talents.talents].enhanced;
         const manualPoint = this.scene.getWorldPointer();
-        this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
+        this.sensor = this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
         this.setupPlayerListener();
         this.scalingTimer(target ? target : manual ? manualPoint : this.scene.player, SCALE * (this.enhanced ? 1.5 : 1), manual ? 0 : Y_OFFSET, REPEAT);
         this.baseCount(type, positive, this.scene.player, {
@@ -330,12 +333,28 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setExistingBody(sensor);
         this.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
         this.setStatic(true);
-        this.sensor = sensor;
+        // this.sensor = sensor;
         return sensor;
     };
+
+    protected hollowTimer(repeatCount: number = 20) {
+        let count = 0, scale = SCALE;
+        this.setScale(SCALE);
+        this.timer = this.scene.time.addEvent({
+            delay: 50,
+            callback: () => {
+                if (count >= repeatCount || !this.timer) return;
+                scale += SCALE;
+                this.setScale(scale);
+                count++;
+            },
+            callbackScope: this,
+            repeat: repeatCount
+        });
+    };
+
     protected scalingTimer(target: Phaser.Physics.Matter.Sprite, scaleIncrement: number, yOffset: number = 0, repeatCount: number = 20) {
-        let scale = scaleIncrement;
-        let count = 0;
+        let count = 0, scale = scaleIncrement;
         if (this.manual === true) {
             const centerX = this.scene.cameras.main.width / 2;
             const centerY = this.scene.cameras.main.height / 2;
@@ -347,6 +366,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
         this.scene.rotateTween(this, 1, true); // this.count
         this.setScale(scale);
+        // console.log(`
+        //     ====================================
+        //     Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}
+        //     ====================================
+        //     `);
         this.timer = this.scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -354,12 +378,14 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 scale += scaleIncrement;
                 this.setScale(scale);
                 this.setPosition(target.x, target.y + yOffset);
+                // console.log(`Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}`);
                 count++;
             },
             callbackScope: this,
             repeat: repeatCount
         });
     };
+
     protected setupBaseListener(conditions: {hitConditions: ListenerCondition[]; blessConditions: ListenerCondition[]; origin?: Enemy | Party;}) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
@@ -403,6 +429,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             context: this.scene
         });
     };
+
     protected setupEnemyListener(origin: Enemy) {
         this.setupBaseListener({
             hitConditions: [

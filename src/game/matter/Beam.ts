@@ -96,7 +96,7 @@ export default class Beam {
         this.updateEmitter(target);
         this.scene.time.addEvent({
             delay: time / 30,
-            callback: () => {if (this.target !== undefined) this.updateEmitter(this.target);},
+            callback: () => {if (this.target !== undefined && this.target.body !== undefined) this.updateEmitter(this.target);},
             callbackScope: this,
             repeat: 29
         });

@@ -524,6 +524,12 @@ export default class Enemy extends Entity {
         this.enemies = this.enemies.filter(e => e.id !== id);
     };
 
+    checkEnemyGame = (id: string): boolean => {
+        const enemy = this.scene.enemies.some((e: Enemy) => e.enemyID === id); 
+        if (!enemy) return true; // Party
+        return this.scene.hud.currScene === "Game"; // Making sure it's not Arena or Underground
+    };
+
     /*
         EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
     */
@@ -550,9 +556,9 @@ export default class Enemy extends Entity {
         };
         this.computerCombatSheet.newComputerHealth = this.health;
         const enemy = this.enemies.find((en: ENEMY) => en.id === origin && origin !== this.enemyID);
-        if (enemy && this.health > 0) {
+        if (enemy && this.health > 0 && this.checkEnemyGame(origin)) {
             this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
-        } else if (!enemy && this.health > 0 && origin !== "") {
+        } else if (!enemy && this.health > 0 && origin !== "" && this.checkEnemyGame(origin)) {
             this.enemies.push({id:origin,threat:0});
             this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max))
         };
@@ -668,9 +674,9 @@ export default class Enemy extends Entity {
                 if (enemy && enemy.health > 0) this.checkComputerEnemyCombatEnter(enemy);
             };
             const enemy = this.enemies.find((en: ENEMY) => en.id === enemyID && enemyID !== this.enemyID);
-            if (enemy && newComputerHealth > 0) {
+            if (enemy && newComputerHealth > 0 && this.checkEnemyGame(enemyID)) {
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
-            } else if (!enemy && newComputerHealth > 0 && enemyID !== "" && enemyID !== this.enemyID) {
+            } else if (!enemy && newComputerHealth > 0 && enemyID !== "" && enemyID !== this.enemyID && this.checkEnemyGame(enemyID)) {
                 this.enemies.push({id:enemyID,threat:0});
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth))
             };

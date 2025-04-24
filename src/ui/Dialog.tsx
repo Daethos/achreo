@@ -523,7 +523,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     
     const checkParty = async () => {
         const par = await getParty(ascean()._id);
-        setParty(par.party.length < 2);
+        setParty(par.party.length < 3);
     }; 
 
     function checkCondition(conditions: Condition) {
@@ -1527,7 +1527,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <br />
                     {rep()?.reputation >= 25 && party() ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 2 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
+                            <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 3 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                             <br />
                             <button class="highlight" onClick={changeEnemyToParty}>
                                 <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={typewriterStyling} performAction={hollowClick} />

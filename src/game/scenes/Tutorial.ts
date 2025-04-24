@@ -97,8 +97,8 @@ export class Tutorial extends Phaser.Scene {
         map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => {
             const type = pillar.properties?.[0].value;
             const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
-            const sensor = Bodies.circle(pillar.x, pillar.y, 16, { isSensor: true, label: `${type}PillarSensor` });
-            graphics.setOrigin(0.5);
+            const shift = {x: type === "exit" ? 32 : 16, y: 16}
+            const sensor = Bodies.circle(pillar.x + shift.x, pillar.y + shift.y, 16, { isSensor: true, label: `${type}PillarSensor` });
             graphics.setExistingBody(sensor);
             graphics.setCollisionCategory(ENTITY_FLAGS.WORLD);
             const body = 

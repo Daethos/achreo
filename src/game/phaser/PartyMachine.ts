@@ -2216,15 +2216,10 @@ export default class PlayerMachine {
     // ==================== TRAITS ==================== \\
     onAstricationEnter = () => {
         if (this.player.isAstrifying === true) return;
-        this.scene.combatManager.combatMachine.input("astrication", {active:true,charges:0});
         this.player.enemySound("lightning", true);
         this.player.specialCombatText = this.scene.showCombatText("Astrication", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.isAstrifying = true;
         this.player.flickerCaerenic(PLAYER.DURATIONS.ASTRICATION); 
-        this.scene.time.delayedCall(PLAYER.DURATIONS.ASTRICATION, () => {
-            // this.scene.combatManager.combatMachine.input("astrication", {active:false,charges:0});
-            this.player.isAstrifying = false;
-        }, undefined, this);
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}"s caeren astrifies, wrapping round their attacks.`
         });
@@ -2234,13 +2229,8 @@ export default class PlayerMachine {
     onBerserkEnter = () => {
         if (this.player.isBerserking === true) return;
         this.player.enemySound("howl", true);
-        this.scene.combatManager.combatMachine.input("berserk", {active:true,charges:1});
         this.player.specialCombatText = this.scene.showCombatText("Berserking", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.isBerserking = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
-            // this.scene.combatManager.combatMachine.input("berserk", {active:false,charges:0});
-            this.player.isBerserking = false;
-        }, undefined, this);
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}"s caeren feeds off the pain, its hush shrieking forth.`
         });
@@ -2278,14 +2268,9 @@ export default class PlayerMachine {
 
     onConvictionEnter = () => {
         if (this.player.isConvicted === true) return;
-        this.scene.combatManager.combatMachine.input("conviction", {active:true,charges:0});
         this.player.enemySound("spooky", true);
         this.player.specialCombatText = this.scene.showCombatText("Conviction", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
         this.player.isConvicted = true;
-        this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
-            // this.scene.combatManager.combatMachine.input("conviction", {active:false,charges:0});
-            this.player.isConvicted = false;
-        }, undefined, this);
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren steels itself in admiration of their physical form.`
         });
@@ -2310,16 +2295,9 @@ export default class PlayerMachine {
     onSeerEnter = () => {
         if (this.player.isSeering === true) return;
         this.player.enemySound("fire", true);
-        this.scene.combatManager.combatMachine.input("isSeering", true);
         this.player.specialCombatText = this.scene.showCombatText("Seer", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
         this.player.isSeering = true;
         this.player.flickerCaerenic(1500); 
-        this.scene.time.delayedCall(PLAYER.DURATIONS.SEER, () => {
-            this.player.isSeering = false;
-            if (this.scene.state.isSeering === true) {
-                // this.scene.combatManager.combatMachine.input("isSeering", false);
-            };
-        }, undefined, this);
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren calms their body to focus, its hush bleeding into them.`
         });
@@ -2332,7 +2310,6 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText("Dispelling", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.player.flickerCaerenic(1000); 
         this.player.currentTarget.clearBubbles();
-        // this.player.currentTarget.clearPositiveEffects();
     };
     onDispelExit = () => {};
 

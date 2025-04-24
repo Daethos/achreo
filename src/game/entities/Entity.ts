@@ -416,8 +416,30 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    removeGlow = () => {
+        if (this.glowShield !== undefined) {
+            this.glowShield.remove(false);
+            this.glowShield.destroy();
+            this.glowShield = undefined;
+        };
+        if (this.glowWeapon !== undefined) {
+            this.glowWeapon.remove(false);
+            this.glowWeapon.destroy();
+            this.glowWeapon = undefined;
+        };
+        if (this.glowSelf !== undefined) {
+            this.glowSelf.remove(false);
+            this.glowSelf.destroy();
+            this.glowSelf = undefined;
+        };
+    };
+
     updateGlow = (object: any) => {
-        const glowFilter = this.scene.glowFilter;
+        const glowFilter = this?.scene?.glowFilter;
+        if (!glowFilter) {
+            this.removeGlow();
+            return;
+        };
         let instance = glowFilter.get(object)[0];
         if (instance) {
             instance.outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;

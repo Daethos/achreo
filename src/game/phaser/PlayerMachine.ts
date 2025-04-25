@@ -729,13 +729,14 @@ export default class PlayerMachine {
         };
         if (this.player.isSuffering()) return;
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {
+            // console.log("Attempting to ping onComputerCombatEnter while occupied with a computerAction:", this.player.computerAction, 'or isContemplating', this.player.isContemplating);
             this.player.setVelocity(0);
             this.player.isMoving = false;
             return;
         };
         this.player.frameCount = 0;
         this.player.computerAction = true;
-        this.scene.time.delayedCall(this.player.swingTimer, () => {
+        this.scene.time.delayedCall(this.player.swingTimer * Phaser.Math.Between(1, 1.15), () => {
             this.player.frameCount = 0;
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();

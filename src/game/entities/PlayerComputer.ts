@@ -9,6 +9,7 @@ import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
+import { FRAMES } from "./Entity";
 import Player from "./Player";
 
 export default class PlayerComputer extends Player {
@@ -212,7 +213,7 @@ export default class PlayerComputer extends Player {
                 return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
-                if (this.clearAttacks()) this.anims.play('player_idle', true);
+                if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
@@ -230,7 +231,8 @@ export default class PlayerComputer extends Player {
             } else { // Inside melee range
                 this.isPosted = true;
                 this.setVelocity(0);
-                if (this.clearAttacks()) this.anims.play('player_idle', true);
+                if (this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.anims.play(FRAMES.IDLE, true);
+                // if (this.clearAttacks()) this.anims.play('player_idle', true);
             };
         };
     };
@@ -239,18 +241,20 @@ export default class PlayerComputer extends Player {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
         let actionNumber = Math.floor(Math.random() * 101);
         let action = '';
-        const loadout = this.scene.hud.settings.computerLoadout || { attack: 30, parry: 10, roll: 10, thrust: 15, posture: 15 };
-        if (actionNumber > 100 - loadout.attack) { // 71-100 (30%)
+        const loadout = this.scene.hud.settings.computerLoadout || { attack: 20, parry: 10, roll: 10, thrust: 15, posture: 15, jump: 10 };
+        if (actionNumber > 100 - loadout.attack) { // 81-100 (20%)
             action = States.COMPUTER_ATTACK;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry) { // 26-40 (15%) || 25 && !this.isRanged
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry) { // 71-80 (10%)
             action = States.COMPUTER_PARRY;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll) { // 41-55 (15%) || 40 && !this.isRanged
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll) { // 61-70 (10%)
             action = States.ROLL;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust) { // 11-20 (10%) || 11-40 (this.isRanged) (30%)
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust) { // 51-60 (10%)
             action = States.COMPUTER_THRUST;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture) { // 56-70 (15%)
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture) { // 36-50 (15%)
             action = States.COMPUTER_POSTURE;
-        } else { // New State 1-10 (10%)
+        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture - loadout.jump) { // 21-35 (15%)
+            action = States.JUMP;
+        } else { // Special State 1-20
             action = States.CONTEMPLATE;
         };
         let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase() as keyof typeof PLAYER.STAMINA]);
@@ -272,31 +276,33 @@ export default class PlayerComputer extends Player {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isParrying = false);
+            this.anims.play(FRAMES.PARRY, true).on('animationcomplete', () => this.isParrying = false);
         } else if (this.isThrusting) {
             sprint(this.scene);
-            this.anims.play('player_attack_2', true).on('animationcomplete', () => this.isThrusting = false);
+            this.anims.play(FRAMES.THRUST, true).on('animationcomplete', () => this.isThrusting = false);
         } else if (this.isDodging) { 
-            this.anims.play('player_slide', true);
+            this.anims.play(FRAMES.DODGE, true);
             if (this.dodgeCooldown === 0) this.playerDodge();
         } else if (this.isRolling) {
             sprint(this.scene);
-            this.anims.play('player_roll', true);
+            this.anims.play(FRAMES.ROLL, true);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
-            this.anims.play('player_attack_3', true).on('animationcomplete', () => this.isPosturing = false);
+            this.anims.play(FRAMES.POSTURE, true).on('animationcomplete', () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.anims.play('player_attack_1', true).on('animationcomplete', () => this.isAttacking = false);
+            this.anims.play(FRAMES.ATTACK, true).on('animationcomplete', () => this.isAttacking = false);
+        } else if (this.isHurt) {
+            this.anims.play(FRAMES.HURT, true);
         } else if (this.moving()) {
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
             walk(this.scene);
-            this.anims.play('player_health', true);
+            this.anims.play(FRAMES.CAST, true);
         } else if (this.isPraying) {
-            this.anims.play('player_pray', true).on('animationcomplete', () => this.isPraying = false);
+            this.anims.play(FRAMES.PRAY, true).on('animationcomplete', () => this.isPraying = false);
         } else {
             this.isMoving = false;
             this.handleIdleAnimations();
@@ -332,6 +338,7 @@ export default class PlayerComputer extends Player {
         if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+        this.functionality('player', this.currentTarget as Enemy);
         
         if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
@@ -339,6 +346,10 @@ export default class PlayerComputer extends Player {
         };
         if (this.isFeared && !this.sansSuffering('isFeared') && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
+            return;
+        };
+        if (this.isHurt && !this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
+            this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
         if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
@@ -353,9 +364,6 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        
-        this.functionality('player', this.currentTarget as Enemy);
-
         if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;

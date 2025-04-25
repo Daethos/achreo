@@ -44,26 +44,23 @@ export default class CombatMachine {
     private actionQueue: Action[] = [];
     private clearQueue: string[] = [];
     private inputQueue: KVI[] = [];
-    // Pointers for in-place compaction
     private clearHash: Record<string, boolean> = Object.create(null);
     private clearHashSize = 0;
     private actionCount = 0;
     private clearCount = 0;
     private inputCount = 0;
 
-    constructor(manager: CombatManager) { // dispatch: any
+    constructor(manager: CombatManager) {
         this.combat = manager.context.state;
     };
     
     public process(): void {
         if (this.clearCount > 0) {
-            // const clearHash: Record<string, boolean> = Object.create(null);
             for (let i = 0; i < this.clearCount; ++i) {
                 this.clearHash[this.clearQueue[i]] = true;
             };
             this.clearHashSize = this.clearCount;
 
-            // In-Place Drop From InputQueue
             let write = 0;
             for (let read = 0; read < this.inputCount; ++read) {
                 const item = this.inputQueue[read];
@@ -73,7 +70,6 @@ export default class CombatMachine {
             };
             this.inputCount = write;
 
-            // In-Place Drop From ActionQueue
             write = 0;
             for (let read = 0; read < this.actionCount; ++read) {
                 const item = this.actionQueue[read];
@@ -83,16 +79,13 @@ export default class CombatMachine {
             };
             this.actionCount = write;
 
-            // Resetting Clear Buffer
             this.clearCount = 0;
 
-            // Clear hash
             for (let i = 0; i < this.clearHashSize; ++i) {
                 delete this.clearHash[this.clearQueue[i]];
             };
         };
 
-        // 2) Emit Inputs
         if (this.inputCount > 0) {
             for (let i = 0; i < this.inputCount; ++i) {
                 const { key, value, id } = this.inputQueue[i];
@@ -103,7 +96,6 @@ export default class CombatMachine {
             this.inputCount = 0;
         };
 
-        // 3) Dispatch Actions
         if (this.actionCount > 0) {
             for (let i = 0; i < this.actionCount; ++i) {
                 const action = this.actionQueue[i];
@@ -124,35 +116,3 @@ export default class CombatMachine {
         this.inputQueue[this.inputCount++] = { key, value, id };
     };
 };
-
-// public process(): void {
-//     if (this.clearQueue.length) {
-//         const clearSet = new Set(this.clearQueue);
-//         this.inputQueue = this.inputQueue.filter(({ id }) => !clearSet.has(id!));
-//         this.actionQueue = this.actionQueue.filter(({ id }) => !clearSet.has(id!));
-//         this.clearQueue = [];
-//     };
-    
-//     if (this.inputQueue.length) {
-//         const inputs = this.inputQueue;
-//         this.inputQueue = [];
-//         for (const { key, value, id } of inputs) {
-//             if (!id || this.combat.enemyID === id) {
-//                 EventBus.emit("update-combat-state", { key, value });
-//             };
-//         };
-//     };
-    
-//     if (this.actionQueue.length) {
-//         const actions = this.actionQueue;
-//         this.actionQueue = [];
-//         for (const action of actions) {
-//             const handler = ACTIONS[action.type];
-//             handler?.(action.data);
-//         };
-//     };
-// };
-
-// public action = (act: Action): number => this.actionQueue.push(act);
-// public clear = (id: string): number => this.clearQueue.push(id); 
-// public input = (key: string, value: string | number | boolean | any, id?: string): number => this.inputQueue.push({key, value, id}); 

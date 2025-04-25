@@ -1,15 +1,19 @@
 import { masteryNumber } from "../../utility/styling";
 import Enemy from "../entities/Enemy";
+import Party from "../entities/PartyComputer";
 import Player from "../entities/Player";
 import { Play } from "../main";
+
 interface Dimension {
     X: number;
     Y: number;
 };
+
 const Default: Dimension = {
     X: 265,
     Y: 165
 };
+
 const CONVERSION = {
     Arena: Default,
     ArenaCvC: Default,
@@ -29,21 +33,24 @@ const CONVERSION = {
         Y: 30 // 35
     },
 };
+
+type Entity = Enemy | Party | Player;
+
 export default class Beam {
-    player: any;
+    player: Entity;
     color: number;
     scene: Play;
     emitter: Phaser.GameObjects.Particles.ParticleEmitter;
     enemyEmitters: any;
-    target: Player | Enemy | undefined;
+    target: Entity | Phaser.Physics.Matter.Sprite | undefined;
     settings: any;
     xOffset: number;
     yOffset: number;
-    constructor(player: any) {
+    constructor(player: Entity) {
         this.player = player;
         this.color = masteryNumber(player.ascean.mastery);
         this.scene = player.scene;
-        this.target = undefined;    
+        this.target = undefined;
         this.xOffset = CONVERSION[this.scene.scene.key as keyof typeof CONVERSION].X;
         this.yOffset = CONVERSION[this.scene.scene.key as keyof typeof CONVERSION].Y;
         this.settings = {
@@ -79,30 +86,31 @@ export default class Beam {
         return { x: worldPoint.x, y: worldPoint.y };
     };
 
-    enemyEmitter = (enemy: any, time: number, mastery: string) => { // Mastery for Enemy using Player Beam ??
+    enemyEmitter = (enemy: Entity | Phaser.Physics.Matter.Sprite | undefined, time: number, mastery: string) => { // Mastery for Enemy using Player Beam ??
         const color = masteryNumber(mastery);
         this.emitter.start();
         this.updateEnemyEmitter(enemy, color);
         this.scene.time.addEvent({
             delay: time / 30,
-            callback: () => {if (enemy && this.player.body) this.updateEnemyEmitter(enemy, color);},
+            callback: () => this.updateEnemyEmitter(enemy, color),
             callbackScope: this,
             repeat: 29
         });
     };
-    startEmitter = (target: any, time: number) => {
+    startEmitter = (target: Player | Party | Enemy | Phaser.Physics.Matter.Sprite | any, time: number) => {
         this.emitter.start();
         this.target = target;
         this.updateEmitter(target);
         this.scene.time.addEvent({
             delay: time / 30,
-            callback: () => {if (this.target !== undefined && this.target.body !== undefined) this.updateEmitter(this.target);},
+            callback: () => this.updateEmitter(this.target),
             callbackScope: this,
             repeat: 29
         });
     };
 
-    updateEmitter = (target: Player | Enemy) => {
+    updateEmitter = (target: Entity | Phaser.Physics.Matter.Sprite | undefined) => {
+        if (target === undefined || target.body === undefined) return;
         let dynamicConfig = {};
         if (this.player === target) {
             dynamicConfig = {

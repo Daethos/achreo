@@ -68,6 +68,7 @@ export default class Settings {
         roll: number;
         thrust: number;
         parry: number;
+        jump: number;
         special: number;
     }; 
     public difficulty: {
@@ -220,10 +221,11 @@ export default class Settings {
         this.computerFocus = "Balanced";
         this.computerLoadout = {
             attack: 15,
-            posture: 15,
-            roll: 15,
+            posture: 10,
+            roll: 10,
             thrust: 15,
             parry: 15,
+            jump: 10,
             special: 25,
         };
         this.difficulty = {

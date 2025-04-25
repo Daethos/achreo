@@ -923,8 +923,8 @@ export default class Player extends Entity {
 
     isAttackTarget = (enemy: Enemy) => this.getEnemyId() === enemy.enemyID;
     isNewEnemy = (enemy: Enemy) => this.targets.every(obj => obj.enemyID !== enemy.enemyID);
-    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
-    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.ascean);
+    isValidEnemyCollision = (other: any): boolean =>  (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body") && other.gameObjectB.isAggressive && other.gameObjectB.ascean);
+    isValidNeutralCollision = (other: any): boolean => (other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body") && other.gameObjectB.ascean);
     isValidRushEnemy = (enemy: Enemy) => {
         if (!enemy?.enemyID) return;
         if (this.isRushing) {
@@ -932,7 +932,7 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
-    isValidTouching = (other: any): boolean => other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body" ||other.bodyB.label === "enemyCollider") && other.gameObjectB.ascean;
+    isValidTouching = (other: any): boolean => other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body") && other.gameObjectB.ascean;
     
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({

@@ -1,3 +1,5 @@
+import { JSX } from "solid-js/jsx-runtime";
+
 const COLORS = {
     "Amaranth": 0x9F2B68,
     "Aqua": 0x00FFFF,
@@ -226,4 +228,31 @@ const sellRarity = (rarity: string): string => {
     };
 };
 
-export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity };
+const fullStyle = (mastery: string) => {
+    return {
+        position: "absolute", left: "20%", top: "7.5%", height: "85%", width: "60%",
+        background: "linear-gradient(#000, #222)",
+        border: `0.15em solid ${masteryColor(mastery)}`,"border-radius": "0.15em",
+        "box-shadow": `0 0 1.25em ${masteryColor(mastery)}`, 
+        animation: `borderTalent 1.5s infinite ease alternate, moist 0.5s ease`,
+        "--glow-color":masteryColor(mastery),
+        "--base-shadow":"#000 0 0 0 0.2em",
+        overflow: "scroll","text-align": "center", "scrollbar-width":"none" 
+    } as JSX.PropAttributes;
+};
+
+const partialStyle = (mastery: string) => {
+    return {
+        top: "10%", height: "80%", width: "48%", 
+        background: "linear-gradient(#000, #222)",
+        border: `0.15em solid ${masteryColor(mastery)}`,
+        "border-radius": "0.15em",
+        "box-shadow": `0 0 1.25em ${masteryColor(mastery)}`,
+        animation: `borderTalent 1.5s infinite ease alternate, moist 0.5s ease`,
+        "--base-shadow":"#000 0 0 0 0.2em",
+        "--glow-color":masteryColor(mastery),
+        overflow: "scroll","text-align": "center", "scrollbar-width":"none",
+    } as JSX.PropAttributes;
+};
+
+export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle };

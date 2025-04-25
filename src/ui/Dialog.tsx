@@ -27,6 +27,7 @@ import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
 import { roundToTwoDecimals } from "../utility/combat";
 import MerchantLoot from "./MerchantLoot";
+import Registry from "./Registry";
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
 const GET_ETCH_COST = {
@@ -372,6 +373,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false });
     const [rep, setRep] = createSignal<FACTION>(initFaction);
     const [party, setParty] = createSignal(false);
+    const [registry, setRegistry] = createSignal(false);
     const [itemCosts, setItemCosts] = createSignal<Record<string, {silver: number, gold: number}>>({});
     const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
@@ -1437,14 +1439,22 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </>
             ) : combat().npcType === "Merchant-Alchemy" ? (
                 <> 
-                    { game().player?.firewater?.charges === 5 ? (
+                    { ascean()?.firewater?.current === 5 ? (
                         <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} styling={typewriterStyling} performAction={hollowClick} />
                     ) : (
                         <>
-                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${game().player?.firewater?.charges} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${ascean().firewater?.current} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={typewriterStyling} performAction={hollowClick} />
                             <br />
-                            <button class="highlight dialog-buttons" style={{ color: "blueviolet" }} onClick={refillFlask}>Walk over and refill your firewater?</button>
+                            <button class="highlight dialog-buttons" style={{ color: "blueviolet", "font-size":"1em" }} onClick={refillFlask}>Walk over and refill your firewater?</button>
                         </>
+                    ) }
+                    { party() && (
+                    <>
+                        <br />
+                        <Typewriter stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} styling={{...typewriterStyling, color: "gold"}} performAction={hollowClick} />
+                        <br />
+                        <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
+                    </>
                     ) }
                 </>
             ) : ( "" ) }
@@ -1749,7 +1759,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 ) : ( "" ) }
                 </div>
             ) : combat().computer && combat().npcType !== "Merchant-Alchemy" && combat().npcType !== "Merchant-Smith" ? (
-                <DialogTree 
+                <DialogTree
                     game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} reputation={reputation}
                     setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{"white-space":"pre-wrap"}}
                 />
@@ -1761,6 +1771,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
+        <Registry ascean={ascean} show={registry} setShow={setRegistry} settings={settings} instance={instance} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={reforge().show}> 
             <div class="modal">

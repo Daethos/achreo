@@ -786,8 +786,6 @@ export default class Enemy extends Entity {
         if (this.scene.hud.settings.difficulty.aggressionImmersion) {
             const aggressive = this.scene.hud.reputation.factions.find((f: FACTION) => f.name === this.ascean.name)?.aggressive || false;
             return aggressive as boolean;
-            // const aggressive = this.scene.hud.reputation.factions.find((f: faction) => f.name === this.ascean.name)?.reputation as number;
-            // return aggressive <= ENEMY_AGGRESSION;
         } else {
             const percent = this.scene.hud.settings.difficulty.aggression;
             return percent >= Math.random() || false;

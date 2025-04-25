@@ -523,6 +523,7 @@ export default function PhaserGame (props: IProps) {
         if (!computer || !computer?.name) return newReputation;
         if (instance.scene?.scene.key !== "Game") return newReputation;
         const enemies = ENEMY_ENEMIES[computer.name as keyof typeof ENEMY_ENEMIES];
+        if (!enemies) return newReputation;
         newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {
                 faction.reputation = Math.min(faction.reputation + 1, 50);

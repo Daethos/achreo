@@ -426,6 +426,14 @@ export function getOneComputerReset() {
 
 };
 
+export function getEnemies(level: number, mastery: string) {
+    let enemies = Asceans.filter(ascean => ascean.level === level && ascean.mastery === mastery);
+    enemies = enemies.map((enemy) => {
+        return populateEnemy(enemy);
+    });
+    return enemies;
+};
+
 export function nonRandomEnemy(level: number, mastery: string): Ascean {
     const roster = Asceans.filter(ascean => ascean.level === level && ascean.mastery === mastery);
     const enemy = roster[Math.floor(Math.random() * roster.length)];

@@ -33,7 +33,7 @@ const config: Phaser.Types.Core.GameConfig = {
     scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Hud],
     physics: {
         default: "matter",
-        matter: {gravity: {x: 0, y: 0}}, // debug: true,
+        matter: {debug:true,gravity: {x: 0, y: 0}}, // debug: true,
     },
     fps: {target: 60,limit: 90},
     fullscreenTarget: "base-ui",

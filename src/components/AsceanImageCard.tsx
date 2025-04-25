@@ -29,18 +29,18 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         setShow(!show());
     }; 
     return <div class="imageCardGrid" style={{ width: "80%", margin: "auto" }}>
-        <div class="imageCardLeft menu">
+        <div class="imageCardLeft menu" style={{ background: "transparent" }}>
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}
             {div(ascean().weaponThree)}
             {div(ascean().shield)}
         </div>
-        <div class="imageCardMiddle menu">
+        <div class="imageCardMiddle menu" style={{ background: "transparent" }}>
             {div(ascean().helmet)}
             {div(ascean().chest)}
             {div(ascean().legs)}
         </div>
-        <div class="imageCardRight menu">
+        <div class="imageCardRight menu" style={{ background: "transparent" }}>
             {div(ascean().amulet)}
             {div(ascean().ringOne)}
             {div(ascean().ringTwo)}

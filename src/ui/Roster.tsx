@@ -12,7 +12,7 @@ import Equipment from "../models/equipment";
 import LootDrop from "./LootDrop";
 import ItemModal from "../components/ItemModal";
 import { roundToTwoDecimals } from "../utility/combat";
-import { masteryColor } from "../utility/styling";
+import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import Settings from "../models/settings";
 const selectors = {
     0.5: { prev: 0.5, next: 1 },
@@ -120,29 +120,10 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const silver = arena().win ? Math.round(arena().wager.silver * arena().wager.multiplier) : -arena().wager.silver;
         return rebalanceCurrency({ silver, gold });
     };
-    const style = { position: "absolute",left: "20%",top: "7.5%",height: "85%",width: "60%",
-        background: "linear-gradient(#000, #222)",
-        border: `0.15em solid ${masteryColor(ascean().mastery)}`,"border-radius": "0.15em",
-        "box-shadow": `0 0 1.25em ${masteryColor(ascean().mastery)}`, 
-        animation: `borderTalent 1.5s infinite ease alternate, moist 0.5s ease`,
-        "--glow-color":masteryColor(ascean().mastery),
-        "--base-shadow":"#000 0 0 0 0.2em",
-        overflow: "scroll","text-align": "center", "scrollbar-width":"none" 
-    } as JSX.PropAttributes;
-    const partial = { top: "10%", height: "80%", width: "48%", 
-        background: "linear-gradient(#000, #222)",
-        border: `0.15em solid ${masteryColor(ascean().mastery)}`,
-        "border-radius": "0.15em",
-        "box-shadow": `0 0 1.25em ${masteryColor(ascean().mastery)}`,
-        animation: `borderTalent 1.5s infinite ease alternate, moist 0.5s ease`,
-        "--base-shadow":"#000 0 0 0 0.2em",
-        "--glow-color":masteryColor(ascean().mastery),
-        overflow: "scroll","text-align": "center", "scrollbar-width":"none",
-    } as JSX.PropAttributes;
     return <Show when={arena().show}>
         <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
-                <div class="left" style={{...partial, left: "1%"}}>
+                <div class="left" style={{...partialStyle(ascean().mastery), left: "1%"}}>
                     <div class="creature-heading center" >
                         <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
                         <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
@@ -161,7 +142,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </div>
                     </div>
                 </div>
-                <div class="right" style={{...partial, left: "50.5%"}}>
+                <div class="right" style={{...partialStyle(ascean().mastery), left: "50.5%"}}>
                     <div class="creature-heading center">
                         <div style={{ display: "grid", "grid-template-columns": "repeat(2, 50%)" }}>
                             <div>
@@ -228,7 +209,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                 </div>
                 <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red" }}>X</button>
             </>}>
-                <div class="center creature-heading" style={style}>
+                <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 1s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>
                     <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Opponent(s) Fought:</span> {arena().enemies.length}</h1>
                     <For each={arena().enemies}>{(enemy) => {

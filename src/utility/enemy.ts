@@ -1,4 +1,4 @@
-import { nonRandomEnemy, populateEnemy, randomEnemy } from "../assets/db/db";
+import { getEnemies, nonRandomEnemy, populateEnemy, randomEnemy } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import { States } from "../game/phaser/StateMachine";
@@ -388,5 +388,12 @@ export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5, mastery: ["c
         return complete;
     } catch (err) {
         console.warn(err, "Error Retrieving Enemies");
+    };
+};
+export function fetchPartyPotential(level: number, mastery: string) {
+    try {
+        return getEnemies(level, mastery);
+    } catch (err) {
+        console.warn(err, "Error Fetching Potential Party Members");
     };
 };

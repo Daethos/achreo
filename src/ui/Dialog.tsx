@@ -1039,7 +1039,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         return rebalanceCurrency({gold:total,silver:0});
     };
 
-        function totalBuyLoot() {
+    function totalBuyLoot() {
         let total: Currency = {gold:0,silver:0};
         for (let i = 0; i < massLootBuy().length; ++i) {
             total.silver += massLootBuy()[i].cost.silver;
@@ -1771,7 +1771,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </div>
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
-        <Registry ascean={ascean} show={registry} setShow={setRegistry} settings={settings} instance={instance} />
+        <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={reforge().show}> 
             <div class="modal">

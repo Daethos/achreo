@@ -85,15 +85,16 @@ export const DEFENSE_TYPES = {
     PLATE_MAIL: "Plate-Mail"
 };
 export const ENEMY_ATTACKS = {
-    attack: "attacks",
-    posture: "postures against",
-    roll: "rolls into",
-    parry: "parries",
     achire: "achires into",
+    attack: "attacks",
     hook: "hooks into",
     leap: "leaps onto",
+    parry: "parries",
+    posture: "postures against",
+    roll: "rolls into",
     quor: "quorses through",
     rush: "rushes through",
+    storm: "storms through",
     thrust: "thrust attacks",
     writhe: "writhes into",
 };

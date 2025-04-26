@@ -2049,7 +2049,7 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = "invoke";
-    combat.playerActionDescription = `You tshaer ${combat.computer?.name}"s caeren with your ${combat.player?.mastery}"s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}"s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
     return combat;
 };
 

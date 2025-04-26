@@ -105,7 +105,7 @@ function rollCompiler(combat: ComputerCombat): ComputerCombat {
 };
 
 function attackCompiler(combat: ComputerCombat): ComputerCombat {
-    const computerAction = combat.computerAction
+    const computerAction = combat.computerAction;
     let computerWeapon = combat.computerWeapons[0]!;
     let computerPhysicalDamage: number = computerWeapon?.physicalDamage as number;
     let computerMagicalDamage: number = computerWeapon?.magicalDamage as number;

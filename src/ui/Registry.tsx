@@ -8,6 +8,7 @@ import { EventBus } from "../game/EventBus";
 import AsceanImageCard from "../components/AsceanImageCard";
 import Equipment from "../models/equipment";
 import ItemModal from "../components/ItemModal";
+import { Compiler } from "../utility/ascean";
 const selectors = {
     0.5: { prev: 0.5, next: 1 },
     1: { prev: 0.5, next: 2 },
@@ -20,7 +21,7 @@ const selectors = {
 export default function Registry({ show, ascean, setShow, instance }: { ascean: Accessor<Ascean>; show: Accessor<boolean>; setShow: Setter<boolean>; instance: IRefPhaserGame }) {
     const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: "constitution", id: "" });
     const [potential, setPotential] = createSignal<any[]>([]);
-    const [party, setParty] = createSignal<Ascean[]>(instance?.game?.registry.get("party"));
+    const [party, setParty] = createSignal<Compiler[]>(instance?.game?.registry.get("party"));
     const [total, setTotal] = createSignal<number>(party().length);
     const [addShow, setAddShow] = createSignal<boolean>(false);
     const [removeShow, setRemoveShow] = createSignal<boolean>(false);
@@ -29,9 +30,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
     const [view, setView] = createSignal<Ascean | undefined>(undefined);
 
     function addToParty() {
-        // console.log(view(), "Adding To Party");
-        EventBus.emit("add-party", {name:view()?.name,level:view()?.level});
-        EventBus.emit("add-to-party", view());
+        EventBus.emit("add-party", {name:view()?.name,level:view()?.level,force:true});
         EventBus.emit("action-button-sound");
         setAddShow(false); 
         setView(undefined);
@@ -42,13 +41,13 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
     };
 
     function removeFromParty() {
-        // console.log(view(), "Removing From Party");
         EventBus.emit("remove-party", view());
-        const newParty = party().filter(p => p._id !== view()?._id);
-        setParty(newParty);
         setTotal(prev => prev - 1);
         setRemoveShow(false); 
         setView(undefined);
+        setTimeout(() => {
+            setParty(instance?.game?.registry.get("party"));
+        }, 1000);
     };
 
     function selectOpponent(type: string, value: number | string) {
@@ -57,12 +56,11 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
             [type]: value
         });
         const res: any = fetchPartyPotential(selector().level, selector().mastery);
-        // console.log(res, "Result of fetching potential party members");
         setPotential(res);
     };
 
     return <Show when={show()}>
-        <div class="modal" style={{ }}>
+        <div class="modal">
             <div class="left" style={{...partialStyle(ascean().mastery), left: "1%"}}>
             <div class="creature-heading center">
                     <h1>Current Party ({party().length})</h1>
@@ -105,7 +103,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                     <h1>Potential Recruits</h1>
                     <For each={potential()}>{(party) => {
                         return (
-                            <div class="textGlow" style={{ color: masteryColor(party.mastery), "--glow-color":masteryColor(party.mastery), margin: 0 }}>{party.name} <button class="highlight" disabled={total() === 3} onClick={() => {setView(party); setAddShow(true);}} style={{ animation: "", color: total() === 3 ? "red" : "" }}>View</button></div>
+                            <div class="textGlow" style={{ color: masteryColor(party.mastery), "--glow-color":masteryColor(party.mastery), margin: 0 }}>{party.name} <button class="highlight" onClick={() => {setView(party); setAddShow(true);}} style={{ animation: "", color: total() === 3 ? "red" : "" }}>View</button></div>
                         )
                     }}</For>
                     <div>
@@ -115,7 +113,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
             <button class="highlight cornerBR" onClick={() => setShow(false)} style={{ color: "red" }}>X</button>
         </div>
         <Show when={addShow()}>
-            <div class="modal" style={{ }}>
+            <div class="modal">
                 <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: "gold" }}>Add {view()?.name}?</p>
                     <h2>{view()?.description}</h2>
@@ -123,19 +121,23 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                     
                     <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
-                <button class="highlight cornerTR animate" onClick={addToParty}>Add</button>
+                
+                <Show when={total() < 3}>
+                    <button class="highlight cornerTR animate" onClick={addToParty}>Add To Party</button>
+                </Show>
+               
                 <button class="highlight cornerBR" onClick={() => {setAddShow(false); setView(undefined)}} style={{ color: "red" }}>Cancel</button>
             </div>
         </Show>
         <Show when={removeShow()}>
-            <div class="modal" style={{ }}>
+            <div class="modal">
                 <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: "red", "font-size":"1.5em", margin: "2% auto" }}>Remove {view()?.name}?</p>
                     <h2>{view()?.description}</h2>
                     <p>Level: <span class="gold">{view()?.level}</span> | Mastery: <span class="gold">{(view()?.mastery as string)?.charAt(0).toUpperCase() + view()?.mastery?.slice(1)}</span></p>
                     <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                 </div>
-                <button class="highlight cornerTR animate" onClick={removeFromParty}>Remove</button>
+                <button class="highlight cornerTR animate" onClick={removeFromParty}>Remove From Party</button>
                 <button class="highlight cornerBR" onClick={() => {setRemoveShow(false); setView(undefined);}} style={{ color: "red" }}>Cancel</button>
             </div>
         </Show>

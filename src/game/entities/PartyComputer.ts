@@ -273,12 +273,14 @@ export default class Party extends Entity {
         };
         this.setActive(false);
         this.clearBubbles();
+        this.removeHighlight();
         this.scrollingCombatText = undefined;
         this.specialCombatText = undefined;
         this.castbar.cleanUp();
         this.healthbar.cleanUp();
         this.spriteWeapon.destroy();
         this.spriteShield.destroy();
+        this.highlight.destroy();
     };
 
     playerStateListener = () => {

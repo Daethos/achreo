@@ -282,7 +282,7 @@ export default function App() {
         };
     };
 
-    async function addParty(party: { name: string; level: number; }) {
+    async function addParty(party: { name: string; level: number; force?: boolean; }) {
         try {
             let asc = getEnemy(party.name, party.level);
             asc._id = uuidv4();
@@ -297,12 +297,16 @@ export default function App() {
                 compiledParty.push(compile);
             };
             phaserRef.game?.registry.set("party", compiledParty);
+            if (party.force) {
+                EventBus.emit("add-to-party", asc);
+            };
         } catch(err) {
             console.warn(err, "Error Adding to Party");
         };
     };
     async function removeParty(party: Ascean) {
         try {
+            console.log(party, "removeParty");
             let newParty = await getParty(ascean()._id);
             newParty.party = newParty.party.filter((e: Ascean) => {
                 return e._id !== party._id;

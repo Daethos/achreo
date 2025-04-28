@@ -429,6 +429,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setForgeSee: () => {setForgeSee(!forgeSee()); setEtchings({...etchings(), show:false}); setForgings({...forgings(), show:false});},
         setReetchSee: () => {checkEtchings(); setForgeSee(false); setForgings({...forgings(), show:false});},
         setReforgeSee: () => {checkForgings(); setForgeSee(false); setEtchings({...etchings(), show:false});},
+        setRegistry: () => setRegistry(true),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit("highlight", "joystick"),
         getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
@@ -506,8 +507,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function checkForgings() {
-        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket]
-            .filter((i: Equipment) => !i.rarity?.includes("Default"));
+        let items = [ascean().weaponOne, ascean().weaponTwo, ascean().weaponThree, ascean().shield, ascean().helmet, ascean().chest, ascean().legs, ascean().amulet, ascean().ringOne, ascean().ringTwo, ascean().trinket].filter((i: Equipment) => !i.rarity?.includes("Default"));
         setForgings({...forgings(),show:true,items});
     };
 
@@ -1358,8 +1358,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             </div>
             {/* Uncommon: Achiom, Rare: Senic, Epic: Kyr, Legendary: Sedyreal */}
             { combat().npcType === "Merchant-Smith" ? ( <>
-                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already."
+                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already.
                     <br /><br />
+                    "Also, if you wish to find some companion to engage in your journey, I've a registry of those looking to venture and find treasure in this world."
                     <p class="gold">
                     Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
                     </p>
@@ -1367,12 +1368,22 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <p class="blueMarkup">[Rare - 3g]</p>
                     <p class="purpleMarkup">[Epic - 12g]</p>
                     <p class="darkorangeMarkup">[Legendary - 60g]</p>
+                    <br /><button class="highlight" data-function-name="setRegistry">Check the Registry</button> 
                     <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater?</button>
                     <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess?</button>
                     <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry?</button>
                     <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith?</button>
                 `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
+                
+                {/* { party() && (
+                    <>
+                        <br />
+                        <Typewriter stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} styling={{...typewriterStyling, color: "gold"}} performAction={hollowClick} />
+                        <br />
+                        <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
+                    </>
+                ) } */}
                 {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
                     {upgradeItems().map((item: any) => {
                         if (item === undefined) return;
@@ -1787,14 +1798,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </svg>
                 <div class="center">
                     <Show when={reforge().item?.type && reforge().item?.grip}>
-                        <div class="my-2" style={{"font-size":"1.25em", margin:"3%"}}>
+                        <div class="my-2" style={{"font-size":"1.35em", margin:"3%"}}>
                             {reforge().item?.type} [<span style={{ "font-style": "italic", color: "gold" }}>{reforge().item?.grip}</span>] <br />
                             {reforge().item?.attackType} [<span style={{ "font-style": "italic", color: "gold" }}>{reforge().item?.damageType?.[0]}{reforge().item?.damageType?.[1] ? " / " + reforge().item?.damageType?.[1] : "" }{reforge().item?.damageType?.[2] ? " / " + reforge().item?.damageType?.[2] : "" }</span>] <br />
                         </div>
                     </Show>
                     <Show when={reforge().item?.type && !reforge().item?.grip}>
-                        <div style={{"font-size":"1.25em", margin:"3%"}}>{reforge().item?.type}</div>
+                        <div style={{"font-size":"1.35em", margin:"3%"}}>{reforge().item?.type}</div>
                     </Show>
+                    <div style={{ "font-size":"1.15em" }}>
                     {attrSplitter("CON", reforge().item?.constitution as number)}
                     {attrSplitter("STR", reforge().item?.strength as number)}
                     {attrSplitter("AGI", reforge().item?.agility as number)}
@@ -1816,6 +1828,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Show when={reforge().item?.influences && reforge().item?.influences?.length as number > 0}>
                         Influence: <span class="gold">{reforge().item?.influences?.[0]}</span>
                     </Show>
+                    </div>
                     <div style={{ color: getRarityColor(reforge().item?.rarity as string), "font-size": "1.5em", "margin-top": "3%", "margin-bottom": "4%" }}>
                         {reforge().item?.rarity}
                     </div>
@@ -1863,7 +1876,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </p>
                 <div>
                     <For each={etchModalShow().types}>{(type: string) => {
-                        return <button class="highlight" style={{ color: "gold", "font-weight": 600, "font-size": "1.5em" }} onClick={() => handleEtching(type, GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST], etchModalShow()?.item as Equipment)}>
+                        return <button class="highlight" style={{ color: "gold", "font-weight": 600, "font-size": "1.5em", margin: "0 3% 5%" }} onClick={() => handleEtching(type, GET_ETCH_COST[etchModalShow().item?.rarity as string as keyof typeof GET_ETCH_COST], etchModalShow()?.item as Equipment)}>
                             {type}
                         </button>
                     }}</For>
@@ -1976,7 +1989,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </Show>
                 <br /><br />
                 </div>
-                <button class="cornerTL highlight" style={{color:"green"}} onClick={() => refreshLoot()}>Refresh</button>
+                <Show when={combat().npcType !== "Merchant-Smith"}>
+                    <button class="cornerTL highlight" style={{color:"green"}} onClick={() => refreshLoot()}>Refresh</button>
+                </Show>
                 <Show when={merchantSell()} fallback={
                     <button class="highlight cornerTR" classList={{ "animate": massLootSell().length > 0}} style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={sellMassLoot}>Mass Sell</button>
                 }>

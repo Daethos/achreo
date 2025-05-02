@@ -24,8 +24,10 @@ import Party from "../entities/PartyComputer";
 import { PARTY_OFFSET } from "../../utility/party";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { ARENA_ENEMY, fetchArena } from "../../utility/enemy";
+import { LEVEL_SELECTOR } from "../../ui/Roster";
 
-export class Arena extends Phaser.Scene {
+export class Gauntlet extends Phaser.Scene {
     sceneKey: string = "";
     animatedTiles: any[];
     offsetX: number;
@@ -80,9 +82,13 @@ export class Arena extends Phaser.Scene {
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     aoePool: AoEPool;
+    round: {current:number;target:number;}={current:0,target:1};
+    gauntlet: {opponents:number;type:string;round:number;};
+    currentRound: number = 1;
+    countdown: Phaser.GameObjects.Text;
 
     constructor (view?: string) {
-        const key = view || "Arena";
+        const key = view || "Gauntlet";
         super(key);
         this.sceneKey = key;
     };
@@ -96,6 +102,7 @@ export class Arena extends Phaser.Scene {
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
+        this.gauntlet = this.registry.get("gauntlet");
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
@@ -170,6 +177,11 @@ export class Arena extends Phaser.Scene {
 
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
+        this.countdown = this.add.text(0, 0, "", { color: "#fdf6d8", fontFamily: "Cinzel", fontSize: "20px", stroke: "#000", strokeThickness: 2, align: "center" });
+        this.hud.add.existing(this.countdown);
+        this.countdown.setDepth(100);
+        this.countdown.setOrigin(0.5);
+        this.countdown.setVisible(false);
 
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys("W,UP"),
@@ -294,13 +306,14 @@ export class Arena extends Phaser.Scene {
                 EventBus.emit("reset-game");
             });
         });
-        EventBus.on("switch-arena", this.switchArena);
+        EventBus.on("switch-gauntlet", this.switchGauntlet);
     };
 
     resumeScene = () => {
         this.cameras.main.fadeIn();
         this.resumeMusic();
         this.state = this.registry.get("combat");
+        this.gauntlet = this.registry.get("gauntlet");
         this.player.health = this.state.newPlayerHealth;
         this.player.healthbar.setValue(this.state.newPlayerHealth);
         this.player.healthbar.setTotal(this.state.playerHealth);
@@ -356,7 +369,7 @@ export class Arena extends Phaser.Scene {
                 this.tweenManager[tween.name] = this.tweens.add({
                     targets: tween,
                     angle: count * 360,
-                    duration: count * 925,
+                    duration: count * 950,
                     ease: "Circ.easeInOut",
                     yoyo: false,
                 });
@@ -395,12 +408,13 @@ export class Arena extends Phaser.Scene {
         };
     };
 
-    switchArena = () => {
+    switchGauntlet = () => {
         this.wager = { silver: 0, gold: 0, multiplier: 0 };
+        this.currentRound = 1;
         this.player.defeatedDuration = 0;
-        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the arena. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
+        EventBus.emit("alert", { header: "Exiting the Eulex", body: `You are now poised to leave the gauntlet. Stand by, this experience is automated.`, duration: 3000, key: "Close" });    
         this.time.delayedCall(3000, () => {
-            EventBus.emit("scene-switch", {current:"Arena", next:"Underground"});
+            EventBus.emit("scene-switch", {current:"Gauntlet", next:"Underground"});
         }, undefined, this);
     };
 
@@ -518,6 +532,8 @@ export class Arena extends Phaser.Scene {
         for (let i = 0; i < this.party.length; i++) {
             const p = this.party[i];
             p.isDeleting = true;
+            p.active = false;
+            p.visible = false;
             this.time.delayedCall(500, () => {
                 this.party = this.party.filter((party: Party) => party.enemyID !== p.enemyID);
                 p.cleanUp();
@@ -534,12 +550,28 @@ export class Arena extends Phaser.Scene {
         };
     };
 
+    createNewEnemies = (): void => {
+        const range = [LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].prev, Math.min((this.player.ascean.level % 2 === 0 ? this.player.ascean.level : this.player.ascean.level + 1), 8), LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].next];
+        const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
+        const enemies = []
+        for (let i = 0; i < this.gauntlet.opponents; ++i) {
+            const mastery = masteries[Math.floor(Math.random() * masteries.length)];
+            enemies.push(mastery);    
+        };
+        const enemySet: ARENA_ENEMY[] = enemies.map((mastery: string) => {
+            const level = range[Math.floor(Math.random() * range.length)];
+            return { level, mastery } as ARENA_ENEMY;
+        });
+        const newEnemies = fetchArena(enemySet);
+        this.registry.set("enemies", newEnemies);
+    };
+
     createArenaEnemy = () => {
         EventBus.emit("alert", { header: "Prepare!", body: "The enemies are being summoned. Prepare for the Eulex.", key: "Close" });
         this.time.delayedCall(1000, () => {
             let data: Compiler[] = this.registry.get("enemies");
             if (!data) {
-                this.switchArena();
+                this.switchGauntlet();
                 return;
             };
             let marker: any, markers: any[] = [], count = 0, current: number = 1250;
@@ -562,20 +594,41 @@ export class Arena extends Phaser.Scene {
                     count = j;
                     current = distance;
                 };
+                const potentialTargets = [this.player];
                 if (team) {
                     for (let k = 0; k < this.party.length; k++) {
                         this.party[k].enemies.push({id:enemy.enemyID, threat:0});
                         enemy.enemies.push({id:this.party[k].enemyID,threat:0});
+                        potentialTargets.push(this.party[k]);
                     };
                 };
+                if (this.gauntlet.type === "Free For All") {
+                    for (let en = 0; en < this.enemies.length; en++) {
+                        if (this.enemies[en].enemyID === enemy.enemyID) continue;
+                        enemy.enemies.push({id:this.enemies[en].enemyID,threat:0});
+                        potentialTargets.push(this.enemies[en]);
+                    };
+                };
+                const target = potentialTargets[Math.floor(Math.random() * potentialTargets.length)];
                 this.time.delayedCall(1000, () => {
-                    if (this.party.length > 0 && Math.random() > 0.5 && team) {
-                        enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
+                    if (target.name === "player") {
+                        enemy.checkEnemyCombatEnter();
+                    } else if (target.name === "enemy") {
+                        enemy.checkComputerEnemyCombatEnter(target);
                         enemy.enemies.push({id:this.player.playerID,threat:0});
                         enemy.inCombat = true;
-                    } else {
-                        enemy.checkEnemyCombatEnter();
+                    } else if (target.name === "party") {
+                        enemy.checkComputerEnemyCombatEnter(target);
+                        enemy.enemies.push({id:this.player.playerID,threat:0});
+                        enemy.inCombat = true;
                     };
+                    // if (this.party.length > 0 && Math.random() > 0.5 && team) {
+                    //     enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
+                    //     enemy.enemies.push({id:this.player.playerID,threat:0});
+                    //     enemy.inCombat = true;
+                    // } else {
+                    //     enemy.checkEnemyCombatEnter();
+                    // };
                     this.player.targets.push(enemy);
                     if (count === j) {
                         if (this.player.isComputer) {
@@ -625,13 +678,38 @@ export class Arena extends Phaser.Scene {
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             if (this.enemies.length === 0) { // || !this.inCombat
-                if (enemy.isDefeated) {
-                    EventBus.emit("settle-wager", { wager: this.wager, win: true });
-                } else if (enemy.isTriumphant) {
-                    EventBus.emit("settle-wager", { wager: this.wager, win: false });
+                // check for Rounds and current
+                if (this.currentRound === this.gauntlet.round || enemy.isTriumphant) {
+                    if (enemy.isDefeated) {
+                        EventBus.emit("settle-wager", { wager: this.wager, win: true });
+                    } else if (enemy.isTriumphant) {
+                        EventBus.emit("settle-wager", { wager: this.wager, win: false });
+                    };
+                    this.computerDisengage();
+                    this.hud.clearNonAggressiveEnemy();
+                } else {
+                    EventBus.emit("alert", { header: "Congratulations", body: `You have survived this round (${this.currentRound}), you have 10 seconds to prepare for the next. Good Luck.`, key: "Close" });
+                    let cd = 10;
+                    this.countdown.setText(`Round ${this.currentRound + 1} commencing in 10 seconds.`);
+                    this.countdown.setPosition(this.cameras.main.width / 2, this.cameras.main.height * 0.2); //  - this.countdown.width / 2
+                    this.countdown.setVisible(true);
+                    this.countdown.setScrollFactor(0);
+                    this.time.addEvent({
+                        delay: 1000,
+                        repeat: 9,
+                        callback: () => {
+                            --cd;
+                            this.countdown.setText(`Round ${this.currentRound + 1} commencing in ${cd} seconds.`);
+                            if (cd === 0) {
+                                this.currentRound++;
+                                this.createNewEnemies();
+                                this.createArenaEnemy();        
+                                this.countdown.setVisible(false);
+                            };
+                        },
+                        callbackScope: this
+                    });
                 };
-                this.computerDisengage();
-                this.hud.clearNonAggressiveEnemy();
             };
             enemy.cleanUp();
             enemy.destroy();

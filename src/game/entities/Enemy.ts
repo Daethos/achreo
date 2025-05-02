@@ -271,7 +271,7 @@ export default class Enemy extends Entity {
         // const paddedHeight = colliderHeight + 2 * paddingHeight;
         // let enemyCollider = Bodies.rectangle(this.x, this.y + 10, colliderWidth, colliderHeight, { isSensor: false, label: "enemyCollider" });
         // enemyCollider.boundsPadding = { x: paddedWidth, y: paddedHeight };
-        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena" || this.scene.hud.currScene === "Gauntlet";
         let colliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: !underground,
             label: "body",

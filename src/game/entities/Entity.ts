@@ -19,6 +19,7 @@ import { Play } from "../main";
 import { Tutorial } from "../scenes/Tutorial";
 import Party from "./PartyComputer";
 import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
+import { Gauntlet } from "../scenes/Gauntlet";
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
 };
@@ -28,7 +29,7 @@ export function calculateThreat(damage: number, currentHealth: number, totalHeal
     const relative = damageRatio + healthRatio;
     return relative;
 };
-export type Player_Scene = Game | Underground | Tutorial | Arena;
+export type Player_Scene = Game | Underground | Tutorial | Arena | Gauntlet;
 export const FRAMES = {
     ANIMATION_COMPLETE: "animationcomplete",
     CLIMB: "player_climb",

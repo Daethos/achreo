@@ -160,6 +160,7 @@ export const RANGE = {
     Underground: 2000,
     Game: 1000,
     Arena: 2000,
+    Gauntlet: 3000,
 }; 
 export const INSTINCTS = {
     "constitution": [

@@ -27,6 +27,7 @@ const CONVERSION = {
     ArenaView7: Default,
     ArenaView8: Default,
     Game: Default,
+    Gauntlet: Default,
     Tutorial: Default,
     Underground: {
         X: 555, // 500

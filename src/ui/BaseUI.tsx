@@ -33,6 +33,12 @@ export type ArenaRoster = {
     result: boolean;
     win: boolean;
     party: boolean;
+    map: string;
+    gauntlet: {
+        opponents: number,
+        round: number,
+        type: string,
+    }
 };
 interface Props {
     instance: Store<IRefPhaserGame>;
@@ -74,7 +80,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false });
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false, map: "ARENA", gauntlet: { opponents: 1, type: "RANDOMIZED", round: 1 } });
     createEffect(() => EventBus.emit("combat", combat()));  
     createEffect(() => EventBus.emit("game", game()));  
     createEffect(() => EventBus.emit("reputation", reputation()));
@@ -476,6 +482,17 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         instance.game?.registry.set("team", team);
         setArena({ ...arena(), wager });
         EventBus.emit("scene-switch", {current:"Underground", next:"Arena"});
+    });
+    usePhaserEvent("set-wager-gauntlet", (data: {enemies: Compiler[]; team: boolean; wager: {silver:number; gold:number; multiplier: number;};}) => {
+        const { enemies, team, wager } = data;
+        instance.game?.registry.set("enemies", enemies);
+        const gauntlet = { ...arena().gauntlet, opponents: enemies.length };
+        instance.game?.registry.set("gauntlet", gauntlet);
+
+        instance.game?.registry.set("team", team);
+        instance.game?.registry.set("wager", wager);
+        setArena({ ...arena(), wager });
+        EventBus.emit("scene-switch", {current:"Underground", next:"Gauntlet"});
     });
     usePhaserEvent("set-wager-underground", (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[] }) => {
         const { wager, enemies } = data;

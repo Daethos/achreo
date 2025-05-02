@@ -16,7 +16,8 @@ import { Underground } from "./scenes/Underground";
 import { Arena } from "./scenes/Arena";
 import { Tutorial } from "./scenes/Tutorial";
 import { ArenaCvC } from "./scenes/ArenaCvC";
-export type Play = Arena | ArenaCvC | Game | Tutorial | Underground;
+import { Gauntlet } from "./scenes/Gauntlet";
+export type Play = Arena | ArenaCvC | Game | Gauntlet | Tutorial | Underground;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
@@ -30,7 +31,7 @@ const config: Phaser.Types.Core.GameConfig = {
     backgroundColor: "#000",
     dom: {createContainer: true},
     input: {activePointers: 10, mouse:true, windowEvents:false},
-    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Hud],
+    scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Gauntlet,Hud],
     physics: {
         default: "matter",
         matter: {gravity: {x: 0, y: 0}}, // debug: true,

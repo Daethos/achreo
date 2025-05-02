@@ -17,6 +17,7 @@ import { Underground } from "./Underground";
 import { EnemySheet } from "../../utility/enemy";
 import Talents from "../../utility/talents";
 import { Player_Scene } from "../entities/Entity";
+import { Gauntlet } from "./Gauntlet";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
@@ -463,6 +464,7 @@ export class Hud extends Phaser.Scene {
             const game = this.scene.manager.getScene("Game") as Game;
             const tutorial = this.scene.manager.getScene("Tutorial") as Tutorial;
             const arena = this.scene.manager.getScene("Arena") as Arena;
+            const gauntlet = this.scene.manager.getScene("Gauntlet") as Gauntlet;
             const underground = this.scene.manager.getScene("Underground") as Underground;
             if (this.scene.isActive("Game")) {
                 if (on) {
@@ -487,6 +489,12 @@ export class Hud extends Phaser.Scene {
                     arena.resumeMusic();
                 } else {
                     arena.pauseMusic();
+                };
+            } else if (this.scene.isActive("Gauntlet")) {
+                if (on) {
+                    gauntlet.resumeMusic();
+                } else {
+                    gauntlet.pauseMusic();
                 };
             };
         });

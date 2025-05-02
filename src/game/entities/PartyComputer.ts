@@ -160,7 +160,7 @@ export default class Party extends Entity {
         //     isSensor: false, label: "partyCollider",
         //     // collisionFilter: {category: ENTITY_FLAGS.PARTY, mask: ENTITY_FLAGS.ENEMY}
         // }); // Y + 10 For Platformer
-        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena" || this.scene.hud.currScene === "Gauntlet";
         let colliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: !underground,
             label: "body",

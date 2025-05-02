@@ -1,4 +1,4 @@
-import { Accessor, createSignal, For, JSX, Setter, Show } from "solid-js";
+import { Accessor, createSignal, For, onMount, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";
@@ -14,7 +14,7 @@ import ItemModal from "../components/ItemModal";
 import { roundToTwoDecimals } from "../utility/combat";
 import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import Settings from "../models/settings";
-const selectors = {
+export const LEVEL_SELECTOR = {
     0.5: { prev: 0.5, next: 1 },
     1: { prev: 0.5, next: 2 },
     2: { prev: 1, next: 4 },
@@ -22,25 +22,71 @@ const selectors = {
     6: { prev: 4, next: 8 },
     8: { prev: 6, next: 8 },
 };
+type NODE = {
+    [key: string]: {
+        key: string;
+        next: string;
+        prev: string;
+    };
+    // [key: string]: any;
+};
+const SCENE_SWITCH: NODE = {
+    ARENA: {
+        key:"ARENA",
+        next: "GAUNTLET",
+        prev: "UNDERGROUND",
+    },
+    GAUNTLET: {
+        key:"GAUNLET",
+        next: "UNDERGROUND",
+        prev: "ARENA",
+    },
+    UNDERGROUND: {
+        key:"UNDERGROUND",
+        next: "ARENA",
+        prev: "GAUNTLET",
+    },
+};
+const GAUNTLET_SWITCH: NODE = {
+    FREE_FOR_ALL: {
+        key: "Free For All",
+        next: "RANDOMIZED",
+        prev: "SELECTED"
+    },
+    RANDOMIZED: {
+        key: "Randomized",
+        next: "SELECTED",
+        prev: "FREE_FOR_ALL"
+    },
+    SELECTED: {
+        key: "Selected",
+        next: "FREE_FOR_ALL",
+        prev: "RANDOMIZED"
+    },
+};
+function getLevel(ascean: Accessor<Ascean>): number {
+    return Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8);
+};
 
 export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
-    const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: "constitution", id: "" });
-    const [switchScene, setSwitchScene] = createSignal<boolean>(true);
+    const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: getLevel(ascean), mastery: "constitution", id: "" });
+    const [switchScene, setSwitchScene] = createSignal<any>("ARENA");
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
+    const [opponents, setOpponents] = createSignal<number>(1);
     const [party, setParty] = createSignal<any>(instance?.game?.registry.get("party"));
 
     function createArena() {
         EventBus.emit("alert", { header: "Duel Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
-        const p = instance?.game?.registry.get("party");
-        setParty(p);
+        // const p = instance?.game?.registry.get("party");
+        // setParty(p);
         const enemies = fetchArena(arena().enemies);
         let multiplier = 0;
         for (let i = 0; i < arena().enemies.length; i++) {
             multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
         };
         if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
-        if (p.length > 0 && arena().party) multiplier *= 1 / (1 + p.length);
+        if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
         multiplier /= 2;
         const wager = { ...arena().wager, multiplier };
         if (switchScene()) {
@@ -50,6 +96,51 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         };
         setArena({ ...arena(), show: false });
         if (!base) EventBus.emit("outside-press", "dialog");
+    };
+
+    function createGauntlet() {
+        EventBus.emit("alert", { header: "Gauntlet Constructing", body: `The Ancient Eulex has begun. You have chosen to run the gauntlet. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+        if (GAUNTLET_SWITCH[arena().gauntlet.type].key !== "Selected") {
+            randomizedGauntlet();
+        };
+        const enemies = fetchArena(arena().enemies);
+        let multiplier = 0;
+        for (let i = 0; i < arena().enemies.length; i++) {
+            multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
+        };
+        if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
+        if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
+        multiplier *= arena().gauntlet.round;
+        multiplier /= 2;
+        const wager = { ...arena().wager, multiplier };
+
+        EventBus.emit("set-wager-gauntlet", {enemies, team: arena().party, wager});
+        setArena({ ...arena(), show: false });
+        if (!base) EventBus.emit("outside-press", "dialog");
+    };
+
+    function changeGauntletMode() {
+        setArena({...arena(), gauntlet: { ...arena().gauntlet, type: GAUNTLET_SWITCH[arena().gauntlet.type].next }});
+    };
+
+    function checkGauntletReady(): boolean {
+        if (switchScene() !== "GAUNTLET") return false;    
+        return arena().gauntlet.type !== "SELECTED" ? true : arena().enemies.length > 0;
+    };
+
+    function randomizedGauntlet() {
+        const range = [LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev, getLevel(ascean), LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next];
+        const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
+        const enemies = []
+        for (let i = 0; i < opponents(); ++i) {
+            const mastery = masteries[Math.floor(Math.random() * masteries.length)];
+            enemies.push(mastery);    
+        };
+        const enemySet: ARENA_ENEMY[] = enemies.map((mastery: string) => {
+            const level = range[Math.floor(Math.random() * range.length)];
+            return { level, mastery } as ARENA_ENEMY;
+        });
+        setArena({ ...arena(), enemies: enemySet });
     };
 
     function opponentAdd() {
@@ -92,13 +183,14 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const partyAvailable = party().length > 0;
         let team: boolean = false;
         if (partyAvailable) {
-            team = switchScene() && partyAvailable ? !arena().party : partyAvailable;
+            team = switchScene() !== SCENE_SWITCH.UNDERGROUND.key && partyAvailable ? !arena().party : partyAvailable;
         };
         setArena({...arena(), party: team});
     };
     function switchScenes() {
-        setSwitchScene(!switchScene());
-        if (switchScene() === false) checkTeam();
+        setSwitchScene(SCENE_SWITCH[switchScene()].next);
+        setArena({...arena(), map:SCENE_SWITCH[switchScene()].key});
+        if (switchScene() === SCENE_SWITCH.UNDERGROUND.key) checkTeam();
     };
     function clearWager() {
         let silver = ascean().currency.silver, gold = ascean().currency.gold;
@@ -112,7 +204,8 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const currency = rebalanceCurrency({ silver, gold });
         EventBus.emit("update-currency", currency);
         setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, win: false, show: false, result: false });
-        if (switchScene()) EventBus.emit("switch-arena");
+        if (switchScene() === "ARENA") EventBus.emit("switch-arena");
+        if (switchScene() === "GAUNTLET") EventBus.emit("switch-gauntlet");
     };
 
     function getRebalance() {
@@ -120,6 +213,11 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const silver = arena().win ? Math.round(arena().wager.silver * arena().wager.multiplier) : -arena().wager.silver;
         return rebalanceCurrency({ silver, gold });
     };
+
+    onMount(() => {
+        setParty(instance?.game?.registry?.get("party"));
+    });
+
     return <Show when={arena().show}>
         <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
@@ -128,18 +226,38 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
                         <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                         {/* settings().difficulty.arena ? "Arena [Computer]" : */}
-                        <h1 style={{ margin: "8px 0" }} onClick={switchScenes}><span style={{ color: "#fdf6d8" }}>Map: </span>{switchScene() ? !settings().difficulty.arena ? "Arena [Computer]" : "Arena [Manual]" : "Underground [Manual]"}</h1>
+                        <h1 style={{ margin: "8px 0" }} onClick={switchScenes}><span style={{ color: "#fdf6d8" }}>Map: </span>{switchScene() === "ARENA" ? !settings().difficulty.arena ? "Arena [Computer]" : "Arena [Manual]" : switchScene() === "GAUNTLET"  ? !settings().difficulty.arena ? "Gauntlet [Computer]" : "Gauntlet [Manual]" : "Underground [Manual]"}</h1>
+                        <Show when={switchScene() === "GAUNTLET"}><h1 onClick={changeGauntletMode} style={{ margin: "8px 0" }}>{GAUNTLET_SWITCH[arena().gauntlet.type].key}</h1></Show>
                         <p style={{ color: "gold", "font-size": "0.75em", "margin": "0" }}>Click on Maps and/or Opponents to Switch Between Options<br /> [Note]: Player AI is available only in the Arena. <br /> If you have a party, you cannot fight [Solo] in the Underground.</p>
                         <h1 ></h1>
-                        {arena().enemies.length > 0 && <button class="highlight animate" onClick={() => createArena()} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
+                        {(arena().enemies.length > 0 && switchScene() !== "GAUNTLET") && <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
+                        {checkGauntletReady() && <button class="highlight animate" onClick={createGauntlet} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
                         <For each={arena().enemies}>{(enemy) => {
                             return (
                                 <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
                             )
                         }}</For>
-                        <div>
-                            <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em" }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
-                        </div>
+                        <Show when={switchScene() === "GAUNTLET"}>
+                            <div>
+                                Rounds: {arena().gauntlet.round === 11 ? "∞" : arena().gauntlet.round}
+                                <button class="highlight" onClick={() => setArena({ ...arena(), gauntlet: { ...arena().gauntlet, round: Math.max(1, arena().gauntlet.round - 1) } })}>-</button>
+                                <button class="highlight" onClick={() => setArena({ ...arena(), gauntlet: { ...arena().gauntlet, round: Math.min(11, arena().gauntlet.round + 1) } })}>+</button>
+                            </div>
+                        </Show>
+                        <Show when={switchScene() === "GAUNTLET" && arena().gauntlet.type !== "SELECTED"} fallback={
+                            <div>
+                                <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em" }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
+                            </div>
+                        }>
+                            <div>
+                                Opponents Per Round: {opponents()}
+                                <button class="highlight" onClick={() => setOpponents(Math.max(1, opponents() - 1))}>-</button>
+                                <button class="highlight" onClick={() => setOpponents(Math.min(12, opponents() + 1))}>+</button>
+                                <div class="border" style={{"font-size":"0.75em", padding:"3%"}}>
+                                    You are setting the gauntlet to be free for all or randomized. This will summon randomized enemies each round, from level to mastery.
+                                </div>
+                            </div>
+                        </Show>
                     </div>
                 </div>
                 <div class="right" style={{...partialStyle(ascean().mastery), left: "50.5%"}}>
@@ -148,11 +266,11 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                             <div>
                                 <p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Opponent Level ({selector().level}) <br /> 
                                     <span style={{ color: "#fdf6d8", "font-size": "0.75em" }}>
-                                        Prev ({selectors[selector().level as keyof typeof selectors].prev}) |  Next ({selectors[selector().level as keyof typeof selectors].next}) 
+                                        Prev ({LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev}) |  Next ({LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next}) 
                                     </span>
                                 </p>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", selectors[selector().level as keyof typeof selectors].prev)}>-</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", selectors[selector().level as keyof typeof selectors].next)}>+</button>
+                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev)}>-</button>
+                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next)}>+</button>
                             </div>
                             <div style={{ "margin-bottom": "8px" }}><p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
                                 <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>
@@ -219,7 +337,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                     }}</For>
                     <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> <span>{arena().wager.gold}g <span style={{ color: "silver" }}>{arena().wager.silver}s</span></span></h1>
                     <p class="gold textGlow" style={{ margin: "0 auto", "font-size": "1.25em" }}>
-                        {arena().wager.gold > 0 ? arena().win ? `+${getRebalance().gold}g` : `-${getRebalance().gold}g` : ``} <span style={{ color: "silver" }}>{arena().wager.silver > 0 ? arena().win ? `+${getRebalance().silver}s` : `-${getRebalance().silver}s` : ``}</span>
+                        {arena().wager.gold > 0 ? arena().win ? `+${getRebalance().gold}g` : `${getRebalance().gold}g` : ``} <span style={{ color: "silver" }}>{arena().wager.silver > 0 ? arena().win ? `+${getRebalance().silver}s` : `-${getRebalance().silver}s` : ``}</span>
                     </p>
                     <Show when={game().lootDrops.length > 0}>
                         <For each={game().lootDrops}>

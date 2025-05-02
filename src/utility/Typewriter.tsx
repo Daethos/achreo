@@ -1,4 +1,4 @@
-import { Accessor, JSX, createEffect, createSignal } from "solid-js";
+import { Accessor, JSX, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import Typed from "typed.js";
 import { EventBus } from "../game/EventBus";
 type StyleMap = { [key: string]: JSX.CSSProperties };
@@ -173,6 +173,9 @@ interface TypewriterProps {
 
 export default function Typewriter({ stringText, styling, performAction, main }: TypewriterProps) {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
+    const [scrolling, setScrolling] = createSignal<boolean>(false);
+    let observer: MutationObserver | undefined = undefined;
+    let scrollTimeout: NodeJS.Timeout;
     let typed: Typed | null = null;
     let isTyping = false; // Flag to track typing status
     (window as any).handleButton = (button: string) => performAction(button);
@@ -185,6 +188,26 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         const functionName = element?.attributes?.["data-function-name" as any]?.value;
         element.setAttribute("onclick", `handleButton("${functionName}")`);
     };
+    function setupScrollObserver(containerSelector: any) {
+        const container = document.querySelector(containerSelector);
+
+        const observer = new MutationObserver(() => {
+            if (scrolling()) return;
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
+        
+        observer.observe(container, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+        
+        return observer;
+    };
+    
     const styleHTML = (html: string) => {
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, "text/html");
@@ -198,7 +221,15 @@ export default function Typewriter({ stringText, styling, performAction, main }:
     };
     createEffect(() => {
         if (typed) (typed as Typed).destroy();
-        if (el()) typewriter(stringText);
+        if (el()) {
+            observer?.disconnect();
+            observer = setupScrollObserver(".dialog-window");
+            typewriter(stringText);
+        };
+
+        onCleanup(() => {
+            observer?.disconnect();
+        });
     });
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === "function" ? text() : text;
@@ -227,6 +258,24 @@ export default function Typewriter({ stringText, styling, performAction, main }:
             EventBus.emit("typing-complete");
         };
     }; // "white-space": "pre-wrap", 
+
+    onMount(() => {
+        const container = document.querySelector(".dialog-window");
+        container?.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            setScrolling(true);
+            scrollTimeout = setTimeout(() => {
+                setScrolling(false);
+            }, 500);
+        });
+
+        onCleanup(() => {
+            container?.removeEventListener("scroll", () => {
+                clearTimeout(scrollTimeout);
+            });
+        });
+    });
+
     return (
         <div id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>
     );

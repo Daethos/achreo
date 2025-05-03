@@ -1,4 +1,4 @@
-import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js";
+import { Accessor, JSX, Setter, createEffect, createSignal, onMount } from "solid-js";
 import { getRarityColor } from "../utility/styling";
 import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
@@ -13,9 +13,13 @@ interface Props {
     setWeaponCompared: Setter<string>;
     setInventoryType: Setter<string>;
     inventorySwap: Accessor<any>;
+    index: Accessor<number>;
+    dragStart: (e: any, item: Equipment, index: number) => void;
+    dragEnd: (e: DragEvent) => void;
+    dragOver: (e: DragEvent, index: number) => void;
 };
 
-export default function Inventory({ ascean, inventory, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap }: Props) {
+export default function Inventory({ ascean, inventory, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap, index, dragStart, dragEnd, dragOver }: Props) {
     const [trueType, setTrueType] = createSignal("");
     const [editState, setEditState] = createSignal<any>({
         weaponOne: ascean().weaponOne,
@@ -43,7 +47,7 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
         _id: ascean()._id,
         inventoryType: "",
     });
-
+    let ref: HTMLDivElement;
     createEffect(() => {
         checkInventory();
         setEditState({
@@ -128,7 +132,15 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
         };
     };
 
-    return <div class="playerInventory" onClick={checkHighlight} style={getItemStyle(inventory?.rarity as string)}>
+    return <div class="playerInventory" 
+        onClick={checkHighlight} 
+        style={getItemStyle(inventory?.rarity as string)}
+        ref={ref!}
+        data-id={index()}
+        draggable={true}
+        ondragstart={(e) => dragStart(e, inventory, index())}
+        ondragend={(e) => dragEnd(e)}
+        ondragover={(e) => dragOver(e, index())}>
         <img src={inventory?.imgUrl} alt={inventory?.name} />
     </div>;
 };

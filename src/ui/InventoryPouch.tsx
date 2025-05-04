@@ -20,8 +20,12 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
     const [dragOverIndex, setDragOverIndex] = createSignal<any>(undefined);
     const [activeDrag, setActiveDrag] = createSignal<{index: number, item: any} | undefined>(undefined);
+    const [touchHoldTimeout, setTouchHoldTimeout] = createSignal<NodeJS.Timeout | null>(null);
+    const [isTouchHoldActive, setIsTouchHoldActive] = createSignal(false);
+    
     let touchStartPos = { x: 0, y: 0 };
     const TOUCH_SLOP = 10; // Minimum movement to start drag (px)
+    const TOUCH_HOLD_DELAY = 250;
 
     createEffect(() => {
         if (inventorySwap().start.id === undefined || inventorySwap().end.id === undefined) return;
@@ -73,7 +77,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     };
     
     const dragStart = (e: any, item: Equipment, index: number) => {
-        console.log('DragStart - Index | Item:', index, item, e);
+        // console.log('DragStart - Index | Item:', index, item, e);
         e.dataTransfer!.setData('text/plain', index.toString());
         setActiveDrag({ index, item });
         
@@ -98,7 +102,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         setTimeout(() => document.body.removeChild(dragImage), 0);
     };
 
-
     const dragEnd = (e: DragEvent) => {
         e.preventDefault();
         (e.target as HTMLElement).style.opacity = '1';
@@ -106,7 +109,11 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         const dragIndex = activeDrag()?.index;
         // console.log("dragEnd!", dragIndex, dragOverIndex());
         
-        if (dragIndex === undefined || dragOverIndex() === undefined || dragIndex === dragOverIndex()) return;
+        if (dragIndex === undefined || dragOverIndex() === undefined || dragIndex === dragOverIndex()) {
+            setActiveDrag(undefined);
+            setDragOverIndex(undefined);
+            return;
+        };
         
         setDragAndDropInventory(prev => {
             const newItems = [...prev];
@@ -132,12 +139,30 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             x: e.touches[0].clientX,
             y: e.touches[0].clientY
         };
-        
         const target = e.currentTarget as HTMLElement;
-        target.dataset.touched = 'true';
+        setTouchHoldTimeout(setTimeout(() => {
+            setIsTouchHoldActive(true);
+            target.dataset.touched = 'true';
+            target.style.transition = 'none';
+        }, TOUCH_HOLD_DELAY));
     };
       
     const handleTouchMove = (e: TouchEvent, item: Equipment, index: number) => {
+        if (!isTouchHoldActive()) {
+            // Check if we've moved too much during hold delay
+            const dx = Math.abs(e.touches[0].clientX - touchStartPos.x);
+            const dy = Math.abs(e.touches[0].clientY - touchStartPos.y);
+            
+            if (dx > TOUCH_SLOP || dy > TOUCH_SLOP) {
+                // Cancel the hold if finger moved too much
+                if (touchHoldTimeout()) {
+                    clearTimeout(touchHoldTimeout()!);
+                    setTouchHoldTimeout(null);
+                };
+                return;
+            };
+            return;
+        };
         const target = e.currentTarget as HTMLElement;
         if (target.dataset.touched !== "true") return;
         
@@ -150,13 +175,13 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             
             if (!activeDrag()) {
                 setActiveDrag({ index, item });
-                // target.style.opacity = "0.5";
+                target.style.opacity = "1";
+                // target.style.zIndex = "1000";
                 target.style.backgroundColor = "#F3E5AB";
                 target.style.boxShadow = '0 0 1.25em rgba(255, 215, 0, 0.7)';
-                target.style.border = "0.15em solid gold";
+                // target.style.border = "0.15em solid gold";
                 target.style.transform = "scale(0.5)";
             };
-        
             target.style.transition = "none";
             target.style.visibility = "hidden";
             const hoveredElement = document.elementFromPoint(touch.clientX, touch.clientY);
@@ -168,16 +193,25 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
                     setDragOverIndex(hoverIndex);
                 };
             };
-            target.style.transform = `translate(${dx}px, ${dy}px)`;
+        } else {
+            setDragOverIndex(index);
         };
+        target.style.transform = `translate(${dx}px, ${dy}px)`;
     };
       
     const handleTouchEnd = (e: TouchEvent) => {
+        if (touchHoldTimeout()) {
+            clearTimeout(touchHoldTimeout()!);
+            setTouchHoldTimeout(null);
+        };
+
         const target = e.currentTarget as HTMLElement;
         target.dataset.touched = "false";
-        
+        setIsTouchHoldActive(false);
         target.style.transform = "";
         target.style.boxShadow = "";
+        // target.style.border = "";
+        target.style.backgroundColor = "";
         target.style.transition = "transform 0.5s ease";
         
         if (activeDrag()) {
@@ -199,7 +233,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
                         <img src={activeDrag()?.item.imgUrl} alt={activeDrag()?.item?.name} />
                     </div>
                 </Show> */}
-                <div onClick={() => doubleTap(item, index)} class="juiceItem" style={{ margin: "5%", "grid-column": (activeDrag()?.index === index() && (activeDrag()?.index as number) < (dragOverIndex() as number)) ? "0" : "" }}>
+                <div onClick={() => doubleTap(item, index)} class="juiceItem" style={{ margin: "5%", background: dragOverIndex() === index() ? "gold" : "", opacity: dragOverIndex() === index() ? "0.75" : "1" }}>
                     <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} index={index}
                         highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
                         dragStart={dragStart} dragEnd={dragEnd} dragOver={dragOver}

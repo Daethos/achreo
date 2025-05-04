@@ -1,7 +1,6 @@
 import Inventory from "./Inventory";
 import { Accessor, createEffect, createSignal, For, Setter, Show } from "solid-js";
 import { EventBus } from "../game/EventBus";
-import { useResizeListener } from "../utility/dimensions";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { border } from "../utility/styling";
@@ -18,10 +17,11 @@ interface Props {
 export default function InventoryPouch({ ascean, setInventoryType, setHighlighted, highlighted, setRingCompared, setWeaponCompared, dragAndDropInventory, setDragAndDropInventory }: Props) {
     const [inventorySwap, setInventorySwap] = createSignal<any>({ start: { id: undefined, index: -1 }, end: { id: undefined, index: -1 } });
     const [prospectiveId, setProspectiveId] = createSignal<string | undefined>(undefined);
-    const dimensions = useResizeListener();
     const [doubleTapCount, setDoubleTapCount] = createSignal(0);
     const [dragOverIndex, setDragOverIndex] = createSignal<any>(undefined);
     const [activeDrag, setActiveDrag] = createSignal<{index: number, item: any} | undefined>(undefined);
+    let touchStartPos = { x: 0, y: 0 };
+    const TOUCH_SLOP = 10; // Minimum movement to start drag (px)
 
     createEffect(() => {
         if (inventorySwap().start.id === undefined || inventorySwap().end.id === undefined) return;
@@ -73,7 +73,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     };
     
     const dragStart = (e: any, item: Equipment, index: number) => {
-        // console.log('DragStart - Index:', index);
+        console.log('DragStart - Index | Item:', index, item, e);
         e.dataTransfer!.setData('text/plain', index.toString());
         setActiveDrag({ index, item });
         
@@ -81,14 +81,12 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         (e.target as HTMLElement).style.transform = 'scale(0.75)';
 
         const dragImage = (e.target as HTMLElement).cloneNode(true) as HTMLElement;
+
         dragImage.style.position = 'fixed';
         dragImage.style.top = '-9999px';
         dragImage.style.width = `${(e.target as HTMLElement).offsetWidth}px`;
-
         dragImage.style.boxShadow = '0 0 1.25em rgba(255, 215, 0, 0.7)';
-        // dragImage.style.filter = 'brightness(1.25) drop-shadow(0 0 5px rgba(255,255,255,0.9))';
         dragImage.style.border = '0.15em solid gold';
-        // dragImage.style.backgroundColor = '#fdf6d8';
         dragImage.style.opacity = "1";
         dragImage.style.width = `${(e.target as HTMLElement).offsetWidth * 1.25}px`;
         dragImage.style.height = `${(e.target as HTMLElement).offsetHeight * 1.25}px`;
@@ -97,8 +95,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
 
         document.body.appendChild(dragImage);
         e.dataTransfer!.setDragImage(dragImage, (e.target as HTMLElement).offsetWidth / 2, (e.target as HTMLElement).offsetHeight / 2);
-        // e.dataTransfer!.setDragImage(dragImage, (e.target as HTMLElement).offsetWidth, (e.target as HTMLElement).offsetHeight);
-        // e.dataTransfer!.setDragImage(dragImage, 0, 0);
         setTimeout(() => document.body.removeChild(dragImage), 0);
     };
 
@@ -108,9 +104,9 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         (e.target as HTMLElement).style.opacity = '1';
         (e.target as HTMLElement).style.transform = 'scale(1)';
         const dragIndex = activeDrag()?.index;
-        // console.log('Drop - From:', dragIndex, 'To:', dragOverIndex());
+        // console.log("dragEnd!", dragIndex, dragOverIndex());
         
-        if (dragIndex === undefined || dragIndex === dragOverIndex()) return;
+        if (dragIndex === undefined || dragOverIndex() === undefined || dragIndex === dragOverIndex()) return;
         
         setDragAndDropInventory(prev => {
             const newItems = [...prev];
@@ -127,34 +123,94 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
 
     const dragOver = (e: DragEvent, index: number) => {
         e.preventDefault();
-        // console.log('DragOver - Index:', index);
         setDragOverIndex(index);
         e.dataTransfer!.dropEffect = 'move';
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+        touchStartPos = {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+        
+        const target = e.currentTarget as HTMLElement;
+        target.dataset.touched = 'true';
+    };
+      
+    const handleTouchMove = (e: TouchEvent, item: Equipment, index: number) => {
+        const target = e.currentTarget as HTMLElement;
+        if (target.dataset.touched !== "true") return;
+        
+        const touch = e.touches[0];
+        const dx = touch.clientX - touchStartPos.x;
+        const dy = touch.clientY - touchStartPos.y;
+        
+        if (Math.abs(dx) > TOUCH_SLOP || Math.abs(dy) > TOUCH_SLOP) {
+            e.preventDefault();
+            
+            if (!activeDrag()) {
+                setActiveDrag({ index, item });
+                // target.style.opacity = "0.5";
+                target.style.backgroundColor = "#F3E5AB";
+                target.style.boxShadow = '0 0 1.25em rgba(255, 215, 0, 0.7)';
+                target.style.border = "0.15em solid gold";
+                target.style.transform = "scale(0.5)";
+            };
+        
+            target.style.transition = "none";
+            target.style.visibility = "hidden";
+            const hoveredElement = document.elementFromPoint(touch.clientX, touch.clientY);
+            target.style.visibility = "visible";
+            if (hoveredElement) {
+                const inventoryItem = hoveredElement.closest('[data-id]');
+                if (inventoryItem) {
+                    const hoverIndex = parseInt(inventoryItem.getAttribute('data-id')!);
+                    setDragOverIndex(hoverIndex);
+                };
+            };
+            target.style.transform = `translate(${dx}px, ${dy}px)`;
+        };
+    };
+      
+    const handleTouchEnd = (e: TouchEvent) => {
+        const target = e.currentTarget as HTMLElement;
+        target.dataset.touched = "false";
+        
+        target.style.transform = "";
+        target.style.boxShadow = "";
+        target.style.transition = "transform 0.5s ease";
+        
+        if (activeDrag()) {
+            const dragEvent = new DragEvent("dragend", {
+                bubbles: true,
+                cancelable: true
+            });
+            target.dispatchEvent(dragEvent);
+        };
+    };
 
-    // onDrop={drop} onDragOver={allowDrop}
     return <div class="playerInventoryBag" style={{ "grid-template-rows": "repeat(7, 1fr)" }}> 
         <For each={dragAndDropInventory()}>{(item, index) => {
             if (item === undefined || item === null) return;
             return (
                 <>
-                <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number > index()}>
-                    <div class="playerInventory" style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
+                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number > index()}>
+                    <div style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
                         <img src={activeDrag()?.item.imgUrl} alt={activeDrag()?.item?.name} />
                     </div>
-                </Show>
-                <div onClick={() => doubleTap(item, index)} class="sortable juiceNB" style={dimensions().ORIENTATION === "landscape" ? { margin: "5%" } : { margin: "2.5%" }} draggable="true">
+                </Show> */}
+                <div onClick={() => doubleTap(item, index)} class="juiceItem" style={{ margin: "5%", "grid-column": (activeDrag()?.index === index() && (activeDrag()?.index as number) < (dragOverIndex() as number)) ? "0" : "" }}>
                     <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} index={index}
-                            highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
-                            dragStart={dragStart} dragEnd={dragEnd} dragOver={dragOver}
+                        highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
+                        dragStart={dragStart} dragEnd={dragEnd} dragOver={dragOver}
+                        touchStart={handleTouchStart} touchMove={handleTouchMove} touchEnd={handleTouchEnd}
                     />
                 </div>
-                <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number < index()}>
-                    <div class="playerInventory" style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
+                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number < index()}>
+                    <div style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
                         <img src={activeDrag()?.item.imgUrl} alt={activeDrag()?.item?.name} />
                     </div>
-                </Show>
+                </Show> */}
                 </>
             )
             

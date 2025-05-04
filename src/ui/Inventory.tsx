@@ -1,4 +1,4 @@
-import { Accessor, JSX, Setter, createEffect, createSignal, onMount } from "solid-js";
+import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js";
 import { getRarityColor } from "../utility/styling";
 import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
@@ -17,9 +17,13 @@ interface Props {
     dragStart: (e: any, item: Equipment, index: number) => void;
     dragEnd: (e: DragEvent) => void;
     dragOver: (e: DragEvent, index: number) => void;
+    touchStart: (e: TouchEvent) => void;
+    touchEnd: (e: TouchEvent) => void;
+    touchMove: (e: TouchEvent, item: Equipment, index: number) => void;
 };
 
-export default function Inventory({ ascean, inventory, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap, index, dragStart, dragEnd, dragOver }: Props) {
+export default function Inventory({ ascean, inventory, setInventoryType, setRingCompared, setHighlighted, highlighted, setWeaponCompared, inventorySwap, index, 
+    dragStart, dragEnd, dragOver, touchStart, touchEnd, touchMove }: Props) {
     const [trueType, setTrueType] = createSignal("");
     const [editState, setEditState] = createSignal<any>({
         weaponOne: ascean().weaponOne,
@@ -140,7 +144,11 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
         draggable={true}
         ondragstart={(e) => dragStart(e, inventory, index())}
         ondragend={(e) => dragEnd(e)}
-        ondragover={(e) => dragOver(e, index())}>
+        ondragover={(e) => dragOver(e, index())}
+        ontouchstart={(e) => touchStart(e)}
+        ontouchend={(e) => touchEnd(e)}
+        ontouchmove={(e) => touchMove(e, inventory, index())}
+        >
         <img src={inventory?.imgUrl} alt={inventory?.name} />
     </div>;
 };

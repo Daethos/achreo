@@ -149,6 +149,6 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
         ontouchend={(e) => touchEnd(e)}
         ontouchmove={(e) => touchMove(e, inventory, index())}
         >
-        <img src={inventory?.imgUrl} alt={inventory?.name} />
+        <img src={inventory?.imgUrl} alt={inventory?.name} style={{ "pointer-events":"none" }} />
     </div>;
 };

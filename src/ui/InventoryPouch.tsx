@@ -223,7 +223,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         };
     };
 
-    return <div class="playerInventoryBag" style={{ "grid-template-rows": "repeat(7, 1fr)" }}> 
+    return <div class="playerInventoryBag"> 
         <For each={dragAndDropInventory()}>{(item, index) => {
             if (item === undefined || item === null) return;
             return (

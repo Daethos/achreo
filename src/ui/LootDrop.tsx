@@ -35,9 +35,7 @@ export default function LootDrop({ lootDrop, setShow, setLootDrop, x = true }: P
             </button>
         </div>
         <Show when={x}>
-        <div class="highlight cornerBR" onClick={() => EventBus.emit("blend-game", { showLoot: false })} style={{ color: "red" }}>
-            X
-        </div>
+            <div class="highlight cornerBR" onClick={() => EventBus.emit("blend-game", { showLoot: false })} style={{ color: "red" }}>X</div>
         </Show>
     </div>;
 };

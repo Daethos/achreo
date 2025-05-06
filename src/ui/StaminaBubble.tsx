@@ -1,7 +1,7 @@
-import { createSignal, createEffect, Accessor, Setter } from 'solid-js';
-import createStamina from '../utility/Stamina';
-import Settings from '../models/settings';
-import { useResizeListener } from '../utility/dimensions';
+import { createSignal, createEffect, Accessor, Setter } from "solid-js";
+import createStamina from "../utility/Stamina";
+import Settings from "../models/settings";
+import { useResizeListener } from "../utility/dimensions";
 export default function StaminaBubble({ stamina, show, setShow, settings }: {stamina:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings:Accessor<Settings>;}) {
     const dimensions = useResizeListener();
     const { staminaPercentage, usedStamina } = createStamina(stamina);
@@ -47,9 +47,9 @@ export default function StaminaBubble({ stamina, show, setShow, settings }: {sta
                 };
         };
     };
-    return <div class='staminaBubble' onClick={() => setShow(!show())}>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background': 'conic-gradient(#ffd700, #fdf6d8, #ffd700)', height: `${usedStamina() + staminaPercentage()}%` }}></div>
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, 'z-index': -1, 'background': 'conic-gradient(#006000, #00ff00, #006000)', height: `${staminaPercentage()}%` }}></div>
-        <p class='stamina' style={{ 'color': '#fdf6d8', 'font-weight': 'bold', 'text-shadow': '0.1em 0.1em 0.1em #000', animation: "flicker 1s ease", "--glow-color": "#fdf6d8", ...setText(settings().stamina)}}>{settings().stamina === 'NUMBER' ? newStamina() : settings().stamina === 'PERCENTAGE' ? `${Math.round(staminaPercentage())}` : ''}{settings().stamina === 'PERCENTAGE' && <span class='super' style={{ 'font-size': '0.5em' }}>%</span>}</p>
+    return <div class="staminaBubble" onClick={() => setShow(!show())}>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, "z-index": -1, "background": "conic-gradient(#ffd700, #fdf6d8, #ffd700)", height: `${usedStamina() + staminaPercentage()}%` }}></div>
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, "z-index": -1, "background": "conic-gradient(#006000, #00ff00, #006000)", height: `${staminaPercentage()}%` }}></div>
+        <p class="stamina" style={{ "color": "#fdf6d8", "font-weight": "bold", "text-shadow": "0.1em 0.1em 0.1em #000", animation: "flicker 1s ease", "--glow-color": "#fdf6d8", ...setText(settings().stamina)}}>{settings().stamina === "NUMBER" ? newStamina() : settings().stamina === "PERCENTAGE" ? `${Math.round(staminaPercentage())}` : ""}{settings().stamina === "PERCENTAGE" && <span class="super" style={{ "font-size": "0.5em" }}>%</span>}</p>
     </div>;
 };

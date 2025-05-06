@@ -1271,11 +1271,10 @@ export default class Enemy extends Entity {
         };
     };
 
-
     mastery = () => this.ascean[this.ascean.mastery] || 20;
 
     chiomic = (power: number, id: string) => {
-        this.entropicMultiplier(power);
+        power = this.entropicMultiplier(power);
         if (id === this.scene?.player?.playerID) { // Player Combat
             if (this.scene.state.newPlayerHealth <= 0) return;
             this.scene.combatManager.useGrace(power / 10);

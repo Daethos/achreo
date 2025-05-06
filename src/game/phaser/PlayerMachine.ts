@@ -168,7 +168,7 @@ export default class PlayerMachine {
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
 
     chiomism = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        power = this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId() || id === this.player.playerID) {
             this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power }); 
         } else {
@@ -178,7 +178,7 @@ export default class PlayerMachine {
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: id } });
+            this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id } });
         };
     };
 
@@ -256,8 +256,8 @@ export default class PlayerMachine {
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your suture ${enemy.ascean?.name}"s caeren into you, absorbing and healing for ${suture}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
-            this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSuture, id} });
-            this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySuture, id} });
+            this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSuture, id } });
+            this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySuture, id } });
             enemy.flickerCaerenic(750);
         };
     };
@@ -1508,7 +1508,7 @@ export default class PlayerMachine {
             EventBus.emit("special-combat-text", {
                 playerSpecialDescription: `You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
             });
-            this.chiomism(this.player.spellTarget, 75);
+            this.chiomism(this.player.spellTarget, (50 + this.scene.state.player?.[this.scene.state.player?.mastery]));
             if (this.player.checkTalentEnhanced(States.FROST)) {
                 this.scene.combatManager.snare(this.player.spellTarget);
             } else {
@@ -1622,7 +1622,7 @@ export default class PlayerMachine {
             EventBus.emit("special-combat-text", {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
-            this.chiomism(this.player.spellTarget, 100);
+            this.chiomism(this.player.spellTarget, (100 + this.scene.state.player?.[this.scene.state.player?.mastery]));
             if (this.player.checkTalentEnhanced(States.ILIRECH)) {
                 const chance = Phaser.Math.Between(1, 100);
                 if (chance > 75) this.scene.combatManager.stun(this.player.spellTarget);
@@ -2581,7 +2581,7 @@ export default class PlayerMachine {
         };
         this.scene.sound.play("debuff", { volume: this.scene.hud.settings.volume });
         this.player.specialCombatText = this.scene.showCombatText("Malicing", 750, "hush", false, true, () => this.player.specialCombatText = undefined);
-        const power = this.player.checkTalentEnhanced(States.MALICE) ? 60 : 20;
+        const power = (this.player.checkTalentEnhanced(States.MALICE) ? 100 : 10) + this.scene.state.player?.[this.scene.state.player?.mastery];
         this.chiomism(id, power);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {

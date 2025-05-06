@@ -34,7 +34,7 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
             return true;
         };
         return false;
-      };
+    };
     createEffect(() => {
         if (game().pauseState) return;
         const intervalId = setInterval(() => {

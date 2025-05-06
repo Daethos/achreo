@@ -1,9 +1,8 @@
 import Inventory from "./Inventory";
-import { Accessor, createEffect, createSignal, For, Setter, Show } from "solid-js";
+import { Accessor, createEffect, createSignal, For, Setter } from "solid-js";
 import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-import { border } from "../utility/styling";
 interface Props {
     ascean: Accessor<Ascean>;
     setHighlighted: Setter<{ item: Equipment | undefined; comparing: boolean; type: string }>;

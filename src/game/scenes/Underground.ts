@@ -196,7 +196,7 @@ export class Underground extends Scene {
                 this.party.push(p);
             };
         };
-        this.aoePool = new AoEPool(this, 30);
+        this.aoePool = new AoEPool(this, 110);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));

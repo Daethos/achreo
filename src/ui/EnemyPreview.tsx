@@ -1,4 +1,4 @@
-import { Accessor, Show } from "solid-js";
+import { Accessor, JSX, Show } from "solid-js";
 import { EnemySheet } from "../utility/enemy";
 import { EventBus } from "../game/EventBus";
 
@@ -6,7 +6,10 @@ export default function EnemyPreview ({ enemies }: { enemies: Accessor<EnemyShee
     function fetchEnemy(enemy: any) {
         EventBus.emit("setup-enemy", enemy);
         EventBus.emit("tab-target", enemy);    
-    }; 
+    };
+    const overall = {width: "50%", height: "100%", display: "inline-block", "background-color": "#000"};
+    const enemyStyle: JSX.CSSProperties = {color: "gold", "text-align": "center", "font-size": "0.75em"};
+    const img = {transform:"scale(1.25)"};
     return <>
         {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
             if (enemies().length < 2 || index !== 0) return;
@@ -21,19 +24,19 @@ export default function EnemyPreview ({ enemies }: { enemies: Accessor<EnemyShee
                 <Show when={truePrev} fallback={
                 <div style={{ transform: "scale(0.75)", "background-color": "#000", position: "fixed", height: "auto", width: "10vw", top: "0vh", right: "0vw" }}>
                     <button class="center" style={{ width: "auto", height: "100%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemy)}>
-                        <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" style={{ transform: "scale(1.25)" }} />
-                        <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanEnemy}</div>
+                        <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" style={img} />
+                        <div style={enemyStyle}>{cleanEnemy}</div>
                     </button>
                 </div>
                 }>
                 <div style={{ transform: "scale(0.75)", position: "fixed", width: "20vw", top: "0vh", right: "-1.5vw" }}>
-                    <button class="center" style={{ height: "100%", width: "50%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
-                        <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} style={{ transform: "scale(1.25)" }} alt={enemies()[prevIdxMore].game.name} id="deity-pic" />
-                        <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanName}</div>
+                    <button class="center" style={overall} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
+                        <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} style={img} alt={enemies()[prevIdxMore].game.name} id="deity-pic" />
+                        <div style={enemyStyle}>{cleanName}</div>
                     </button>
-                    <button class="center" style={{ width: "50%", height: "100%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemy)}>
-                        <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" style={{ transform: "scale(1.25)" }} />
-                        <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanEnemy}</div>
+                    <button class="center" style={overall} onClick={() => fetchEnemy(enemy)}>
+                        <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" style={img} />
+                        <div style={enemyStyle}>{cleanEnemy}</div>
                     </button>
                 </div>
                 </Show> 

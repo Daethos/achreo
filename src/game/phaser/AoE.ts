@@ -36,12 +36,14 @@ const COLORS = {
     "spooky": 0x080080,
     "wild": 0x50C878,
     "wind": 0x00FFFF,
-    "": 0x000000
+    // "": 0x000000
 };
-
+const TYPES = ["astrave", "blind", "caeresis", "chiomic", "freeze", "fyerus", "howl", "kynisos", "renewal", "scream", "shock", "tendril", "writhe", "earth", "fire", "frost", "lightning", "righteous", "sorcery", "spooky", "wild", "wind"];
+const PARTICLES = ["earth", "fire", "frost", "lightning", "righteous", "sorcery", "spooky", "wild", "wind"];
 const PARTICLE_SCALE = 0.0075;
 const SCALE = 0.01875;
 const Y_OFFSET = 6;
+const PARTICLE_RADIUS = 24;
 const RADIUS = 60;
 const REPEAT = 20;
 const ENEMY = "enemy";
@@ -66,7 +68,7 @@ export class AoEPool {
     private readonly scene: Play;
     private readonly typePools = new Map<string, AoE[]>();
 
-    constructor(scene: Play, initialSize = 20) {
+    constructor(scene: Play, initialSize = 110) {
         this.scene = scene;
         this.preallocate(initialSize);
     };
@@ -84,10 +86,17 @@ export class AoEPool {
         };
     };
 
+    pinch(type: string): AoE | undefined {
+        let aoe = this.pool.find((a: AoE) => a.type === type ? a : PARTICLES.includes(a.type) ? a : undefined);
+        if (aoe) {
+            this.pool.splice(this.pool.indexOf(aoe), 1);
+        };
+        return aoe;
+    };
+
     get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
         const typePool = this.typePools.get(type) || [];
-        let aoe = typePool.pop() || this.pool.pop();
-        // console.log(aoe, "Aoe?");
+        let aoe = typePool.pop() || this.pinch(type) || this.pool.pop();
         if (!aoe) {
             aoe = this.createNewAoE();
         };
@@ -104,7 +113,7 @@ export class AoEPool {
             return;
         };
         if (aoe.active) {
-            console.warn('Releasing active AoE - forcing cleanup', aoe.name);
+            console.warn('Releasing active AoE - forcing cleanup', aoe.type);
             aoe.cleanup(false);
         };
         const index = this.activeAoEs.indexOf(aoe);
@@ -112,16 +121,16 @@ export class AoEPool {
             this.activeAoEs[index] = this.activeAoEs[this.activeAoEs.length - 1];
             this.activeAoEs.pop();
         } else {
-            console.warn('AoE not found in active pool:', aoe.name);
+            console.warn('AoE not found in active pool:', aoe.type);
         };
         if (aoe.visible || aoe.active) {
             aoe.setVisible(false);
             aoe.setActive(false);
         };
-        if (!this.typePools.has(aoe.name)) {
-            this.typePools.set(aoe.name, []);
+        if (!this.typePools.has(aoe.type)) {
+            this.typePools.set(aoe.type, []);
         };
-        this.typePools.get(aoe.name)!.push(aoe);
+        this.typePools.get(aoe.type)!.push(aoe);
     };
 
     releaseAll() {
@@ -146,8 +155,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     private hit: any[] = [];
     private enhanced: boolean = false;
     private manual: boolean = false;
-    private sensor: MatterJS.BodyType | undefined = undefined;
+    public sensor: MatterJS.BodyType | undefined = undefined;
     private timer: Phaser.Time.TimerEvent | undefined = undefined;
+    public type: string = "";
     public name: string = "";
     public scene: Play;
 
@@ -158,7 +168,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setVisible(false);
         this.setActive(false);
         this.setOrigin(0.5);
-        this.sensor = this.setupSensor(0, 0, RADIUS, "aoeSensor");
+        this.type = TYPES[Math.floor(Math.random() * TYPES.length)];
+        this.name = this.type;
+        this.sensor = this.setupSensor(0, 0, RADIUS, PARTICLES.includes(this.type) ? "particleAoeSensor" : "aoeSensor");
         this.hollowTimer();
     };
 
@@ -265,7 +277,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     private particleAoe(particle: { effect: Particle; entity: Target }, positive: boolean) {
-        this.sensor = this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, RADIUS, "particleAoeSensor");
+        this.sensor = this.setupSensor(particle.effect.effect.x, particle.effect.effect.y, PARTICLE_RADIUS, "particleAoeSensor");
         this.setupParticleListener();
         this.scalingTimer(particle.effect.effect, PARTICLE_SCALE, 0, REPEAT); // *NEW*
         this.baseCount("magic", positive, particle.entity, {
@@ -338,13 +350,16 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     protected hollowTimer(repeatCount: number = 20) {
-        let count = 0, scale = SCALE;
-        this.setScale(SCALE);
+        let count = 0, scale = PARTICLES.includes(this.type) ? PARTICLE_SCALE : SCALE, increment = PARTICLES.includes(this.type) ? PARTICLE_SCALE : SCALE;
+        this.setScale(scale);
         this.timer = this.scene.time.addEvent({
             delay: 50,
             callback: () => {
-                if (count >= repeatCount || !this.timer) return;
-                scale += SCALE;
+                if (count >= repeatCount || !this.timer) {
+                    this.cleanup(false);
+                    return;
+                };
+                scale += increment;
                 this.setScale(scale);
                 count++;
             },

@@ -235,7 +235,7 @@ export class Game extends Scene {
 
         this.startDayCycle();
         
-        this.aoePool = new AoEPool(this, 30);
+        this.aoePool = new AoEPool(this, 220);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));

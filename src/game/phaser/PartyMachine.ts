@@ -1152,7 +1152,7 @@ export default class PlayerMachine {
             EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} seizes into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
             });
-            this.chiomism(this.player.spellTarget, 75);
+            this.chiomism(this.player.spellTarget, (75 + this.player.computerCombatSheet.computer?.[this.player.ascean.mastery]));
             this.scene.combatManager.slow(this.player.spellTarget, 3000);
             this.player.castingSuccess = false;
             this.player.enemySound("frost", true);
@@ -1227,7 +1227,7 @@ export default class PlayerMachine {
             EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} rips into this world with Ilian tendrils entwining.`
             });
-            this.chiomism(this.player.spellTarget, 100);
+            this.chiomism(this.player.spellTarget, (100 + this.player.computerCombatSheet.computer?.[this.player.ascean.mastery]));
             this.player.castingSuccess = false;
             this.player.enemySound("fire", true);
         };
@@ -1300,7 +1300,7 @@ export default class PlayerMachine {
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
         this.player.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,
-            callback: () => this.chiomism(this.player.spellTarget, 20),
+            callback: () => this.chiomism(this.player.spellTarget, (10 + this.player.computerCombatSheet.computer?.[this.player.ascean.mastery])),
             callbackScope: this,
             repeat: 3,
         });
@@ -1328,12 +1328,12 @@ export default class PlayerMachine {
     };
     caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
     levelModifier = () => (this.player?.ascean.level as number + 9) / 10;
-    mastery = () => this.player?.ascean[this.player?.ascean.mastery as keyof typeof this.player.ascean];
+    mastery = () => this.player?.computerCombatSheet.computer?.[this.player?.ascean.mastery as keyof typeof this.player.ascean];
     chiomism = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        const modifiedPower = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        const damage = Math.round(this.mastery() / 2 * (1 + power / 100) * this.caerenicDamage() * this.levelModifier());
+        const damage = Math.round(this.mastery() / 2 * (1 + modifiedPower / 100) * this.caerenicDamage() * this.levelModifier());
         EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
         const text = `${this.player.ascean.name}'s hush flays ${damage} health from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });

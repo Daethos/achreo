@@ -1,14 +1,28 @@
-import { Accessor, createEffect, createSignal, Setter, Show } from "solid-js";
+import { Accessor, createEffect, createSignal, onCleanup, onMount, Setter, Show } from "solid-js";
 import { Combat } from "../stores/combat";
 import Settings from "../models/settings";
 import { EventBus } from "../game/EventBus";
-export default function CombatText({ settings, combat, combatHistory, partyHistory, partyShow, editShow, setEditShow }: { settings: Accessor<Settings>; combat: Accessor<Combat>, combatHistory: Accessor<string>, partyHistory: Accessor<string>, partyShow: Accessor<boolean>, editShow: Accessor<boolean>, setEditShow: Setter<boolean> }) {
+export default function CombatText({ settings, combat, combatHistory, partyHistory, partyShow, editShow, setEditShow, scrollPosition, setScrollPosition }: { scrollPosition:Accessor<number>; setScrollPosition: Setter<number>; settings: Accessor<Settings>; combat: Accessor<Combat>, combatHistory: Accessor<string>, partyHistory: Accessor<string>, partyShow: Accessor<boolean>, editShow: Accessor<boolean>, setEditShow: Setter<boolean> }) {
     const [edit, setEdit] = createSignal({
         size: settings()?.combatText?.size || "1em",
         top: settings()?.combatText?.top || "40vh",
         left: settings()?.combatText?.left || "20vw",
         height: settings()?.combatText?.height || "50vh",
         width: settings()?.combatText?.width || "60vw",
+    });
+    let combatTextEl: any;
+    onMount(() => {
+        if (combatTextEl) {
+            combatTextEl.scrollTop = scrollPosition();
+        };
+    });
+
+    createEffect(() => {
+        if (combatTextEl) {
+            const handler = () => setScrollPosition(combatTextEl.scrollTop);
+            combatTextEl.addEventListener('scroll', handler);
+            onCleanup(() => combatTextEl.removeEventListener('scroll', handler));
+        };
     });
     createEffect(() => {
         if (!settings().combatText) return;
@@ -26,7 +40,7 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
         EventBus.emit("save-settings", update);
     };
     return <div>
-        <div class="combatText" style={{...edit(), "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700"}}>
+        <div class="combatText" ref={combatTextEl} style={{...edit(), "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700"}}>
         <div class="animate-flicker" style={{ "text-wrap": "balance", margin: "3%", "--glow-color":"#000" }}> 
             <Show when={partyShow()} fallback={
                 <div style={{ "font-size": edit()?.size, "z-index": 1 }} innerHTML={combatHistory()} />

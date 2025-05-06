@@ -25,7 +25,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     
     let touchStartPos = { x: 0, y: 0 };
     const TOUCH_SLOP = 10; // Minimum movement to start drag (px)
-    const TOUCH_HOLD_DELAY = 250;
+    const TOUCH_HOLD_DELAY = 150;
 
     createEffect(() => {
         if (inventorySwap().start.id === undefined || inventorySwap().end.id === undefined) return;
@@ -77,7 +77,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     };
     
     const dragStart = (e: any, item: Equipment, index: number) => {
-        // console.log('DragStart - Index | Item:', index, item, e);
         e.dataTransfer!.setData('text/plain', index.toString());
         setActiveDrag({ index, item });
         
@@ -107,7 +106,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         (e.target as HTMLElement).style.opacity = '1';
         (e.target as HTMLElement).style.transform = 'scale(1)';
         const dragIndex = activeDrag()?.index;
-        // console.log("dragEnd!", dragIndex, dragOverIndex());
         
         if (dragIndex === undefined || dragOverIndex() === undefined || dragIndex === dragOverIndex()) {
             setActiveDrag(undefined);
@@ -144,17 +142,18 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             setIsTouchHoldActive(true);
             target.dataset.touched = 'true';
             target.style.transition = 'none';
+            target.style.backgroundColor = "#F3E5AB";
+            // target.style.transform = "scale(0.75)";
+            target.style.boxShadow = '0 0 1.25em rgba(255, 215, 0, 0.7)';
         }, TOUCH_HOLD_DELAY));
     };
       
     const handleTouchMove = (e: TouchEvent, item: Equipment, index: number) => {
         if (!isTouchHoldActive()) {
-            // Check if we've moved too much during hold delay
             const dx = Math.abs(e.touches[0].clientX - touchStartPos.x);
             const dy = Math.abs(e.touches[0].clientY - touchStartPos.y);
             
             if (dx > TOUCH_SLOP || dy > TOUCH_SLOP) {
-                // Cancel the hold if finger moved too much
                 if (touchHoldTimeout()) {
                     clearTimeout(touchHoldTimeout()!);
                     setTouchHoldTimeout(null);
@@ -176,11 +175,8 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             if (!activeDrag()) {
                 setActiveDrag({ index, item });
                 target.style.opacity = "1";
-                // target.style.zIndex = "1000";
                 target.style.backgroundColor = "#F3E5AB";
                 target.style.boxShadow = '0 0 1.25em rgba(255, 215, 0, 0.7)';
-                // target.style.border = "0.15em solid gold";
-                target.style.transform = "scale(0.5)";
             };
             target.style.transition = "none";
             target.style.visibility = "hidden";
@@ -210,7 +206,6 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         setIsTouchHoldActive(false);
         target.style.transform = "";
         target.style.boxShadow = "";
-        // target.style.border = "";
         target.style.backgroundColor = "";
         target.style.transition = "transform 0.5s ease";
         
@@ -228,19 +223,19 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
             if (item === undefined || item === null) return;
             return (
                 <>
-                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number > index()}>
+                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number < index()}>
                     <div style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
                         <img src={activeDrag()?.item.imgUrl} alt={activeDrag()?.item?.name} />
                     </div>
                 </Show> */}
-                <div onClick={() => doubleTap(item, index)} class="juiceItem" style={{ margin: "5%", background: dragOverIndex() === index() ? "gold" : "", opacity: dragOverIndex() === index() ? "0.75" : "1" }}>
+                <div onClick={() => doubleTap(item, index)} class="juiceItem" style={{ margin: "5%", background: dragOverIndex() === index() ? "gold" : "" }}>
                     <Inventory ascean={ascean} setRingCompared={setRingCompared} setWeaponCompared={setWeaponCompared} index={index}
                         highlighted={highlighted} setHighlighted={setHighlighted} inventory={item} setInventoryType={setInventoryType} inventorySwap={inventorySwap}
                         dragStart={dragStart} dragEnd={dragEnd} dragOver={dragOver}
                         touchStart={handleTouchStart} touchMove={handleTouchMove} touchEnd={handleTouchEnd}
                     />
                 </div>
-                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number < index()}>
+                {/* <Show when={dragOverIndex() === index() && activeDrag()?.index !== index() && activeDrag()?.index as number > index()}>
                     <div style={{border: border("gold", 0.15), transform: "scale(0.5)"}}>
                         <img src={activeDrag()?.item.imgUrl} alt={activeDrag()?.item?.name} />
                     </div>

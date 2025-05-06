@@ -441,7 +441,6 @@ export default function App() {
         setMenu({ ...menu(), screen });
     };
 
-
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -462,7 +461,9 @@ export default function App() {
         "Enter World" : () => switchScene("Tutorial", "Game"),
         "Enter Tutorial" : () => switchScene("Game", "Tutorial"),
     };
+
     const sendSettings = () => EventBus.emit("get-settings", settings);
+    
     usePhaserEvent("add-party", addParty);
     usePhaserEvent("remove-party", removeParty);
     usePhaserEvent("request-settings", sendSettings);

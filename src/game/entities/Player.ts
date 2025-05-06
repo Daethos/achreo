@@ -152,7 +152,7 @@ export default class Player extends Entity {
         // let playerColliderFull = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, {
         //     isSensor: false, label: "playerCollider",
         // }); // Y + 10 For Platformer
-        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena";
+        const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena" || this.scene.hud.currScene === "Gauntlet";
         let playerColliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: !underground,
             label: "body",

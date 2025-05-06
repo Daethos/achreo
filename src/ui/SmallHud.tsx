@@ -37,6 +37,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
     const [editSettingsShow, setEditSettingsShow] = createSignal(false);
     const [combatHistory, setCombatHistory] = createSignal<any>("");
     const [partyHistory, setPartyHistory] = createSignal<any>("");
+    const [scrollPosition, setScrollPosition] = createSignal<number>(0);
     createMemo(() => {
         if (ascean()?.experience as number > experience()) {
             setToastShow(true);
@@ -120,7 +121,7 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
        <Show when={game().showCombat}>
             <button class="highlight" onClick={() => setEditTextShow(!editTextShow())} style={{ top: `${Number(settings().combatText.top.split("vh")[0]) - 12.5}vh`, left: `${Number(settings().combatText.left.split("vw")[0]) - 1.25}vw`, position: "absolute", color: "gold", transform: "scale(0.75)" }}>{svg("UI")}</button>
             <button class="highlight" onClick={() => setPartyShow(!partyShow())} style={{ top: `${Number(settings().combatText.top.split("vh")[0]) - 11.5}vh`, right: `${Number(settings().combatText.left.split("vw")[0]) - 1.25}vw`, position: "absolute", color: "gold", transform: "scale(0.8)" }}>{svg("INSPECT")}</button>
-            <CombatText settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
+            <CombatText scrollPosition={scrollPosition} setScrollPosition={setScrollPosition} settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
         </Show>
         <Show when={game().showDialog}>
             <Dialog ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} instance={instance} />

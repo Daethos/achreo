@@ -106,6 +106,7 @@ export class Particle {
         this.effect.setTexture(idKey);
         this.effect.setAngle(angleTarget(this.target));
     };
+    
     scaler = (particle: boolean, special: boolean, action: string) => {
         if (particle && !special) {
             return 0.5;
@@ -115,9 +116,11 @@ export class Particle {
             return 0.6; // 0.75
         };
     };
+    
     sensorer = (special: boolean, action: string): number => {
         return !special ? 6 : action === "achire" ? 9 : 16;
     };
+
     sensorListener = (player: Player | Enemy | Entity, sensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],

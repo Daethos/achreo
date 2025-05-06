@@ -602,7 +602,8 @@ export class Gauntlet extends Phaser.Scene {
                         potentialTargets.push(this.party[k]);
                     };
                 };
-                if (this.gauntlet.type === "Free For All") {
+                if (this.gauntlet.type === "FREE_FOR_ALL") {
+                    console.log("FREE FOR ALL!");
                     for (let en = 0; en < this.enemies.length; en++) {
                         if (this.enemies[en].enemyID === enemy.enemyID) continue;
                         enemy.enemies.push({id:this.enemies[en].enemyID,threat:0});
@@ -622,13 +623,6 @@ export class Gauntlet extends Phaser.Scene {
                         enemy.enemies.push({id:this.player.playerID,threat:0});
                         enemy.inCombat = true;
                     };
-                    // if (this.party.length > 0 && Math.random() > 0.5 && team) {
-                    //     enemy.checkComputerEnemyCombatEnter(this.party[Math.floor(Math.random() * this.party.length)]);
-                    //     enemy.enemies.push({id:this.player.playerID,threat:0});
-                    //     enemy.inCombat = true;
-                    // } else {
-                    //     enemy.checkEnemyCombatEnter();
-                    // };
                     this.player.targets.push(enemy);
                     if (count === j) {
                         if (this.player.isComputer) {

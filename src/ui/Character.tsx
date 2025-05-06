@@ -26,6 +26,7 @@ import Talents from "../utility/talents";
 import { ACTION_ORIGIN } from "../utility/actions";
 import { svg } from "../utility/settings";
 import QuestManager, { Quest, replaceChar } from "../utility/quests";
+import Currency from "../utility/Currency";
 const AsceanImageCard = lazy(async () => await import("../components/AsceanImageCard"));
 const ExperienceBar = lazy(async () => await import("./ExperienceBar"));
 const Firewater = lazy(async () => await import("./Firewater"));
@@ -311,7 +312,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             text = faction[concern.toLowerCase()] as string;
         };
     
-        const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000
+        const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000;
         return <div class="skill-bar animate-flicker">
             <p class="skill-bar-text fadeInScale">{text}: {positive ? `${Math.floor(faction.reputation)} / ${num}` : `${Math.floor(faction.reputation)} / -${num}`}</p>
             <div class="skill-bar-fill" style={{"background":`${positive ? "blue" : "red"}`, "width": `${Math.abs(faction.reputation / (concern === "Enemy" ? 1 : concern === "Province" ? 5 : 10))}%`}}></div>
@@ -342,9 +343,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
+                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                    </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div>Silver: <span class="gold">{ascean().currency.silver}</span> Gold: <span class="gold">{ascean().currency.gold} {"\n"}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
@@ -352,12 +355,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
                         <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
                     </div>
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
-                    </div>
 
                 </div>
-            </div>
+            </div>;
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
                     <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Quests</h1>
@@ -382,7 +382,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             )}
                         </For>
                     </div>
-                </div>
+                </div>;
             case CHARACTERS.SKILLS:
                 const skills = Object.keys(ascean().skills).map((skill) => {
                     return createSkillBar(skill);
@@ -677,9 +677,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
             <button class="highlight menuHeader" onClick={() => setNextView()}><div class="playerMenuHeading">Inventory</div></button>
-            <button class="highlight menuButton" onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "-1.25vh", right: "10vh", "z-index": 1, "font-size": "1.15em" }}>
+            <button class="highlight menuButton" onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "-1.25vh", right: "20vw", "z-index": 1, "font-size": "1.15em" }}>
                 <div>{expandedCharacter() === true ? "Player Stats" : "Equipment"}</div>
             </button>
+            <div class="center" style={{ position: "fixed", top: "-0.25vh", right: "5.5vw", height: "10vh", width: "15vw", background: "#000", "scale": "0.8", border: `1px solid ${masteryColor(ascean().mastery)}` }}>
+                <Currency ascean={ascean} />
+            </div>
             <Suspense fallback={<Puff color="gold"/>}>
                 <Firewater ascean={ascean} />
             </Suspense>
@@ -808,7 +811,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class="center creature-heading animate-flicker" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
-                    {/* <div class="smallburst" style={{ "--glow-color":masteryColor(ascean().mastery), "z-index":1 }}></div> */}
                     { dimensions().ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ margin: "2%" }}>{combat()?.player?.description}</h2>
@@ -820,18 +822,17 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
+                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
+                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                    </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div>Silver: <span class="gold">{ascean().currency.silver}</span> Gold: <span class="gold">{ascean().currency.gold} {"\n"}</span></div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
                         <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
-                    </div>
-                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
-                    <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (

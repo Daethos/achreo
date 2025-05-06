@@ -8,6 +8,7 @@ import { Arena } from "../scenes/Arena";
 import { Game } from "../scenes/Game";
 import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS, EntityFlag } from "./Collision";
+import { Gauntlet } from "../scenes/Gauntlet";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
@@ -47,7 +48,7 @@ const ENEMY = "enemy";
 const PARTY = "party";
 const PLAYER = "player";
 
-type Player_Scene = Arena | Underground | Game | Tutorial; 
+type Player_Scene = Arena | Underground | Game | Tutorial | Gauntlet; 
 type Target = Player | Enemy | Party;
 interface CountCallbacks {
     concern?: () => boolean;
@@ -333,7 +334,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setExistingBody(sensor);
         this.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
         this.setStatic(true);
-        // this.sensor = sensor;
         return sensor;
     };
 

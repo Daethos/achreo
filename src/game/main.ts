@@ -24,7 +24,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: dimensions().HEIGHT,
     width: dimensions().WIDTH,
     scale: {
-        mode: Phaser.Scale.FIT, // FIT
+        mode: Phaser.Scale.EXPAND, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH
     },
     parent: "game-container",
@@ -68,7 +68,7 @@ const config: Phaser.Types.Core.GameConfig = {
         }],
     }
 };
-const StartGame = (parent: string, fps: any = {min: 5,target: 60,limit: 90}): Phaser.Game => {
+const StartGame = (parent: string, fps: any): Phaser.Game => {
     return new Phaser.Game({ ...config, parent, fps });
 };
 export default StartGame;

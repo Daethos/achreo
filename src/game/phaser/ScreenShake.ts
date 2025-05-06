@@ -15,14 +15,15 @@ export function screenShake(scene: Phaser.Scene, duration = 32, intensity = 0.00
     totalTrauma += 1.025;
     intensity *= Math.pow(totalTrauma, 2);
     if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(duration);
-    const decayInterval = setInterval(() => {
+    const delta = scene.sys.game.loop.delta;
+    const decay = setInterval(() => {
         scene.cameras.main.shake(duration, intensity);
         totalTrauma -= 1.025 / duration;
         if (totalTrauma <= 0) {
             totalTrauma = 0;
-            clearInterval(decayInterval);
+            clearInterval(decay);
         };
-    }, 16);
+    }, delta);
 };
 export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.002) { // 48 || 0.0004
     scene.cameras.main.shake(duration, intensity);

@@ -38,7 +38,7 @@ export const partyText = (prev: string, data: { text: string; }) => {
     let newText: any = "";
     if (data.text) newText += data.text + "\n";
     if (newText !== "") {
-        newText = styleText(newText);
+        newText = styleText(newText, true);
         oldText += newText;
     };
     return oldText;
@@ -65,7 +65,7 @@ function checkAlignment(line: string[]) {
     if (count > 0) return "left";
     return "right";
 };
-function styleText(text: string) {
+function styleText(text: string, party?: boolean) {
     var numberCheck: string[] = [];
     const style = (t: string) => { 
         const numCheck = t.split("").find((c: string) => NUMBERS.includes(parseInt(c)));
@@ -106,7 +106,7 @@ function styleText(text: string) {
     };
     const lines = text.split("\n").map(line => {
         const styledLine = line.split(" ").map(t => style(t)).join(" ");
-        const alignment = checkAlignment(line.split(" "));
+        const alignment = party ? "left" : checkAlignment(line.split(" "));
         return `<div style="text-align: ${alignment};">${styledLine}</div>`;
     }).join("");
     return lines;

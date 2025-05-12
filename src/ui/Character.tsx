@@ -313,7 +313,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         };
     
         const num = concern === "Enemy" ? 100 : concern === "Province" ? 500 : 1000;
-        return <div class="skill-bar animate-flicker">
+        return <div class="skill-bar">
             <p class="skill-bar-text fadeInScale">{text}: {positive ? `${Math.floor(faction.reputation)} / ${num}` : `${Math.floor(faction.reputation)} / -${num}`}</p>
             <div class="skill-bar-fill" style={{"background":`${positive ? "blue" : "red"}`, "width": `${Math.abs(faction.reputation / (concern === "Enemy" ? 1 : concern === "Province" ? 5 : 10))}%`}}></div>
         </div>;  
@@ -323,7 +323,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         const skillLevel = (ascean().skills as any)[skill];
         const skillCap = ascean().level * 100;
         const skillPercentage = Math.round((skillLevel / skillCap) * 100);
-        return <div class="skill-bar animate-flicker">
+        return <div class="skill-bar">
             <p class="skill-bar-text fadeInScale">{skill}: {Math.floor(skillLevel / 10)} / {skillCap / 10}</p>
             <div class="skill-bar-fill" style={{"width": `${skillPercentage}%`}}></div>
         </div>;
@@ -333,7 +333,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         switch (character) {
             case CHARACTERS.CHARACTER:
                 return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
-                    <div class="animate-flicker">
+                    <div>
                     { dimensions().ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
@@ -346,10 +346,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
+                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
+                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
@@ -360,7 +361,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </div>;
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
-                    <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Quests</h1>
+                    <h1 style={{...bMargin}}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
                         return <div class="border juice wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: "gold" }}>{quest.title}</h2>
@@ -374,7 +375,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     ? reputation().factions.filter((faction) => faction.named === false)
                     : processReputation(reputationConcern().toLowerCase());
                 return <div class="creature-heading">
-                    <h1 class="animate-flicker" onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={{...bMargin, "--glow-color":"gold"}}>Reputation ({reputationConcern()})</h1>
+                    <h1 onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={{...bMargin}}>Reputation ({reputationConcern()})</h1>
                     <div style={bMargin}>
                         <For each={unnamed}>
                             {(faction: FACTION) => (
@@ -388,7 +389,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     return createSkillBar(skill);
                 });
                 return <div class="creature-heading">
-                    <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Skills</h1>
+                    <h1 style={{...bMargin}}>Skills</h1>
                     <div style={bMargin}>
                         {skills}
                     </div>
@@ -400,14 +401,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
                 if (highestDeity?.[1] === 0) highestDeity[0] = combat().weapons?.[0]?.influences?.[0] as string; 
                 return <div class="creature-heading ">
-                    <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Attacks</h1>
+                    <h1 style={{...bMargin}}>Attacks</h1>
                         Magical: <span class="gold">{statistics().combat?.attacks?.magical}</span> <br />
                         Physical: <span class="gold">{statistics().combat?.attacks?.physical}</span><br />
                         Highest Damage: <span class="gold">{Math.round(statistics().combat?.attacks?.total)}</span>
-                    <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Combat</h1>
+                    <h1 style={{...bMargin}}>Combat</h1>
                         Mastery: <span class="gold">{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
                         Wins / Losses: <span class="gold">{statistics().combat?.wins} / {statistics().combat?.losses}</span>
-                    <h1 class="animate-flicker" style={{...bMargin, "--glow-color":"gold"}}>Prayers</h1>
+                    <h1 style={{...bMargin}}>Prayers</h1>
                         Consumed / Invoked: <span class="gold">{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                         Highest Prayer: <span class="gold">{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                         Favored Deity: <span class="gold">{highestDeity[0]}</span><br />
@@ -415,7 +416,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>;
             case CHARACTERS.TALENTS:
                 return <div class="creature-heading">
-                    <h1 class="animate-flicker" style={{ "--glow-color":"gold" }}>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
+                    <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h3 classList={{
                         "animate-flicker-infinite":talents().points.spent !== talents().points.total,
                         "animate-texty-infinite":talents().points.spent === talents().points.total,
@@ -444,13 +445,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>;
             case CHARACTERS.TRAITS:
                 return <div class="creature-heading">
-                    <h1 class="animate-flicker" style={{ "--glow-color":"gold" }}>{playerTraitWrapper()?.primary?.name}</h1>
+                    <h1>{playerTraitWrapper()?.primary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
-                    <h1 class="animate-flicker" style={{ "--glow-color":"gold" }}>{playerTraitWrapper()?.secondary?.name}</h1>
+                    <h1>{playerTraitWrapper()?.secondary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitOneName}</span> - {playerTraitWrapper()?.secondary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitTwoName}</span> - {playerTraitWrapper()?.secondary?.traitTwoDescription}</h2>
-                    <h1 class="animate-flicker" style={{ "--glow-color":"gold" }}>{playerTraitWrapper()?.tertiary?.name}</h1>
+                    <h1>{playerTraitWrapper()?.tertiary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitOneName}</span> - {playerTraitWrapper()?.tertiary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitTwoName}</span> - {playerTraitWrapper()?.tertiary?.traitTwoDescription}</h2>
                 </div>;
@@ -467,19 +468,19 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         const amuletInfluenceStrength = FAITH_RARITY[ascean().amulet.rarity as keyof typeof FAITH_RARITY];
         const trinketInfluenceStrength = FAITH_RARITY[ascean().trinket.rarity as keyof typeof FAITH_RARITY];
         return <div class="creature-heading" style={{ padding: "5%" }}>
-            <h1 style={{...bMargin, animation: "flicker 0.75s ease alternate", "--glow-color":"gold"}}>Influence</h1>
+            <h1 style={{...bMargin}}>Influence</h1>
             <h2>The influences of your equipment increase the likelihood of receiving a prayer from the associated deity.</h2>
                 {ascean().weaponOne.name}: <span class="gold" style={{ animation: "flicker 0.75s ease alternate", "--glow-color":"gold" }}>{ascean().weaponOne?.influences?.[0]} [{weaponInfluenceStrength}]</span><br />
                 {ascean().amulet.name}: <span class="gold" style={{ animation: "flicker 0.75s ease alternate", "--glow-color":"gold" }}>{ascean().amulet?.influences?.length as number > 0 ? `${ascean().amulet?.influences?.[0]}` : ""} [{amuletInfluenceStrength}]</span><br />
                 {ascean().trinket.name}: <span class="gold" style={{ animation: "flicker 0.75s ease alternate", "--glow-color":"gold" }}>{ascean().amulet?.influences?.length as number > 0 ? `${ascean().trinket?.influences?.[0]}` : ""} [{trinketInfluenceStrength}]</span>        
-            <h1 style={{...bMargin, animation: "flicker 0.75s ease alternate", "--glow-color":"gold"}}>Prayers</h1>
+            <h1 style={{...bMargin}}>Prayers</h1>
             <h2>That which you seek in combat.</h2>
                 Mastery: <span class="gold">{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
                 Consumed / Invoked: <span class="gold">{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
                 Highest Prayer: <span class="gold">{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
                 Favored Deity: <span class="gold">{highestDeity[0]}</span><br />
                 Blessings: <span class="gold">{highestDeity[1]}</span>
-            <h1 style={{...bMargin, animation: "flicker 0.75s ease alternate", "--glow-color":"gold"}}>Traits</h1>
+            <h1 style={{...bMargin}}>Traits</h1>
             <h2>That which you invoke without intent.</h2>
             {playerTraitWrapper()?.primary?.name} <span class="gold">({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName})</span><br />
             {playerTraitWrapper()?.secondary?.name} <span class="gold">({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName})</span><br />
@@ -490,7 +491,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const createDeityInfo = (deity: string): JSX.Element => {
         const info = DEITIES[deity as keyof typeof DEITIES];
         return <div class="creature-heading">
-            <h1 class="animate-flicker-infinite" style={{ "--glow-color":"gold" }}>{info?.name}</h1>
+            <h1>{info?.name}</h1>
             <h4 class="gold cinzel">{info?.favor}</h4>
             <h2>{info?.origin}</h2>
             <p class="gold">{info?.description}</p>
@@ -532,7 +533,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <For each={deities}>
                 {(deity: any) => (
                     <div>
-                        <h1 class="animate-flicker" style={{ "font-size": "1.2em", "--glow-color":"gold" }}>{deity?.name}</h1>
+                        <h1 style={{ "font-size": "1.2em" }}>{deity?.name}</h1>
                         <h2>Favor: {deity?.favor}</h2> 
                     </div>
                 )}
@@ -753,7 +754,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {/* <button class="highlight cornerBR" style={{ "background-color": "gold", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
-                        <div class="animate-flicker" style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                        <div class="" style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <Show when={ascean().experience >= ascean().level * 1000}>
                             <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
@@ -783,7 +784,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <Match when={settings().asceanViews === VIEWS.FAITH}>
                     <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "margin-left": "0", "margin-top": "7.5%", transform: "scale(0.9)" }}>
-                            <div class="creature-heading" style={{ "margin-top": "-5%", animation: "flicker 0.75s ease alternate", "--glow-color":"gold" }}>
+                            <div class="creature-heading" style={{ "margin-top": "-5%" }}>
                                 <h1>Blessings</h1>
                             </div>
                             <div style={{ width: "70%", margin: "auto", padding: "1em", display: "grid" }}>
@@ -810,7 +811,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         {/* <<----- WINDOW TWO -----> */}
         <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class="center creature-heading animate-flicker" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
+                <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
                     { dimensions().ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ margin: "2%" }}>{combat()?.player?.description}</h2>
@@ -825,10 +826,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span> Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
+                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span></div>
+                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
                         <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
                         <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
@@ -975,7 +977,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={showQuest().show}>
             <div class="modal">
                 <div class="superCenter" style={{ width:"65%" }}>
-                <div class="border juice"  style={{ margin: "1em auto", 
+                <div class="border juice" style={{ margin: "1em auto", 
                     "border-color": masteryColor(showQuest()?.quest?.mastery), 
                     animation: `borderTalent 1.5s infinite ease alternate`, 
                     "--base-shadow":"#000 0 0 0 0.2em", 
@@ -984,7 +986,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 }}>
                     <div class="creature-heading" style={{ padding: "1em" }}>
                     <h1 class="center" classList={{
-                    // "animate-texty-infinite": showQuest()?.complete,
                     "animate-flicker-infinite": showQuest()?.complete,
                 }} style={{ color: showQuest()?.complete ? "gold" : "#fdf6d8", margin: "3%" }}>
                         {showQuest()?.quest.title} {showQuest()?.complete ? "(Completed)" : ""}<br />

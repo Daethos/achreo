@@ -9,6 +9,8 @@ export const EFFECT = "effect";
 export const HEAL = "heal";
 export const HUSH = "hush";
 export const TENDRIL = "tendril";
+const POSITION = 50;
+const HEALTH_POSITION = 70;
 
 export type CombatText = {
     x: number;
@@ -101,16 +103,16 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     public update(player: Player | Enemy) {
         this.timerTime += 1;
         if (this.constant === true) { 
-            this.setPosition(player.x - (this.text.width * this.text.scale / 2), player.y - (player.healthbar.visible ? 70 : 50));
+            this.setPosition(player.x - (this.text.width * this.text.scale / 2), player.y - (player.healthbar.visible ? HEALTH_POSITION : POSITION));
          } else { 
-            this.setPosition(player.x - (this.text.width * this.text.scale / 2), player.y - 50 - this.timerTime);
+            this.setPosition(player.x - (this.text.width * this.text.scale / 2), player.y - POSITION - this.timerTime);
         }; 
     };
 
     private release(): void {
         this.active = false;
         this.visible = false;
-        this.setPosition(-1000,-1000);
+        this.setPosition(-1000);
         this.text.setAlpha(1).setScale(1);
         this.pool.release(this);
     };

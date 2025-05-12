@@ -255,4 +255,5 @@ const partialStyle = (mastery: string) => {
     } as JSX.PropAttributes;
 };
 
+
 export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle };

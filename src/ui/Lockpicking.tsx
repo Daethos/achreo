@@ -1,15 +1,15 @@
 import { Accessor, createEffect, createSignal, onMount, Setter, Show } from "solid-js";
 import Ascean from "../models/ascean";
 import Settings from "../models/settings";
-import { screenShake } from "../game/phaser/ScreenShake";
+import { screenShake, vibrate } from "../game/phaser/ScreenShake";
 import { Store } from "solid-js/store";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { font } from "../utility/styling";
 
 const LOCKPICK = {
-    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, ROTATION: 720, PLAYER: 2 },
-    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, ROTATION: 540, PLAYER: 2.5 },
-    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, ROTATION: 360, PLAYER: 3 },
+    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, ROTATION: 720, PLAYER: 2, DEBUG: 240 },
+    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, ROTATION: 540, PLAYER: 3 },
+    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, ROTATION: 360, PLAYER: 4 },
     Master: { DIFFICULTY: "Master", HEALTH: 40, SIZE: 10, ROTATION: 270, PLAYER: 5 },
     Legendary: { DIFFICULTY: "Legendary", HEALTH: 50, SIZE: 5, ROTATION: 180, PLAYER: 10 },
 };
@@ -45,13 +45,17 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         const currentAngle = angle();
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
             setGameStatus("success"); // Lock opened!
-            if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate([100, 50, 100]);
+            vibrate([150, 50, 150]);
         } else {
             setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
-            if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(200);
+            vibrate(250);
             if (pickDurability() <= 0) {
-                setGameStatus("fail"); // Pick broke
                 setLockpicks(prev => Math.max(prev - 1, 0));
+                if (lockpicks() > 0) {
+                    setPickDurability(100);
+                    return;
+                };
+                setGameStatus("fail"); // Pick broke
             };
         };
     };
@@ -73,8 +77,9 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     };
 
     const handleTouchStart = (e: TouchEvent) => {
+        if (gameStatus() !== "playing" || lockpicks() === 0) return;
         setStartTouchX(e.touches[0].clientX);
-        setStartTouchY(e.touches[0].clientY);    
+        setStartTouchY(e.touches[0].clientY);
         setRumble(true);
     };
 
@@ -94,18 +99,20 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         };
         setTotalRotation(prev => prev + 1);
         setAngle((ang + 360) % 360); // Convert to 0-360 range
-
-        // Vibrate when pick is stressed (optional)
-        if (totalRotation() > lockDifficulty().ROTATION * 0.5 && "vibrate" in navigator && navigator?.vibrate !== undefined) {
-            navigator.vibrate(10); // Short pulse
-        };
+        vibrate(16); // totalRotation() > lockDifficulty().ROTATION * 0.5 && 
 
         // Break pick if rotated too much
         if (totalRotation() >= lockDifficulty().ROTATION || pickDurability() === 0) {
-            if (pickDurability() === 0) setLockpicks(prev => Math.max(prev - 1, 0));
+            vibrate(250); // Long buzz
+            if (pickDurability() === 0) {
+                setLockpicks(prev => Math.max(prev - 1, 0));
+                if (lockpicks() > 0) {
+                    setPickDurability(100);
+                    return;
+                };
+            };
             setPickDurability(0);
             setGameStatus("fail");
-            if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(200); // Long buzz
         };
         checkDistance();
     };
@@ -135,7 +142,7 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     return (
         <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal" }}>
         <h1 style={{ margin: "3% auto 1%" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
-        <h2 style={{ margin: "0" }}>Rotate the Pick and Tap to attempt.</h2>
+        <h2 style={{ margin: "0" }}>Rotate the Pick and Tap to Unlock.</h2>
         <div class="lock" onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>
@@ -150,15 +157,14 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
                             top: "50%",
                             left: "50%",
                             height: "100%",
-                            width: `${(sweetSpotEnd() - sweetSpotStart())}%`, // because lock is 200px I think is why it neesd this
-                            transform: `translate(-50%, -50%) rotate(${sweetSpotStart() - 240}deg)`,
+                            width: `${(sweetSpotEnd() - sweetSpotStart())}%`,
+                            transform: `translate(-50%, -50%) rotate(${sweetSpotStart() + (sweetSpotEnd() - sweetSpotStart()) / 2 + 90}deg)`,
                             "transform-origin": "center",
                         }}
                     />
                 </Show>
             </div>
         </div>
-
         <div style={{ display: "inline-flex" }}>
             <p style={{ margin: "1%" }}>Durability:</p>
             <div class="durability-bar">
@@ -171,7 +177,7 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
             <div class="result modal">
                 <div class="border superCenter" style={{ height: "70vh", width: "40vw" }}>
                     <div class="center creature-heading wrap">
-                    <h1 style={{ "margin-top": "10%" }}>{gameStatus() === "success" ? "The lock opened!" : totalRotation() >= lockDifficulty().ROTATION ? "Your Tension Wrench Broke!" : "Your Lockpick Broke!"}</h1><br />
+                    <h1 style={{ "margin-top": "10%" }}>{gameStatus() === "success" ? "The lock opened!" : totalRotation() >= lockDifficulty().ROTATION ? "Your Tension Wrench Broke!" : "Your Lockpick(s) Broke!"}</h1><br />
                     <p>A door would now be open, or perhaps your spoils of treasure if you were successful at lockpicking. Still a work in progress!</p>
                     <p class="gold">"[Item] [Item] [Item] 1g 50s"</p>
                     <div style={font("0.5em")}>[This is automatically saved to your character.]</div>
@@ -181,8 +187,11 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
                 </div>
             </div>
         </Show>
-        <button class="highlight cornerBL" onClick={checkSweetSpot} style={{ color: "green" }}>Tap</button>
+        <Show when={lockpicks() > 0}>
+            <button class="highlight cornerBL" onClick={checkSweetSpot} style={{ color: "green" }}>Tap</button>
+        </Show>
         <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>X</button>
+        <button class="highlight cornerTR" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>
         </div>
     );
 };

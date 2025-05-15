@@ -206,8 +206,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 top: top(state().player?.name.length as number), 
                 "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
                 "--glow-color": state().isStealth ? "#fdf6d8" : "gold",
-                "font-size": size(state().player?.name.length as number) }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
-        <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} />
+                "font-size": size(state().player?.name.length as number), "z-index": 0 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} style={{ "z-index": -1 }} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
         <div class="combatUiWeapon" classList={{

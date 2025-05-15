@@ -14,7 +14,7 @@ export function hitStop(scene: Phaser.Scene, duration = 32) {
 export function screenShake(scene: Phaser.Scene, duration = 32, intensity = 0.0025) {
     totalTrauma += 1.025;
     intensity *= Math.pow(totalTrauma, 2);
-    if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(duration);
+    vibrate(duration);
     const delta = scene.sys.game.loop.delta;
     const decay = setInterval(() => {
         scene.cameras.main.shake(duration, intensity);
@@ -31,6 +31,6 @@ export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.002) { 
 export function walk(scene: any, duration = 32, intensity = 0.000675) { // 32 || 0.0003
     scene.cameras.main.shake(duration, intensity);
 };
-export function vibrate(duration = 64) {
+export function vibrate(duration: number[] | number = 64) {
     if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(duration);
 };

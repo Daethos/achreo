@@ -197,8 +197,8 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
     };
     async function handleLockpicking() {
-        const lockpick = LOCKPICK_DIFFICULT[settings()?.lockpick as keyof typeof LOCKPICK_DIFFICULT || "Easy"];
-        const newSettings = { ...settings(), lockpick };
+        const difficulty = LOCKPICK_DIFFICULT[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK_DIFFICULT || "Easy"];
+        const newSettings = { ...settings(), lockpick: { ...settings().lockpick, difficulty } };
         await saveSettings(newSettings);
     };
     async function handleFps(type: string, payload: boolean | number | string) {
@@ -511,7 +511,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Lockpicking</h1>
                     <Collapse value={frame().lockpick} class="my-transition">
                         <div style={font("1em", "#fdf6d8")}>
-                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick || "Easy"}</button>
+                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick?.difficulty || "Easy"}</button>
                         </div>
                         <div style={font("0.5em")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
                     </Collapse>

@@ -8,6 +8,7 @@ export default class Settings {
     public volume: number;
     public joystick: number;
     public vibration: number;
+    public lockpick: string;
     public actions: string[];
     public specials: string[];
     public totalSpecials: string[];
@@ -179,6 +180,7 @@ export default class Settings {
         this.volume = 0.3;
         this.joystick = 0.5;
         this.vibration = 100;
+        this.lockpick = "Easy";
         this.actions = ["Attack", "Posture", "Roll", "Dodge", "Parry"];
         this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
         this.totalSpecials = [];

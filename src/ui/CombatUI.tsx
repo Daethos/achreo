@@ -19,6 +19,9 @@ import Equipment, { getOneTemplate } from "../models/equipment";
 import Ascean from "../models/ascean";
 import Pickpocket from "./Pickpocket";
 import PickpocketLoot from "./PickpocketLoot";
+import Lockpicking from "./Lockpicking";
+import { IRefPhaserGame } from "../game/PhaserGame";
+import { Store } from "solid-js/store";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
@@ -30,22 +33,24 @@ interface Props {
     stamina: Accessor<number>;
     grace: Accessor<number>;
     touching: Accessor<string[]>;
+    instance: Store<IRefPhaserGame>;
 };
-export default function CombatUI({ ascean, state, game, settings, stamina, grace, touching }: Props) {
+export default function CombatUI({ ascean, state, game, settings, stamina, grace, touching, instance }: Props) {
     const dimensions = useResizeListener();
     const [effect, setEffect] = createSignal<StatusEffect>();
-    const [show, setShow] = createSignal(false);
-    const [prayerShow, setPrayerShow] = createSignal(false);
-    const [shieldShow, setShieldShow] = createSignal(false);
-    const [staminaShow, setStaminaShow] = createSignal(false);
-    const [graceShow, setGraceShow] = createSignal(false);
+    const [show, setShow] = createSignal<boolean>(false);
+    const [prayerShow, setPrayerShow] = createSignal<boolean>(false);
+    const [shieldShow, setShieldShow] = createSignal<boolean>(false);
+    const [staminaShow, setStaminaShow] = createSignal<boolean>(false);
+    const [graceShow, setGraceShow] = createSignal<boolean>(false);
     const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [thievery, setThievery] = createSignal<boolean>(false);
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
+    const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
-    const [showPickpocket, setShowPickpocket] = createSignal(false); // setShowPickpocketItems
-    const [showPickpocketItems, setShowPickpocketItems] = createSignal(false); // setShowPickpocketItems
+    const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
+    const [showPickpocketItems, setShowPickpocketItems] = createSignal<boolean>(false); // setShowPickpocketItems
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const [stealAnimation, setStealAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
@@ -244,6 +249,11 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 </button>
             </Show>
         </Show>
+        <Show when={state().isStealth}>
+            <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
+                <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
+            </button>
+        </Show>
         <Show when={prayerShow()}>
             <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
         </Show>
@@ -262,6 +272,11 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 Create Prayer
             </div>
         </button> */}
+        
+        <Show when={lockpicking()}>
+            <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
+        </Show>
+       
         <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
         <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
             <div class="modal">

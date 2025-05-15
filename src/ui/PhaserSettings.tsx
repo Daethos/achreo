@@ -25,6 +25,7 @@ const cleanFrame = {
     combat: false,
     desktop: false,
     fps: false,
+    lockpick: false,
     speed: false,
     sound: false,
     tooltips: false,
@@ -49,6 +50,13 @@ const FOCUS = {
     Balanced: "Defensive",
     Defensive: "Offensive",
     Offensive: "Balanced",
+};
+const LOCKPICK_DIFFICULT = {
+    Easy: "Medium",
+    Medium: "Hard",
+    Hard: "Master",
+    Master: "Legendary",
+    Legendary: "Easy",
 };
 export default function PhaserSettings({ settings, setSettings, specials }: { settings: Accessor<Settings>; setSettings: Setter<Settings>; specials: Accessor<any[]>; }) {
     const [actionShow, setActionShow] = createSignal<boolean>(false);
@@ -186,6 +194,11 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
     async function handleComputerFocus() {
         const computerFocus = FOCUS[settings().computerFocus as keyof typeof FOCUS || "Balanced" as keyof typeof FOCUS];
         const newSettings = { ...settings(), computerFocus };        
+        await saveSettings(newSettings);
+    };
+    async function handleLockpicking() {
+        const lockpick = LOCKPICK_DIFFICULT[settings()?.lockpick as keyof typeof LOCKPICK_DIFFICULT || "Easy"];
+        const newSettings = { ...settings(), lockpick };
         await saveSettings(newSettings);
     };
     async function handleFps(type: string, payload: boolean | number | string) {
@@ -400,7 +413,6 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                             </div>
                         </Collapse>
 
-
                         <h1 onClick={() => resetDifficulty("combatTargeting", !difficulty().combatTargeting)} style={font("0.85em")}>Combat Targeting</h1>
                         <Collapse value={difficulty().combatTargeting} class="my-transition">
                             <div style={font("0.85em", "#fdf6d8")}>
@@ -494,6 +506,14 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                             </button>            
                             <div style={font("0.5em", "gold")}>[Apply delta smoothing during the game update to help avoid spikes?]</div>
                         </div>
+                    </Collapse>
+
+                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Lockpicking</h1>
+                    <Collapse value={frame().lockpick} class="my-transition">
+                        <div style={font("1em", "#fdf6d8")}>
+                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick || "Easy"}</button>
+                        </div>
+                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
                     </Collapse>
 
                     <h1 onClick={() => resetFrame("speed", !frame().speed)} style={font("1.25em")}>Speed</h1>

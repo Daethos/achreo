@@ -29,7 +29,7 @@ export default function Pickpocket({ ascean, combat, setThievery, stealing, setS
                     dialog = <div>You have a <span class="gold">{thieveryAnimation().player}</span>% of succeeding. <br /><br /> <i>Calculating</i> {combat().computer?.name}'s Awareness</div>;
                     break;
                 case 3:
-                    dialog = <div><i>Comparing</i> your <span class="gold">guile</span> with {combat().computer?.name}'s</div>;
+                    dialog = <div><i>Comparing</i> your <span class="gold">guile ({thieveryAnimation().player}%)</span> with {combat().computer?.name}'s.</div>;
                     break;
                 case 4:
                     dialog = <div>Player: <span class="gold">{thieveryAnimation().player}</span>% <br /> <br />

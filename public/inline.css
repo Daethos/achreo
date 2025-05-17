@@ -109,24 +109,30 @@
     transform: scale(0.8);
     transition: transform 0.5s ease;
 }
+
 @keyframes moist {
     0% { transform: scale(0.9); }
     75% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+
 @keyframes juicy {
     0% { transform: scale(0.85); }
     100% { transform: scale(1); }
 }
+
 @keyframes juicyNB {
     0% { transform: scale(0.8); }
     100% { transform: scale(1); }
 }
+
 .fadeIn {animation: fadein 1s ease;}
+
 @keyframes fadeInScale {
     from {opacity:0;transform:scale(0.75);}
     to {opacity:1;transform:scale(1);}
 }
+
 @keyframes borderTalent {
     0% {
       box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.1em 0.3em;
@@ -140,6 +146,17 @@
     /* Initial state */
     box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.25em 0.3em;
 }
+@keyframes flickerDiv {
+    0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color);
+    }
+    20%, 24%, 55% {
+        opacity: 0.6;
+        box-shadow: none;
+    }
+}
+
 @keyframes flicker {
     0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
         opacity: 1;
@@ -150,15 +167,18 @@
         text-shadow: none;
     }
 }
+
 @keyframes pulse {
     0% { transform: scale(0.9); opacity: 0.3; }
     100% { transform: scale(1.15); opacity: 0.9; }
 }
+
 @keyframes texty {
     0%{text-shadow: 0 0 5px var(--glow-color), 0 0 10px var(--glow-color)}
     100%{text-shadow: 0 0 10px var(--glow-color), 0 0 15px var(--glow-color)}
 
 }
+
 @keyframes wrench {
     0%, 50%, 100% { transform: rotate(115deg); }
     10% { transform: rotate(103deg); }
@@ -169,12 +189,16 @@
     80% { transform: rotate(112deg); }
     90% { transform: rotate(130deg); }
 }
+
 .animate-texty {
     animation: texty 1s ease alternate;
 }
-  
+
 .animate-flicker {
     animation: flicker 1s ease alternate;
+}
+.animate-flickerDiv {
+    animation: flickerDiv 1s ease alternate;
 }
 .animate-texty-infinite {
     animation: texty 1s infinite ease alternate;
@@ -446,12 +470,13 @@ svg.defs {
   border: 0.15em solid #fdf6d8;
   border-radius: 50%;
 }
+
 .lock-body {
   width: 100%;
   height: 100%;
   position: relative;
-  animation: randomize1 10s infinite steps(1), randomize2 7s infinite steps(1);
 }
+
 .keyhole {
   position: absolute;
   top: 50%;
@@ -467,35 +492,39 @@ svg.defs {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80px;
-  height: 3px;
-  background: #d4af37; /* Gold */
+  width: 85px;
+  height: 4px;
+  background: silver; /* Gold */
   transform: rotate(115deg);
   transform-origin: left center;
   transition: transform 0.1s;
   z-index: 1;
 }
+
 .lockpick {
   position: absolute;
   width: 110px;
-  height: 4px;
+  height: 5px;
   background: gold;
   top: 50%;
   left: 50%;
   transform-origin: left center;
   z-index: 1;
 }
+
 .durability-bar {
   width: 150px;
   height: 10px;
   background: red;
   margin: 10px auto;
 }
+
 .durability-fill {
   height: 100%;
   background: #d4af37; /* Gold */
   transition: width 0.25s;
 }
+
 .sweet-spot {
     position: absolute;
     top: 50%;

@@ -199,8 +199,8 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     onMount(() => resetLock());
 
     return (
-        <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal" }}>
-        <h1 style={{ margin: "3% auto 1%" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
+        <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal", "z-index": 99 }}>
+        <h1 style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
         <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>

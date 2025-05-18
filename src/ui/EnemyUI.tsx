@@ -1,4 +1,5 @@
 import { Accessor, For, Setter, Show, Suspense, createEffect, createSignal, lazy } from "solid-js"
+import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
@@ -56,68 +57,71 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
         } else { // Mobile
             return 0.8;
         };
-    };
-    return <div class="modal">
-        <div class="border center" style={{ 
-            "height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%", 
-            // "max-height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%",
-            "width": dimensions().ORIENTATION === "landscape" ? "50%" : "70%", 
-            "margin-top": dimensions().ORIENTATION === "landscape" ? `${dimensions().HEIGHT * 0.025}px` : "25%"
-        }}>
-            <button class="highlight cornerBL" onClick={clearEnemy}>
-                <p>Clear UI</p>
-            </button>
-            { state().isEnemy || state().npcType ? (
-                <button class="highlight cornerTL" onClick={() => removeEnemy(state().enemyID)}>
-                    <p>Remove {enemy()?.name.split(" ")[0]}</p>
+    }; // style={{ "z-index": 99 }}
+    // <Portal></Portal>
+    return <Portal>
+        <div class="modal">
+            <div class="border center" style={{ 
+                "height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%", 
+                // "max-height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%",
+                "width": dimensions().ORIENTATION === "landscape" ? "50%" : "70%", 
+                "margin-top": dimensions().ORIENTATION === "landscape" ? `${dimensions().HEIGHT * 0.025}px` : "25%",
+            }}>
+                <button class="highlight cornerBL" onClick={clearEnemy}>
+                    <p>Clear UI</p>
                 </button>
-            ) : (
-                <button class="highlight cornerTL" onClick={removeParty} style={{ color: "red" }}>
-                    <p>Remove <b>{enemy()?.name}</b> <br /> From The Party <br /> <br /> <b>[PERMANENT]</b></p>
+                { state().isEnemy || state().npcType ? (
+                    <button class="highlight cornerTL" onClick={() => removeEnemy(state().enemyID)}>
+                        <p>Remove {enemy()?.name.split(" ")[0]}</p>
+                    </button>
+                ) : (
+                    <button class="highlight cornerTL" onClick={removeParty} style={{ color: "red" }}>
+                        <p>Remove <b>{enemy()?.name}</b> <br /> From The Party <br /> <br /> <b>[PERMANENT]</b></p>
+                    </button>
+                ) }
+                <button class="highlight cornerTR" onClick={() => setShow(!show)}>
+                    <p>X</p>
                 </button>
-            ) }
-            <button class="highlight cornerTR" onClick={() => setShow(!show)}>
-                <p>X</p>
-            </button>
-            <div class="creature-heading center" style={{ height: "100%", width: "100%" }}>
-                <h1 style={{ "text-align": "center", color: "gold", "padding-top": "0" }}>
-                    {state().computer?.name}
-                </h1>
-                <h2 style={{ margin: "2%" }}>
-                    {state().computer?.description}
-                </h2>
-                <Suspense fallback={<Puff color="gold"/>}>
-                <div style={{ position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dimensions().WIDTH > 1200 ? "1%" : "0%" }}>
-                    <HealthBar combat={state} enemy={true} game={game} />
-                </div>
-                </Suspense>
-                <div style={{ color: "#fdf6d8", "margin-top": dimensions().WIDTH > 1200 ? "13.5%" : "10%", "font-size": dimensions().WIDTH > 1200 ? "1.25em" : "0.875em" }}>
-                    Level <span class="gold">{state().computer?.level}</span> | Mastery <span class="gold">{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
-                </div>
-                <div class="" style={{ transform: "scale(0.875)", "margin-top": dimensions().WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dimensions().WIDTH > 1200 ? "7.5%" : "3%" }}>
-                    <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
-                </div>
-                <div style={{ "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "" : dimensions().HEIGHT > 420 ? "-5%" : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
-                    <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
-                </div>
-                <Show when={itemShow()}>
-                    <div class="modal" onClick={() => setItemShow(!itemShow)}>
-                        <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+                <div class="creature-heading center" style={{ height: "100%", width: "100%" }}>
+                    <h1 style={{ "text-align": "center", color: "gold", "padding-top": "0" }}>
+                        {state().computer?.name}
+                    </h1>
+                    <h2 style={{ margin: "2%" }}>
+                        {state().computer?.description}
+                    </h2>
+                    <Suspense fallback={<Puff color="gold"/>}>
+                    <div style={{ position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dimensions().WIDTH > 1200 ? "1%" : "0%" }}>
+                        <HealthBar combat={state} enemy={true} game={game} />
                     </div>
-                </Show>
-                <Show when={attributeShow()}>
-                    <div class="modal" onClick={() => setAttributeShow(!attributeShow)}>
-                        <AttributeModal attribute={attribute()} />
+                    </Suspense>
+                    <div style={{ color: "#fdf6d8", "margin-top": dimensions().WIDTH > 1200 ? "13.5%" : "10%", "font-size": dimensions().WIDTH > 1200 ? "1.25em" : "0.875em" }}>
+                        Level <span class="gold">{state().computer?.level}</span> | Mastery <span class="gold">{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                     </div>
-                </Show>        
-                <Show when={attributeDisplay().show}>
-                    <div class="modal" onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
-                        <AttributeNumberModal attribute={attributeDisplay} />
+                    <div class="" style={{ transform: "scale(0.875)", "margin-top": dimensions().WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dimensions().WIDTH > 1200 ? "7.5%" : "3%" }}>
+                        <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                     </div>
-                </Show>
+                    <div style={{ "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "" : dimensions().HEIGHT > 420 ? "-5%" : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
+                        <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
+                    </div>
+                    <Show when={itemShow()}>
+                        <div class="modal" onClick={() => setItemShow(!itemShow)}>
+                            <ItemModal item={equipment() as Equipment} stalwart={false} caerenic={false} /> 
+                        </div>
+                    </Show>
+                    <Show when={attributeShow()}>
+                        <div class="modal" onClick={() => setAttributeShow(!attributeShow)}>
+                            <AttributeModal attribute={attribute()} />
+                        </div>
+                    </Show>        
+                    <Show when={attributeDisplay().show}>
+                        <div class="modal" onClick={() => setAttributeDisplay({ ...attributeDisplay(), show: false })}>
+                            <AttributeNumberModal attribute={attributeDisplay} />
+                        </div>
+                    </Show>
+                </div>
             </div>
         </div>
-    </div>;
+    </Portal>;
 };
 
 export default function EnemyUI({ state, game, enemies, instance }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]>, instance: Store<IRefPhaserGame> }) {

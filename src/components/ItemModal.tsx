@@ -25,7 +25,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const name = item.name.includes("Starter") ? ( item.name.split(" ")[0] + " " + item.name.split(" ")[1] ) : ( item.name );
     const centerImage = dimensions()?.ORIENTATION === "landscape" ? (name.length > 18 ? "45%" : name.length > 10 ? "7.5%" : "15%") : (name.length > 13 ? "40%" : name.length > 10 ? "5%" : "10%");
     const styling = { "font-size": "1.25em", margin: "3%" };
-    return <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === "landscape" ? "50%" : "75%", "top": "48%" }}> 
+    return <div class="border superCenter" style={{ width: dimensions()?.ORIENTATION === "landscape" ? "50%" : "75%", "top": "48%", "z-index": 99 }}> 
         <div class="wrap" style={{ height: "100%" }}>
             <div class="creature-heading" style={{ width: "100%"}}>
                 <h1 style={ empty ? { "text-align": "center", margin: "24px 0" } : { "justify-content": "space-evenly", margin: "24px 0 16px" }}>{name} 
@@ -70,7 +70,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 <Show when={item?.influences && item?.influences?.length > 0}>
                     Influence: <span class="gold">{item?.influences?.[0]}</span>
                 </Show>
-                <div style={{ color: getRarityColor(item?.rarity as string), "font-size": "1.5em", "margin": "2% auto 3%" }}>
+                <div style={{ color: getRarityColor(item?.rarity as string), "font-size": "1.5em", "margin": "2% auto 4%" }}>
                     {item?.rarity}
                 </div>
                 <Show when={stalwart}>

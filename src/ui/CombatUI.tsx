@@ -1,4 +1,5 @@
 import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js"
+import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
 import { border, borderColor, font, itemStyle, masteryColor } from "../utility/styling";
 import PrayerEffects from "./PrayerEffects";
@@ -222,16 +223,6 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
-        <Show when={show()}>
-        <div class="modal" onClick={() => setShow(!show())}>
-            <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().isCaerenic} />
-        </div>
-        </Show>
-        <Show when={shieldShow()}>
-        <div class="modal" onClick={() => setShieldShow(!shieldShow())}>
-            <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
-        </div>
-        </Show>  
         <Show when={state().playerEffects.length > 0 && state().combatEngaged === true}>
         <div class="combatEffects" style={{ left: "-3vw", top: "15vh", "height": "14vh", width: "auto", transform: "scale(0.75)" }}>
             <For each={state().playerEffects}>{(effect) => ( 
@@ -240,75 +231,86 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         </div>
         </Show> 
         <Show when={state().isStealth && state().computer}> 
-            <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "0vw" }} onClick={() => disengage()}>
+            <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => disengage()}>
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
             </button>
             <Show when={state().newComputerHealth > 0 && touching().includes(state().enemyID)}>
-                <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "10vw" }} onClick={checkPickpocket}>
+                <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "10vw" }} onClick={checkPickpocket}>
                     <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Steal</div>
                 </button>
             </Show>
         </Show>
         <Show when={state().isStealth}>
-            <button class="disengage highlight combatUiAnimation" style={{ top: "12.5vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
+            <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
             </button>
         </Show>
-        <Show when={prayerShow()}>
-            <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
-        </Show>
-        <Show when={staminaShow()}>
-        <div class="modal" onClick={() => setStaminaShow(!staminaShow())}>
-            <StaminaModal setShow={setStaminaShow} settings={settings} />
-        </div> 
-        </Show>
-        <Show when={graceShow()}>
-        <div class="modal" onClick={() => setGraceShow(!graceShow())}>
-            <GraceModal setShow={setGraceShow} settings={settings} />
-        </div> 
-        </Show>
+        <Portal>
+            <Show when={show()}>
+            <div class="modal" onClick={() => setShow(!show())}>
+                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().isCaerenic} />
+            </div>
+            </Show>
+            <Show when={shieldShow()}>
+            <div class="modal" onClick={() => setShieldShow(!shieldShow())}>
+                <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
+            </div>
+            </Show>
+            <Show when={prayerShow()}>
+                <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
+            </Show>
+            <Show when={staminaShow()}>
+            <div class="modal" onClick={() => setStaminaShow(!staminaShow())}>
+                <StaminaModal setShow={setStaminaShow} settings={settings} />
+            </div> 
+            </Show>
+            <Show when={graceShow()}>
+            <div class="modal" onClick={() => setGraceShow(!graceShow())}>
+                <GraceModal setShow={setGraceShow} settings={settings} />
+            </div> 
+            </Show>
+            <Show when={lockpicking()}>
+                <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
+            </Show>
+            <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
+            <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
+                <div class="modal">
+                <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
+                    <div class="center creature-heading" style={{ height: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
+                        <h1 style={{margin:"5%"}}>Pickpocketing</h1>
+                        <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal the items of consequence?</h2>
+                        <For each={pickpocketItems()}>{(item) => (
+                            <PickpocketLoot item={item} setShow={setShowPickpocket} setHighlight={setHighlight} thievery={thievery} steal={steal} />
+                        )}</For>
+                    </div>
+                </div>
+                <button class="highlight cornerBR" onClick={() => setPickpocketItems([])} style={{color:"red"}}>X</button>
+                </div>
+            </Show>
+            <Show when={thieveryModal()}> 
+                <div class="modal">
+                <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
+                    <div class="">
+                    </div>
+                    <br /><br /><br />
+                    <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setThieveryModal(false)}>
+                        <p style={font("0.5em")}>X</p>
+                    </button>
+                </div>
+                </div> 
+            </Show>
+
+            <Show when={showPickpocket() && highlight()}>
+                <div class="modal" onClick={() => setShowPickpocket(false)}>
+                    <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
+                </div>
+            </Show>
+        </Portal>
+
         {/* <button class="highlight center" onClick={() => createPrayer()} style={{ }}>
             <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>
                 Create Prayer
             </div>
         </button> */}
-        
-        <Show when={lockpicking()}>
-            <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
-        </Show>
-       
-        <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
-        <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
-            <div class="modal">
-            <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
-                <div class="center creature-heading" style={{ height: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
-                    <h1 style={{margin:"5%"}}>Pickpocketing</h1>
-                    <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal the items of consequence?</h2>
-                    <For each={pickpocketItems()}>{(item) => (
-                        <PickpocketLoot item={item} setShow={setShowPickpocket} setHighlight={setHighlight} thievery={thievery} steal={steal} />
-                    )}</For>
-                </div>
-            </div>
-            <button class="highlight cornerBR" onClick={() => setPickpocketItems([])} style={{color:"red"}}>X</button>
-            </div>
-        </Show>
-        <Show when={thieveryModal()}> 
-            <div class="modal">
-            <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
-                <div class="">
-                </div>
-                <br /><br /><br />
-                <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setThieveryModal(false)}>
-                    <p style={font("0.5em")}>X</p>
-                </button>
-            </div>
-            </div> 
-        </Show>
-
-        <Show when={showPickpocket() && highlight()}>
-            <div class="modal" onClick={() => setShowPickpocket(false)}>
-                <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
-            </div>
-        </Show>
     </div>;
 };

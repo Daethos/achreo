@@ -21,6 +21,7 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     const [gameStatus, setGameStatus] = createSignal("playing"); // playing/success/fail
     const [sweetSpotStart, setSweetSpotStart] = createSignal<number>(0);
     const [sweetSpotEnd, setSweetSpotEnd] = createSignal<number>(0);
+    const [showManual, setShowManual] = createSignal<boolean>(false);
     // const [startTouchX, setStartTouchX] = createSignal<number>(0);
     // const [startTouchY, setStartTouchY] = createSignal<number>(0);
     const [lockpicks, setLockpicks] = createSignal<number>(settings()?.lockpick?.count || 5);
@@ -49,10 +50,10 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         const currentAngle = angle();
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
             setGameStatus("success"); // Lock opened!
-            vibrate([150, 50, 150]);
+            vibrate([500, 250, 500]);
         } else {
             setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
-            vibrate(250);
+            vibrate(1000);
             setTension(115);
             if (pickDurability() <= 0) {
                 setBroke(true);
@@ -84,8 +85,15 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
             screenShake(instance?.scene as Phaser.Scene, duration * lockDifficulty().DURATION, lockDifficulty().INTENSITY); // Tweak multipliers
         };
     };
+    function isInSweetSpot(): boolean {
+        const currentAngle = angle();
+        const isBetween = (angle: number, start: number, end: number) => 
+            (start <= end) 
+            ? angle >= start && angle <= end
+            : angle >= start || angle <= end;
+        return isBetween(currentAngle, sweetSpotStart(), sweetSpotEnd());
+    };
 
-    // Lockpick touch handler
     const handlePickTouch = (e: TouchEvent) => {
         e.preventDefault();
         if (gameStatus() !== "playing" || lockpicks() === 0) return;
@@ -94,15 +102,14 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         setActiveTouch("pick");
     };
 
-    // Wrench touch handler
     const handleWrenchTouch = (e: TouchEvent) => {
         e.preventDefault();
         setActiveTouch("wrench");
         const wobble = () => {
-            if (!rumble()) return; // Stop if rumble is off
+            if (!rumble()) return;
             const wobbleAngle = angle() + (Math.random() * 0.5 - 0.25); // +/- 5deg jitter
             setAngle(wobbleAngle);
-            requestAnimationFrame(wobble); // Continue until rumble=false
+            requestAnimationFrame(wobble);
         };
         setRumble(true);
         wobble();
@@ -119,15 +126,18 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         const touchY = e.touches[0].clientY;
         const ang = Math.atan2(touchY - centerY, touchX - centerX) * (180 / Math.PI);
         const newAngle = (ang + 360) % 360;
-        
+
         if (activeTouch() === "pick") {
-            setAngle(newAngle); // Convert to 0-360 range
+            // if (!isInSweetSpot() && startTouchX() !== touchX && startTouchY() !== touchY) {
+            //     setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY, 0));
+            // };
+            setAngle(newAngle);
             setTotalRotation(prev => prev + 1);
             checkDistance();
             if (totalRotation() > lockDifficulty().ROTATION) {
                 setTotalRotation(0);
                 setPickDurability(0);
-                vibrate(250); // Long buzz
+                vibrate(1000); // Long buzz
                 setBroke(true);
                 setTimeout(() => {
                     setBroke(false);
@@ -139,13 +149,14 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
                 }, 1000);
             };
         } else if (activeTouch() === "wrench") {
-            setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY, 0));
-            // setTotalRotation(prev => prev + 1);
-            setTension(newAngle); // Convert to 0-360 range
+            if (!isInSweetSpot()) {
+                setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY, 0));
+            };
+            setTension(newAngle);
             vibrate(16); // totalRotation() > lockDifficulty().ROTATION * 0.5 && 
 
             if (pickDurability() === 0) {
-                vibrate(250); // Long buzz
+                vibrate(1000); // Long buzz
                 setBroke(true);
                 setTimeout(() => {
                     setBroke(false);
@@ -190,7 +201,6 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     return (
         <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal" }}>
         <h1 style={{ margin: "3% auto 1%" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
-        <h2 class="wrap" style={{ margin: "0 auto" }}>Set the <span class="gold">lockpick</span> and rotate the <span style={{ color: "silver" }}>tension wrench</span> to unlock.</h2>
         <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>
@@ -235,11 +245,24 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
                 </div>
             </div>
         </Show>
+        <Show when={showManual()}>
+            <div class="result modal" onClick={() => setShowManual(false)}>
+                <div class="border superCenter">
+                    <div class="center creature-heading wrap">
+                        <h1>How to Lockpick</h1>
+                        <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling for vibrations of the tumblers setting into place.{" "}
+                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> either clockwise or counter in order to attempt to unlock.</h2>
+                        <p style={font("1em")}><span style={{ color: "red" }}>Warning: </span>You can break the <span class="gold">lockpick</span> from over rotation when feeling around to set in place. You can also break the <span class="gold">lockpick</span> as you rotate the <span style={{ color: "silver" }}>tension wrench</span>, if not set correctly.</p>
+                    </div>
+                </div>
+            </div>
+        </Show>
         {/* <Show when={lockpicks() > 0}>
             <button class="highlight cornerBL" onClick={checkSweetSpot} style={{ color: "green" }}>Tap</button>
         </Show> */}
+        <button class="highlight cornerTL" onClick={() => setShowManual(true)} style={{ color: "green" }}>Manual</button>
         <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>X</button>
-        <button class="highlight cornerBL" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>
+        <button class="highlight cornerTR" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>
         </div>
     );
 };

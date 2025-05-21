@@ -23,6 +23,7 @@ import PickpocketLoot from "./PickpocketLoot";
 import Lockpicking from "./Lockpicking";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
+import Steal from "./Steal";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
@@ -50,6 +51,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
+    const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
     const [showPickpocketItems, setShowPickpocketItems] = createSignal<boolean>(false); // setShowPickpocketItems
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
@@ -111,12 +113,16 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         }
     });
     function checkPickpocket() {
-        let equipment: any[] = [];
-        for (let i = 0; i < 3; ++i) {
-            const item = getOneTemplate(state().computer?.level as number);
-            equipment.push(item);
+        console.log(state().computer?.name, pickpocketEnemy());
+        if (pickpocketItems().length === 0 || state().computer?.name !== pickpocketEnemy()) {
+            let equipment: any[] = [];
+            for (let i = 0; i < 3; ++i) {
+                const item = getOneTemplate(state().computer?.level as number);
+                equipment.push(item);
+            };
+            setPickpocketItems(equipment);
+            setPickpocketEnemy(state().computer?.name as string);
         };
-        setPickpocketItems(equipment);
         setShowPickpocketItems(true);
     };
     const disengage = () => EventBus.emit("disengage");
@@ -272,7 +278,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <Show when={lockpicking()}>
                 <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
             </Show>
-            <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
+            {/* <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} /> */}
             <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
                 <div class="modal">
                 <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
@@ -284,8 +290,11 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                         )}</For>
                     </div>
                 </div>
-                <button class="highlight cornerBR" onClick={() => setPickpocketItems([])} style={{color:"red"}}>X</button>
+                <button class="highlight cornerBR" onClick={() => setShowPickpocketItems(false)} style={{color:"red"}}>X</button>
                 </div>
+            </Show>
+            <Show when={stealing().stealing}>
+                <Steal ascean={ascean} combat={state} game={game} settings={settings} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
             </Show>
             <Show when={thieveryModal()}> 
                 <div class="modal">
@@ -301,7 +310,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             </Show>
 
             <Show when={showPickpocket() && highlight()}>
-                <div class="modal" onClick={() => setShowPickpocket(false)}>
+                <div class="modal" onClick={() => setHighlight(undefined)}>
                     <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
                 </div>
             </Show>

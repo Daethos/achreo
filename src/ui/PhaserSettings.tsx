@@ -508,12 +508,12 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         </div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Lockpicking</h1>
+                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Thievery</h1>
                     <Collapse value={frame().lockpick} class="my-transition">
                         <div style={font("1em", "#fdf6d8")}>
                         <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick?.difficulty || "Easy"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
+                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks and pickpocket. Adjusts the lock's width of success and the lockpick's fragility. Adjusts the pocket's maze complexity, enemy alertness, and time you can pickpocket.]</div>
                     </Collapse>
 
                     <h1 onClick={() => resetFrame("speed", !frame().speed)} style={font("1.25em")}>Speed</h1>

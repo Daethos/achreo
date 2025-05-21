@@ -24,9 +24,9 @@ export default function PickpocketLoot({ item, setShow, setHighlight, thievery, 
     };
     return <div style={{ margin: "3%" }}>
         <button onClick={select} class="my-3 mx-2 p-2" style={getItemStyle}><img src={item?.imgUrl} alt={item?.name} /></button>
-        <Show when={thievery()}>
-            <button class="highlight super" onClick={() => setThieveryModal(true)} style={{ "color": "red", padding: "0.75em" }}>Steal {item?.name}</button>
-        </Show>
+        {/* <Show when={thievery()}>
+        </Show> */}
+        <button class="highlight super" onClick={sneed} style={{ "color": "red", padding: "0.75em" }}>Steal {item?.name}</button>
         <Show when={thieveryModal()}> 
             <div class="modal">
             <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>

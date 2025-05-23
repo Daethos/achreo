@@ -96,7 +96,6 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
 
     const checkMazeCollision = (x: number, y: number): { collides: boolean, type: string } => {
         const padding = pickDiff().PADDING;
-        // const padding = 5; // Adjust for touch sensitivity
         for (let i = 0; i < mazeWalls().length; ++i) { 
             const wall = mazeWalls()[i]; 
             const isHorizontal = wall.y1 === wall.y2;
@@ -181,12 +180,12 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
             setAlertLevel(prev => Math.min(prev + pickDiff().ALERT, 100));
             if (alertLevel() >= 100) {
                 failure.play();
-                // const value = checkStatisticalValue(stealing().item.rarity as string);
-                // EventBus.emit("pocket-item", { success: false, item: stealing().item, value });
-                // EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The item has subsequently been alerted to your abhorrent presence.`, delay: 6000, key: "Close"});    
+                const value = checkStatisticalValue(stealing().item.rarity as string);
+                EventBus.emit("pocket-item", { success: false, item: stealing().item, value });
+                EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The item has subsequently been alerted to your abhorrent presence.`, delay: 6000, key: "Close"});    
                 vibrate(1000);
                 setStealProgress(0);
-                // setTimeout(() => engage(), 5000);
+                setTimeout(() => engage(), 5000);
                 clearInterval(timer);
                 timer = undefined;
             };

@@ -1,20 +1,22 @@
 import { Accessor, createEffect, createSignal, onMount, Setter, Show } from "solid-js";
+import { creation } from "../App";
 import Ascean from "../models/ascean";
 import { Combat } from "../stores/combat";
 import { EventBus } from "../game/EventBus";
 import { vibrate } from "../game/phaser/ScreenShake";
 import { font, getRarityColor } from "../utility/styling";
-import { roundToTwoDecimals } from "../utility/combat";
 import Settings from "../models/settings";
 import { GameState } from "../stores/game";
+var failure = new Audio("../assets/sounds/religious.mp3");
+var success = new Audio("../assets/sounds/steal.mp3");
 const MAZE_SIZE = 100; // 10x10 grid
 type Wall = { x1: number; y1: number; x2: number; y2: number, type: "outer" | "inner" };
 const PICKPOCKET = {
-    Easy: { DIFFICULTY: "Easy", WALL_GRID: 4, WALL_SIZE: 3, ALERT: 2 },
-    Medium: { DIFFICULTY: "Medium", WALL_GRID: 5, WALL_SIZE: 4, ALERT: 2.5 },
-    Hard: { DIFFICULTY: "Hard", WALL_GRID: 5, WALL_SIZE: 5, ALERT: 3 },
-    Master: { DIFFICULTY: "Master", WALL_GRID: 6, WALL_SIZE: 6, ALERT: 4 },
-    Legendary: { DIFFICULTY: "Legendary", WALL_GRID: 7, WALL_SIZE: 7, ALERT: 5 },
+    Easy: { DIFFICULTY: "Easy", WALL_GRID: 4, WALL_SIZE: 3, ALERT: 1, PADDING: 3, NEXT: "Medium" },
+    Medium: { DIFFICULTY: "Medium", WALL_GRID: 5, WALL_SIZE: 4, ALERT: 2, PADDING: 3.5, NEXT: "Hard" },
+    Hard: { DIFFICULTY: "Hard", WALL_GRID: 5, WALL_SIZE: 5, ALERT: 3, PADDING: 4, NEXT: "Master" },
+    Master: { DIFFICULTY: "Master", WALL_GRID: 6, WALL_SIZE: 6, ALERT: 4, PADDING: 5, NEXT: "Legendary" },
+    Legendary: { DIFFICULTY: "Legendary", WALL_GRID: 7, WALL_SIZE: 7, ALERT: 5, PADDING: 6, NEXT: "Easy" },
 };
 const getDifficultyColor = (difficulty: string) => {
     const colors = {
@@ -26,21 +28,17 @@ const getDifficultyColor = (difficulty: string) => {
     };
     return colors[difficulty as keyof typeof colors];
 };
-export default function Steal({ ascean, combat, game, settings, stealing, setItems, setShowPickpocket, setStealing, setThievery }: { ascean: Accessor<Ascean>; combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; setThievery: Setter<boolean>; stealing: Accessor<{ stealing: boolean; item: any }>; setStealing: Setter<{ stealing: boolean; item: any }>; setItems: Setter<any[]>; setShowPickpocket:Setter<boolean>; }) {
+export default function Steal({ ascean, combat, game, settings, stealing, setItems, setShowPickpocket, setStealing }: { ascean: Accessor<Ascean>; combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; stealing: Accessor<{ stealing: boolean; item: any }>; setStealing: Setter<{ stealing: boolean; item: any }>; setItems: Setter<any[]>; setShowPickpocket:Setter<boolean>; }) {
     const [debugMode, setDebugMode] = createSignal<boolean>(true);
     const [stealProgress, setStealProgress] = createSignal<number>(0);
-    const [pickDiff, setPickDiff] = createSignal(PICKPOCKET[settings()?.lockpick?.difficulty as keyof typeof PICKPOCKET] || PICKPOCKET["Easy"]); // Easy/medium/hard
+    const [pickDiff, setPickDiff] = createSignal(PICKPOCKET[settings()?.pickpocket?.difficulty as keyof typeof PICKPOCKET] || PICKPOCKET["Easy"]); // Easy/medium/hard
     const [alertLevel, setAlertLevel] = createSignal<number>(0);
     const [isStealing, setIsStealing] = createSignal<boolean>(false);
     const [showManual, setShowManual] = createSignal<boolean>(false);
     const [mazeWalls, setMazeWalls] = createSignal<Wall[]>([]);
     const [offset, setOffset] = createSignal({x:0,y:0});
     const [imgCenter, setImgCenter] = createSignal({x:0,y:0});
-    const [safeZone, setSafeZone] = createSignal({
-        x: 89.5,
-        y: 82.5,
-        radius: 7.5
-    });
+    const safeZone = { x: 89.5, y: 82.5, radius: 7.5 };
     let touchId: number | null = null;
     let touchStartPos = { x: 0, y: 0 };
     let target: any;
@@ -49,9 +47,27 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
     createEffect(() => checkThievery());
     onMount(() => setMazeWalls(generateMaze(MAZE_SIZE, MAZE_SIZE)));
 
+    async function changeDifficulty() {
+        try {
+            const difficulty = PICKPOCKET[settings()?.pickpocket?.difficulty as keyof typeof PICKPOCKET || "Easy"].NEXT;
+            const newSettings = { ...settings(), pickpocket: { ...settings()?.pickpocket, difficulty } };
+            EventBus.emit("save-settings", newSettings);
+            setTimeout(() => {
+                setMazeWalls(generateMaze(MAZE_SIZE, MAZE_SIZE));
+            }, 500);
+        } catch (err) {
+            console.warn(err, "Error Changing Difficulty");
+        };
+    };
+
     function checkThievery(): void {
-        setThievery(combat().isStealth);
-        setPickDiff(PICKPOCKET[settings()?.lockpick?.difficulty as keyof typeof PICKPOCKET] || PICKPOCKET["Easy"]);
+        setPickDiff(PICKPOCKET[settings()?.pickpocket?.difficulty as keyof typeof PICKPOCKET] || PICKPOCKET["Easy"]);
+    };
+
+    function stopThievery(): void {
+        clearInterval(timer);
+        timer = undefined;
+        setStealing({...stealing(), stealing: false});
     };
 
     function checkStatisticalValue(rarity: string): number {
@@ -75,26 +91,26 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
         if (game().scrollEnabled) EventBus.emit('outside-press', "settings");
         if (game().showCombat) EventBus.emit('outside-press', "logs");
         setStealing({...stealing(), stealing: false});
-        setThievery(false);
         setShowPickpocket(false);
     };
 
     const checkMazeCollision = (x: number, y: number): { collides: boolean, type: string } => {
-        const padding = 3; // Adjust for touch sensitivity
+        const padding = pickDiff().PADDING;
+        // const padding = 5; // Adjust for touch sensitivity
         for (let i = 0; i < mazeWalls().length; ++i) { 
             const wall = mazeWalls()[i]; 
             const isHorizontal = wall.y1 === wall.y2;
             if (isHorizontal) {
-                const check = { collides:y >= wall.y1 - padding && 
-                    y <= wall.y1 + padding && 
-                    x >= wall.x1 && 
-                    x <= wall.x2, type: wall.type};
+                const check = { 
+                    collides: y >= wall.y1 - padding && y <= wall.y1 + padding && x >= wall.x1 && x <= wall.x2, 
+                    type: wall.type
+                };
                 if (check.collides) return check;
             } else {
-                const check = { collides:x >= wall.x1 - padding && 
-                    x <= wall.x1 + padding && 
-                    y >= wall.y1 && 
-                    y <= wall.y2, type: wall.type};
+                const check = { 
+                    collides: x >= wall.x1 - padding && x <= wall.x1 + padding && y >= wall.y1 && y <= wall.y2, 
+                    type: wall.type 
+                };
                 if (check.collides) return check;
             };
         };
@@ -112,6 +128,8 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
             { x1: width, y1: 0, x2: width, y2: height, type: "outer" }
         ];
         const connectedCells = new Set<string>();
+        clearInterval(timer);
+        timer = undefined;
 
         const generateInnerWalls = () => {
             walls = [...outerWalls];
@@ -162,12 +180,13 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
             };
             setAlertLevel(prev => Math.min(prev + pickDiff().ALERT, 100));
             if (alertLevel() >= 100) {
-                const value = checkStatisticalValue(stealing().item.rarity as string);
-                EventBus.emit("pocket-item", { success: false, item: stealing().item, value });
-                EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The item has subsequently been alerted to your abhorrent presence.`, delay: 6000, key: "Close"});    
+                failure.play();
+                // const value = checkStatisticalValue(stealing().item.rarity as string);
+                // EventBus.emit("pocket-item", { success: false, item: stealing().item, value });
+                // EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The item has subsequently been alerted to your abhorrent presence.`, delay: 6000, key: "Close"});    
                 vibrate(1000);
                 setStealProgress(0);
-                setTimeout(() => engage(), 5000);
+                // setTimeout(() => engage(), 5000);
                 clearInterval(timer);
                 timer = undefined;
             };
@@ -176,7 +195,7 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
     };
 
     const isInSafeZone = (touchX: number, touchY: number) => {
-        const zone = safeZone();
+        const zone = safeZone;
         const dist = Math.sqrt(
             Math.pow(touchX - 100, 2) + 
             Math.pow(touchY - 100, 2)
@@ -223,6 +242,7 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
     const handleTouchEnd = () => {
         setIsStealing(false);
         if (isInSafeZone(imgCenter().x, imgCenter().y)) {
+            success.play();
             const value = checkStatisticalValue(stealing().item.rarity as string);
             clearInterval(timer);
             timer = undefined;
@@ -240,30 +260,30 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
         <div class="modal">
             <div class="border" style={{ position: "absolute", height: "95%", width: "60%", left: "20%", top: "0%" }}>
                 <div class="center creature-heading wrap">
-                    <h1>Pickpocketing (<span style={{ color: getDifficultyColor(pickDiff().DIFFICULTY) }}>{pickDiff().DIFFICULTY}</span>)</h1>
+                    <h1 onClick={changeDifficulty}>Pickpocketing (<span style={{ color: getDifficultyColor(pickDiff().DIFFICULTY) }}>{pickDiff().DIFFICULTY}</span>)</h1>
                     <Show when={stealProgress() >= 100 || alertLevel() >= 100}>
                         <div class="sunburst" style={{ "--glow-color": alertLevel() >= 100 ? "red" : "green", top: "-75vh", transform: "scale(2)" }}></div>
                     </Show>
                     <div
                         classList={{ shake: alertLevel() >= 100 }}
                         onTouchMove={handleTouchMove}
-                        style={{ height: "75vh", width: "100%", background: "#222" }}
+                        style={{ height: "75vh", width: "100%", background: "linear-gradient(#111, #333)" }}
                     >
                         <svg class="maze" style={{ height: "75vh", width: "100%" }}>
                             {mazeWalls().map((wall, _i) => { 
                                 return (
                                     <line x1={`${wall.x1}%`} y1={`${wall.y1}%`} 
                                     x2={`${wall.x2}%`} y2={`${wall.y2}%`} 
-                                    style={{ "--wall-thickness": `${pickDiff().WALL_SIZE}px`, stroke: "gray" }}
+                                    style={{ "--wall-thickness": `${pickDiff().WALL_SIZE}px`, stroke: "#777" }}
                                     />
                             )})}
                         </svg>
                         <Show when={debugMode()}>
                             <div class="safe-zone" style={{
-                                left: `${safeZone().x}%`,
-                                top: `${safeZone().y}%`,
-                                width: `${safeZone().radius}%`,
-                                height: `${safeZone().radius}%`,
+                                left: `${safeZone.x}%`,
+                                top: `${safeZone.y}%`,
+                                width: `${safeZone.radius}%`,
+                                height: `${safeZone.radius}%`,
                                 "border-radius": "0.5em",
                                 transform: "translate(-50%, -50%)",
                             }} />
@@ -317,7 +337,7 @@ export default function Steal({ ascean, combat, game, settings, stealing, setIte
                 </Show>
                 <button class="highlight cornerTL" onClick={() => setShowManual(true)} style={{ color: "green" }}>Manual</button>
                 <button class="highlight cornerTR" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>
-                <button class="highlight cornerBR" onClick={() => setStealing({...stealing(), stealing: false})} style={{ color: "red" }}>X</button>
+                <button class="highlight cornerBR" onClick={stopThievery} style={{ color: "red" }}>X</button>
             </div>
         </div>
     );

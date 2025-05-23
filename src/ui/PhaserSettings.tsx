@@ -51,7 +51,7 @@ const FOCUS = {
     Defensive: "Offensive",
     Offensive: "Balanced",
 };
-const LOCKPICK_DIFFICULT = {
+const THIEVERY = {
     Easy: "Medium",
     Medium: "Hard",
     Hard: "Master",
@@ -197,8 +197,14 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         await saveSettings(newSettings);
     };
     async function handleLockpicking() {
-        const difficulty = LOCKPICK_DIFFICULT[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK_DIFFICULT || "Easy"];
+        const difficulty = THIEVERY[settings()?.lockpick?.difficulty as keyof typeof THIEVERY || "Easy"];
         const newSettings = { ...settings(), lockpick: { ...settings().lockpick, difficulty } };
+        await saveSettings(newSettings);
+    };
+    
+    async function handlePickpocketing() {
+        const difficulty = THIEVERY[settings()?.pickpocket?.difficulty as keyof typeof THIEVERY || "Easy"];
+        const newSettings = { ...settings(), pickpocket: { ...settings().pickpocket, difficulty } };
         await saveSettings(newSettings);
     };
     async function handleFps(type: string, payload: boolean | number | string) {
@@ -508,14 +514,6 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         </div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Thievery</h1>
-                    <Collapse value={frame().lockpick} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
-                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick?.difficulty || "Easy"}</button>
-                        </div>
-                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks and pickpocket. Adjusts the lock's width of success and the lockpick's fragility. Adjusts the pocket's maze complexity, enemy alertness, and time you can pickpocket.]</div>
-                    </Collapse>
-
                     <h1 onClick={() => resetFrame("speed", !frame().speed)} style={font("1.25em")}>Speed</h1>
                     <Collapse value={frame().speed} class="my-transition">
                         <div style={font("1em")}>
@@ -539,6 +537,22 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                         <div style={font("0.5em")}>[Whether any music or sound effects are enabled. Restart Game For This Change To Take Effect.]</div>
                         <div style={{...font("0.75em", "#fdf6d8"), "margin": "3%" }}>Volume ({settings().volume})</div>
                         <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
+                    </Collapse>
+
+                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Thievery</h1>
+                    <Collapse value={frame().lockpick} class="my-transition">
+                        <div style={font("1em", "#fdf6d8")}>
+                        <h4 style={{ margin: "3% auto 0%" }}>Lockpicking</h4>
+                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick?.difficulty || "Easy"}</button>
+                        </div>
+                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
+                    
+                        <div style={font("1em", "#fdf6d8")}>
+                        <h4 style={{ margin: "3% auto 0%" }}>Pickpocketing</h4>
+                        <button class="gold highlight" onClick={handlePickpocketing}>{settings()?.pickpocket?.difficulty || "Easy"}</button>
+                        </div>
+                        <div style={font("0.5em")}>[Changes how difficult it is to pickpocket. Adjusts the pocket's maze complexity, enemy alertness, and time you can pickpocket.]</div>
+                    
                     </Collapse>
                     
                     <h1 onClick={() => resetFrame("tooltips", !frame().tooltips)} style={font("1.25em")}>Tooltips</h1>

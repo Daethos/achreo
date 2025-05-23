@@ -27,8 +27,8 @@ const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
 const Preview = lazy(async () => await import("./components/Preview"));
 const GameToast = lazy(async () => await import("./ui/GameToast"));
 export var click = new Audio("../assets/sounds/TV_Button_Press.wav");
-var creation = new Audio("../assets/sounds/freeze.wav");
-var load = new Audio("../assets/sounds/combat-round.mp3");
+export var creation = new Audio("../assets/sounds/freeze.wav");
+export var load = new Audio("../assets/sounds/combat-round.mp3");
 
 export type Toast = { header: string; body: string; delay: number; key?: string; extra?: string; arg: any };
 

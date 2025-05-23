@@ -1,7 +1,7 @@
 import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js"
 import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
-import { border, borderColor, font, itemStyle, masteryColor } from "../utility/styling";
+import { border, borderColor, itemStyle, masteryColor } from "../utility/styling";
 import PrayerEffects from "./PrayerEffects";
 import { EventBus } from "../game/EventBus";
 import { For, Show } from "solid-js";
@@ -18,7 +18,6 @@ import Settings from "../models/settings";
 import { useResizeListener } from "../utility/dimensions";
 import Equipment, { getOneTemplate } from "../models/equipment";
 import Ascean from "../models/ascean";
-import Pickpocket from "./Pickpocket";
 import PickpocketLoot from "./PickpocketLoot";
 import Lockpicking from "./Lockpicking";
 import { IRefPhaserGame } from "../game/PhaserGame";
@@ -47,14 +46,12 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [graceShow, setGraceShow] = createSignal<boolean>(false);
     const [previousHealth, setPreviousHealth] = createSignal({health:0,show:false,positive:false});
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
-    const [thievery, setThievery] = createSignal<boolean>(false);
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
     const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
     const [showPickpocketItems, setShowPickpocketItems] = createSignal<boolean>(false); // setShowPickpocketItems
-    const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const [stealAnimation, setStealAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:"", name:""},
@@ -199,10 +196,10 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
+            }} onClick={changeDisplay} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
             "--glow-color": "violet" }}>{healthDisplay()}</div>
-            <div class="healthbarPosition" style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
-            <div class="healthbarPosition" style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
+            <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
+            <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>
         </div>
             <p class="playerName" classList={{
@@ -278,15 +275,14 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <Show when={lockpicking()}>
                 <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
             </Show>
-            {/* <Pickpocket ascean={ascean} combat={state} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} /> */}
             <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
                 <div class="modal">
                 <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
                     <div class="center creature-heading" style={{ height: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
                         <h1 style={{margin:"5%"}}>Pickpocketing</h1>
-                        <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal the items of consequence?</h2>
+                        <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal these items of consequence?</h2>
                         <For each={pickpocketItems()}>{(item) => (
-                            <PickpocketLoot item={item} setShow={setShowPickpocket} setHighlight={setHighlight} thievery={thievery} steal={steal} />
+                            <PickpocketLoot item={item} setShow={setShowPickpocket} setHighlight={setHighlight} steal={steal} />
                         )}</For>
                     </div>
                 </div>
@@ -294,21 +290,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 </div>
             </Show>
             <Show when={stealing().stealing}>
-                <Steal ascean={ascean} combat={state} game={game} settings={settings} setThievery={setThievery} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
+                <Steal ascean={ascean} combat={state} game={game} settings={settings} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
             </Show>
-            <Show when={thieveryModal()}> 
-                <div class="modal">
-                <div class="button superCenter" style={{ "background-color": "black", width: "25%" }}>
-                    <div class="">
-                    </div>
-                    <br /><br /><br />
-                    <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setThieveryModal(false)}>
-                        <p style={font("0.5em")}>X</p>
-                    </button>
-                </div>
-                </div> 
-            </Show>
-
             <Show when={showPickpocket() && highlight()}>
                 <div class="modal" onClick={() => setHighlight(undefined)}>
                     <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 

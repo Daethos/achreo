@@ -1,17 +1,21 @@
 import { Accessor, createEffect, createSignal, onMount, Setter, Show } from "solid-js";
+import { creation, load } from "../App";
 import Ascean from "../models/ascean";
 import Settings from "../models/settings";
 import { screenShake, vibrate } from "../game/phaser/ScreenShake";
 import { Store } from "solid-js/store";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { font } from "../utility/styling";
+import { EventBus } from "../game/EventBus";
+var picking = new Audio("../assets/sounds/lockpick-sound.mp3");
+var success = new Audio("../assets/sounds/lockpick-success.mp3");
 
 const LOCKPICK = {
-    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 540, PLAYER: 2, DURATION: 20, INTENSITY: 0.002 },
-    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 450, PLAYER: 3, DURATION: 20, INTENSITY: 0.00175 },
-    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, PLAYER: 4, DURATION: 20, INTENSITY: 0.0015 },
-    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, PLAYER: 5, DURATION: 20, INTENSITY: 0.00125 },
-    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 20, INTENSITY: 0.001 },
+    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 540, PLAYER: 2, DURATION: 20, INTENSITY: 0.002, NEXT: "Medium" },
+    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 450, PLAYER: 3, DURATION: 20, INTENSITY: 0.00175, NEXT: "Hard" },
+    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, PLAYER: 4, DURATION: 20, INTENSITY: 0.0015, NEXT: "Master" },
+    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, PLAYER: 5, DURATION: 20, INTENSITY: 0.00125, NEXT: "Legendary" },
+    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 20, INTENSITY: 0.001, NEXT: "Easy" },
 };
 
 export default function Lockpicking({ ascean, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
@@ -34,6 +38,20 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
 
     createEffect(() => setLockDifficulty(LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK] || LOCKPICK["Easy"]));
 
+    async function changeDifficulty() {
+        try {
+            const difficulty = LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK || "Easy"].NEXT;
+            // const lockpick = { ...settings()?.lockpick, difficulty };
+            // EventBus.emit("save-this-setting", lockpick);
+
+            const newSettings = { ...settings(), lockpick: { ...settings()?.lockpick, difficulty } };
+            EventBus.emit("save-settings", newSettings);
+            setTimeout(() => resetLock(), 500);
+        } catch (err) {
+            console.warn(err, "Error Changing Difficulty");
+        };
+    };
+
     const resetLock = (pick: boolean = false) => {
         const size = lockDifficulty().SIZE + ((ascean().achre + ascean().agility) / lockDifficulty().PLAYER);
         const start = Math.floor(Math.random() * (360 - size));
@@ -49,10 +67,12 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     const checkSweetSpot = () => {
         const currentAngle = angle();
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
+            success.play();
             setGameStatus("success"); // Lock opened!
             vibrate([500, 250, 500]);
         } else {
             setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
+            load.play();
             vibrate(1000);
             setTension(115);
             if (pickDurability() <= 0) {
@@ -97,6 +117,8 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     const handlePickTouch = (e: TouchEvent) => {
         e.preventDefault();
         if (gameStatus() !== "playing" || lockpicks() === 0) return;
+        picking.loop = true;
+        picking.play();
         // setStartTouchX(e.touches[0].clientX);
         // setStartTouchY(e.touches[0].clientY);
         setActiveTouch("pick");
@@ -135,6 +157,10 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
             setTotalRotation(prev => prev + 1);
             checkDistance();
             if (totalRotation() > lockDifficulty().ROTATION) {
+                if (!load.ended) {   
+                    load.pause();
+                };
+                load.play();
                 setTotalRotation(0);
                 setPickDurability(0);
                 vibrate(1000); // Long buzz
@@ -156,6 +182,10 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
             vibrate(16); // totalRotation() > lockDifficulty().ROTATION * 0.5 && 
 
             if (pickDurability() === 0) {
+                if (!load.ended) {   
+                    load.pause();
+                };
+                load.play();
                 vibrate(1000); // Long buzz
                 setBroke(true);
                 setTimeout(() => {
@@ -181,6 +211,7 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
     const handleTouchEnd = () => {
         setRumble(false);
         setTension(115);
+        picking.pause();
         // setStartTouchX(0);
         // setStartTouchY(0);
         setActiveTouch(undefined);
@@ -200,7 +231,7 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
 
     return (
         <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal", "z-index": 99 }}>
-        <h1 style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
+        <h1 onClick={changeDifficulty} style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
         <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>

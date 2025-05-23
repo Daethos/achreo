@@ -95,6 +95,7 @@ export class Hud extends Phaser.Scene {
             this.logger.log("Warning: Some function did not work, but did not crash the game!");
             this.logger.log("Error: Some portion if not all of the game has crashed!");
             this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);
+            this.logger.log(`Console: Scene Renderer Type: ${this.renderer.type === Phaser.WEBGL ? "WebGL" : this.renderer.type === Phaser.CANVAS ? "Canvas" : "Not Categorized"}`);
         }, undefined, this);
         this.input.keyboard?.on("keydown-P", () => {
             EventBus.emit("action-button-sound");

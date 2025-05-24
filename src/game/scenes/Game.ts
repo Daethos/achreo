@@ -75,6 +75,7 @@ export class Game extends Scene {
     compositeTextures: any;
     day: boolean = true;
     aoePool: AoEPool;
+    frameCount: number = 0;
 
     constructor () {
         super("Game");
@@ -181,6 +182,12 @@ export class Game extends Scene {
         });
         if (this.hud.settings.desktop) {
             for (let i = 0; i < 40; ++i) {
+                const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+                this.enemies.push(e);
+                e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
+            };
+        } else {
+            for (let i = 0; i < 20; ++i) {
                 const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
@@ -741,6 +748,15 @@ export class Game extends Scene {
         };
     };
 
+    distanceToPlayer = (enemy: Enemy) => {
+        if (!enemy || !enemy.body) {
+            return 2500;
+        };
+        const distance = enemy.position.subtract(this.player.position).length();
+        enemy.distanceToPlayer = distance;
+        return distance;    
+    };
+
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.combatManager.combatMachine.process();
@@ -748,7 +764,6 @@ export class Game extends Scene {
         this.setCameraOffset();
         this.checkEnvironment(this.player);
         if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
-        // console.log(this.player.position);
     };
 
     setCameraOffset = () => {
@@ -789,7 +804,18 @@ export class Game extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update(delta);
+            const distance = this.distanceToPlayer(this.enemies[i]);
+            if (distance < 800) {
+                this.enemies[i].update(delta);
+            } else if (distance < 1600) {
+                if (this.frameCount % 2 === 0) this.enemies[i].update(delta);
+            } else if (distance < 2400) {
+                if (this.frameCount % 6 === 0) this.enemies[i].update(delta);
+            } else {
+                if (this.frameCount % 60 === 0) this.enemies[i].update(delta);
+                // this.enemies[i].updateMinimal();    
+            };
+            // this.enemies[i].update(delta);
             if (this.enemies[i].isDeleting) return;
             this.checkEnvironment(this.enemies[i]);
         };
@@ -801,6 +827,7 @@ export class Game extends Scene {
         for (let i = 0; i < this.npcs.length; i++) {
             this.npcs[i].update();
         };
+        this.frameCount++;
     };
     pause(): void {
         this.scene.pause();

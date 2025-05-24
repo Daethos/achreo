@@ -112,6 +112,7 @@ export default class Enemy extends Entity {
     specialFear: boolean = false;
     defeatedByPlayer: boolean = false;
     isDying: boolean = false;
+    distanceToPlayer: number = 0;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -4599,6 +4600,15 @@ export default class Enemy extends Entity {
     };
 
     cleanCombatAnimation = () => this.stateMachine.isCurrentState(States.COMBAT) || this.stateMachine.isCurrentState(States.CHASE);
+
+    evaluateEnemyStateMinimal = () => {
+        if (this.body) {
+            this.functionality(NAME, this.currentTarget);
+            if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
+            if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
+            if (this.healthbar) this.healthbar.update(this);
+        };
+    };
     
     evaluateEnemyState = () => {
         if (this.body) {
@@ -4707,6 +4717,11 @@ export default class Enemy extends Entity {
  
     update(dt: number) {
         this.evaluateEnemyState(); 
+        // if (this.distanceToPlayer < 800) {
+        //     this.evaluateEnemyState(); 
+        // } else {
+        //     this.evaluateEnemyStateMinimal();
+        // };
         this.positiveMachine.update(dt);   
         this.stateMachine.update(dt);
         this.negativeMachine.update(dt);

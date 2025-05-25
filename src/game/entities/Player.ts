@@ -1284,14 +1284,6 @@ export default class Player extends Entity {
         };
     };
 
-    // movementClear = (): boolean => {
-    //     return (
-    //         !this.playerMachine.stateMachine.isCurrentState(States.ROLL) &&
-    //         !this.playerMachine.stateMachine.isCurrentState(States.DODGE) &&
-    //         !this.playerMachine.stateMachine.isCurrentState(States.PARRY) &&
-    //         (this.isStalwart ? !this.scene.hud.talents.talents.stalwart.enhanced : true)
-    //     );
-    // };
     movementClear = () => {
         const inRestrictedState = this.playerMachine.stateMachine.isCurrentState(States.ROLL) || this.playerMachine.stateMachine.isCurrentState(States.DODGE) || this.playerMachine.stateMachine.isCurrentState(States.PARRY);
         if (this.isStalwart) {
@@ -1606,43 +1598,48 @@ export default class Player extends Entity {
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.functionality("player", this.currentTarget as Enemy);
 
-        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+        const state = this.playerMachine.stateMachine.getCurrentState();
+
+        if (this.isDefeated && state !== States.DEFEATED) {
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (this.isConfused && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
+        if (this.isConfused && state !== States.CONFUSED) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
         };
-        if (this.isFeared && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
+        if (this.isFeared && state !== States.FEARED) {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
-        if (this.isHurt && !this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
+        if (this.isHurt && !this.isDefeated && state !== States.HURT) {
             this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
-        if (this.isParalyzed && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+        if (this.isParalyzed && state !== States.PARALYZED) {
             this.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };
-        if (this.isStunned && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
+        if (this.isStunned && state !== States.STUN) {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN)) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-            return;
-        };
-        if (this.isPolymorphed && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
+        if (this.isPolymorphed && state !== States.POLYMORPHED) {
             this.playerMachine.stateMachine.setState(States.POLYMORPHED);
             return;
         };
-        if (this.isSlowed && !this.playerMachine.negativeMachine.isCurrentState(States.SLOWED)) {
+
+        const negState = this.playerMachine.negativeMachine.getCurrentState();
+
+        if (this.isFrozen && negState !== States.FROZEN) {
+            this.playerMachine.negativeMachine.setState(States.FROZEN);
+            return;
+        };
+        if (this.isSlowed && negState !== States.SLOWED) {
             this.playerMachine.negativeMachine.setState(States.SLOWED);
             return;
         };
-        if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED)) {
+        if (this.isSnared && negState !== States.SNARED) {
             this.playerMachine.negativeMachine.setState(States.SNARED); 
             return;    
         };

@@ -28,6 +28,8 @@ export default class NPC extends Entity {
     originPoint: any;
     npcSensor: any;
     weapons: any;
+    distanceToPlayer: number = 0;
+    lastDistanceFrame: number = 0;
 
     constructor(data: any) {
         let { scene, type } = data;

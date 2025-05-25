@@ -113,6 +113,7 @@ export default class Enemy extends Entity {
     defeatedByPlayer: boolean = false;
     isDying: boolean = false;
     distanceToPlayer: number = 0;
+    lastDistanceFrame: number = 0;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -4613,65 +4614,71 @@ export default class Enemy extends Entity {
     evaluateEnemyState = () => {
         if (this.body) {
             this.functionality(NAME, this.currentTarget);
-            if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
-            if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
-            if (this.healthbar) this.healthbar.update(this);
-            if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-            if (this.specialCombatText) this.specialCombatText.update(this); 
-            if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-            if (this.negationBubble) this.negationBubble.update(this.x, this.y);
+            if (this.distanceToPlayer < 2560000) {
+                if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
+                if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
+                if (this.healthbar) this.healthbar.update(this);
+                if (this.scrollingCombatText) this.scrollingCombatText.update(this);
+                if (this.specialCombatText) this.specialCombatText.update(this); 
+                if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+                if (this.negationBubble) this.negationBubble.update(this.x, this.y);
+            };
         };
         if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
             this.stateMachine.setState(States.DEFEATED);
             return;
         };
         if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
+
+        const currentState = this.stateMachine.getCurrentState();
+        const currentNeagtiveState = this.negativeMachine.getCurrentState();
+
         this.evaluateEnemyAnimation();
-        if (this.isConfused && !this.sansSuffering("isConfused") && !this.stateMachine.isCurrentState(States.CONFUSED)) {
+        if (this.isConfused && !this.sansSuffering("isConfused") && currentState !== States.CONFUSED) {
             this.stateMachine.setState(States.CONFUSED);
             return;
         };
-        if (this.isConsumed && !this.stateMachine.isCurrentState(States.CONSUMED)) {
+        if (this.isConsumed && currentState !== States.CONSUMED) {
             this.stateMachine.setState(States.CONSUMED);
             return;
         };
-        if (this.isCounterSpelled && !this.stateMachine.isCurrentState(States.COUNTERSPELLED)) {
+        if (this.isCounterSpelled && currentState !== States.COUNTERSPELLED) {
             this.stateMachine.setState(States.COUNTERSPELLED);
             return;
         };
-        if (this.isFeared && !this.sansSuffering("isFeared") && !this.stateMachine.isCurrentState(States.FEARED)) {
+        if (this.isFeared && !this.sansSuffering("isFeared") && currentState !== States.FEARED) {
             this.stateMachine.setState(States.FEARED);
             return;
         };
-        if (this.isHurt && !this.sansSuffering("isHurt") && !this.stateMachine.isCurrentState(States.HURT)) {
+        if (this.isHurt && !this.sansSuffering("isHurt") && currentState !== States.HURT) {
             this.stateMachine.setState(States.HURT);
             return;
         };
-        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && !this.stateMachine.isCurrentState(States.PARALYZED)) {
+        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && currentState !== States.PARALYZED) {
             this.stateMachine.setState(States.PARALYZED);
             return;
         };
-        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && !this.stateMachine.isCurrentState(States.POLYMORPHED)) {
+        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && currentState !== States.POLYMORPHED) {
             this.stateMachine.setState(States.POLYMORPHED);
             return;
         };
-        if (this.isStunned && !this.sansSuffering("isStunned") && !this.stateMachine.isCurrentState(States.STUNNED)) {
+        if (this.isStunned && !this.sansSuffering("isStunned") && currentState !== States.STUNNED) {
             this.stateMachine.setState(States.STUNNED);
             return;
         };
-        if (this.isFrozen && !this.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
+        if (this.isFrozen && currentNeagtiveState !== States.FROZEN && !this.currentNegativeState(States.FROZEN)) {
             this.negativeMachine.setState(States.FROZEN);
             return;
         };
-        if (this.isRooted && !this.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
+        if (this.isRooted && currentNeagtiveState !== States.ROOTED && !this.currentNegativeState(States.ROOTED)) {
             this.negativeMachine.setState(States.ROOTED);
             return;
         };
-        if (this.isSlowed && !this.negativeMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
+        if (this.isSlowed && currentNeagtiveState !== States.SLOWED && !this.currentNegativeState(States.SLOWED)) {
             this.negativeMachine.setState(States.SLOWED);
             return;
         };
-        if (this.isSnared && !this.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
+        if (this.isSnared && currentNeagtiveState !== States.SNARED && !this.currentNegativeState(States.SNARED)) {
             this.negativeMachine.setState(States.SNARED); 
             return;    
         };

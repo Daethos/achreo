@@ -266,6 +266,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     reconTimer: Phaser.Time.TimerEvent | undefined;
     isDeleting: boolean = false;
     aoeMask: EntityFlag = ENTITY_FLAGS.NONE;
+    evasionTimer: number = 0;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");

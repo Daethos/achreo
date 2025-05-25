@@ -80,6 +80,7 @@ export class Arena extends Phaser.Scene {
     wager = { silver: 0, gold: 0, multiplier: 0 };
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     aoePool: AoEPool;
+    frameCount: number = 0;
 
     constructor (view?: string) {
         const key = view || "Arena";
@@ -723,6 +724,7 @@ export class Arena extends Phaser.Scene {
             y: this.map.worldToTileY(this.player.y) as number
         });
         this.fov!.update(player, bounds, delta);
+        this.frameCount++;
     };
 
     pause(): void {

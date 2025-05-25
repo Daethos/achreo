@@ -642,6 +642,11 @@ export default class PlayerMachine {
             this.player.isRolling = true;    
         };
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating) this.player.evasionTime = 0;
+        // if (this.player.evasionTimer === 1000) {
+        //     this.scene.time.delayedCall(this.player.evasionTimer, () => {
+        //         this.player.evasionTimer = 0;
+        //     }, undefined, this.player);
+        // };
     };
     onEvasionUpdate = (dt: number) => {
         this.player.evasionTime -= dt;
@@ -1053,6 +1058,7 @@ export default class PlayerMachine {
         if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming) return;
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
+        this.player.isRolling = false;
         if (this.scene.state.action !== "") this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
         const body = (this.player.body as any).parts[3];

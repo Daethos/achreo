@@ -387,6 +387,11 @@ export default class PlayerMachine {
             this.player.isRolling = true;    
         };
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating) this.player.evasionTime = 0;
+        // if (this.player.evasionTimer === 1000) {
+        //     this.scene.time.delayedCall(this.player.evasionTimer, () => {
+        //         this.player.evasionTimer = 0;
+        //     }, undefined, this.player);
+        // };
     };
     onEvasionUpdate = (dt: number) => {
         this.player.evasionTime -= dt;
@@ -771,7 +776,7 @@ export default class PlayerMachine {
         this.player.wasFlipped = this.player.flipX; 
         (this.player.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
-        console.log((this.player.body as any).parts, "Parts");
+        // console.log((this.player.body as any).parts, "Parts");
         const body = (this.player.body as any).parts[3];
         const legs = (this.player.body as any).parts[2];
         if (!body.isSensor) {
@@ -857,6 +862,7 @@ export default class PlayerMachine {
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
         this.player.computerAction = false;
+        this.player.isRolling = false;
         const body = (this.player.body as any).parts[3];
         if (!body.isSensor) {
             body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;

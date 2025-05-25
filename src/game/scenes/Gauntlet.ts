@@ -86,6 +86,7 @@ export class Gauntlet extends Phaser.Scene {
     gauntlet: {opponents:number;type:string;round:number;};
     currentRound: number = 1;
     countdown: Phaser.GameObjects.Text;
+    frameCount: number = 0;
 
     constructor (view?: string) {
         const key = view || "Gauntlet";
@@ -795,6 +796,7 @@ export class Gauntlet extends Phaser.Scene {
             y: this.map.worldToTileY(this.player.y) as number
         });
         this.fov!.update(player, bounds, delta);
+        this.frameCount++;    
     };
 
     pause(): void {

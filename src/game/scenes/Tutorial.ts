@@ -54,6 +54,7 @@ export class Tutorial extends Phaser.Scene {
     hud: Hud;
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     aoePool: AoEPool;
+    frameCount: number = 0;
 
     constructor () {
         super("Tutorial");
@@ -531,6 +532,7 @@ export class Tutorial extends Phaser.Scene {
         for (let i = 0; i < this.dms.length; i++) {
             this.dms[i].update(delta);
         };
+        this.frameCount++;
     };
 
     pause(): void {

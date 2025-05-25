@@ -78,6 +78,7 @@ export class Underground extends Scene {
     scrollingTextPool: ObjectPool<ScrollingCombatText>;
     aoePool: AoEPool;
     lastSafePosition: {x:number;y:number;};
+    frameCount: number = 0;
 
     constructor () {
         super("Underground");
@@ -707,6 +708,7 @@ export class Underground extends Scene {
             y: this.map.worldToTileY(this.player.y) as number
         });
         this.fov?.update(player, bounds, delta);
+        this.frameCount++;
     };
 
     pause(): void {

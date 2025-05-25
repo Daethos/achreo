@@ -1373,7 +1373,8 @@ export default class Party extends Entity {
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
-        if (this.isUnderRangedAttack()) { // Switch to EVADE the Enemy
+        if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
+            // this.evasionTimer = 1000;
             this.playerMachine.stateMachine.setState(States.EVADE);
             return;
         } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
@@ -1393,7 +1394,8 @@ export default class Party extends Entity {
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
+                if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) { //  && this.evasionTimer === 0
+                    // this.evasionTimer = 1000;
                     this.playerMachine.stateMachine.setState(States.EVADE);
                     return;
                 } else {
@@ -1401,7 +1403,8 @@ export default class Party extends Entity {
                     this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
                 };
-            } else if (this.checkLineOfSight() && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
+            } else if (this.checkLineOfSight() && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) { //  && this.evasionTimer === 0
+                // this.evasionTimer = 1000;
                 this.playerMachine.stateMachine.setState(States.EVADE);
                 return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.

@@ -64,6 +64,7 @@ export class ArenaCvC extends Phaser.Scene {
     highlight: Phaser.GameObjects.Graphics;
     highlightAnimation: boolean = false;
     aoePool: AoEPool;
+    frameCount: number = 0;
 
     constructor (view?: string) {
         const key = view || "ArenaCvC";
@@ -422,6 +423,7 @@ export class ArenaCvC extends Phaser.Scene {
         //     y: this.map.worldToTileY(this.target.y) as number
         // });
         // this.fov!.update(target, bounds, delta);
+        this.frameCount++;
     };
     pause(): void {
         this.scene.pause();

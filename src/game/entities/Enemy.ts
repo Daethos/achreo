@@ -1924,7 +1924,7 @@ export default class Enemy extends Entity {
         this.wasFlipped = this.flipX;
         (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
-        console.log((this.body as any).parts, "Parts");
+        // console.log((this.body as any).parts, "Parts");
         const body = (this.body as any).parts[3];
         const legs = (this.body as any).parts[2];
         if (!body.isSensor) {

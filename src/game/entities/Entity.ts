@@ -538,6 +538,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     getDirection = () => {
+        if (this.scene.frameCount % 6 !== 0) return;
         if (this.velocity?.x as number < 0) {
             this.setFlipX(true);
         } else if (this.velocity?.x as number > 0) {

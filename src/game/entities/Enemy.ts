@@ -1261,7 +1261,7 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    // const specific = [States.CHIOMIC];
+                    // const specific = [States.CHIOMIC, States.SCREAM, States.ASTRAVE, States.FREEZE, States.HOWL];
                     // const test = specific[Math.floor(Math.random() * specific.length)];
                     if (this.stateMachine.isState(special)) {
                         this.stateMachine.setState(special);
@@ -1614,11 +1614,24 @@ export default class Enemy extends Entity {
     generatePatrolPath = () => {
         let pathPosition;
         let pathFound = false;
+        const bodyPadding = {
+            x: 6,
+            y: 16
+        };
+        if (!this.body) return;
         while (pathFound === false) {
             const point = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 250, this.x + 250), Phaser.Math.RND.between(this.y - 250, this.y + 250));
-            if (this.scene.navMesh.isPointInMesh(point)) {
-                pathPosition = point;
-                pathFound = true;
+            if (this.scene.navMesh.isPointInMesh(point) && this.body) {
+                const direction = point.clone().subtract(this.position).normalize();
+                const paddedCheck = new Phaser.Math.Vector2(
+                    point.x + (direction.x * bodyPadding.x),
+                    point.y + (direction.y * bodyPadding.y)
+                );
+
+                if (this.scene.navMesh.isPointInMesh(paddedCheck)) {
+                    pathPosition = point;
+                    pathFound = true;
+                };
             };
         };
         let patrolPath = this.scene.navMesh.findPath(this.position, pathPosition);
@@ -4616,7 +4629,9 @@ export default class Enemy extends Entity {
         };
         
         if (this.weaponTypeCache.thisIsRanged) { // RANGED ENEMY LOGIC
-            this.stateMachine.setState(States.COMBAT);
+            if (!this.stateMachine.isCurrentState(States.COMBAT)) {
+                this.stateMachine.setState(States.COMBAT);
+            };
             
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
                 this.enemyAnimation();
@@ -4750,15 +4765,13 @@ export default class Enemy extends Entity {
     evaluateEnemyState = () => {
         if (this.body) {
             this.functionality(NAME, this.currentTarget);
-            if (this.distanceToPlayer < 2560000) {
-                if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
-                if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
-                if (this.healthbar) this.healthbar.update(this);
-                if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-                if (this.specialCombatText) this.specialCombatText.update(this); 
-                if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-                if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-            };
+            if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
+            if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
+            if (this.healthbar) this.healthbar.update(this);
+            if (this.scrollingCombatText) this.scrollingCombatText.update(this);
+            if (this.specialCombatText) this.specialCombatText.update(this); 
+            if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
+            if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         };
         if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
             this.stateMachine.setState(States.DEFEATED);

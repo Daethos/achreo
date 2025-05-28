@@ -21,9 +21,9 @@ import { Gauntlet } from "./Gauntlet";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
-export const X_SPEED_OFFSET = 2;
+export const X_SPEED_OFFSET = 3;
 export const Y_OFFSET = 10;
-export const Y_SPEED_OFFSET = 1.5;
+export const Y_SPEED_OFFSET = 2;
 export class Hud extends Phaser.Scene {
     gameHeight: number;
     gameWidth: number;

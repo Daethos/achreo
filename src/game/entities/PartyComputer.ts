@@ -810,6 +810,8 @@ export default class Party extends Entity {
         }, undefined, this);
     };
 
+    mastery = () => this.ascean[this.ascean.mastery] || 20;
+
     resist = () => {
         this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.resistCombatText = undefined);
     };

@@ -1398,7 +1398,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 {forgings().show ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
+                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}>
                     
                     <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
                         if (item === undefined) return;
@@ -1425,7 +1425,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 {etchings().show && etchings().items.length > 0 ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
+                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}> 
                     {etchings().items.map((item: any) => {
                         if (item === undefined) return;
                         return (
@@ -1439,7 +1439,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </div> ) 
                 : etchings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
                 <br />
-                {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}>
+                {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
                         if (item === undefined || item === undefined) return;
                         return <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>

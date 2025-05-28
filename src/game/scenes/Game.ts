@@ -1,4 +1,4 @@
-import { Cameras, GameObjects, Scene, Tilemaps, Time } from "phaser";
+import { Cameras, GameObjects, Scene, Sound, Tilemaps, Time } from "phaser";
 import { Combat, initCombat } from "../../stores/combat";
 import { EventBus } from "../EventBus";
 import LootDrop from "../matter/LootDrop";
@@ -29,7 +29,7 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 
 export class Game extends Scene {
-    overlay: Phaser.GameObjects.Graphics;
+    overlay: GameObjects.Graphics;
     animatedTiles: any[];
     offsetX: number = 0;
     offsetY: number = 0;
@@ -41,8 +41,8 @@ export class Game extends Scene {
     party: Party[] = [];
     npcs: NPC[] = [];
     lootDrops: LootDrop[] = [];
-    target: Phaser.GameObjects.Sprite;
-    playerLight: Phaser.GameObjects.PointLight;
+    target: GameObjects.Sprite;
+    playerLight: GameObjects.PointLight;
     combat: boolean = false;
     stealth: boolean = false;
     combatTime: number = 0;
@@ -55,17 +55,17 @@ export class Game extends Scene {
     navMesh: any;
     navMeshPlugin: PhaserNavMeshPlugin;
     postFxPipeline: any;
-    musicDay: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicNight: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicCombat: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicCombat2: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    musicStealth: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    musicDay: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+    musicNight: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+    musicCombat: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+    musicCombat2: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
+    musicStealth: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
     fpsText: GameObjects.Text;
     combatManager: CombatManager;
-    baseLayer: Phaser.Tilemaps.TilemapLayer;
-    climbingLayer: Phaser.Tilemaps.TilemapLayer;
-    flowers: Phaser.Tilemaps.TilemapLayer;
-    plants: Phaser.Tilemaps.TilemapLayer;
+    baseLayer: Tilemaps.TilemapLayer;
+    climbingLayer: Tilemaps.TilemapLayer;
+    flowers: Tilemaps.TilemapLayer;
+    plants: Tilemaps.TilemapLayer;
     matterCollision: any;
     glowFilter: any;
     targetTarget: Enemy;
@@ -78,6 +78,7 @@ export class Game extends Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
+    quadrant = { startX: 0, startY: 0, endX: 0, endY: 0 };
 
     constructor () {
         super("Game");
@@ -109,12 +110,12 @@ export class Game extends Scene {
         let layerT = map.createLayer("Tile Layer - Tree Trunks", decorations as Tilemaps.Tileset, 0, 0);
         let layerB = map.createLayer("Tile Layer - Camp Base", camps as Tilemaps.Tileset, 0, 0);
         let layer6 = map.createLayer("Tile Layer 6 - Camps", camps as Tilemaps.Tileset, 0, 0);
-        this.baseLayer = layer0 as Phaser.Tilemaps.TilemapLayer;
-        this.climbingLayer = layer1 as Phaser.Tilemaps.TilemapLayer;
+        this.baseLayer = layer0 as Tilemaps.TilemapLayer;
+        this.climbingLayer = layer1 as Tilemaps.TilemapLayer;
         const layer2 =  map.createLayer("Tile Layer 2 - Flowers", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
         const layer3 =  map.createLayer("Tile Layer 3 - Plants", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        this.flowers = layer2 as Phaser.Tilemaps.TilemapLayer;
-        this.plants = layer3 as Phaser.Tilemaps.TilemapLayer;
+        this.flowers = layer2 as Tilemaps.TilemapLayer;
+        this.plants = layer3 as Tilemaps.TilemapLayer;
         map.createLayer("Tile Layer - Campfire", campfire as Tilemaps.Tileset, 0, 0);
         map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
         [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
@@ -183,7 +184,7 @@ export class Game extends Scene {
             e.setPosition(enemy.x, enemy.y);
         });
         if (this.hud.settings.desktop) {
-            for (let i = 0; i < 40; ++i) {
+            for (let i = 0; i < 60; ++i) {
                 const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
@@ -768,6 +769,10 @@ export class Game extends Scene {
 
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
+        // this.quadrant = {};
+        // if (this.frameCount % 120 === 0) {
+        //     const position = this.player.position;
+        // };
         this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffsetOptimized();
@@ -842,17 +847,15 @@ export class Game extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            const enemy = this.enemies[i];
-            const distance = this.distanceToPlayer(enemy);
-            let shouldUpdate = false;
+            let enemy = this.enemies[i], distance = this.distanceToPlayer(enemy), shouldUpdate = false;
             if (distance < 640000) {
                 shouldUpdate = true;
-            } else if (distance < 2560000 && this.frameCount % 2 === 0) {
-                shouldUpdate = true;
-            } else if (distance < 5760000 && this.frameCount % 6 === 0) {
-                shouldUpdate = true;
-            } else if (this.frameCount % 60 === 0) {
-                shouldUpdate = true;
+            } else if (distance < 1440000) {
+                shouldUpdate = this.frameCount % 2 === 0;
+            } else if (distance < 2560000) {
+                shouldUpdate = this.frameCount % 6 === 0;
+            } else {
+                shouldUpdate = this.frameCount % 60 === 0;
             };
             if (shouldUpdate) {
                 enemy.update(delta);
@@ -871,9 +874,9 @@ export class Game extends Scene {
             let shouldUpdate = false;
             const distance = this.distanceToPlayer(npc);
             if (distance < 640000) {
-                shouldUpdate = true;
-            } else if (this.frameCount % 60 === 0) {
-                shouldUpdate = true;
+                shouldUpdate = this.frameCount % 60 === 0;
+            } else {
+                shouldUpdate = this.frameCount % 600 === 0;
             };
             if (shouldUpdate) npc.update();
         };

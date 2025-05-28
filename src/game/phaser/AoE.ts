@@ -162,7 +162,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     public scene: Play;
 
     constructor(scene: Play) {
-        super(scene.matter.world, 0, 6, "target");
+        super(scene.matter.world, 0, 0, "target");
         this.scene = scene;
         scene.add.existing(this);
         this.setVisible(false);
@@ -171,6 +171,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.type = TYPES[Math.floor(Math.random() * TYPES.length)];
         this.name = this.type;
         this.sensor = this.setupSensor(0, 0, RADIUS, PARTICLES.includes(this.type) ? "particleAoeSensor" : "aoeSensor");
+        // this.cleanup(false);
         this.hollowTimer();
     };
 
@@ -179,7 +180,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
     
     public cleanup = (returnToPool: boolean = true) => {
-        if (this.scene) {
+        if (this.scene && this.sensor) {
             this.scene.matterCollision.removeOnCollideStart({ objectA: [this.sensor] });
             this.scene.matterCollision.removeOnCollideEnd({ objectA: [this.sensor] });
             this.scene.glowFilter.remove(this);
@@ -454,11 +455,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 }, {
                     mask: ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.PARTY,
                     filter: (gameObject) => {
-                        const isEnemy = gameObject.aoeMask & ENTITY_FLAGS.ENEMY;
-                        if (isEnemy) {
-                            return !origin.enemies.some(e => e.id === gameObject.enemyID) && !this.hit.some(h => h.enemyID === gameObject.enemyID) && gameObject.enemyID !== origin.enemyID;
-                        };
-                        return !this.hit.some(h => h.enemyID === gameObject.enemyID);
+                        // const isEnemy = gameObject.aoeMask & ENTITY_FLAGS.ENEMY;
+                        // if (isEnemy) {
+                        //     return !origin.enemies.some(e => e.id === gameObject.enemyID); // && !this.hit.some(h => h.enemyID === gameObject.enemyID && gameObject.enemyID !== origin.enemyID)
+                        // };
+                        return !this.hit.some(h => h.enemyID === gameObject.enemyID) && gameObject.enemyID !== origin.enemyID;
                     }
                 }
             ],

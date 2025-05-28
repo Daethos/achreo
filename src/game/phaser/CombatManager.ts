@@ -591,12 +591,14 @@ export class CombatManager {
             } else {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
                 if (origin) { // CvC
-                    const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);
+                    // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
+                    const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
                     EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
                 } else {
                     const party = this.context.party.find((e: Party) => e.enemyID === enemySpecialID);
                     if (!party) return;
-                    const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean] * 0.3);
+                    const damage = Math.round(party.mastery() / 2 * (1 + (party.entropicMultiplier(10))) * ((party.ascean.level + 9) / 10));
+                    // const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
                     EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
                 };  
             };
@@ -605,7 +607,8 @@ export class CombatManager {
             if (party) {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
                 if (origin) { // CvC
-                    const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean] * 0.3);
+                    const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
+                    // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
                     EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
                 };
             };

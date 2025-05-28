@@ -3,30 +3,94 @@ import { Legs, Chests, Shields, Helmets } from '../assets/db/equipment';
 import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
 import { v4 as uuidv4 } from 'uuid';
 import { addEquipment } from '../assets/db/db';
-
-// const ATTRIBUTE_RANGE = {
-//     Default: [0, 0, 0, 0, 0, 0, 0],
-//     Common: [0, 1, 1, 1, 2, 2, 3],
-//     Uncommon: [1, 1, 2, 2, 3, 4, 6],
-//     Rare: [2, 3, 4, 5, 6, 7, 10],
-//     Epic: [4, 5, 6, 7, 8, 10, 15],
-//     Legendary: [10, 14, 17, 20, 24, 27, 30],
-// };
+const COLLECTION = [Weapons, Legs, Chests, Shields, Helmets, Amulets, Rings, Trinkets];
 const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
 const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
 const DAMAGE = ['physicalDamage', 'magicalDamage'];
 const DEFENSE = ['physicalResistance', 'magicalResistance'];
 const CRITICAL = ['criticalDamage'];
+const ATTRIBUTE_MUTATION_RANGES = {
+    1: [1, 1],
+    2: [1, 2],
+    3: [2, 3],
+    4: [2, 4],
+    5: [3, 5],
+    6: [4, 6],
+    7: [5, 7],
+    8: [5, 8],
+    9: [6, 9],
+    10: [7, 10],
+    11: [7, 11],
+    12: [8, 12],
+    13: [9, 13],
+    14: [10, 14],
+    15: [11, 15],
+    16: [12, 16],
+    17: [13, 17],
+    18: [14, 18],
+    19: [15, 19],
+};
+const CHANCE_MUTATION_RANGES = [
+    { threshold: 24, range: [0, 4] },
+    { threshold: 20, range: [0, 2] },
+    { threshold: 18, range: [0, 2] },
+    { threshold: 16, range: [0, 1.5] },
+    { threshold: 14, range: [0, 1.5] },
+    { threshold: 12, range: [-1, 1.5] },
+    { threshold: 10, range: [-1, 1.5] },
+    { threshold: 8, range: [-1, 1] },
+    { threshold: 6, range: [-1, 1] },
+    { threshold: 4, range: [-1, 0.5] },
+    { threshold: 2, range: [-1, 0.5] },
+    { threshold: 0, range: [-1, 0] }
+];
+const DAMAGE_MUTATION_RANGES = [
+    { threshold: 20, range: [0, 4] },
+    { threshold: 18, range: [0, 2] },
+    { threshold: 16, range: [0, 2] },
+    { threshold: 14, range: [0, 2] },
+    { threshold: 12, range: [-1, 2] },
+    { threshold: 10, range: [-1, 2] },
+    { threshold: 8, range: [-1, 1] },
+    { threshold: 6, range: [-1, 1] },
+    { threshold: 4, range: [-1, 0] },
+    { threshold: 2, range: [-1, 0] },
+    { threshold: 0, range: [0, 0] }
+];
+const DEFENSE_MUTATION_RANGES = [
+    { threshold: 20, range: [0, 3] },
+    { threshold: 18, range: [0, 1.5] },
+    { threshold: 16, range: [0, 1.5] },
+    { threshold: 14, range: [0, 1.5] },
+    { threshold: 12, range: [-1, 1] },
+    { threshold: 10, range: [-1, 1] },
+    { threshold: 8, range: [-1, 0.5] },
+    { threshold: 6, range: [-1, 0.5] },
+    { threshold: 4, range: [-1, 0] },
+    { threshold: 2, range: [-1, 0] },
+    { threshold: 0, range: [-1, 0] }
+];
+const CRITICAL_MUTATION_RANGES = [
+    { threshold: 1.99, range: [-0.2, 0.25] },
+    { threshold: 1.74, range: [-0.15, 0.2] },
+    { threshold: 1.49, range: [-0.1, 0.15] },
+    { threshold: 1.24, range: [-0.05, 0.1] },
+    { threshold: 1.09, range: [-0.02, 0.03] },
+    { threshold: 1.05, range: [-0.01, 0.03] },
+    { threshold: 1.03, range: [-0.01, 0.02] },
+    { threshold: 1.02, range: [-0.01, 0.02] },
+    { threshold: 1.01, range: [0, 0.01] }
+];
 
-export function getSpecificItem(item: Equipment) {
-    return Weapons.find((w: any) => w.name === item.name && w.rarity === item.rarity) ||
-        Legs.find((l: any) => l.name === item.name && l.rarity === item.rarity) ||
-        Chests.find((c: any) => c.name === item.name && c.rarity === item.rarity) ||
-        Shields.find((s: any) => s.name === item.name && s.rarity === item.rarity) ||
-        Helmets.find((h: any) => h.name === item.name && h.rarity === item.rarity) ||
-        Amulets.find((a: any) => a.name === item.name && a.rarity === item.rarity) ||
-        Rings.find((r: any) => r.name === item.name && r.rarity === item.rarity) ||
-        Trinkets.find((t: any) => t.name === item.name && t.rarity === item.rarity);
+function findMutationRange(value: number, ranges: Array<{threshold: number, range: number[]}>) {
+    return ranges.find(r => value >= r.threshold)?.range || [0, 0];
+};
+
+export function getSpecificItem(name: string, rarity: string) {
+    for (const collection of COLLECTION) {
+        const found = collection.find(i => i.name === name && i.rarity === rarity);
+        if (found) return found;
+    };
 };
 
 export function randomIntFromInterval(min: number, max: number): number {
@@ -120,186 +184,56 @@ async function defaultMutate(equipment: Equipment[]) {
 
 function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefined {
     try {
+        const baseItem = getSpecificItem(eqp.name, eqp.rarity as string); // JSON.parse(JSON.stringify(getSpecificItem(item)));
+        const base = JSON.parse(JSON.stringify(baseItem));
         let item = JSON.parse(JSON.stringify(eqp));
-        const base = JSON.parse(JSON.stringify(getSpecificItem(item))); // JSON.parse(JSON.stringify(getSpecificItem(item)));
         // console.log(base, "Base Item");
         for (const attribute of ATTRIBUTES) {
             if (sans.includes(attribute)) continue;
-            const baseline = base![attribute as keyof typeof base];
-            if (baseline && baseline > 0) {
-                // console.log(attribute, baseline, item[attribute], "baseline and current");
-                // console.log(attribute, item[attribute], 'Current Attribute Rating');
-                if (baseline >= 20) {
-                    item[attribute] = item[attribute];
-                    continue;
-                };
-                switch (baseline) {
-                    case 1:
-                        item[attribute] = 1;
-                        break;
-                    case 2: 
-                        item[attribute] = randomIntFromInterval(1, 2);
-                        break;
-                    case 3: 
-                        item[attribute] = randomIntFromInterval(2, 3);
-                        break;
-                    case 4: 
-                        item[attribute] = randomIntFromInterval(2, 4);
-                        break;
-                    case 5: 
-                        item[attribute] = randomIntFromInterval(3, 5);
-                        break;
-                    case 6: 
-                        item[attribute] = randomIntFromInterval(4, 6);
-                        break;
-                    case 7: 
-                        item[attribute] = randomIntFromInterval(5, 7);
-                        break;
-                    case 8: 
-                        item[attribute] = randomIntFromInterval(5, 8);
-                        break;    
-                    case 9: 
-                        item[attribute] = randomIntFromInterval(6, 9);
-                        break;
-                    case 10: 
-                        item[attribute] = randomIntFromInterval(7, 10);
-                        break;
-                    case 11:
-                        item[attribute] = randomIntFromInterval(7, 11);
-                        break;
-                    case 12: 
-                        item[attribute] = randomIntFromInterval(8, 12);
-                        break;
-                    case 13:
-                        item[attribute] = randomIntFromInterval(9, 13);
-                        break;
-                    case 14: 
-                        item[attribute] = randomIntFromInterval(10, 14);
-                        break;
-                    case 15: 
-                        item[attribute] = randomIntFromInterval(11, 15);
-                        break;
-                    case 16: 
-                        item[attribute] = randomIntFromInterval(12, 16);
-                        break;
-                    case 17: 
-                        item[attribute] = randomIntFromInterval(13, 17);
-                        break;
-                    case 18: 
-                        item[attribute] = randomIntFromInterval(14, 18);
-                        break;    
-                    case 19: 
-                        item[attribute] = randomIntFromInterval(15, 19);
-                        break;
-                    default: break;
-                };
-            };
+            const baseline: number = base[attribute];
+            if (!baseline || baseline <= 0 || baseline >= 20) continue;
+            const [min, max] = ATTRIBUTE_MUTATION_RANGES[baseline as keyof typeof ATTRIBUTE_MUTATION_RANGES];
+            item[attribute] = randomIntFromInterval(min, max);
         };
-        for (const attribute of CHANCE) {    
+        for (const attribute of CHANCE) {
+            if (sans.includes(attribute)) continue;
+            
+            const baseline = base![attribute as keyof typeof base];
+            const [minMod, maxMod] = findMutationRange(baseline, CHANCE_MUTATION_RANGES);
+            item[attribute] = randomFloatFromInterval(
+                Math.max(baseline + minMod, 0),
+                baseline + maxMod
+            );
+        };
+
+        for (const attribute of DAMAGE) {
             if (sans.includes(attribute)) continue;
             const baseline = base![attribute as keyof typeof base];
-            if (baseline >= 24) { // 24+ +/- 2/0
-                item[attribute] = randomFloatFromInterval(baseline, baseline + 4);
-            } else if (baseline >= 20) { // 20-23 +/- 2/0
-                item[attribute] = randomFloatFromInterval(baseline, baseline + 2);
-            } else if (baseline >= 18) { // 18-19 +/- 2/0
-                item[attribute] = randomFloatFromInterval(baseline, baseline + 2);
-            } else if (baseline >= 16) { // 16-17 +/- 2/0
-                item[attribute] = randomFloatFromInterval(baseline, baseline + 1.5);
-            } else if (baseline >= 14) { // 14-15 +/- 2/0
-                item[attribute] = randomFloatFromInterval(baseline, baseline + 1.5);
-            } else if (baseline >= 12) { // 12-13 +/- 2/0
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1.5);
-            } else if (baseline >= 10) { // 10-11 +/- 2/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1.5);
-            } else if (baseline >= 8) { // 8-9 +/- 2/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 6) { // 6-7 +/- 1/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 4) { // 2-5 +/- 1/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 0.5);
-            } else if (baseline >= 2) { // 2-3 +/- 0/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 0.5);
-            } else { // 0-1  +/ 0/1
-                item[attribute] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline);
-            };
+            const [minMod, maxMod] = findMutationRange(baseline, DAMAGE_MUTATION_RANGES);
+            item[attribute] = randomIntFromInterval(
+                Math.max(baseline + minMod, 0),
+                baseline + maxMod
+            );
         };
-        for (const damage of DAMAGE) {    
-            if (sans.includes(damage)) continue;
-            const baseline = base![damage as keyof typeof base];
-            if (baseline >= 20) { // 20+ +/- 2/0
-                item[damage] = randomIntFromInterval(baseline, baseline + 4);
-            } else if (baseline >= 18) { // 18-19 +/- 2/0
-                item[damage] = randomIntFromInterval(baseline, baseline + 2);
-            } else if (baseline >= 16) { // 16-17 +/- 2/0
-                item[damage] = randomIntFromInterval(baseline, baseline + 2);
-            } else if (baseline >= 14) { // 14-15 +/- 2/0
-                item[damage] = randomIntFromInterval(baseline, baseline + 2);
-            } else if (baseline >= 12) { // 12-13 +/- 2/0
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline + 2);
-            } else if (baseline >= 10) { // 10-11 +/- 2/1
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline + 2);
-            } else if (baseline >= 8) { // 8-9 +/- 2/1
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 6) { // 6-7 +/- 1/1
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 4) { // 2-5 +/- 1/1
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline);
-            } else if (baseline >= 2) { // 2-3 +/- 0/1
-                item[damage] = randomIntFromInterval(Math.max(baseline - 1, 0), baseline);
-            } else { // 0-1  +/ 0/1
-                item[damage] = randomIntFromInterval(baseline, baseline);
-            };
+
+        for (const attribute of DEFENSE) {
+            if (sans.includes(attribute)) continue;
+            const baseline = base![attribute as keyof typeof base];
+            const [minMod, maxMod] = findMutationRange(baseline, DEFENSE_MUTATION_RANGES);
+            item[attribute] = randomFloatFromInterval(
+                Math.max(baseline + minMod, 0),
+                baseline + maxMod
+            );
         };
-        for (const defense of DEFENSE) {    
-            if (sans.includes(defense)) continue;
-            const baseline = base![defense as keyof typeof base];
-            if (baseline >= 20) { // 20+ +/- 2/0
-                item[defense] = randomFloatFromInterval(baseline, baseline + 3);
-            } else if (baseline >= 18) { // 18-19 +/- 2/0
-                item[defense] = randomFloatFromInterval(baseline, baseline + 1.5);
-            } else if (baseline >= 16) { // 16-17 +/- 2/0
-                item[defense] = randomFloatFromInterval(baseline, baseline + 1.5);
-            } else if (baseline >= 14) { // 14-15 +/- 2/0
-                item[defense] = randomFloatFromInterval(baseline, baseline + 1.5);
-            } else if (baseline >= 12) { // 12-13 +/- 2/0
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 10) { // 10-11 +/- 2/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 1);
-            } else if (baseline >= 8) { // 8-9 +/- 2/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 0.5);
-            } else if (baseline >= 6) { // 6-7 +/- 1/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline + 0.5);
-            } else if (baseline >= 4) { // 2-5 +/- 1/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline);
-            } else if (baseline >= 2) { // 2-3 +/- 0/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline);
-            } else { // 0-1  +/ 0/1
-                item[defense] = randomFloatFromInterval(Math.max(baseline - 1, 0), baseline);
-            };
-        };
-        for (const damage of CRITICAL) {    
-            if (sans.includes(damage)) continue;
-            const baseline = base![damage as keyof typeof base];
-            if (baseline > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.2, baseline + 0.25);
-            } else if (baseline > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.15, baseline + 0.2);
-            } else if (baseline > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.1, baseline + 0.15);
-            } else if (baseline > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.05, baseline + 0.1);
-            } else if (baseline > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.02, baseline + 0.03);
-            } else if (baseline > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.01, baseline + 0.03);
-            } else if (baseline === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.01, baseline + 0.02);
-            } else if (baseline === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
-                item[damage] = randomFloatFromInterval(baseline - 0.01, baseline + 0.02);
-            } else if (baseline === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                item[damage] = randomFloatFromInterval(baseline, baseline + 0.01);
-            };
+
+        for (const attribute of CRITICAL) {
+            if (sans.includes(attribute)) continue;
+            const baseline = base![attribute as keyof typeof base];
+            const [minMod, maxMod] = findMutationRange(baseline, CRITICAL_MUTATION_RANGES);
+            item[attribute] = randomFloatFromInterval(
+                Math.max(baseline + minMod, 0),
+                baseline + maxMod
+            );
         };
         return item;
     } catch (err) {
@@ -315,172 +249,46 @@ async function mutate(equipment: Equipment[], _rarity?: string | 'Common') {
             item.influences = influence((item as any)?.influences);
             // console.log(item.influences, 'Current Influence of Item!')
             // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
-            for (const attribute of ATTRIBUTES) {   
-                if (item[attribute] > 0) {
-                    if (item[attribute] >= 20) {
-                        item[attribute] = item[attribute];
-                        continue;
-                    };
-                    // console.log(attribute, item[attribute], 'Current Attribute Rating');
-                    switch (item[attribute]) {
-                        case 1:
-                            item[attribute] = 1;
-                            break;
-                        case 2: 
-                            item[attribute] = randomIntFromInterval(1, 2);
-                            break;
-                        case 3: 
-                            item[attribute] = randomIntFromInterval(2, 3);
-                            break;
-                        case 4: 
-                            item[attribute] = randomIntFromInterval(2, 4);
-                            break;
-                        case 5: 
-                            item[attribute] = randomIntFromInterval(3, 5);
-                            break;
-                        case 6: 
-                            item[attribute] = randomIntFromInterval(4, 6);
-                            break;
-                        case 7: 
-                            item[attribute] = randomIntFromInterval(5, 7);
-                            break;
-                        case 8: 
-                            item[attribute] = randomIntFromInterval(5, 8);
-                            break;    
-                        case 9: 
-                            item[attribute] = randomIntFromInterval(6, 9);
-                            break;
-                        case 10: 
-                            item[attribute] = randomIntFromInterval(7, 10);
-                            break;
-                        case 11:
-                            item[attribute] = randomIntFromInterval(7, 11);
-                            break;
-                        case 12: 
-                            item[attribute] = randomIntFromInterval(8, 12);
-                            break;
-                        case 13:
-                            item[attribute] = randomIntFromInterval(9, 13);
-                            break;
-                        case 14: 
-                            item[attribute] = randomIntFromInterval(10, 14);
-                            break;
-                        case 15: 
-                            item[attribute] = randomIntFromInterval(11, 15);
-                            break;
-                        case 16: 
-                            item[attribute] = randomIntFromInterval(12, 16);
-                            break;
-                        case 17: 
-                            item[attribute] = randomIntFromInterval(13, 17);
-                            break;
-                        case 18: 
-                            item[attribute] = randomIntFromInterval(14, 18);
-                            break;    
-                        case 19: 
-                            item[attribute] = randomIntFromInterval(15, 19);
-                            break;
-                        default: break;
-                    };
-                };
+            for (const attribute of ATTRIBUTES) {
+                const baseline: number = item[attribute];
+                if (!baseline || baseline <= 0 || baseline >= 20) continue;
+                const [min, max] = ATTRIBUTE_MUTATION_RANGES[baseline as keyof typeof ATTRIBUTE_MUTATION_RANGES];
+                item[attribute] = randomIntFromInterval(min, max);
             };
-            for (const attribute of CHANCE) {    
-                if (item[attribute] >= 24) { // 24+ +/- 2/0
-                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 4);
-                } else if (item[attribute] >= 20) { // 20-23 +/- 2/0
-                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
-                } else if (item[attribute] >= 18) { // 18-19 +/- 2/0
-                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 2);
-                } else if (item[attribute] >= 16) { // 16-17 +/- 2/0
-                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
-                } else if (item[attribute] >= 14) { // 14-15 +/- 2/0
-                    item[attribute] = randomFloatFromInterval(item[attribute], item[attribute] + 1.5);
-                } else if (item[attribute] >= 12) { // 12-13 +/- 2/0
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
-                } else if (item[attribute] >= 10) { // 10-11 +/- 2/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1.5);
-                } else if (item[attribute] >= 8) { // 8-9 +/- 2/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
-                } else if (item[attribute] >= 6) { // 6-7 +/- 1/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 1);
-                } else if (item[attribute] >= 4) { // 2-5 +/- 1/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
-                } else if (item[attribute] >= 2) { // 2-3 +/- 0/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute] + 0.5);
-                } else { // 0-1  +/ 0/1
-                    item[attribute] = randomFloatFromInterval(Math.max(item[attribute] - 1, 0), item[attribute]);
-                };
+            for (const attribute of CHANCE) {
+                const baseline = item![attribute as keyof typeof item];
+                const [minMod, maxMod] = findMutationRange(baseline, CHANCE_MUTATION_RANGES);
+                item[attribute] = randomFloatFromInterval(
+                    Math.max(baseline + minMod, 0),
+                    baseline + maxMod
+                );
             };
-            for (const damage of DAMAGE) {    
-                if (item[damage] >= 20) { // 20+ +/- 2/0
-                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 4);
-                } else if (item[damage] >= 18) { // 18-19 +/- 2/0
-                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-                } else if (item[damage] >= 16) { // 16-17 +/- 2/0
-                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-                } else if (item[damage] >= 14) { // 14-15 +/- 2/0
-                    item[damage] = randomIntFromInterval(item[damage], item[damage] + 2);
-                } else if (item[damage] >= 12) { // 12-13 +/- 2/0
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
-                } else if (item[damage] >= 10) { // 10-11 +/- 2/1
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 2);
-                } else if (item[damage] >= 8) { // 8-9 +/- 2/1
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
-                } else if (item[damage] >= 6) { // 6-7 +/- 1/1
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage] + 1);
-                } else if (item[damage] >= 4) { // 2-5 +/- 1/1
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
-                } else if (item[damage] >= 2) { // 2-3 +/- 0/1
-                    item[damage] = randomIntFromInterval(Math.max(item[damage] - 1, 0), item[damage]);
-                } else { // 0-1  +/ 0/1
-                    item[damage] = randomIntFromInterval(item[damage], item[damage]);
-                };
+
+            for (const attribute of DAMAGE) {
+                const baseline = item![attribute as keyof typeof item];
+                const [minMod, maxMod] = findMutationRange(baseline, DAMAGE_MUTATION_RANGES);
+                item[attribute] = randomIntFromInterval(
+                    Math.max(baseline + minMod, 0),
+                    baseline + maxMod
+                );
             };
-            for (const defense of DEFENSE) {    
-                if (item[defense] >= 20) { // 20+ +/- 2/0
-                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 3);
-                } else if (item[defense] >= 18) { // 18-19 +/- 2/0
-                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-                } else if (item[defense] >= 16) { // 16-17 +/- 2/0
-                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-                } else if (item[defense] >= 14) { // 14-15 +/- 2/0
-                    item[defense] = randomFloatFromInterval(item[defense], item[defense] + 1.5);
-                } else if (item[defense] >= 12) { // 12-13 +/- 2/0
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
-                } else if (item[defense] >= 10) { // 10-11 +/- 2/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 1);
-                } else if (item[defense] >= 8) { // 8-9 +/- 2/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
-                } else if (item[defense] >= 6) { // 6-7 +/- 1/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense] + 0.5);
-                } else if (item[defense] >= 4) { // 2-5 +/- 1/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
-                } else if (item[defense] >= 2) { // 2-3 +/- 0/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
-                } else { // 0-1  +/ 0/1
-                    item[defense] = randomFloatFromInterval(Math.max(item[defense] - 1, 0), item[defense]);
-                };
+
+            for (const attribute of DEFENSE) {
+                const baseline = item![attribute as keyof typeof item];
+                const [minMod, maxMod] = findMutationRange(baseline, DEFENSE_MUTATION_RANGES);
+                item[attribute] = randomFloatFromInterval(
+                    Math.max(baseline + minMod, 0),
+                    baseline + maxMod
+                );
             };
-            for (const damage of CRITICAL) {    
-                if (item[damage] > 1.99) { // 2.0 +/- 0.3/0.25 (0.55 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.2, item[damage] + 0.25);
-                } else if (item[damage] > 1.74) { // 1.75 +/- 0.25/0.2 (0.45 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.15, item[damage] + 0.2);
-                } else if (item[damage] > 1.49) { // 1.5 +/- 0.2/0.15 (0.35 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.1, item[damage] + 0.15);
-                } else if (item[damage] > 1.24) { // 1.25 +/- 0.15/0.1 (0.25 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.05, item[damage] + 0.1);
-                } else if (item[damage] > 1.09) { // 1.1 +/- 0.05/0.02 (0.07 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.02, item[damage] + 0.03);
-                } else if (item[damage] > 1.05) { // 1.05 +/- 0.04/0.01 (0.05 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.03);
-                } else if (item[damage] === 1.03) { // 1.00 +/- 0.03/0 (0.03 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
-                } else if (item[damage] === 1.02) { // 1.00 +/- 0.02/0 (0.02 Range)
-                    item[damage] = randomFloatFromInterval(item[damage] - 0.01, item[damage] + 0.02);
-                } else if (item[damage] === 1.01) { // 1.00 +/- 0.01/0 (0.01 Range)
-                    item[damage] = randomFloatFromInterval(item[damage], item[damage] + 0.01);
-                };
+
+            for (const attribute of CRITICAL) {
+                const baseline = item![attribute as keyof typeof item];
+                const [minMod, maxMod] = findMutationRange(baseline, CRITICAL_MUTATION_RANGES);
+                item[attribute] = randomFloatFromInterval(
+                    Math.max(baseline + minMod, 0),
+                    baseline + maxMod
+                );
             };
             await addEquipment(item);
         };

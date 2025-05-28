@@ -615,15 +615,11 @@ export class Gauntlet extends Phaser.Scene {
                 this.time.delayedCall(1000, () => {
                     if (target.name === "player") {
                         enemy.checkEnemyCombatEnter();
-                    } else if (target.name === "enemy") {
+                    } else {
                         enemy.checkComputerEnemyCombatEnter(target);
-                        enemy.enemies.push({id:this.player.playerID,threat:0});
-                        enemy.inCombat = true;
-                    } else if (target.name === "party") {
-                        enemy.checkComputerEnemyCombatEnter(target);
-                        enemy.enemies.push({id:this.player.playerID,threat:0});
-                        enemy.inCombat = true;
                     };
+                    enemy.inCombat = true;
+                    enemy.enemies.push({id:this.player.playerID,threat:0});
                     this.player.targets.push(enemy);
                     if (count === j) {
                         if (this.player.isComputer) {

@@ -576,6 +576,7 @@ export class Arena extends Phaser.Scene {
                         enemy.inCombat = true;
                     } else {
                         enemy.checkEnemyCombatEnter();
+                        enemy.enemies.push({id:this.player.playerID,threat:0});
                     };
                     this.player.targets.push(enemy);
                     if (count === j) {

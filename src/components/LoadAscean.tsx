@@ -5,6 +5,7 @@ import { Puff } from "solid-spinner";
 import Equipment from "../models/equipment";
 import { Attributes } from "../utility/attributes";
 import { useResizeListener } from "../utility/dimensions";
+import { masteryColor } from "../utility/styling";
 const AsceanImageCard = lazy(async () => await import("./AsceanImageCard"));
 const ItemModal = lazy(async () => await import("./ItemModal"));
 const AttributeModal = lazy(async () => await import("./Attributes"));
@@ -29,7 +30,7 @@ export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
     return (
         <div class="stat-block superCenter" style={{ width: "75%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease" }}>
         <Suspense fallback={<Puff color="gold" />}>
-        <div class="border left center juice" style={{ height: "77.5vh", width: "48%", top: "10%" }}>
+        <div class="border left center juiced" style={{ height: "80vh", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem` }}>
             <div class="creature-heading superCenter" style={{ width: "100%" }}>
                 <h1>{ascean().name}</h1>
                 <h2>{ascean().description}</h2>
@@ -41,7 +42,7 @@ export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
         </div>
         </Suspense>
         <Suspense fallback={<Puff color="gold" />}>
-        <div class="border right center juice" style={{ height: "80vh", width: "48%", top: "10%" }}>
+        <div class="border right center juiced" style={{ height: "80vh", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem` }}>
             <div class="superCenter view" style={{ position: "absolute", ...positioning() }}>
                 <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />

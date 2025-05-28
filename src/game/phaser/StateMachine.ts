@@ -142,8 +142,8 @@ export const States = {
     STUNNED: "stunned",
 };
 
-export const specialStateMachines = 
-    [States.ACHIRE, States.ARC, States.ASTRAVE, States.BLINK, States.CHIOMISM, States.CONFUSE, States.CONSUME, States.DESPERATION, States.DEVOUR, States.DISPEL, States.FEAR, States.FROST, 
+export const specialStateMachines = [States.ACHIRE, States.ARC, States.ASTRAVE, States.BLINK, States.CHIOMISM, States.CONFUSE, States.CONSUME, 
+    States.DESPERATION, States.DEVOUR, States.DISPEL, States.FEAR, States.FROST, 
     States.FYERUS, States.HEALING, States.ILIRECH, States.INVOKE, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LEAP, States.LIKYR, States.MAIERETH, 
     States.PARALYZE, States.POLYMORPH, States.PURSUIT, States.QUOR, States.ROOT, States.RUSH, States.SACRIFICE, States.SHADOW, States.SHIRK, States.TETHER, 
     States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, States.SNARE,States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING];
@@ -198,16 +198,18 @@ export default class StateMachine {
 
     // console.warn(`State ${name} does not exist`);
     setState(name: string) {
-        if (!this.states.has(name)) return;
-        if (this.isCurrentState(name)) return;
+        const state = this.states.get(name);
+        if (!state || this.currentState === state) return;
+
         if (this.isChangingState === true) {
             this.changeStateQueue.push(name);
             return;
         };
+
         this.isChangingState = true;
-        if (this.currentState && this.currentState.onExit) this.currentState.onExit();
-        this.currentState = this.states.get(name)!;
-        if (this.currentState && this.currentState.onEnter) this.currentState.onEnter();
+        this.currentState?.onExit?.();
+        this.currentState = state;
+        this.currentState.onEnter?.();
         this.isChangingState = false;
     };
 
@@ -216,6 +218,6 @@ export default class StateMachine {
             this.setState(this.changeStateQueue.shift()!);
             return;
         };
-        if (this.currentState && this.currentState.onUpdate) this.currentState?.onUpdate?.(dt);
+        this.currentState?.onUpdate?.(dt);
     };
 };

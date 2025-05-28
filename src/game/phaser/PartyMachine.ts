@@ -516,7 +516,7 @@ export default class PlayerMachine {
         if (this.player.contemplationTime <= 0) {
             this.player.isContemplating = false;
         };
-        if (!this.player.isContemplating) this.stateMachine.setState(States.CLEAN); 
+        if (!this.player.isContemplating) this.stateMachine.setState(States.CLEAN);
     };
     onContemplateExit = () => {
         this.player.isContemplating = false;

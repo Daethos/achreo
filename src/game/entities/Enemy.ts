@@ -1817,7 +1817,7 @@ export default class Enemy extends Entity {
             return;
         };
         this.instincts();
-        this.stateMachine.setState(States.CHASE);
+        // this.stateMachine.setState(States.CHASE);
     };
 
     onEvasionEnter = () => {
@@ -4476,6 +4476,7 @@ export default class Enemy extends Entity {
         };
         if (this.inCombat || this.inComputerCombat) { // Making a pass through
             this.clearComputerCombatWin("NULL");
+            return; // Trying this out?
         };
         if (!this.isValidTarget(this.currentTarget) && this.health > 0 && !this.stateMachine.isCurrentState(States.LEASH)) {
             this.stateMachine.setState(States.LEASH);
@@ -4485,28 +4486,16 @@ export default class Enemy extends Entity {
         this.currentAction = "";
         this.enemies = [];
     };
-    // getCombatDirection() {
-    //     try {
-    //         return this.currentTarget.position.clone().subtract(this.position);
-    //     } catch (e) {
-    //         console.error("Combat direction error:", e);
-    //         this.cleanUpCombat();
-    //         return null;
-    //     };
-    // };
     getCombatDirection() {
         try {
-            // Use cached distance if available and recent
             if (this.cachedDirection && this.cachedDirectionFrame && 
                 (this.scene.frameCount - this.cachedDirectionFrame) < 60) {
                 return this.cachedDirection;
             };
             
-            // Calculate direction manually (no clone needed)
             const dx = this.currentTarget.x - this.x;
             const dy = this.currentTarget.y - this.y;
             
-            // Cache the direction vector
             this.cachedDirection = { 
                 x: dx, 
                 y: dy, 
@@ -4874,11 +4863,6 @@ export default class Enemy extends Entity {
  
     update(dt: number) {
         this.evaluateEnemyState(); 
-        // if (this.distanceToPlayer < 800) {
-        //     this.evaluateEnemyState(); 
-        // } else {
-        //     this.evaluateEnemyStateMinimal();
-        // };
         this.positiveMachine.update(dt);   
         this.stateMachine.update(dt);
         this.negativeMachine.update(dt);

@@ -120,8 +120,6 @@ export class Game extends Scene {
         map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
         [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
             layer?.setCollisionByProperty({ collides: true });
-            // layer?.setCollisionCategory(ENTITY_FLAGS.WORLD);
-            // layer?.setCollidesWith([ENTITY_FLAGS.PLAYER, ENTITY_FLAGS.ENEMY, ENTITY_FLAGS.PARTY])
             this.matter.world.convertTilemapLayer(layer!);
             layer?.forEachTile(tile => {
                 if ((tile.physics as any).matterBody) {
@@ -755,7 +753,7 @@ export class Game extends Scene {
         if (!computer || !computer.body) {
             return 6250000; // 2500^2
         };
-         if (computer.lastDistanceFrame && (this.frameCount - computer.lastDistanceFrame) < 60) {
+        if (computer.lastDistanceFrame && (this.frameCount - computer.lastDistanceFrame) < 180) {
             return computer.distanceToPlayer;
         };
         const dx = computer.x - this.player.x;
@@ -851,9 +849,9 @@ export class Game extends Scene {
             if (distance < 640000) {
                 shouldUpdate = true;
             } else if (distance < 1440000) {
-                shouldUpdate = this.frameCount % 2 === 0;
+                shouldUpdate = this.frameCount % 3 === 0;
             } else if (distance < 2560000) {
-                shouldUpdate = this.frameCount % 6 === 0;
+                shouldUpdate = this.frameCount % 12 === 0;
             } else {
                 shouldUpdate = this.frameCount % 60 === 0;
             };
@@ -874,7 +872,7 @@ export class Game extends Scene {
             let shouldUpdate = false;
             const distance = this.distanceToPlayer(npc);
             if (distance < 640000) {
-                shouldUpdate = this.frameCount % 60 === 0;
+                shouldUpdate = this.frameCount % 180 === 0;
             } else {
                 shouldUpdate = this.frameCount % 600 === 0;
             };

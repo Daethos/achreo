@@ -353,6 +353,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     protected hollowTimer(repeatCount: number = 20) {
         let count = 0, scale = PARTICLES.includes(this.type) ? PARTICLE_SCALE : SCALE, increment = PARTICLES.includes(this.type) ? PARTICLE_SCALE : SCALE;
         this.setScale(scale);
+
         this.timer = this.scene.time.addEvent({
             delay: 50,
             callback: () => {

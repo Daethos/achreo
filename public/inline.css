@@ -37,7 +37,7 @@
 .header {display: flex; justify-content: space-between; padding: 5; margin-bottom: 5; color: #fdf6d8; font-family: "Cinzel-Regular"; font-size: 1.25em; border-bottom-color: #fdf6d8; border-bottom-width: 2;}
 
 .moisten {animation: moist 0.5s ease;}
-.juice, .juiceNB, .juiceConcept, .juiceSmall, .juiceSub, .juiceItem {
+.juice, .juiced, .juiceNB, .juiceConcept, .juiceSmall, .juiceSub, .juiceItem {
     animation: juicy 0.75s ease;
     transition: transform 0.75s ease;
 }

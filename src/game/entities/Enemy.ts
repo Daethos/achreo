@@ -524,7 +524,7 @@ export default class Enemy extends Entity {
 
     removeComputerEnemy = (id: string) => {
         if (this.currentTarget && this.currentTarget.enemyID === id) {
-            console.log("removing computer enemy");
+            // console.log("removing computer enemy");
             this.clearComputerCombatWin(id);
         };
         this.enemies = this.enemies.filter(e => e.id !== id);

@@ -20,13 +20,13 @@ const CRITICAL = ['criticalDamage'];
 
 export function getSpecificItem(item: Equipment) {
     return Weapons.find((w: any) => w.name === item.name && w.rarity === item.rarity) ||
-    Legs.find((l: any) => l.name === item.name && l.rarity === item.rarity) ||
-    Chests.find((c: any) => c.name === item.name && c.rarity === item.rarity) ||
-    Shields.find((s: any) => s.name === item.name && s.rarity === item.rarity) ||
-    Helmets.find((h: any) => h.name === item.name && h.rarity === item.rarity) ||
-    Amulets.find((a: any) => a.name === item.name && a.rarity === item.rarity) ||
-    Rings.find((r: any) => r.name === item.name && r.rarity === item.rarity) ||
-    Trinkets.find((t: any) => t.name === item.name && t.rarity === item.rarity);
+        Legs.find((l: any) => l.name === item.name && l.rarity === item.rarity) ||
+        Chests.find((c: any) => c.name === item.name && c.rarity === item.rarity) ||
+        Shields.find((s: any) => s.name === item.name && s.rarity === item.rarity) ||
+        Helmets.find((h: any) => h.name === item.name && h.rarity === item.rarity) ||
+        Amulets.find((a: any) => a.name === item.name && a.rarity === item.rarity) ||
+        Rings.find((r: any) => r.name === item.name && r.rarity === item.rarity) ||
+        Trinkets.find((t: any) => t.name === item.name && t.rarity === item.rarity);
 };
 
 export function randomIntFromInterval(min: number, max: number): number {
@@ -121,7 +121,7 @@ async function defaultMutate(equipment: Equipment[]) {
 function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefined {
     try {
         let item = JSON.parse(JSON.stringify(eqp));
-        const base = getSpecificItem(item);
+        const base = JSON.parse(JSON.stringify(getSpecificItem(item))); // JSON.parse(JSON.stringify(getSpecificItem(item)));
         // console.log(base, "Base Item");
         for (const attribute of ATTRIBUTES) {
             if (sans.includes(attribute)) continue;
@@ -129,6 +129,10 @@ function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefine
             if (baseline && baseline > 0) {
                 // console.log(attribute, baseline, item[attribute], "baseline and current");
                 // console.log(attribute, item[attribute], 'Current Attribute Rating');
+                if (baseline >= 20) {
+                    item[attribute] = item[attribute];
+                    continue;
+                };
                 switch (baseline) {
                     case 1:
                         item[attribute] = 1;
@@ -186,9 +190,6 @@ function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefine
                         break;    
                     case 19: 
                         item[attribute] = randomIntFromInterval(15, 19);
-                        break;
-                    case base![attribute as keyof typeof base] >= 20: 
-                        item[attribute] = item[attribute];
                         break;
                     default: break;
                 };
@@ -316,6 +317,10 @@ async function mutate(equipment: Equipment[], _rarity?: string | 'Common') {
             // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
             for (const attribute of ATTRIBUTES) {   
                 if (item[attribute] > 0) {
+                    if (item[attribute] >= 20) {
+                        item[attribute] = item[attribute];
+                        continue;
+                    };
                     // console.log(attribute, item[attribute], 'Current Attribute Rating');
                     switch (item[attribute]) {
                         case 1:
@@ -374,9 +379,6 @@ async function mutate(equipment: Equipment[], _rarity?: string | 'Common') {
                             break;    
                         case 19: 
                             item[attribute] = randomIntFromInterval(15, 19);
-                            break;
-                        case item[attribute] >= 20: 
-                            item[attribute] = item[attribute];
                             break;
                         default: break;
                     };

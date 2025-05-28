@@ -245,7 +245,9 @@ export default class Player extends Entity {
 
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
+        // console.log(this.isCaerenic, "Caerenic?");
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume / 3 });
+        const enhanced = this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1;
         if (this.isCaerenic) {
             screenShake(this.scene, 64);
             this.scene.tweens.add({
@@ -258,12 +260,12 @@ export default class Player extends Entity {
             this.setGlow(this, true);
             this.setGlow(this.spriteWeapon, true, "weapon");
             this.setGlow(this.spriteShield, true, "shield"); 
-            this.adjustSpeed(PLAYER.SPEED.CAERENIC * (this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1));
+            this.adjustSpeed(PLAYER.SPEED.CAERENIC * enhanced);
         } else {
             this.setGlow(this, false);
             this.setGlow(this.spriteWeapon, false, "weapon")
             this.setGlow(this.spriteShield, false, "shield"); 
-            this.adjustSpeed(-PLAYER.SPEED.CAERENIC * (this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1));
+            this.adjustSpeed(-PLAYER.SPEED.CAERENIC * enhanced);
         };
     };
 

@@ -79,6 +79,8 @@ export class Underground extends Scene {
     aoePool: AoEPool;
     lastSafePosition: {x:number;y:number;};
     frameCount: number = 0;
+    cachedWidthOffset: number = 0;
+    cachedHeightOffset: number = 0;
 
     constructor () {
         super("Underground");
@@ -642,25 +644,36 @@ export class Underground extends Scene {
     playerUpdate = (delta: number): void => {// In your playerUpdate method, before any movement:
         this.player.update(delta);
         // this.checkWallCollision();
-        this.combatManager.combatMachine.process();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
-        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
+        this.hud.rightJoystick.update();
     };
 
     setCameraOffset = () => {
-        const { width, height } = this.cameras.main.worldView;
-        if (this.player.flipX === true) {
-            this.offsetX = Math.min((width / X_OFFSET), this.offsetX + X_SPEED_OFFSET);
+        if (this.frameCount % 4 !== 0) return;
+        if (this.frameCount % 60 === 0) {
+            const { width, height } = this.cameras.main.worldView;
+            this.cachedWidthOffset = width / X_OFFSET;
+            this.cachedHeightOffset = height / Y_OFFSET;
+        };
+        
+        const prevOffsetX = this.offsetX;
+        const prevOffsetY = this.offsetY;
+        
+        if (this.player.flipX) {
+            this.offsetX = Math.min(this.cachedWidthOffset, this.offsetX + X_SPEED_OFFSET);
         } else {
-            this.offsetX = Math.max(this.offsetX - X_SPEED_OFFSET, -(width / X_OFFSET));
+            this.offsetX = Math.max(this.offsetX - X_SPEED_OFFSET, -this.cachedWidthOffset);
         };
-        if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - Y_SPEED_OFFSET, -(height / Y_OFFSET));
-        } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / Y_OFFSET), this.offsetY + Y_SPEED_OFFSET);
+        
+        const playerVelY = this.player.velocity?.y || 0;
+        if (playerVelY > 0) {
+            this.offsetY = Math.max(this.offsetY - Y_SPEED_OFFSET, -this.cachedHeightOffset);
+        } else if (playerVelY < 0) {
+            this.offsetY = Math.min(this.cachedHeightOffset, this.offsetY + Y_SPEED_OFFSET);
         };
-        this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+        
+        if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
 
     startCombatTimer = (): void => {
@@ -708,6 +721,7 @@ export class Underground extends Scene {
             y: this.map.worldToTileY(this.player.y) as number
         });
         this.fov?.update(player, bounds, delta);
+        this.combatManager.combatMachine.process();
         this.frameCount++;
     };
 

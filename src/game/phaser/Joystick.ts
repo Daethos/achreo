@@ -93,19 +93,18 @@ export default class Joystick extends Phaser.GameObjects.Container {
             }, undefined, this);
     };
     update() {
-        if (this.joystick.force > 0) {
-            if (this.joystick.forceX > 15) {
-                this.pointer.x += this.joystick.forceX * FORCE;
-            };
-            if (this.joystick.forceX < -15) {
-                this.pointer.x += this.joystick.forceX * FORCE;
-            };
-            if (this.joystick.forceY > 15) {
-                this.pointer.y += this.joystick.forceY * FORCE;
-            };
-            if (this.joystick.forceY < -15) {
-                this.pointer.y += this.joystick.forceY * FORCE;
-            };
+        if (this.joystick.force === 0) return;
+        if (this.joystick.forceX > 15) {
+            this.pointer.x += this.joystick.forceX * FORCE;
+        };
+        if (this.joystick.forceX < -15) {
+            this.pointer.x += this.joystick.forceX * FORCE;
+        };
+        if (this.joystick.forceY > 15) {
+            this.pointer.y += this.joystick.forceY * FORCE;
+        };
+        if (this.joystick.forceY < -15) {
+            this.pointer.y += this.joystick.forceY * FORCE;
         };
     };
 };

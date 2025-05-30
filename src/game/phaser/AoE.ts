@@ -88,30 +88,21 @@ export class AoEPool {
 
     pinch(type: string): AoE | undefined {
         let aoe = this.pool.find((a: AoE) => a.type === type ? a : PARTICLES.includes(a.type) ? a : undefined);
-        if (aoe) {
-            this.pool.splice(this.pool.indexOf(aoe), 1);
-        };
+        if (aoe) this.pool.splice(this.pool.indexOf(aoe), 1);
         return aoe;
     };
 
     get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
         const typePool = this.typePools.get(type) || [];
         let aoe = typePool.pop() || this.pinch(type) || this.pool.pop();
-        if (!aoe) {
-            aoe = this.createNewAoE();
-        };
-
+        if (!aoe) aoe = this.createNewAoE();
         aoe.reset(type, count, positive, enemy, manual, target, particle);
-
         this.activeAoEs.push(aoe);
         return aoe;
     };
 
     release(aoe: AoE) {
-        if (!aoe || !(aoe instanceof AoE)) {
-            console.error('Attempted to release invalid AoE object');
-            return;
-        };
+        if (!aoe || !(aoe instanceof AoE)) return;
         if (aoe.active) {
             console.warn('Releasing active AoE - forcing cleanup', aoe.type);
             aoe.cleanup(false);
@@ -140,7 +131,7 @@ export class AoEPool {
     };
 
     shrink(keepCount = 10) {
-        for (const [_type, pool] of this.typePools) {
+        for (const [_, pool] of this.typePools) {
             while (pool.length > keepCount) {
                 const aoe = pool.pop()!;
                 aoe.destroy();

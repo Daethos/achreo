@@ -716,6 +716,7 @@ export default class PlayerMachine {
         this.player.isMoving = false;
         this.player.setVelocity(0);
         this.scene.time.delayedCall(Phaser.Math.Between(500, 1000), () => {
+            // Check this, not sure about how this functions cyclically
             if (this.player.isSuffering() || this.player.isCasting || this.player.isPraying || this.player.computerAction) {
                 this.player.computerAction = false;
                 this.stateMachine.setState(States.LULL);
@@ -729,7 +730,6 @@ export default class PlayerMachine {
     onComputerCombatEnter = () => {  
         if (this.player.inCombat === false || this.player.health <= 0) {
             this.player.inCombat = false;
-            // this.stateMachine.setState(States.IDLE);
             return;
         };
         if (this.player.isSuffering()) return;

@@ -28,6 +28,10 @@ import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 
+const DISTANCE_CLOSE = 640000;
+const DISTANCE_MID = 1440000;
+const DISTANCE_FAR = 2560000;
+
 export class Game extends Scene {
     overlay: GameObjects.Graphics;
     animatedTiles: any[];
@@ -78,7 +82,7 @@ export class Game extends Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
-    quadrant = { startX: 0, startY: 0, endX: 0, endY: 0 };
+    tileCache = new Map<string, {climb:boolean, water:boolean}>();
 
     constructor () {
         super("Game");
@@ -714,87 +718,67 @@ export class Game extends Scene {
         }, undefined, this);
     };
 
-    checkEnvironment = (player: Player | Enemy | Party) => {
-        const x = this.map.worldToTileX(player.x || 0);
-        const y = this.map.worldToTileY(player.y || 0);
-        if (!this.climbingLayer) return;
-        const climb = this.climbingLayer.getTileAt(x as number, y as number);
-        if (climb && climb.properties && climb.properties.climb) {
-            player.isClimbing = true;
-        } else {
-            player.isClimbing = false;
+    checkEnvironment = (entity: Player | Enemy | Party) => {
+        if (this.frameCount % 20 !== 0) return;
+        const x = this.map.worldToTileX(entity.x || 0) as number;
+        const y = this.map.worldToTileY(entity.y || 0) as number;
+        const key = `${x},${y}`;
+        let cached = this.tileCache.get(key);
+
+        if (!cached) {
+            const climb = this.climbingLayer?.getTileAt(x, y);
+            const water = this.baseLayer?.getTileAt(x, y);
+            cached = {
+                climb: !!(climb?.properties?.climb),
+                water: !!(water?.properties?.water)
+            };
+            this.tileCache.set(key, cached);
         };
-        if (!this.baseLayer) return;
-        const water = this.baseLayer.getTileAt(x as number, y as number);
-        if (water && water.properties && water.properties.water) {
-            player.inWater = true;
-        } else {
-            player.inWater = false;
-        };
+        
+        entity.isClimbing = cached.climb;
+        entity.inWater = cached.water;
+
         const flower = this.flowers.getTileAt(x as number, y as number);
         if (flower) {
-            if (flower.pixelY > player.y - 12) {
-                player.setDepth(1);
+            if (flower.pixelY > entity.y - 8) {
+                entity.setDepth(1);
             } else {
-                player.setDepth(3);
+                entity.setDepth(3);
             };
         };
         const plant = this.plants.getTileAt(x as number, y as number);
         if (plant) {
-            if (plant.pixelY > player.y - 12) {
-                player.setDepth(1);
+            if (plant.pixelY > entity.y - 8) {
+                entity.setDepth(1);
             } else {
-                player.setDepth(3);
+                entity.setDepth(3);
             };
         };
     };
 
-    distanceToPlayer = (computer: Enemy | NPC) => {
-        if (!computer || !computer.body) {
-            return 6250000; // 2500^2
-        };
-        if (computer.lastDistanceFrame && (this.frameCount - computer.lastDistanceFrame) < 180) {
-            return computer.distanceToPlayer;
-        };
-        const dx = computer.x - this.player.x;
-        const dy = computer.y - this.player.y;
+    distanceToPlayer = (entity: Enemy | NPC) => {
+        if (!entity || !entity.body) return 6250000; // 2500^2
+        if (entity.lastDistanceFrame && (this.frameCount - entity.lastDistanceFrame) < 180) return entity.distanceToPlayer;
+
+        const dx = entity.x - this.player.x;
+        const dy = entity.y - this.player.y;
         const distanceSq = dx * dx + dy * dy;
         
-        computer.distanceToPlayer = distanceSq;
-        computer.lastDistanceFrame = this.frameCount;
+        entity.distanceToPlayer = distanceSq;
+        entity.lastDistanceFrame = this.frameCount;
         return distanceSq;
     };
 
     playerUpdate = (delta: number): void => {
-        this.player.update(delta); 
-        // this.quadrant = {};
-        // if (this.frameCount % 120 === 0) {
-        //     const position = this.player.position;
-        // };
-        this.combatManager.combatMachine.process();
+        this.player.update(delta);
         this.playerLight.setPosition(this.player.x, this.player.y);
-        this.setCameraOffsetOptimized();
+        this.setCameraOffset();
         this.checkEnvironment(this.player);
-        if (!this.hud.settings.desktop) this.hud.rightJoystick.update();
+        this.hud.rightJoystick.update();
     };
 
     setCameraOffset = () => {
-        const { width, height } = this.cameras.main.worldView;
-        if (this.player.flipX === true) {
-            this.offsetX = Math.min((width / X_OFFSET), this.offsetX + X_SPEED_OFFSET);
-        } else {
-            this.offsetX = Math.max(this.offsetX - X_SPEED_OFFSET, -(width / X_OFFSET));
-        };
-        if (this.player.velocity?.y as number > 0) {
-            this.offsetY = Math.max(this.offsetY - Y_SPEED_OFFSET, -(height / Y_OFFSET));
-        } else if (this.player.velocity?.y as number < 0) {
-            this.offsetY = Math.min((height / Y_OFFSET), this.offsetY + Y_SPEED_OFFSET);
-        };
-        this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
-    };
-
-    setCameraOffsetOptimized = () => {
-        if (this.frameCount % 3 !== 0) return;
+        if (this.frameCount % 4 !== 0) return;
         if (this.frameCount % 60 === 0) {
             const { width, height } = this.cameras.main.worldView;
             this.cachedWidthOffset = width / X_OFFSET;
@@ -817,9 +801,7 @@ export class Game extends Scene {
             this.offsetY = Math.min(this.cachedHeightOffset, this.offsetY + Y_SPEED_OFFSET);
         };
         
-        if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) {
-            this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
-        };
+        if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
     };
 
     startCombatTimer = (): void => {
@@ -845,14 +827,14 @@ export class Game extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            let enemy = this.enemies[i], distance = this.distanceToPlayer(enemy), shouldUpdate = false;
-            if (distance < 640000) {
+            let enemy = this.enemies[i], distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
+            if (distance < DISTANCE_CLOSE) { // < 800px
                 shouldUpdate = true;
-            } else if (distance < 1440000) {
-                shouldUpdate = this.frameCount % 3 === 0;
-            } else if (distance < 2560000) {
+            } else if (distance < DISTANCE_MID) { // < 1200px 30fps
+                shouldUpdate = (this.frameCount & 1) === 0;
+            } else if (distance < DISTANCE_FAR) { // < 1600px 5fps
                 shouldUpdate = this.frameCount % 12 === 0;
-            } else {
+            } else { // > 1600px 1fps
                 shouldUpdate = this.frameCount % 60 === 0;
             };
             if (shouldUpdate) {
@@ -871,13 +853,10 @@ export class Game extends Scene {
             const npc = this.npcs[i];
             let shouldUpdate = false;
             const distance = this.distanceToPlayer(npc);
-            if (distance < 640000) {
-                shouldUpdate = this.frameCount % 180 === 0;
-            } else {
-                shouldUpdate = this.frameCount % 600 === 0;
-            };
+            if (distance < DISTANCE_CLOSE) shouldUpdate = this.frameCount % 180 === 0;
             if (shouldUpdate) npc.update();
         };
+        this.combatManager.combatMachine.process();
         this.frameCount++;
     };
     pause(): void {

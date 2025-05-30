@@ -21,9 +21,9 @@ import { Gauntlet } from "./Gauntlet";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
-export const X_SPEED_OFFSET = 3;
+export const X_SPEED_OFFSET = 5;
 export const Y_OFFSET = 10;
-export const Y_SPEED_OFFSET = 2;
+export const Y_SPEED_OFFSET = 3;
 export class Hud extends Phaser.Scene {
     gameHeight: number;
     gameWidth: number;
@@ -84,7 +84,7 @@ export class Hud extends Phaser.Scene {
         );
         this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
         this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
-        this.rightJoystick.createPointer(this); 
+        this.rightJoystick.createPointer(this);
         this.joystickKeys = this.joystick.createCursorKeys();    
         this.postFxPipeline = this.plugins.get("rexHorrifiPipeline");
 

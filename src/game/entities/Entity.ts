@@ -737,7 +737,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const enemyBounds = enemy.getBounds();
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {
             this.attackedTarget = enemy;
-            this.actionSuccess = true;
+            // this.actionSuccess = true;
+            (this as any).playerActionSuccess();
         };
     };
 

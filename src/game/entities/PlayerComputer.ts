@@ -163,34 +163,34 @@ export default class PlayerComputer extends Player {
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
         };
-        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+        const state = this.playerMachine.stateMachine.getCurrentState();
+        if (this.isDefeated && state !== States.DEFEATED) {
             this.isDefeated = false;
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (this.playerMachine.stateMachine.isCurrentState(States.LEASH) || this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) return;
+        if (state === States.LEASH || state === States.DEFEATED) return;
         if (!this.inCombat || this.isCasting || this.isPraying || this.isContemplating || this.scene.state.newPlayerHealth <= 0) {
             this.isMoving = false;
             this.setVelocity(0);
             return;    
         };
-        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || this.playerMachine.stateMachine.isCurrentState(States.CHASE) || this.playerMachine.stateMachine.isCurrentState(States.EVADE)) return;
+        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
         
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
         if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
-            // this.evasionTimer = 1000;
             this.playerMachine.stateMachine.setState(States.EVADE);
             return;
         } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
-            if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) { // !this.computerAction && 
+            if (state !== States.COMPUTER_COMBAT) { // !this.computerAction && 
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-                return;    
+                // return;
             };
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
@@ -201,19 +201,15 @@ export default class PlayerComputer extends Player {
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25          
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) { //  && this.evasionTimer === 0
-                    // this.evasionTimer = 1000;
+                if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
                     this.playerMachine.stateMachine.setState(States.EVADE);
-                    return;
                 } else {
                     direction.normalize();
                     this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
                 };
-            } else if (this.checkLineOfSight() && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) { //  && this.evasionTimer === 0
-                // this.evasionTimer = 1000;
+            } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
                 this.playerMachine.stateMachine.setState(States.EVADE);
-                return;
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
                 if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
@@ -222,9 +218,9 @@ export default class PlayerComputer extends Player {
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
             };
         } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
-            if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) {
+            if (state !== States.COMPUTER_COMBAT) {
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-                return;
+                // return;
             };
             if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
                 direction.normalize();
@@ -234,7 +230,7 @@ export default class PlayerComputer extends Player {
             } else { // Inside melee range
                 this.isPosted = true;
                 this.setVelocity(0);
-                if (this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.anims.play(FRAMES.IDLE, true);
+                if (this.computerAction) this.anims.play(FRAMES.IDLE, true);
                 // if (this.clearAttacks()) this.anims.play('player_idle', true);
             };
         };

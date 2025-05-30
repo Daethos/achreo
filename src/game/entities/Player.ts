@@ -1348,7 +1348,7 @@ export default class Player extends Entity {
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: "action", value: action }});
             } else {
-                this.scene.combatManager.combatMachine.action({ type: "Player", data: { 
+                this.scene.combatManager.combatMachine.action({ type: "Player", data: {
                     playerAction: { action, parry: this.scene.state.parryGuess },  
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
@@ -1384,7 +1384,7 @@ export default class Player extends Entity {
             if (this.enemyIdMatch()) {
                 this.scene.combatManager.combatMachine.action({ type: "Weapon",  data: { key: "action", value: action } });
             } else {
-                this.scene.combatManager.combatMachine.action({ type: "Player", data: { 
+                this.scene.combatManager.combatMachine.action({ type: "Player", data: {
                     playerAction: { action, parry: this.scene.state.parryGuess }, 
                     enemyID: this.attackedTarget.enemyID, 
                     ascean: this.attackedTarget.ascean, 
@@ -1392,7 +1392,7 @@ export default class Player extends Entity {
                     combatStats: this.attackedTarget.combatStats, 
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
-                    actionData: { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    actionData: { action: "", parry: "" }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
                 }});
             };
         };

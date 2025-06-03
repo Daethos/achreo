@@ -1,7 +1,7 @@
 import { Accessor, createMemo, createSignal, For } from "solid-js";
 import { useResizeListener } from "../utility/dimensions";
 import { Menu } from "../utility/screens";
-import { backgroundGradient } from "../utility/styling";
+import { backgroundGradient, masteryColor } from "../utility/styling";
 interface IProps {
     menu: Accessor<Menu>;
     viewAscean: (asc: string) => void;
@@ -19,7 +19,7 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
                     const orientation = dimensions()?.ORIENTATION;
                     const currentFocus = focus();
                     const length = menu()?.asceans.length;
-                    console.log(currentFocus, "Current Focus");
+                    console.log(currentFocus === asc._id, "Yes?")
                     return {
                         "height": length === 3 ? "60%" : "",
                         "padding-top": length === 3 ? "1%" : "",
@@ -32,9 +32,10 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
                             : (length === 3 ? "1.25%" : length === 2 ? "2%" : "0%"),
                         "margin-bottom": length > 1 ? "0%" : "0%",
                         "margin-top": length === 3 ? "0%" : "0%",
-                        "--base-shadow": "#000 0 0 0 0.2em",
-                        "--glow-color": "gold", 
-                        "background": `linear-gradient(#000, ${backgroundGradient(asc.mastery, currentFocus === asc._id)})`
+                        "--base-shadow": `#000 0 0 0 0.2rem`,
+                        "border-color": `${currentFocus === asc._id ? masteryColor(asc.mastery) : "#fdf6d8"}`,
+                        "--glow-color": masteryColor(asc.mastery), 
+                        "background": `linear-gradient(#000, ${backgroundGradient(asc.mastery, currentFocus === asc._id)})`,
                     };
                 });
                 return <div class={dimensions().ORIENTATION === "landscape" ? "border center glowJuice juice menu-item-3d" : "border center glowJuice juice"} 

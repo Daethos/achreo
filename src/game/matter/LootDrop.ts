@@ -9,7 +9,6 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     drop: Equipment;
     scene: any;
     tween: Phaser.Tweens.Tween;
-    particles: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
@@ -25,8 +24,6 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
             type = "treasure";
             x = treasure.x;
             y = treasure.y;
-            // x = Phaser.Math.Between(treasure.x-16, treasure.x+16);
-            // y = Phaser.Math.Between(treasure.y-16, treasure.y+16);
         };
         super (scene.matter.world, 200, 200, texture);
         this.setPosition(x,y);

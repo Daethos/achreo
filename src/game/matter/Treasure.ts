@@ -10,7 +10,6 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
     tween: Phaser.Tweens.Tween;
 
     constructor(data: any) {
-        // const t = new Treasure({ scene:this, x:treasure.x, y:treasure.y });
         let { scene, x, y } = data;
         super (scene.matter.world, x, y, "treasure-chest");
         scene.add.existing(this);
@@ -31,7 +30,7 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
             objectA: [sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
-                    EventBus.emit("lockpick", {id: this._id, interacting: true});
+                    EventBus.emit("lockpick", {id: this._id, interacting: true, type: "treasure"});
                 };
             },
             context: scene
@@ -40,7 +39,7 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
             objectA: [sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
-                    EventBus.emit("lockpick", {id: "", interacting: false});
+                    EventBus.emit("lockpick", {id: "", interacting: false, type: ""});
                 };
             },
             context: scene
@@ -62,7 +61,5 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
             opacity: 0,
             onComplete: () => this.destroy()
         });
-        // get equipment
-        // 
     };
 };

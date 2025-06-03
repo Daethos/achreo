@@ -49,7 +49,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
-    const [lockpick, setLockpick] = createSignal({id:"", interacting: false});
+    const [lockpick, setLockpick] = createSignal({id:"", interacting: false, type: ""});
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
     const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
@@ -111,7 +111,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             }, 1000);
         }
     });
-    function checkLockpick(e: { id: string; interacting: boolean; }) {
+    function checkLockpick(e: { id: string; interacting: boolean; type: string; }) {
         setLockpick(e);
     };
     function checkPickpocket() {

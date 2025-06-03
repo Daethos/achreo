@@ -90,7 +90,7 @@ export default class Joystick extends Phaser.GameObjects.Container {
             this.joystick.thumb.setFillStyle(thumb);
             this.joystick.base.setAlpha(opacity);
             this.joystick.thumb.setAlpha(opacity);
-            }, undefined, this);
+        }, undefined, this);
     };
     update() {
         if (this.joystick.force === 0) return;

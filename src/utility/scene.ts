@@ -92,6 +92,7 @@ export const image: {key: string, value:string}[] = [
     {key: "loot", value: "../assets/images/loot.png"},
     {key: "cursor-reset", value: "../assets/images/cursor-reset.png"},
     {key: "player-castbar", value: "../assets/gui/player-castbar.png"},
+    {key: "treasure-chest", value: "../assets/gui/treasure-chest.png"},
 ];
 
 export const INTRO_NODES = {

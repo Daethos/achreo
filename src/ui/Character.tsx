@@ -363,7 +363,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class="creature-heading">
                     <h1 style={{...bMargin}}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
-                        return <div class="border juice wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
+                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
                             <h2 style={{ color: "gold" }}>{quest.title}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
                             <p style={{ color: "gold" }}>{quest.giver}</p>
@@ -427,7 +427,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
                         const cost = efficient ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST] : spec?.cost;
                         const cooldown = efficient ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN] : spec?.cooldown;
-                        return <div class="border row juice" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                        return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
                                 {svg(spec?.svg)} {special} <br />
@@ -978,7 +978,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <div class="modal">
                 <div class="superCenter" style={{ width:"65%" }}>
                 <div class="border juice" style={{ margin: "1em auto", 
-                    "border-color": masteryColor(showQuest()?.quest?.mastery), 
+                    "border-color": masteryColor(showQuest()?.quest?.mastery),
                     animation: `borderTalent 1.5s infinite ease alternate`, 
                     "--base-shadow":"#000 0 0 0 0.2em", 
                     "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em`, 

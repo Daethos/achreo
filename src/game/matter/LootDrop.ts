@@ -9,12 +9,27 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     drop: Equipment;
     scene: any;
     tween: Phaser.Tweens.Tween;
+    particles: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
+        let x = 0, y = 0, type = "";
         const texture = imgUrl(drop.imgUrl);
         const enemy = scene.enemies?.find((e: any) => e.enemyID === enemyID);
-        super (scene.matter.world, enemy.body.position.x - 16, enemy.body.position.y + 16, texture);
+        if (enemy) {
+            type = "enemy";
+            x = enemy.body.position.x - 16;
+            y = enemy.body.position.x + 16;
+        } else { // Treasure Chest
+            const treasure = scene.treasures?.find((e: any) => e._id === enemyID);
+            type = "treasure";
+            x = treasure.x;
+            y = treasure.y;
+            // x = Phaser.Math.Between(treasure.x-16, treasure.x+16);
+            // y = Phaser.Math.Between(treasure.y-16, treasure.y+16);
+        };
+        super (scene.matter.world, 200, 200, texture);
+        this.setPosition(x,y);
         this.scene = scene;
         this.scene.plugins.get('rexGlowFilterPipeline').add(this, {
             outerStrength: 3,
@@ -29,14 +44,39 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.drop = drop;
         this.setupCollider();
         this.setupListener();
-        this.tween = scene.tweens.add({
-            targets: this,
-            duration: 1000,
-            scale: 1,
-            y: this.y - 25,
-            repeat: -1,
-            yoyo: true
-        });
+        if (type === "treasure") {
+            const distance = Phaser.Math.Between(32, 64);
+            const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+            const newX = x + Math.cos(angle) * distance;
+            const newY = y + Math.sin(angle) * distance;
+            const variance = () => Phaser.Math.Between(-16, 16);
+            scene.tweens.add({
+                targets: this,
+                x: {value:newX,variance:variance()},
+                y: {value:newY,variance:variance()},
+                duration: 1000,
+                ease: 'Quad.easeOut',
+                onComplete: () => {
+                    this.tween = scene.tweens.add({
+                        targets: this,
+                        duration: 1000,
+                        scale: 1,
+                        y: newY - 25,
+                        repeat: -1,
+                        yoyo: true
+                    });
+                }
+            });
+        } else {
+            this.tween = scene.tweens.add({
+                targets: this,
+                duration: 1000,
+                scale: 1,
+                y: this.y - 25,
+                repeat: -1,
+                yoyo: true
+            });
+        };
 
         this.setInteractive(new Phaser.Geom.Rectangle(0, 0, 32, 32), Phaser.Geom.Rectangle.Contains)
             .on('pointerdown', () => {

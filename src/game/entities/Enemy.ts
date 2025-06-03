@@ -1807,7 +1807,6 @@ export default class Enemy extends Entity {
             return;
         };
         this.instincts();
-        // this.stateMachine.setState(States.CHASE);
     };
 
     onEvasionEnter = () => {
@@ -1823,12 +1822,6 @@ export default class Enemy extends Entity {
             this.isRolling = true;
         };
         this.handleAnimations();
-        // if (this.evasionTimer === 1000) {
-        //     this.scene.time.delayedCall(this.evasionTimer, () => {
-        //         this.evasionTimer = 0;
-        //         console.log(this.evasionTimer, "Evasion Back to 0!");
-        //     }, undefined, this);
-        // };
     };
     onEvasionUpdate = (_dt: number) => {
         if (this.isDodging === true) this.anims.play("player_slide", true);
@@ -2956,7 +2949,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("enemy-combat-text", {
                     computerSpecialDescription: `${this.ascean.name} ensorcels you into a snare!`
                 }); 
-                screenShake(this.scene, 90);
+                screenShake(this.scene);
             };
         } else { // CvC
             this.scene.combatManager.snare(this.targetID);
@@ -4647,6 +4640,12 @@ export default class Enemy extends Entity {
         };
     };
     
+    /* -------------------------------------------- 
+        Updates positions on visuals if they exist 
+        Checks for negative status effects
+        Updates casted particle effects
+        Sets combat states if clear 
+    ---------------------------------------------- */
     evaluateEnemyState = () => {
         if (this.body) {
             this.functionality(NAME, this.currentTarget);
@@ -4724,8 +4723,7 @@ export default class Enemy extends Entity {
         this.getDirection();
         this.currentTargetCheck();
         if (this.isSuffering() === true || this.isCasting === true || this.isHurt === true || this.isContemplating === true) return;
-        if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0
-            // this.evasionTimer = 1000;
+        if (this.isUnderRangedAttack()) {
             this.stateMachine.setState(States.EVADE);
             return;
         };
@@ -4753,8 +4751,8 @@ export default class Enemy extends Entity {
                     this.stateMachine.setState(States.CONTEMPLATE);
                     break;
                 default: break;                        
-                }; 
-            };
+            }; 
+        };
     };
  
     update(dt: number) {

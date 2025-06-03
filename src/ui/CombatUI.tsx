@@ -23,6 +23,7 @@ import Lockpicking from "./Lockpicking";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
 import Steal from "./Steal";
+import { usePhaserEvent } from "../utility/hooks";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
@@ -48,6 +49,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [stealing, setStealing] = createSignal<{ stealing: boolean, item: any }>({ stealing: false, item: undefined });
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
+    const [lockpick, setLockpick] = createSignal({id:"", interacting: false});
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
     const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
@@ -109,6 +111,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             }, 1000);
         }
     });
+    function checkLockpick(e: { id: string; interacting: boolean; }) {
+        setLockpick(e);
+    };
     function checkPickpocket() {
         console.log(state().computer?.name, pickpocketEnemy());
         if (pickpocketItems().length === 0 || state().computer?.name !== pickpocketEnemy()) {
@@ -182,6 +187,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     //     EventBus.emit("create-prayer", exists);
     // };
 
+    usePhaserEvent("lockpick", checkLockpick);
+
     return <div class="playerCombatUi" classList={{
         "animate-texty": previousHealth().show && previousHealth().positive,
         "animate-flicker": previousHealth().show && !previousHealth().positive,
@@ -243,7 +250,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 </button>
             </Show>
         </Show>
-        <Show when={state().isStealth}>
+        <Show when={lockpick().interacting}>
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
             </button>
@@ -273,7 +280,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             </div> 
             </Show>
             <Show when={lockpicking()}>
-                <Lockpicking ascean={ascean} settings={settings} setLockpicking={setLockpicking} instance={instance} />
+                <Lockpicking ascean={ascean} lockpick={lockpick} settings={settings} setLockpicking={setLockpicking} instance={instance} />
             </Show>
             <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
                 <div class="modal">

@@ -27,6 +27,7 @@ import { PARTY_OFFSET } from "../../utility/party";
 import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import Treasure from "../matter/Treasure";
 
 const DISTANCE_CLOSE = 640000;
 const DISTANCE_MID = 1440000;
@@ -45,6 +46,7 @@ export class Game extends Scene {
     party: Party[] = [];
     npcs: NPC[] = [];
     lootDrops: LootDrop[] = [];
+    treasures: Treasure[] = [];
     target: GameObjects.Sprite;
     playerLight: GameObjects.PointLight;
     combat: boolean = false;
@@ -180,6 +182,10 @@ export class Game extends Scene {
         if (this.hud.prevScene === "Tutorial") {
             this.player.setPosition(38, 72);
         };
+        map?.getObjectLayer("Treasure")?.objects.forEach((treasure:any) => {
+            const t = new Treasure({ scene:this, x:treasure.x, y:treasure.y });
+            this.treasures.push(t);
+        });
         map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
             const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
             this.enemies.push(e);
@@ -191,7 +197,7 @@ export class Game extends Scene {
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
             };
-        } else {
+        } else { // Mobile pushed to 40 enemies
             for (let i = 0; i < 20; ++i) {
                 const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
                 this.enemies.push(e);

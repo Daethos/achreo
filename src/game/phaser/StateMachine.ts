@@ -142,14 +142,23 @@ export const States = {
     STUNNED: "stunned",
 };
 
-export const specialStateMachines = [States.ACHIRE, States.ARC, States.ASTRAVE, States.BLINK, States.CHIOMISM, States.CONFUSE, States.CONSUME, 
+export const specialStateMachines = [
+    States.ACHIRE, States.ARC, States.ASTRAVE, States.BLINK, States.CHIOMISM, States.CONFUSE, States.CONSUME, 
     States.DESPERATION, States.DEVOUR, States.DISPEL, States.FEAR, States.FROST, 
-    States.FYERUS, States.HEALING, States.ILIRECH, States.INVOKE, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LEAP, States.LIKYR, States.MAIERETH, 
-    States.PARALYZE, States.POLYMORPH, States.PURSUIT, States.QUOR, States.ROOT, States.RUSH, States.SACRIFICE, States.SHADOW, States.SHIRK, States.TETHER, 
-    States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, States.SNARE,States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING];
-export const specialPositiveMachines = [States.ABSORB, States.CHIOMIC, States.DISEASE, States.ENVELOP, States.FREEZE, States.HOWL, States.MALICE, 
-    States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, States.PROTECT, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, 
-    States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE];
+    States.FYERUS, States.HEALING, States.ILIRECH, States.INVOKE, States.KYNISOS, 
+    States.KYRISIAN, States.KYRNAICISM, States.LEAP, States.LIKYR, States.MAIERETH, 
+    States.PARALYZE, States.POLYMORPH, States.PURSUIT, States.QUOR, States.ROOT, 
+    States.RUSH, States.SACRIFICE, States.SHADOW, States.SHIRK, States.TETHER, 
+    States.RECONSTITUTE, States.SHROUD, States.SLOW, States.SLOWING, States.STORM, 
+    States.SNARE,States.SUTURE, States.TSHAERAL, States.TSHAER, States.TSHAERING
+];
+
+export const specialPositiveMachines = [
+    States.ABSORB, States.CHIOMIC, States.DISEASE, States.ENVELOP, States.FREEZE, States.HOWL, 
+    States.MALICE, States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, 
+    States.PROTECT, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, 
+    States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE
+];
 
 let idCount = 0;
 
@@ -196,7 +205,6 @@ export default class StateMachine {
         this.changeStateQueue = [];
     };
 
-    // console.warn(`State ${name} does not exist`);
     setState(name: string) {
         const state = this.states.get(name);
         if (!state || this.currentState === state) return;

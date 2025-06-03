@@ -1779,6 +1779,137 @@
         }, 
         {
          "draworder":"topdown",
+         "id":28,
+         "name":"Treasure",
+         "objects":[
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1132,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1280,
+                 "y":3520
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1133,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":0,
+                 "y":1440
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1134,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3680,
+                 "y":3712
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1135,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3712,
+                 "y":3712
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1136,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3872,
+                 "y":320
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1137,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":3136,
+                 "y":1856
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1138,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1504,
+                 "y":2240
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1139,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1504,
+                 "y":800
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1140,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1408,
+                 "y":224
+                }, 
+                {
+                 "gid":4127,
+                 "height":32,
+                 "id":1141,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":1376,
+                 "y":224
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":8,
          "name":"Enemies",
          "objects":[
@@ -5127,8 +5258,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":28,
- "nextobjectid":1131,
+ "nextlayerid":29,
+ "nextobjectid":1142,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.1",
@@ -28004,7 +28135,6 @@
                  "objectgroup":
                     {
                      "draworder":"index",
-                     "id":2,
                      "name":"",
                      "objects":[
                             {

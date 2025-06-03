@@ -201,6 +201,25 @@ const borderColor = (prayer: string): string => {
     };
 };
 
+const backgroundGradient = (mastery: string, focus: boolean) => {
+    switch (mastery) {
+        case "constitution":
+            return focus ? "#777" : "#444";
+        case "strength":
+            return focus ? "#600" : "#300";
+        case "agility":
+            return focus ? "#060" : "#030";
+        case "achre":
+            return focus ? "#006" : "#003";
+        case "caeren":
+            return focus ? "#606" : "#303";
+        case "kyosir":
+            return focus ? "#550" : "#330";
+        default:
+            return "#111";
+    };
+};
+
 const font = (fontSize: string = "1em", color?: string) => {
     if (!color || !fontSize) return { "font-size": fontSize };
     return { "font-size": fontSize, color };
@@ -256,4 +275,4 @@ const partialStyle = (mastery: string) => {
 };
 
 
-export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle };
+export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle, backgroundGradient };

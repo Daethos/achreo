@@ -18,7 +18,7 @@ const LOCKPICK = {
     Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 20, INTENSITY: 0.001, NEXT: "Easy" },
 };
 
-export default function Lockpicking({ ascean, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
+export default function Lockpicking({ ascean, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; lockpick: Accessor<{id: string; interacting: boolean}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
     const [angle, setAngle] = createSignal(0); // Lockpick rotation (0-360°)
     const [tension, setTension] = createSignal(115); // Wrench rotation (0-360°)
     const [lockDifficulty, setLockDifficulty] = createSignal(LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK] || LOCKPICK["Easy"]); // Easy/medium/hard
@@ -68,8 +68,12 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         const currentAngle = angle();
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
             success.play();
-            setGameStatus("success"); // Lock opened!
             vibrate([500, 250, 500]);
+            setGameStatus("success"); // Lock opened!
+            setTimeout(() => {
+                EventBus.emit("open-chest", lockpick().id);
+                setLockpicking(false);
+            }, 1000);
         } else {
             setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
             load.play();
@@ -264,14 +268,21 @@ export default function Lockpicking({ ascean, settings, setLockpicking, instance
         <p style={{ margin: "0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
         <Show when={gameStatus() !== "playing"}>
             <div class="result modal">
-                <div class="border superCenter" style={{ height: "70vh", width: "40vw", "z-index": 2 }}>
+                <div class="border superCenter" style={{ height: "50vh", width: "40vw", "z-index": 2 }}>
                     <div class="center creature-heading wrap">
                     <h1 style={{ "margin-top": "10%" }}>{gameStatus() === "success" ? "The Lock Opened!" : "Your Lockpick(s) Broke!"}</h1><br />
-                    <p>A door would now be open, or perhaps your spoils of treasure if you were successful at lockpicking. Still a work in progress!</p>
-                    <p class="gold">"[Item] [Item] [Item] 1g 50s"</p>
-                    <div style={font("0.5em")}>[This is automatically saved to your character.]</div>
-                    <button class="highlight cornerBL" onClick={() => resetLock(gameStatus() !== "success")}>{gameStatus() === "success" ? "Unlock Another" : "Try Again"}</button> <br />
-                    <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>{gameStatus() === "success" ? "Leave Satisfied" : "Give Up"}</button>
+                    {/* <p>A door would now be open, or perhaps your spoils of treasure if you were successful at lockpicking. Still a work in progress!</p> */}
+                    {/* <p class="gold">"[Item] [Item] [Item] 1g 50s"</p> */}
+                    {/* <div style={font("0.5em")}>[This is automatically saved to your character.]</div> */}
+                    <Show when={gameStatus() !== "success"}>
+                        <button class="highlight cornerBL" onClick={() => resetLock(gameStatus() !== "success")}>Try Again</button> <br />
+                    </Show>
+                    {/* <button class="highlight cornerBL" onClick={() => resetLock(gameStatus() !== "success")}>{gameStatus() === "success" ? "Unlock Another" : "Try Again"}</button> <br /> */}
+                    {/* <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>{gameStatus() === "success" ? "Leave Satisfied" : "Give Up"}</button> */}
+                    <Show when={gameStatus() === "success"}>
+                        <p>Congratulations {ascean().name}, you have successfully opened the lock! Good job, you rapscallion.</p>
+                        {/* <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "teal" }}>Leave Satisfied</button> */}
+                    </Show>
                     </div>
                 </div>
             </div>

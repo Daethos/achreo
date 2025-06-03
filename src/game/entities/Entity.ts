@@ -765,7 +765,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     particleAoe = (effect: Particle) => {
         this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
-        // new AoE(this.scene, effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
     functionality = (entity: string, target: Player | Enemy | Party) => {
@@ -776,7 +775,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
           
             if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            this.frameCount += 1;
+            this.frameCount++;
         } else if (this.isParrying) {
             const configKey = this.hasBow ? "bow" : "noBow";
             const config = this.flipX
@@ -786,7 +785,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount += 1;
+            this.frameCount++;
             if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         } else if (this.isThrusting) {
             const configKey = this.hasBow ? "bow" : "noBow";
@@ -820,7 +819,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === (FRAME_COUNT.THRUST_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount += 1;
+            this.frameCount++;
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
                 if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
@@ -839,7 +838,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
             if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount += 1;
+            this.frameCount++;
         } else if (this.isAttacking) {
             const configKey = this.hasBow ? "bow" : "noBow";
             const config = this.flipX
@@ -873,7 +872,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === (FRAME_COUNT.ATTACK_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount += 1;
+            this.frameCount++;
         } else if (this.isPosturing) {
             const configKey = this.hasBow ? "bow" : "noBow";
             const config = this.flipX
@@ -906,7 +905,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === (FRAME_COUNT.POSTURE_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount += 1;
+            this.frameCount++;
         } else if (this.movingVertical()) {
             if (!this.flipX) {
                 if (this.hasBow) {

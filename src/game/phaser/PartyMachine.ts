@@ -596,18 +596,19 @@ export default class PlayerMachine {
             
             (distance <= 60 && !ranged) ? 6 :
             (distance <= 60 && ranged) ? 7 :
+
             (distance > 60 && distance <= 120 && !ranged) ? 8 :
             (distance > 60 && distance <= 120 && ranged) ? 9 :
+
             (distance > 120 && distance <= 180 && !ranged) ? 10 :
             (distance > 120 && distance <= 180 && ranged) ? 11 :
+
             (distance > 180 && !ranged) ? 12 :
             (distance > 180 && ranged) ? 13 :
 
             chance;
 
-        if (this.player.prevInstinct === instinct) {
-            instinct = chance;
-        };
+        if (this.player.prevInstinct === instinct) instinct = chance;
 
         const focus = this.scene.hud.settings.computerFocus || BALANCED;
         let foci;
@@ -628,10 +629,7 @@ export default class PlayerMachine {
 
         let key = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].key, value = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].value;
         let finals = [instinct, foci];
-        if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
-            finals.push(instinct);
-        };
-
+        if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) finals.push(instinct);
         let final = finals[Math.floor(Math.random() * finals.length)];
 
         if (final === typeof "string") {

@@ -162,7 +162,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.type = TYPES[Math.floor(Math.random() * TYPES.length)];
         this.name = this.type;
         this.sensor = this.setupSensor(0, 0, RADIUS, PARTICLES.includes(this.type) ? "particleAoeSensor" : "aoeSensor");
-        // this.cleanup(false);
         this.hollowTimer();
     };
 
@@ -170,7 +169,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         scene.rotateTween(this, 0, false);
     };
     
-    public cleanup = (returnToPool: boolean = true) => {
+    public cleanup = (returning: boolean = true) => {
         if (this.scene && this.sensor) {
             this.scene.matterCollision.removeOnCollideStart({ objectA: [this.sensor] });
             this.scene.matterCollision.removeOnCollideEnd({ objectA: [this.sensor] });
@@ -196,14 +195,11 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
         this.scene.tweens.killTweensOf(this);
 
-        if (returnToPool) this.scene.aoePool.release(this);
+        if (returning) this.scene.aoePool.release(this);
     };
     
     public reset(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }): AoE {
-        if (this.active) {
-            console.warn('Resetting an active AoE!');
-            this.cleanup(false);
-        };
+        if (this.active) this.cleanup(false);
 
         this.name = type;
         this.count = count;

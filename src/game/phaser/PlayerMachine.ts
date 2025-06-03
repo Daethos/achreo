@@ -2121,7 +2121,7 @@ export default class PlayerMachine {
             }, undefined, this);
         };
         this.player.flickerCaerenic(750);
-        screenShake(this.scene, 64);
+        screenShake(this.scene);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
             zoom: this.scene.cameras.main.zoom * 1.5,

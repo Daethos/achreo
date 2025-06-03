@@ -24,7 +24,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
     
     let touchStartPos = { x: 0, y: 0 };
     const TOUCH_SLOP = 10; // Minimum movement to start drag (px)
-    const TOUCH_HOLD_DELAY = 150;
+    const TOUCH_HOLD_DELAY = 100;
 
     createEffect(() => {
         if (inventorySwap().start.id === undefined || inventorySwap().end.id === undefined) return;

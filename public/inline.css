@@ -61,12 +61,17 @@
 .glowJuice:focus,.glowJuice:hover {
     animation: borderTalent 1s 0.1s infinite ease alternate;
 }
-
+.focused-card:hover, .focused-card:focus {
+    --pulse-duration: 3s;
+    --pulse-easing: cubic-bezier(0.65, 0, 0.35, 1);
+    animation: gradientShimmer var(--pulse-duration) var(--pulse-easing) infinite, borderTalent 1.5s 0.1s infinite ease alternate;
+}
 .glowMenu:focus,.glowMenu:hover {
     animation: borderMenu 1s 0.1s infinite ease alternate;
 }
 .glowJuice:not(:hover):not(:focus),
-.glowMenu:not(:hover):not(:focus) {
+.glowMenu:not(:hover):not(:focus),
+.focused-card:not(:hover):not(:focus) {
     animation: none;
     transform: scale(1);
     transition: all 0.75s ease;
@@ -114,7 +119,6 @@
     transform: scale(0.8);
     transition: transform 0.5s ease;
 }
-
 @keyframes moist {
     0% { transform: scale(0.9); }
     75% { transform: scale(1.1); }
@@ -152,6 +156,41 @@
     }
     100% {
       box-shadow: var(--base-shadow), inset var(--glow-color) 0 0 0 0.3em, var(--glow-color) 0 0 1em 0.3em;
+    }
+}
+@keyframes gradientShimmer {
+    0%, 100% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 0%), #000);
+    }
+    5%, 95% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 3%), #000);
+    }
+    10%, 90% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 6%), #000);
+    }
+    15%, 85% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 9%), #000);
+    }
+    20%, 80% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 12%), #000);
+    }
+    25%, 75% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 15%), #000);
+    }
+    30%, 70% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 18%), #000);
+    }
+    35%, 65% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 21%), #000);
+    }
+    40%, 60% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 24%), #000);
+    }
+    45%, 55% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 27%), #000);
+    }
+    50% {
+        background: linear-gradient(to bottom, #000, color-mix(in srgb, var(--mastery-color), #000 30%), #000);
     }
 }
 .glowing-border {

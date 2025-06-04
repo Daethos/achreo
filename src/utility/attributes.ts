@@ -6,12 +6,12 @@ export const Attributes = [{
 }, {
     name: "strength",
     title: "Of Tshaer and Se'vas.",
-    description: "The physical power you possess, weighing heavily into your abliity to deal and receive physical damage with brutality. \n\n Many an Ancient and their apparition embodied beautiful displays of this, and a reverence all its own is given to those who possess it.",
+    description: "The physical power you possess, weighing heavily into your ability to deal and receive physical damage with brutality. \n\n Many an Ancient and their apparition embodied beautiful displays of this, and a reverence all its own is given to those who possess it.",
     gameplay: "Governs Crit Damage, Physical Damage, Defense, and Stamina. Affects Dual-Wielding Two-Hand Physical Weapons"
 }, {
     name: "agility",
     title: "Of Kyn'gi and Se'dyro",
-    description: "The physical clarity you possess, weighing heavily into your abliity to mitigate and perform physical damage with finesse. \n\n While an understood quality, there are many of another nature who have been known to admire and reward this trait.",
+    description: "The physical clarity you possess, weighing heavily into your ability to mitigate and perform physical damage with finesse. \n\n While an understood quality, there are many of another nature who have been known to admire and reward this trait.",
     gameplay: "Governs Physical Crit Chance, Physical Damage, Roll, and Stamina. Affects Dual-Wielding One-Hand Physical Weapons"
 }, {
     name: "achre",

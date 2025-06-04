@@ -17,9 +17,9 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
             {((asc) => {
                 const style = createMemo(() => {
                     const orientation = dimensions()?.ORIENTATION;
-                    const currentFocus = focus();
+                    const currentFocus = focus() === asc._id;
                     const length = menu()?.asceans.length;
-                    console.log(currentFocus === asc._id, "Yes?")
+                    const mastery = backgroundGradient(asc.mastery, currentFocus);
                     return {
                         "height": length === 3 ? "60%" : "",
                         "padding-top": length === 3 ? "1%" : "",
@@ -33,12 +33,15 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
                         "margin-bottom": length > 1 ? "0%" : "0%",
                         "margin-top": length === 3 ? "0%" : "0%",
                         "--base-shadow": `#000 0 0 0 0.2rem`,
-                        "border-color": `${currentFocus === asc._id ? masteryColor(asc.mastery) : "#fdf6d8"}`,
-                        "--glow-color": masteryColor(asc.mastery), 
-                        "background": `linear-gradient(#000, ${backgroundGradient(asc.mastery, currentFocus === asc._id)})`,
+                        "border-color": `${currentFocus ? masteryColor(asc.mastery) : "#fdf6d8"}`,
+                        "--glow-color": masteryColor(asc.mastery),
+                        "--mastery-color": backgroundGradient(asc.mastery, true),
+                        "--mastery-base": backgroundGradient(asc.mastery, false),
+                        "--pulse-duration": "2s",
+                        "background": `linear-gradient(#000, ${mastery})`,
                     };
                 });
-                return <div class={dimensions().ORIENTATION === "landscape" ? "border center glowJuice juice menu-item-3d" : "border center glowJuice juice"} 
+                return <div class={dimensions().ORIENTATION === "landscape" ? "border center glowJuice juice focused-card menu-item-3d" : "border center glowJuice juice"} 
                     tabIndex={0}
                     onFocusOut={() => {if (focus() === asc._id) setFocus("");}} 
                     onfocus={() => setFocus(asc._id)}

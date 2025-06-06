@@ -197,8 +197,8 @@ export class Game extends Scene {
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
             };
-        } else { // Mobile pushed to 40 enemies
-            for (let i = 0; i < 20; ++i) {
+        } else { // Mobile pushed to 30 enemies
+            for (let i = 0; i < 10; ++i) {
                 const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
                 this.enemies.push(e);
                 e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));

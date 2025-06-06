@@ -18,15 +18,15 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         if (enemy) {
             type = "enemy";
             x = enemy.body.position.x - 16;
-            y = enemy.body.position.x + 16;
+            y = enemy.body.position.y+ 16;
         } else { // Treasure Chest
             const treasure = scene.treasures?.find((e: any) => e._id === enemyID);
             type = "treasure";
             x = treasure.x;
             y = treasure.y;
         };
-        super (scene.matter.world, 200, 200, texture);
-        this.setPosition(x,y);
+        super (scene.matter.world, x, y, texture);
+        // this.setPosition(x,y);
         this.scene = scene;
         this.scene.plugins.get('rexGlowFilterPipeline').add(this, {
             outerStrength: 3,
@@ -46,11 +46,10 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
             const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
             const newX = x + Math.cos(angle) * distance;
             const newY = y + Math.sin(angle) * distance;
-            const variance = () => Phaser.Math.Between(-16, 16);
             scene.tweens.add({
                 targets: this,
-                x: {value:newX,variance:variance()},
-                y: {value:newY,variance:variance()},
+                x: newX,
+                y: newY,
                 duration: 1000,
                 ease: 'Quad.easeOut',
                 onComplete: () => {

@@ -30,6 +30,8 @@ export default class NPC extends Entity {
     weapons: any;
     distanceToPlayer: number = 0;
     lastDistanceFrame: number = 0;
+    chunkX: number = 0;
+    chunkY: number = 0;
 
     constructor(data: any) {
         let { scene, type } = data;
@@ -40,6 +42,8 @@ export default class NPC extends Entity {
         this.enemyID = uuidv4();
         this.npcType = type ? type : types[this.id];
         this.npcTarget = undefined;
+        this.chunkX = this.scene.playerChunkX;
+        this.chunkY = this.scene.playerChunkY;
         this.createNPC();
         this.stateMachine = new StateMachine(this, "npc");
         this.stateMachine

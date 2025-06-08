@@ -38,6 +38,10 @@ const config: Phaser.Types.Core.GameConfig = {
     },
     fps: {target: 60,limit: 90},
     fullscreenTarget: "base-ui",
+    // render: {
+    //     clearBeforeRender: false,
+    //     antialias: false
+    // },
     plugins: {
         global: [{
             key: "rexHorrifiPipeline",

@@ -18,7 +18,17 @@ import Player from "../entities/Player";
 import { Compiler } from "../../utility/ascean";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
-
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+    };
+    navMesh: any;
+    overlay: Phaser.GameObjects.Graphics;
+};
 export class ArenaCvC extends Phaser.Scene {
     player: Player;
     sceneKey: string = "";
@@ -65,6 +75,10 @@ export class ArenaCvC extends Phaser.Scene {
     highlightAnimation: boolean = false;
     aoePool: AoEPool;
     frameCount: number = 0;
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
 
     constructor (view?: string) {
         const key = view || "ArenaCvC";

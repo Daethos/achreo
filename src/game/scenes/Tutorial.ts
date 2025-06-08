@@ -20,6 +20,17 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+    };
+    navMesh: any;
+    overlay: Phaser.GameObjects.Graphics;
+};
 export class Tutorial extends Phaser.Scene {
     offsetX: number = 0;
     offsetY: number = 0;
@@ -57,6 +68,10 @@ export class Tutorial extends Phaser.Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
 
     constructor () {
         super("Tutorial");

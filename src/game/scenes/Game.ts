@@ -28,13 +28,38 @@ import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
+import { useResizeListener } from "../../utility/dimensions";
 
+export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 640000;
 const DISTANCE_MID = 1440000;
 const DISTANCE_FAR = 2560000;
+const TILE_SIZE = 32;
+const OVERLAY_BUFFER = 24;
+const dimensions = useResizeListener();
+
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+        treasures: Treasure[];
+        npcs: NPC[];
+    };
+    layers: {
+        base: Phaser.Tilemaps.TilemapLayer | null;
+        climbing: Phaser.Tilemaps.TilemapLayer | null;
+        flowers: Phaser.Tilemaps.TilemapLayer | null;
+        plants: Phaser.Tilemaps.TilemapLayer | null;
+    };
+    navMesh: any;
+    // overlay: Phaser.GameObjects.Graphics;
+};
 
 export class Game extends Scene {
-    overlay: GameObjects.Graphics;
+    overlay: GameObjects.Rectangle;
     animatedTiles: any[];
     offsetX: number = 0;
     offsetY: number = 0;
@@ -58,7 +83,7 @@ export class Game extends Scene {
     map: Tilemaps.Tilemap;
     camera: Cameras.Scene2D.Camera;
     minimap: MiniMap;
-    navMesh: any;
+    navMesh: any = undefined;
     navMeshPlugin: PhaserNavMeshPlugin;
     postFxPipeline: any;
     musicDay: Sound.NoAudioSound | Sound.HTML5AudioSound | Sound.WebAudioSound;
@@ -85,6 +110,13 @@ export class Game extends Scene {
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
     tileCache = new Map<string, {climb:boolean, water:boolean}>();
+    chunkSet: number = 0;
+    currentChunkX: number = 0;
+    currentChunkY: number = 0;
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
 
     constructor () {
         super("Game");
@@ -100,81 +132,6 @@ export class Game extends Scene {
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        const map = this.make.tilemap({ key: "ascean_test" });
-        this.map = map;
-        const tileSize = 32;
-        const camps = map.addTilesetImage("Camp_Graves", "Camp_Graves", tileSize, tileSize, 0, 0);
-        const decorations = map.addTilesetImage("AncientForestDecorative", "AncientForestDecorative", tileSize, tileSize, 0, 0);
-        const tileSet = map.addTilesetImage("AncientForestMain", "AncientForestMain", tileSize, tileSize, 1, 2);
-        const campfire = map.addTilesetImage("CampFireB", "CampFireB", tileSize, tileSize, 0, 0);
-        const light = map.addTilesetImage("light1A", "light1A", tileSize, tileSize, 0, 0);
-        let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Tilemaps.Tileset, 0, 0);
-        let layerC = map.createLayer("Tile Layer - Construction", tileSet as Tilemaps.Tileset, 0, 0);
-        let layer4 = map.createLayer("Tile Layer 4 - Primes", decorations as Tilemaps.Tileset, 0, 0);
-        let layer5 = map.createLayer("Tile Layer 5 - Snags", decorations as Tilemaps.Tileset, 0, 0);
-        let layerT = map.createLayer("Tile Layer - Tree Trunks", decorations as Tilemaps.Tileset, 0, 0);
-        let layerB = map.createLayer("Tile Layer - Camp Base", camps as Tilemaps.Tileset, 0, 0);
-        let layer6 = map.createLayer("Tile Layer 6 - Camps", camps as Tilemaps.Tileset, 0, 0);
-        this.baseLayer = layer0 as Tilemaps.TilemapLayer;
-        this.climbingLayer = layer1 as Tilemaps.TilemapLayer;
-        const layer2 =  map.createLayer("Tile Layer 2 - Flowers", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        const layer3 =  map.createLayer("Tile Layer 3 - Plants", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        this.flowers = layer2 as Tilemaps.TilemapLayer;
-        this.plants = layer3 as Tilemaps.TilemapLayer;
-        map.createLayer("Tile Layer - Campfire", campfire as Tilemaps.Tileset, 0, 0);
-        map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
-        [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
-            layer?.setCollisionByProperty({ collides: true });
-            this.matter.world.convertTilemapLayer(layer!);
-            layer?.forEachTile(tile => {
-                if ((tile.physics as any).matterBody) {
-                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
-                    (tile.physics as any).matterBody.body.collisionFilter = {
-                        category: ENTITY_FLAGS.WORLD,
-                        mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
-                        group: 0, // -1, // Negative group prevents self-collisions
-                    };
-                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
-                };
-            });
-            if (index < 5) return;
-            layer?.setDepth(5);
-        });
-        [layer2, layer3].forEach((layer) => { // Flowers, Plants
-            this.matter.world.convertTilemapLayer(layer!);
-            layer?.setDepth(2);
-        });
-        // this.matter.world.createDebugGraphic();
-        const objectLayer = map.getObjectLayer('navmesh');
-        const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
-        this.navMesh = navMesh;
-
-        this.overlay = this.add.graphics();
-        this.overlay.fillStyle(0x000000, 1); // Start Full
-        this.overlay.fillRect(0, 0, 4096, 4096);
-        this.overlay.setDepth(99);
-
-        // if (this.game.renderer.type === Phaser.WEBGL) {
-        //     var windPipeline = new WindPipeline(this.game);
-        //     (this.game.renderer as any).pipelines.add('Wind', windPipeline);
-        //     layer2?.setPipeline('Wind');
-        //     layer3?.setPipeline('Wind');
-        //     layer4?.setPipeline('Wind');
-        //     this.time.addEvent({
-        //         delay: 100,
-        //         loop: true,
-        //         callback: () => {
-        //             windPipeline.updateTime(this.time.now / 1000);
-        //         },
-        //         callbackScope: this
-        //     });
-        // };
-
-        // const debugGraphics = this.add.graphics().setAlpha(0.75);
-        // this.navMesh.enableDebug(debugGraphics); 
-        this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        (this.sys as any).animatedTiles.init(this.map);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         if (this.hud.prevScene === "Underground") {
             this.player.setPosition(1410, 130);
@@ -182,36 +139,130 @@ export class Game extends Scene {
         if (this.hud.prevScene === "Tutorial") {
             this.player.setPosition(38, 72);
         };
-        map?.getObjectLayer("Treasure")?.objects.forEach((treasure:any) => {
-            const t = new Treasure({ scene:this, x:treasure.x, y:treasure.y });
-            this.treasures.push(t);
-        });
-        map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
-            const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-            this.enemies.push(e);
-            e.setPosition(enemy.x, enemy.y);
-        });
-        if (this.hud.settings.desktop) {
-            for (let i = 0; i < 60; ++i) {
-                const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-                this.enemies.push(e);
-                e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
-            };
-        } else { // Mobile pushed to 30 enemies
-            for (let i = 0; i < 10; ++i) {
-                const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-                this.enemies.push(e);
-                e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
-            };
-        };
-        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
-            this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
+        this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
+        // this.matter.world.createDebugGraphic();
+
+        // this.matter.world.setBounds(-CHUNK_SIZE * 5, -CHUNK_SIZE * 5, CHUNK_SIZE * 5, CHUNK_SIZE * 5);
+
+        // // ==================================================================
+        // const map = this.make.tilemap({ key: "ascean_test" });
+        // this.map = map;
+        // const camps = map.addTilesetImage("Camp_Graves", "Camp_Graves", TILE_SIZE, TILE_SIZE, 0, 0);
+        // const decorations = map.addTilesetImage("AncientForestDecorative", "AncientForestDecorative", TILE_SIZE, TILE_SIZE, 0, 0);
+        // const tileSet = map.addTilesetImage("AncientForestMain", "AncientForestMain", TILE_SIZE, TILE_SIZE, 1, 2);
+        // const campfire = map.addTilesetImage("CampFireB", "CampFireB", TILE_SIZE, TILE_SIZE, 0, 0);
+        // const light = map.addTilesetImage("light1A", "light1A", TILE_SIZE, TILE_SIZE, 0, 0);
+        // let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Tilemaps.Tileset, 0, 0);
+        // let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Tilemaps.Tileset, 0, 0);
+        // let layerC = map.createLayer("Tile Layer - Construction", tileSet as Tilemaps.Tileset, 0, 0);
+        // let layer4 = map.createLayer("Tile Layer 4 - Primes", decorations as Tilemaps.Tileset, 0, 0);
+        // let layer5 = map.createLayer("Tile Layer 5 - Snags", decorations as Tilemaps.Tileset, 0, 0);
+        // let layerT = map.createLayer("Tile Layer - Tree Trunks", decorations as Tilemaps.Tileset, 0, 0);
+        // let layerB = map.createLayer("Tile Layer - Camp Base", camps as Tilemaps.Tileset, 0, 0);
+        // let layer6 = map.createLayer("Tile Layer 6 - Camps", camps as Tilemaps.Tileset, 0, 0);
+        // this.baseLayer = layer0 as Tilemaps.TilemapLayer;
+        // this.climbingLayer = layer1 as Tilemaps.TilemapLayer;
+        // const layer2 =  map.createLayer("Tile Layer 2 - Flowers", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
+        // const layer3 =  map.createLayer("Tile Layer 3 - Plants", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
+        // this.flowers = layer2 as Tilemaps.TilemapLayer;
+        // this.plants = layer3 as Tilemaps.TilemapLayer;
+        // map.createLayer("Tile Layer - Campfire", campfire as Tilemaps.Tileset, 0, 0);
+        // map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
+        // [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
+        //     layer?.setCollisionByProperty({ collides: true });
+        //     this.matter.world.convertTilemapLayer(layer!);
+        //     layer?.forEachTile(tile => {
+        //         if ((tile.physics as any).matterBody) {
+        //             // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
+        //             (tile.physics as any).matterBody.body.collisionFilter = {
+        //                 category: ENTITY_FLAGS.WORLD,
+        //                 mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
+        //                 group: 0, // -1, // Negative group prevents self-collisions
+        //             };
+        //             // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
+        //         };
+        //     });
+        //     if (index < 5) return;
+        //     layer?.setDepth(5);
+        // });
+        // [layer2, layer3].forEach((layer) => { // Flowers, Plants
+        //     this.matter.world.convertTilemapLayer(layer!);
+        //     layer?.setDepth(2);
+        // });
+        // // this.matter.world.createDebugGraphic();
+        // const objectLayer = map.getObjectLayer('navmesh');
+        // const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, TILE_SIZE);
+        // this.navMesh = navMesh;
+
+        // // ========================================================================
+
+        // // if (this.game.renderer.type === Phaser.WEBGL) {
+        // //     var windPipeline = new WindPipeline(this.game);
+        // //     (this.game.renderer as any).pipelines.add('Wind', windPipeline);
+        // //     layer2?.setPipeline('Wind');
+        // //     layer3?.setPipeline('Wind');
+        // //     layer4?.setPipeline('Wind');
+        // //     this.time.addEvent({
+        // //         delay: 100,
+        // //         loop: true,
+        // //         callback: () => {
+        // //             windPipeline.updateTime(this.time.now / 1000);
+        // //         },
+        // //         callbackScope: this
+        // //     });
+        // // };
+
+        // // const debugGraphics = this.add.graphics().setAlpha(0.75);
+        // // this.navMesh.enableDebug(debugGraphics); 
+        // this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+        // (this.sys as any).animatedTiles.init(this.map);
+        // this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
+        // if (this.hud.prevScene === "Underground") {
+        //     this.player.setPosition(1410, 130);
+        // };
+        // if (this.hud.prevScene === "Tutorial") {
+        //     this.player.setPosition(38, 72);
+        // };
+        // map?.getObjectLayer("Treasure")?.objects.forEach((treasure:any) => {
+        //     const t = new Treasure({ scene:this, x:treasure.x, y:treasure.y });
+        //     this.treasures.push(t);
+        // });
+        // map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
+        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+        //     this.enemies.push(e);
+        //     e.setPosition(enemy.x, enemy.y);
+        // });
+        // if (this.hud.settings.desktop) {
+        //     for (let i = 0; i < 60; ++i) {
+        //         const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+        //         this.enemies.push(e);
+        //         e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
+        //     };
+        // } else { // Mobile pushed to 30 enemies
+        //     for (let i = 0; i < 10; ++i) {
+        //         const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+        //         this.enemies.push(e);
+        //         e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
+        //     };
+        // };
+        // map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
+        //     this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
+
+
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
+        camera.zoom = this.hud.settings.positions.camera.zoom || 0.8;
         camera.startFollow(this.player, false, 0.1, 0.1);
+        camera.setBounds(0, 0, CHUNK_SIZE, CHUNK_SIZE);
         camera.setLerp(0.1, 0.1);
-        camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
+
+        
+        console.log(dimensions(), camera.worldView, "Dimensions");
+        this.overlay = this.add.rectangle(0, 0, camera.worldView.width, camera.worldView.height, 0x000000, 1)
+            // .fillRect(0, 0, dimensions().WIDTH, dimensions().HEIGHT)
+            .setDepth(99)
+            // .setScrollFactor(1);
+
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
             up: this?.input?.keyboard?.addKeys("W,UP"),
@@ -247,7 +298,7 @@ export class Game extends Scene {
 
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
-        this.minimap = new MiniMap(this);
+        // this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
@@ -258,11 +309,354 @@ export class Game extends Scene {
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
+        console.log("Starting Scene!");
     };
 
-    startDayCycle() {
+    private updateChunks() {
+        console.log("Updating Chunks");
+        this.isTransitioning = true;
+
+        this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
+        
+        // Calculate 3x3 grid of chunks around player
+        // const chunksToLoad: Array<{x: number, y: number}> = [];
+        
+        // for (let dx = -1; dx <= 1; dx++) {
+        //     for (let dy = -1; dy <= 1; dy++) {
+        //         const chunkX = this.playerChunkX + (dx * CHUNK_SIZE);
+        //         const chunkY = this.playerChunkY + (dy * CHUNK_SIZE);
+        //         chunksToLoad.push({ x: chunkX, y: chunkY });
+        //     };
+        // };
+        
+        // // Load new chunks that aren't already loaded
+        // chunksToLoad.map(chunk => {
+        //     const chunkKey = `${chunk.x},${chunk.y}`;
+        //     if (!this.loadedChunks.has(chunkKey)) {
+        //         this.loadChunk("ascean_test", chunk.x, chunk.y);
+        //     };
+        // });
+        
+        // Unload chunks that are too far away (keep 5x5 grid for safety)
+        const chunksToUnload: string[] = [];
+        this.loadedChunks.forEach((chunkData, chunkKey) => {
+            const distance = Math.max(
+                Math.abs(chunkData.x - this.playerChunkX) / CHUNK_SIZE,
+                Math.abs(chunkData.y - this.playerChunkY) / CHUNK_SIZE
+            );
+            
+            if (distance > 2) { // Unload chunks more than 2 chunks away
+                chunksToUnload.push(chunkKey);
+            };
+        });
+        
+        // Unload distant chunks
+        chunksToUnload.forEach(chunkKey => {
+            this.unloadChunk(chunkKey);
+        });
+        
+        // Update camera bounds to encompass loaded area
+        this.updateCameraBounds();
+        
+        this.isTransitioning = false;
+        console.log(`%c Updated chunks. Player at chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
+    };
+
+    private loadChunk(key: string, offsetX: number, offsetY: number): void {
+        const chunkKey = `${offsetX},${offsetY}`;
+        
+        if (this.loadedChunks.has(chunkKey)) {
+            console.log(`%c ${chunkKey} has already been loaded.`, "color:red");
+            return;
+        };
+        this.player.setActive(false);
+        // console.log(`Loading chunk: ${chunkKey}`);
+
+        const map = this.make.tilemap({ key });
+
+        const tileSet = map.addTilesetImage("AncientForestMain", "AncientForestMain", TILE_SIZE, TILE_SIZE, 1, 2);
+        const decorations = map.addTilesetImage("AncientForestDecorative", "AncientForestDecorative", TILE_SIZE, TILE_SIZE, 0, 0);
+        const camps = map.addTilesetImage("Camp_Graves", "Camp_Graves", TILE_SIZE, TILE_SIZE, 0, 0);
+        const campfire = map.addTilesetImage("CampFireB", "CampFireB", TILE_SIZE, TILE_SIZE, 0, 0);
+        const light = map.addTilesetImage("light1A", "light1A", TILE_SIZE, TILE_SIZE, 0, 0);
+        
+        // console.log(`Setting Up Layers: ${chunkKey}`);
+        const layers = this.createMapLayers(map, offsetX, offsetY, { camps, decorations, tileSet, campfire, light });
+        this.setupLayerPhysics(layers.collisionLayers);
+        this.setupDecorationLayers(layers.decorationLayers);
+        const navMesh = this.setupNavMesh(map, offsetX, offsetY);
+        // const overlay = this.createChunkOverlay(offsetX, offsetY);
+
+        (this.sys as any).animatedTiles.init(map);
+
+        // console.log(`Loading Entities for Chunk: ${chunkKey}`);
+        const entities = this.spawnChunkEntities(map, offsetX, offsetY);
+
+        const chunkData: ChunkData = {
+            key: chunkKey,
+            x: offsetX,
+            y: offsetY,
+            layers: layers.refLayers,
+            map,
+            entities,
+            navMesh,
+            // overlay
+        };
+
+        // console.log(`Setting Chunk: ${chunkKey}`);
+        this.loadedChunks.set(chunkKey, chunkData);
+        
+        // Debug marker
+        this.add.rectangle(offsetX + 25, offsetY + 25, 50, 50, 0x00ff00).setDepth(100);
+        this.add.text(offsetX + 80, offsetY + 30, `Chunk ${offsetX},${offsetY}`, { 
+            color: '#00ff00',
+            fontSize: '24px'
+        }).setDepth(100);
+
+        // this.matter.world.setBounds(offsetX, offsetY, CHUNK_SIZE, CHUNK_SIZE);
+        // console.log(`Successfully Loaded Chunk ${chunkKey}`);
+        this.player.setActive(true);
+    };
+
+    private createMapLayers(map: Phaser.Tilemaps.Tilemap,offsetX: number, offsetY: number, tilesets: any) {
+        const layer0 = map.createLayer("Tile Layer 0 - Base", tilesets.tileSet, offsetX, offsetY);
+        const layer1 = map.createLayer("Tile Layer 1 - Top", tilesets.tileSet, offsetX, offsetY);
+        const layerC = map.createLayer("Tile Layer - Construction", tilesets.tileSet, offsetX, offsetY);
+        const layer4 = map.createLayer("Tile Layer 4 - Primes", tilesets.decorations, offsetX, offsetY);
+        const layer5 = map.createLayer("Tile Layer 5 - Snags", tilesets.decorations, offsetX, offsetY);
+        const layerT = map.createLayer("Tile Layer - Tree Trunks", tilesets.decorations, offsetX, offsetY);
+        const layerB = map.createLayer("Tile Layer - Camp Base", tilesets.camps, offsetX, offsetY);
+        const layer6 = map.createLayer("Tile Layer 6 - Camps", tilesets.camps, offsetX, offsetY);
+        const layer2 = map.createLayer("Tile Layer 2 - Flowers", tilesets.decorations, offsetX, offsetY);
+        const layer3 = map.createLayer("Tile Layer 3 - Plants", tilesets.decorations, offsetX, offsetY);
+        map.createLayer("Tile Layer - Campfire", tilesets.campfire, offsetX, offsetY);
+        map.createLayer("Tile Layer - Lights", tilesets.light, offsetX, offsetY);
+        return {
+            refLayers: {
+                base: layer0,
+                climbing: layer1,
+                flowers: layer2,
+                plants: layer3
+            },
+            collisionLayers: [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6],
+            decorationLayers: [layer2, layer3]
+        };
+    };
+
+    private setupLayerPhysics(layers: (Tilemaps.TilemapLayer | null)[]) {
+        layers.forEach((layer, index) => {
+            if (!layer) return;
+            
+            layer.setCollisionByProperty({ collides: true });
+            this.matter.world.convertTilemapLayer(layer);
+            
+            layer.forEachTile(tile => {
+                if ((tile.physics as any)?.matterBody) {
+                    (tile.physics as any).matterBody.body.collisionFilter = {
+                        category: ENTITY_FLAGS.WORLD,
+                        mask: 4294967295,
+                        group: 0,
+                    };
+                };
+            });
+            
+            if (index >= 5) {
+                layer.setDepth(5);
+            };
+        });
+    };
+
+    private setupDecorationLayers(layers: (Tilemaps.TilemapLayer | null)[]) {
+        layers.forEach((layer) => {
+            if (!layer) return;
+            this.matter.world.convertTilemapLayer(layer);
+            layer.setDepth(2);
+        });
+    };
+
+    private setupNavMesh(map: Phaser.Tilemaps.Tilemap, x: number, y: number) {
+        const navKey = `navmesh_${x}_${y}`;
+        
+        const objectLayer = map.getObjectLayer('navmesh');
+        objectLayer?.objects.forEach(obj => {
+            obj.x! += x; // offsetX
+            obj.y! += y; // offsetY
+            if (obj.polygon) {
+                obj.polygon.forEach(p => {
+                    p.x += x;
+                    p.y += y;
+                });
+            };
+        });
+        return this.navMeshPlugin.buildMeshFromTiled(navKey, objectLayer, TILE_SIZE);
+    };
+
+    private createChunkOverlay(offsetX: number, offsetY: number) {
+        return this.add.graphics().fillStyle(0x000000, 0).fillRect(offsetX, offsetY, CHUNK_SIZE, CHUNK_SIZE).setDepth(99);
+    };
+
+    private unloadChunk(chunkKey: string) {
+        const chunkData = this.loadedChunks.get(chunkKey);
+        if (!chunkData) return;
+
+        console.log(`Unloading Chunk: ${chunkKey}`);
+
+        // Clean up entities
+        chunkData.entities.enemies.forEach(e => {
+            if (e.body && this.matter.world) {
+                this.matter.world.remove(e.body);
+            };
+            e.isDeleting = true;
+            e.cleanUp();
+            e.destroy();
+        });
+
+        chunkData.entities.treasures.forEach(t => {
+            if (t.body && this.matter.world) {
+                this.matter.world.remove(t.body);
+            };
+            t.cleanUp();
+            t.destroy();
+        });
+
+        chunkData.entities.npcs.forEach(n => {
+            if (n.body && this.matter.world) {
+                this.matter.world.remove(n.body);
+            };
+            n.cleanUp();
+            n.destroy();
+        });
+
+        // Clean up navigation mesh
+        if (chunkData.navMesh) {
+            chunkData.navMesh.destroy();
+        };
+
+        // Clean up map physics
+        this.cleanupMapPhysics(chunkData.map);
+
+        // Destroy the map
+        chunkData.map.destroy();
+
+        // Remove from loaded chunks
+        this.loadedChunks.delete(chunkKey);
+    };
+
+    private cleanupMapPhysics(map: Phaser.Tilemaps.Tilemap) {
+        if (!map) return;
+        
+        // Get all layers that have physics bodies
+        map.layers.forEach(layerData => {
+            const layer = layerData.tilemapLayer;
+            if (layer) {
+                // Remove all tile bodies from Matter world
+                layer.forEachTile(tile => {
+                    if (tile.physics && (tile.physics as any).matterBody) {
+                        this.matter.world.remove((tile.physics as any).matterBody.body);
+                    };
+                });
+            };
+        });
+    };
+
+    private updateCameraBounds() {
+        // Calculate bounds that encompass all loaded chunks
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        
+        this.loadedChunks.forEach(chunk => {
+            minX = Math.min(minX, chunk.x);
+            minY = Math.min(minY, chunk.y);
+            maxX = Math.max(maxX, chunk.x + CHUNK_SIZE);
+            maxY = Math.max(maxY, chunk.y + CHUNK_SIZE);
+        });
+        
+        if (minX !== Infinity) {
+            console.log("Updating Camera Bounds");
+            this.cameras.main.setBounds(minX, minY, maxX - minX, maxY - minY);
+        };
+    };
+
+    private spawnChunkEntities(map: Phaser.Tilemaps.Tilemap, offsetX: number, offsetY: number) {
+        const enemies: Enemy[] = [];
+        const treasures: Treasure[] = [];
+        const npcs: NPC[] = [];
+
+        // Spawn treasures
+        map?.getObjectLayer("Treasure")?.objects.forEach((treasure: any) => {
+            const t = new Treasure({ 
+                scene: this, 
+                x: treasure.x + offsetX, 
+                y: treasure.y + offsetY 
+            });
+            this.treasures.push(t);
+            treasures.push(t);
+        });
+
+        // Spawn enemies from map
+        map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
+            const e = new Enemy({ 
+                scene: this, 
+                x: 200, 
+                y: 200, 
+                texture: "player_actions", 
+                frame: "player_idle_0", 
+                data: undefined 
+            });
+            this.enemies.push(e);
+            enemies.push(e);
+            e.setPosition(enemy.x + offsetX, enemy.y + offsetY);
+        });
+
+        // Spawn additional random enemies
+        // const enemyCount = this.hud.settings.desktop ? 60 : 10;
+        // for (let i = 0; i < enemyCount; i++) {
+        //     const e = new Enemy({
+        //         scene: this, 
+        //         x: 200, 
+        //         y: 200, 
+        //         texture: "player_actions", 
+        //         frame: "player_idle_0", 
+        //         data: undefined 
+        //     });
+        //     this.enemies.push(e);
+        //     enemies.push(e);
+        //     e.setPosition(Phaser.Math.Between(offsetX + 200, offsetX + CHUNK_SIZE - 200), Phaser.Math.Between(offsetY + 200, offsetY + CHUNK_SIZE - 200));
+        // };
+
+        // Spawn NPCs
+        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => {
+            const n = new NPC({ 
+                scene: this, 
+                x: npc.x + offsetX, 
+                y: npc.y + offsetY, 
+                texture: "player_actions", 
+                frame: "player_idle_0" 
+            });
+            this.npcs.push(n);
+            npcs.push(n);
+        });
+        return { enemies, treasures, npcs };
+    };
+
+    private checkChunkTransition() {
+        if (this.isTransitioning) return;
+        const { x, y } = this.player;
+        const currentChunkX = Math.floor(x / CHUNK_SIZE) * CHUNK_SIZE;
+        const currentChunkY = Math.floor(y / CHUNK_SIZE) * CHUNK_SIZE;
+        
+        if (currentChunkX !== this.playerChunkX || currentChunkY !== this.playerChunkY) {
+            this.isTransitioning = true;            
+            this.playerChunkX = currentChunkX;
+            this.playerChunkY = currentChunkY;
+            this.updateChunks();
+            this.isTransitioning = false;
+        };
+    };
+
+    private startDayCycle() {
         if (this.hud.settings?.music === true) {
             if (this.musicNight.isPlaying) {
                 this.tweens.add({
@@ -281,9 +675,10 @@ export class Game extends Scene {
                 this.musicDay.play();
             };
         };
+        console.log("startDayCycle");
         this.day = true;
         this.sound.play("day", { volume: this?.hud?.settings?.volume * 3 });
-        const duration = 80000;
+        const duration = 8000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0, to: 0.25 },
@@ -293,8 +688,9 @@ export class Game extends Scene {
         });
     };
 
-    transitionToEvening() {
-        const duration = 40000;
+    private transitionToEvening() {
+        console.log("transitionToEvening");
+        const duration = 4000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.25, to: 0.5 },
@@ -304,7 +700,8 @@ export class Game extends Scene {
         });
     };
 
-    transitionToNight() {
+    private transitionToNight() {
+        console.log("transitionToNight");
         if (this.hud.settings?.music === true) {
             if (this.musicDay.isPlaying) {
                 this.tweens.add({
@@ -324,7 +721,7 @@ export class Game extends Scene {
         };
         this.day = false;
         this.sound.play("night", { volume: this?.hud?.settings?.volume });
-        const duration = 40000;
+        const duration = 4000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.5, to: 0.65 },
@@ -334,8 +731,8 @@ export class Game extends Scene {
         });
     };
 
-    transitionToMorning() {
-        const duration = 80000;
+    private transitionToMorning() {
+        const duration = 8000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.65, to: 0 },
@@ -351,7 +748,7 @@ export class Game extends Scene {
         return combatText;
     };
 
-    cleanUp = (): void => {
+    private cleanUp = (): void => {
         EventBus.off("combat");
         EventBus.off("enemyLootDrop");
         EventBus.off("minimap");
@@ -726,14 +1123,19 @@ export class Game extends Scene {
 
     checkEnvironment = (entity: Player | Enemy | Party) => {
         if (this.frameCount % 20 !== 0) return;
-        const x = this.map.worldToTileX(entity.x || 0) as number;
-        const y = this.map.worldToTileY(entity.y || 0) as number;
+        const chunkKey = `${this.playerChunkX},${this.playerChunkY}`;
+        const chunkData = this.loadedChunks.get(chunkKey);
+        if (!chunkData) return;
+        const x = chunkData.map.worldToTileX(entity.x || 0) as number;
+        const y = chunkData.map.worldToTileY(entity.y || 0) as number;
         const key = `${x},${y}`;
         let cached = this.tileCache.get(key);
 
         if (!cached) {
-            const climb = this.climbingLayer?.getTileAt(x, y);
-            const water = this.baseLayer?.getTileAt(x, y);
+            const climb = chunkData.layers?.climbing?.getTileAt(x, y);
+            const water = chunkData.layers?.base?.getTileAt(x, y);
+            // const climb = this.climbingLayer?.getTileAt(x, y);
+            // const water = this.baseLayer?.getTileAt(x, y);
             cached = {
                 climb: !!(climb?.properties?.climb),
                 water: !!(water?.properties?.water)
@@ -744,7 +1146,7 @@ export class Game extends Scene {
         entity.isClimbing = cached.climb;
         entity.inWater = cached.water;
 
-        const flower = this.flowers.getTileAt(x as number, y as number);
+        const flower = chunkData.layers?.flowers?.getTileAt(x as number, y as number);
         if (flower) {
             if (flower.pixelY > entity.y - 8) {
                 entity.setDepth(1);
@@ -752,7 +1154,7 @@ export class Game extends Scene {
                 entity.setDepth(3);
             };
         };
-        const plant = this.plants.getTileAt(x as number, y as number);
+        const plant = chunkData.layers?.plants?.getTileAt(x as number, y as number);
         if (plant) {
             if (plant.pixelY > entity.y - 8) {
                 entity.setDepth(1);
@@ -781,6 +1183,8 @@ export class Game extends Scene {
         this.setCameraOffset();
         this.checkEnvironment(this.player);
         this.hud.rightJoystick.update();
+        if (this.frameCount % 60 !== 0) return;
+        this.checkChunkTransition();
     };
 
     setCameraOffset = () => {
@@ -807,7 +1211,13 @@ export class Game extends Scene {
             this.offsetY = Math.min(this.cachedHeightOffset, this.offsetY + Y_SPEED_OFFSET);
         };
         
-        if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+        if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) {
+            this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+        };
+        const { width, height, x, y } = this.cameras.main.worldView;
+        this.overlay.width = width + OVERLAY_BUFFER;
+        this.overlay.height = height + OVERLAY_BUFFER;
+        this.overlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
     };
 
     startCombatTimer = (): void => {
@@ -830,10 +1240,16 @@ export class Game extends Scene {
         EventBus.emit("update-combat-timer", this.combatTime);
     };
 
+    checkChunk = (entity: Enemy | NPC) => {
+        const key = `${entity.chunkX},${entity.chunkY}`;
+        return key === `${this.playerChunkX},${this.playerChunkY}`;
+    };
+
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            let enemy = this.enemies[i], distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
+            let enemy = this.enemies[i], chunk = this.checkChunk(enemy), distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
+            if (!chunk) continue;
             if (distance < DISTANCE_CLOSE) { // < 800px
                 shouldUpdate = true;
             } else if (distance < DISTANCE_MID) { // < 1200px 30fps
@@ -845,31 +1261,32 @@ export class Game extends Scene {
             };
             if (shouldUpdate) {
                 enemy.update(delta);
-                if (enemy.isDeleting) return;
+                if (enemy.isDeleting) continue;
                 this.checkEnvironment(enemy);
             };
         };
         for (let i = 0; i < this.party.length; i++) {
             const party = this.party[i];
-            if (party.isDeleting) return;
+            if (party.isDeleting) continue;
             party.update(delta);
             this.checkEnvironment(party);
         };
         for (let i = 0; i < this.npcs.length; i++) {
-            const npc = this.npcs[i];
-            let shouldUpdate = false;
-            const distance = this.distanceToPlayer(npc);
+            let npc = this.npcs[i], chunk = this.checkChunk(npc), distance = this.distanceToPlayer(npc), shouldUpdate = false;
+            if (!chunk) continue;
             if (distance < DISTANCE_CLOSE) shouldUpdate = this.frameCount % 180 === 0;
             if (shouldUpdate) npc.update();
         };
         this.combatManager.combatMachine.process();
         this.frameCount++;
     };
+
     pause(): void {
         this.scene.pause();
         this.matter.pause();
         this.pauseMusic();
     };
+
     resume(): void {
         this.scene.resume();
         this.matter.resume();

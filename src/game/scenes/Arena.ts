@@ -24,7 +24,17 @@ import Party from "../entities/PartyComputer";
 import { PARTY_OFFSET } from "../../utility/party";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
-
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+    };
+    navMesh: any;
+    overlay: Phaser.GameObjects.Graphics;
+};
 export class Arena extends Phaser.Scene {
     sceneKey: string = "";
     animatedTiles: any[];
@@ -83,7 +93,11 @@ export class Arena extends Phaser.Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
-
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
+    
     constructor (view?: string) {
         const key = view || "Arena";
         super(key);

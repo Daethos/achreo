@@ -8,6 +8,7 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
     _id: string;
     scene: any;
     tween: Phaser.Tweens.Tween;
+    sensor: any;
 
     constructor(data: any) {
         let { scene, x, y } = data;
@@ -21,13 +22,21 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
         this.listener();
     };
 
+    cleanUp = () => {
+        this.scene.matterCollision.removeOnCollideStart({ objectA: [this.sensor] });
+        this.scene.matterCollision.removeOnCollideEnd({ objectA: [this.sensor] });
+        this.sensor = undefined;
+        EventBus.off("open-chest", this.open);
+    };
+
+
     collider = (scene: any) => {
-        const sensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "treasureSensor" })
-        this.setExistingBody(sensor);
+        this.sensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "treasureSensor" })
+        this.setExistingBody(this.sensor);
         this.setStatic(true);
         this.setCollisionCategory(ENTITY_FLAGS.LOOT);
         scene.matterCollision.addOnCollideStart({
-            objectA: [sensor],
+            objectA: [this.sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
                     EventBus.emit("lockpick", {id: this._id, interacting: true, type: "treasure"});
@@ -36,7 +45,7 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
             context: scene
         });
         scene.matterCollision.addOnCollideEnd({
-            objectA: [sensor],
+            objectA: [this.sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
                     EventBus.emit("lockpick", {id: "", interacting: false, type: ""});

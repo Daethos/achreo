@@ -24,7 +24,20 @@ import ScrollingCombatText, { BONE } from "../phaser/ScrollingCombatText";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
-
+import Treasure from "../matter/Treasure";
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+        treasures: Treasure[];
+        npcs: NPC[];
+    };
+    navMesh: any;
+    overlay: Phaser.GameObjects.Graphics;
+};
 export class Underground extends Scene {
     animatedTiles: any[];
     offsetX: number;
@@ -81,6 +94,10 @@ export class Underground extends Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
 
     constructor () {
         super("Underground");

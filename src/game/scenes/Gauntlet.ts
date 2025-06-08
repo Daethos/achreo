@@ -26,7 +26,17 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { ARENA_ENEMY, fetchArena } from "../../utility/enemy";
 import { LEVEL_SELECTOR } from "../../ui/Roster";
-
+interface ChunkData {
+    key: string;
+    x: number;
+    y: number;
+    map: Phaser.Tilemaps.Tilemap;
+    entities: {
+        enemies: Enemy[];
+    };
+    navMesh: any;
+    overlay: Phaser.GameObjects.Graphics;
+};
 export class Gauntlet extends Phaser.Scene {
     sceneKey: string = "";
     animatedTiles: any[];
@@ -89,6 +99,10 @@ export class Gauntlet extends Phaser.Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
+    isTransitioning: boolean = false;
+    loadedChunks: Map<string, ChunkData> = new Map();
+    playerChunkX: number = 0;
+    playerChunkY: number = 0;
 
     constructor (view?: string) {
         const key = view || "Gauntlet";

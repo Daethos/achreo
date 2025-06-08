@@ -23,6 +23,7 @@ import StatusEffect from "../../utility/prayer";
 import Party from "./PartyComputer";
 import { BONE, DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { CHUNK_SIZE } from "../scenes/Game";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
@@ -117,6 +118,8 @@ export default class Enemy extends Entity {
     cachedDirectionFrame: number = 0;
     weaponTypeCacheFrame: number = 0;
     cachedDirection: any;
+    chunkX: number = 0;
+    chunkY: number = 0;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -267,6 +270,9 @@ export default class Enemy extends Entity {
         this.sensorDisp = 12;
         this.colliderDisp = 16; 
         this.beam = new Beam(this);
+        this.chunkX = this.scene.playerChunkX;
+        this.chunkY = this.scene.playerChunkY;
+        console.log(this.scene.playerChunkX, this.scene.playerChunkY, "X / Y of Chunk");
 
         // const colliderWidth = PLAYER.COLLIDER.WIDTH; 
         // const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
@@ -1613,27 +1619,36 @@ export default class Enemy extends Entity {
     generatePatrolPath = () => {
         let pathPosition;
         let pathFound = false;
+        let pathChances = 0;
         const bodyPadding = {
             x: 6,
             y: 16
         };
         if (!this.body) return;
-        while (pathFound === false) {
+        let navMesh;
+        if (this.scene.navMesh) {
+            navMesh = this.scene.navMesh;
+        } else {
+            const chunk = this.scene.loadedChunks.get(`${this.chunkX},${this.chunkY}`);
+            navMesh = chunk?.navMesh;
+        };
+        while (pathFound === false && pathChances < 10) {
             const point = new Phaser.Math.Vector2(Phaser.Math.RND.between(this.x - 250, this.x + 250), Phaser.Math.RND.between(this.y - 250, this.y + 250));
-            if (this.scene.navMesh.isPointInMesh(point) && this.body) {
+            if (navMesh.isPointInMesh(point) && this.body) {
                 const direction = point.clone().subtract(this.position).normalize();
                 const paddedCheck = new Phaser.Math.Vector2(
                     point.x + (direction.x * bodyPadding.x),
                     point.y + (direction.y * bodyPadding.y)
                 );
-
-                if (this.scene.navMesh.isPointInMesh(paddedCheck)) {
+                if (navMesh.isPointInMesh(paddedCheck)) {
                     pathPosition = point;
                     pathFound = true;
                 };
             };
+            pathChances++;
         };
-        let patrolPath = this.scene.navMesh.findPath(this.position, pathPosition);
+        if (pathChances >= 10) return undefined;
+        let patrolPath = navMesh.findPath(this.position, pathPosition);
         return patrolPath;
     };
     
@@ -2226,13 +2241,19 @@ export default class Enemy extends Entity {
         this.setVelocityX(this.flipX ? 35 : -35);
         this.flickerCaerenic(500);
         this.scene.time.delayedCall(500, () => {
-                // Define the map boundaries (you can derive these dynamically from your tilemap or world bounds)
+            // Define the map boundaries (you can derive these dynamically from your tilemap or world bounds)
             const mapBounds = {
-                minX: 32,
-                maxX: this.scene.map.widthInPixels - 32, // Maximum width of the map
-                minY: 32,
-                maxY: this.scene.map.heightInPixels - 32  // Maximum height of the map
+                minX: this.chunkX + 32,
+                maxX: CHUNK_SIZE - 32,
+                minY: this.chunkY + 32,
+                maxY: CHUNK_SIZE - 32
             };
+            // const mapBounds = {
+            //     minX: 32,
+            //     maxX: this.scene.map.widthInPixels - 32, // Maximum width of the map
+            //     minY: 32,
+            //     maxY: this.scene.map.heightInPixels - 32  // Maximum height of the map
+            // };
             const clampedX = Phaser.Math.Clamp(this.x, mapBounds.minX, mapBounds.maxX);
             const clampedY = Phaser.Math.Clamp(this.y, mapBounds.minY, mapBounds.maxY);
             this.setPosition(clampedX, clampedY);
@@ -2842,11 +2863,18 @@ export default class Enemy extends Entity {
         const targetY = this.y + direction.y * 300;
 
         const mapBounds = {
-            minX: 32,
-            maxX: this.scene.map.widthInPixels - 32,
-            minY: 32,
-            maxY: this.scene.map.heightInPixels - 32
+            minX: this.chunkX + 32,
+            maxX: CHUNK_SIZE - 32,
+            minY: this.chunkY + 32,
+            maxY: CHUNK_SIZE - 32
         };
+
+        // const mapBounds = {
+        //     minX: 32,
+        //     maxX: this.scene.map.widthInPixels - 32,
+        //     minY: 32,
+        //     maxY: this.scene.map.heightInPixels - 32
+        // };
 
         const clampedX = Phaser.Math.Clamp(targetX, mapBounds.minX, mapBounds.maxX);
         const clampedY = Phaser.Math.Clamp(targetY, mapBounds.minY, mapBounds.maxY);
@@ -4434,6 +4462,7 @@ export default class Enemy extends Entity {
     };
 
     checkLineOfSight() {
+        if (this.scene.scene.key === "Game") return false;
         const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
         const points = line.getPoints(30);  // Adjust number of points based on precision
         for (let i = 0; i < points.length; i++) {

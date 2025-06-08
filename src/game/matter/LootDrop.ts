@@ -42,7 +42,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.setupCollider();
         this.setupListener();
         if (type === "treasure") {
-            const distance = Phaser.Math.Between(32, 64);
+            const distance = Phaser.Math.Between(16, 32);
             const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
             const newX = x + Math.cos(angle) * distance;
             const newY = y + Math.sin(angle) * distance;

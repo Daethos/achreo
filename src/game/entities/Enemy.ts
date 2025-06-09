@@ -272,7 +272,6 @@ export default class Enemy extends Entity {
         this.beam = new Beam(this);
         this.chunkX = this.scene.playerChunkX;
         this.chunkY = this.scene.playerChunkY;
-        console.log(this.scene.playerChunkX, this.scene.playerChunkY, "X / Y of Chunk");
 
         // const colliderWidth = PLAYER.COLLIDER.WIDTH; 
         // const colliderHeight = PLAYER.COLLIDER.HEIGHT; 

@@ -29,13 +29,14 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import { useResizeListener } from "../../utility/dimensions";
+import WeatherManager from "../matter/Weather";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 640000;
 const DISTANCE_MID = 1440000;
 const DISTANCE_FAR = 2560000;
 const TILE_SIZE = 32;
-const OVERLAY_BUFFER = 24;
+export const OVERLAY_BUFFER = 24;
 const dimensions = useResizeListener();
 
 interface ChunkData {
@@ -117,6 +118,10 @@ export class Game extends Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    weather: WeatherManager;
+    // fog: any;
+    // fogBrush: any;
+    // rainParticles: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor () {
         super("Game");
@@ -140,6 +145,23 @@ export class Game extends Scene {
             this.player.setPosition(38, 72);
         };
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
+
+        // this.fog = this.make.renderTexture({
+        //     width: this.cameras.main.width,
+        //     height: this.cameras.main.height,
+        //     // add: true
+        // });
+        // this.fog.setDepth(98); // just below your overlay
+        // this.fog.setScrollFactor(0); // locks to screen
+
+        // Fill with darkness
+        // this.fog.fill(0x000000, 1);
+
+        // Create a reusable circle "brush" to erase
+        // this.fogBrush = this.make.graphics();
+        // this.fogBrush.fillStyle(0xffffff);
+        // this.fogBrush.fillCircle(0, 0, 64); // 128px diameter
+        
         // this.matter.world.createDebugGraphic();
 
         // this.matter.world.setBounds(-CHUNK_SIZE * 5, -CHUNK_SIZE * 5, CHUNK_SIZE * 5, CHUNK_SIZE * 5);
@@ -248,6 +270,54 @@ export class Game extends Scene {
         // map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
         //     this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
 
+        // Create a tiny vertical white line for raindrop
+        // const drop = this.make.graphics({ x: 0, y: 0 });
+        // drop.fillStyle(0xffffff, 1);
+        // drop.fillRect(0, 0, 2, 10); // 2px wide, 10px tall
+
+        // drop.generateTexture('rainDrop', 2, 10); // Save as texture
+        // drop.destroy(); // Clean up
+
+        // this.rainParticles = this.add.particles(0, 0, 'rainDrop', {
+        //     x: () => Phaser.Math.Between(0, this.cameras.main.width),
+        //     y: () => Phaser.Math.Between(0, this.cameras.main.height),
+        //     lifespan: {min:500, max:1500},
+        //     accelerationX: {min:2.5, max:7.5},
+        //     accelerationY: {min:50, max:100},
+        //     scale: {start: 0.6, end: 0},
+        //     frequency: 50,
+        //     quantity: 5,
+        //     speedX: {min:35, max:75},
+        //     speedY: {min:35, max:75},
+        //     reserve: 25,
+        //     blendMode: "ADD",
+        //     visible: true,
+        //     active: false
+        // });
+        // this.rainParticles.setScrollFactor(0); // Overlay effect
+        // this.rainParticles.setDepth(100);
+        // this.rainParticles.stop();
+        // // this.rainParticles.start();
+        
+        // this.time.addEvent({
+        //     delay: 6000,
+        //     loop: true,
+        //     callback: () => {
+        //         const change = Phaser.Math.Between(0, 100) > 50;
+        //         console.log(change, "Chance to change current activity");
+        //         if (!change) return;
+        //         if (!this.rainParticles.active) {
+        //             this.rainParticles.setActive(true);
+        //             this.rainParticles.setVisible(true);
+        //             this.rainParticles.start();
+        //         } else {
+        //             this.rainParticles.setVisible(false);
+        //             this.rainParticles.setActive(false);
+        //             this.rainParticles.stop();
+        //         };
+        //     }
+        // });
+
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions.camera.zoom || 0.8;
@@ -257,11 +327,10 @@ export class Game extends Scene {
         camera.setRoundPixels(true);
 
         
-        console.log(dimensions(), camera.worldView, "Dimensions");
+        // console.log(dimensions(), camera.worldView, "Dimensions");
         this.overlay = this.add.rectangle(0, 0, camera.worldView.width, camera.worldView.height, 0x000000, 1)
-            // .fillRect(0, 0, dimensions().WIDTH, dimensions().HEIGHT)
-            .setDepth(99)
-            // .setScrollFactor(1);
+            .setDepth(99);
+        this.weather = new WeatherManager(this);
 
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.player.inputKeys = {
@@ -316,7 +385,6 @@ export class Game extends Scene {
     };
 
     private updateChunks() {
-        console.log("Updating Chunks");
         this.isTransitioning = true;
 
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
@@ -362,7 +430,7 @@ export class Game extends Scene {
         this.updateCameraBounds();
         
         this.isTransitioning = false;
-        console.log(`%c Updated chunks. Player at chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
+        console.log(`%c Updated Chunks. Player at Chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
     };
 
     private loadChunk(key: string, offsetX: number, offsetY: number): void {
@@ -410,11 +478,11 @@ export class Game extends Scene {
         this.loadedChunks.set(chunkKey, chunkData);
         
         // Debug marker
-        this.add.rectangle(offsetX + 25, offsetY + 25, 50, 50, 0x00ff00).setDepth(100);
-        this.add.text(offsetX + 80, offsetY + 30, `Chunk ${offsetX},${offsetY}`, { 
-            color: '#00ff00',
-            fontSize: '24px'
-        }).setDepth(100);
+        // this.add.rectangle(offsetX + 25, offsetY + 25, 50, 50, 0x00ff00).setDepth(100);
+        // this.add.text(offsetX + 80, offsetY + 30, `Chunk ${offsetX},${offsetY}`, { 
+        //     color: '#00ff00',
+        //     fontSize: '24px'
+        // }).setDepth(100);
 
         // this.matter.world.setBounds(offsetX, offsetY, CHUNK_SIZE, CHUNK_SIZE);
         // console.log(`Successfully Loaded Chunk ${chunkKey}`);
@@ -445,6 +513,36 @@ export class Game extends Scene {
             decorationLayers: [layer2, layer3]
         };
     };
+    /*
+        type LAYER_TYPE = {
+            name: string;
+            depth: number;
+            layer: Phaser.Tilemaps.TilemapLayer;
+        };
+
+        private setupLayers(layers: (Tilemaps.TilemapLayer | undefined)[]) {
+            layers.forEach((layer, index) => {
+                if (!layer) return;
+                
+                layer.setCollisionByProperty({ collides: true });
+                this.matter.world.convertTilemapLayer(layer);
+                
+                layer.forEachTile(tile => {
+                    if ((tile.physics as any)?.matterBody) {
+                        (tile.physics as any).matterBody.body.collisionFilter = {
+                            category: ENTITY_FLAGS.WORLD,
+                            mask: 4294967295,
+                            group: 0,
+                        };
+                    };
+                });
+                
+                if (index >= 5) {
+                    layer.setDepth(5);
+                };
+            });    
+        };
+    */
 
     private setupLayerPhysics(layers: (Tilemaps.TilemapLayer | null)[]) {
         layers.forEach((layer, index) => {
@@ -492,10 +590,6 @@ export class Game extends Scene {
             };
         });
         return this.navMeshPlugin.buildMeshFromTiled(navKey, objectLayer, TILE_SIZE);
-    };
-
-    private createChunkOverlay(offsetX: number, offsetY: number) {
-        return this.add.graphics().fillStyle(0x000000, 0).fillRect(offsetX, offsetY, CHUNK_SIZE, CHUNK_SIZE).setDepth(99);
     };
 
     private unloadChunk(chunkKey: string) {
@@ -574,7 +668,6 @@ export class Game extends Scene {
         });
         
         if (minX !== Infinity) {
-            console.log("Updating Camera Bounds");
             this.cameras.main.setBounds(minX, minY, maxX - minX, maxY - minY);
         };
     };
@@ -675,10 +768,9 @@ export class Game extends Scene {
                 this.musicDay.play();
             };
         };
-        console.log("startDayCycle");
         this.day = true;
         this.sound.play("day", { volume: this?.hud?.settings?.volume * 3 });
-        const duration = 8000;
+        const duration = 80000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0, to: 0.25 },
@@ -689,8 +781,7 @@ export class Game extends Scene {
     };
 
     private transitionToEvening() {
-        console.log("transitionToEvening");
-        const duration = 4000;
+        const duration = 40000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.25, to: 0.5 },
@@ -701,7 +792,6 @@ export class Game extends Scene {
     };
 
     private transitionToNight() {
-        console.log("transitionToNight");
         if (this.hud.settings?.music === true) {
             if (this.musicDay.isPlaying) {
                 this.tweens.add({
@@ -721,7 +811,7 @@ export class Game extends Scene {
         };
         this.day = false;
         this.sound.play("night", { volume: this?.hud?.settings?.volume });
-        const duration = 4000;
+        const duration = 40000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.5, to: 0.65 },
@@ -732,7 +822,7 @@ export class Game extends Scene {
     };
 
     private transitionToMorning() {
-        const duration = 8000;
+        const duration = 80000;
         this.tweens.add({
             targets: this.overlay,
             alpha: { from: 0.65, to: 0 },
@@ -1218,6 +1308,10 @@ export class Game extends Scene {
         this.overlay.width = width + OVERLAY_BUFFER;
         this.overlay.height = height + OVERLAY_BUFFER;
         this.overlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
+        // const playerX = this.player.x - this.cameras.main.worldView.x;
+        // const playerY = this.player.y - this.cameras.main.worldView.y;
+
+        // this.fog.erase(this.fogBrush, playerX, playerY);
     };
 
     startCombatTimer = (): void => {
@@ -1240,16 +1334,17 @@ export class Game extends Scene {
         EventBus.emit("update-combat-timer", this.combatTime);
     };
 
-    checkChunk = (entity: Enemy | NPC) => {
-        const key = `${entity.chunkX},${entity.chunkY}`;
-        return key === `${this.playerChunkX},${this.playerChunkY}`;
-    };
-
+    checkChunk = (entity: Enemy | NPC): boolean => entity.chunkX === this.playerChunkX && entity.chunkY === this.playerChunkY;
+    
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             let enemy = this.enemies[i], chunk = this.checkChunk(enemy), distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
-            if (!chunk) continue;
+            if (!chunk) {
+                enemy.visible = false;
+                enemy.active = false;
+                continue;
+            };
             if (distance < DISTANCE_CLOSE) { // < 800px
                 shouldUpdate = true;
             } else if (distance < DISTANCE_MID) { // < 1200px 30fps
@@ -1260,6 +1355,8 @@ export class Game extends Scene {
                 shouldUpdate = this.frameCount % 60 === 0;
             };
             if (shouldUpdate) {
+                enemy.visible = true;
+                enemy.active = true;
                 enemy.update(delta);
                 if (enemy.isDeleting) continue;
                 this.checkEnvironment(enemy);
@@ -1273,9 +1370,17 @@ export class Game extends Scene {
         };
         for (let i = 0; i < this.npcs.length; i++) {
             let npc = this.npcs[i], chunk = this.checkChunk(npc), distance = this.distanceToPlayer(npc), shouldUpdate = false;
-            if (!chunk) continue;
+            if (!chunk) {
+                npc.visible = false;
+                npc.active = false;
+                continue;
+            };
             if (distance < DISTANCE_CLOSE) shouldUpdate = this.frameCount % 180 === 0;
-            if (shouldUpdate) npc.update();
+            if (shouldUpdate) {
+                npc.visible = true;
+                npc.active = true;
+                npc.update();
+            };
         };
         this.combatManager.combatMachine.process();
         this.frameCount++;

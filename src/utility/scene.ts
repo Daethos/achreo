@@ -35,6 +35,7 @@ export const audio: { key: string, value: string }[] = [
     {key: "parry", value: "../assets/sounds/counter-success.mp3"},
     {key: "weaponOrder", value: "../assets/sounds/weapon-order.mp3"},
     {key: "phenomena", value: "../assets/sounds/phenomena.mp3"},
+    {key: "thunder", value: "../assets/sounds/thunder.mp3"},
     {key: "TV_Turn_On", value: "../assets/sounds/TV_Turn_On.wav"},
     {key: "TV_Button_Press", value: "../assets/sounds/TV_Button_Press.wav"},
     {key: "combat-round", value: "../assets/sounds/combat-round.mp3"},

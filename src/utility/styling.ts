@@ -201,6 +201,25 @@ const borderColor = (prayer: string): string => {
     };
 };
 
+const backgroundTransparency = (mastery: string, focus: boolean) => {
+        switch (mastery) {
+            case "constitution":
+                return focus ? "rgba(119, 119, 119, 1)" : "rgba(119, 119, 119, 0)";
+            case "strength":
+                return focus ? "rbga(102, 0, 0, 1)" : "rbga(102, 0, 0, 0)";
+            case "agility":
+                return focus ? "rgba(0, 102, 0, 1)" : "rbga(0, 102, 0, 0)";
+            case "achre":
+                return focus ? "rgba(0, 0, 102, 1)" : "rbga(0, 0, 102, 0)";
+            case "caeren":
+                return focus ? "rgba(102, 0, 102, 1)" : "rbga(102, 0, 102, 0)";
+            case "kyosir":
+                return focus ? "rgba(85, 85, 0, 1)" : "rgba(85, 85, 0, 0)";
+            default:
+                return "#111";
+    };
+};
+
 const backgroundGradient = (mastery: string, focus: boolean) => {
     switch (mastery) {
         case "constitution":
@@ -275,4 +294,4 @@ const partialStyle = (mastery: string) => {
 };
 
 
-export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle, backgroundGradient };
+export { COLORS, NUMBERS, getRarityColor, getShadowColor, borderColor, itemStyle, masteryColor, masteryNumber, border, font, shadow, sellRarity, fullStyle, partialStyle, backgroundGradient, backgroundTransparency };

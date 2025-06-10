@@ -325,7 +325,6 @@ export class Game extends Scene {
         camera.setBounds(0, 0, CHUNK_SIZE, CHUNK_SIZE);
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
-
         
         // console.log(dimensions(), camera.worldView, "Dimensions");
         this.overlay = this.add.rectangle(0, 0, camera.worldView.width, camera.worldView.height, 0x000000, 1)

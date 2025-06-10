@@ -1,5 +1,8 @@
 import { Game, OVERLAY_BUFFER } from "../scenes/Game";
+
+const FADE_DURATION = 2000;
 type weather = "clear" | "fog" | "rain" | "snow" | "storm";
+
 export default class WeatherManager {
     private scene: Game;
     private rainParticles: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -19,11 +22,11 @@ export default class WeatherManager {
     };
 
     private createFog() {
-        this.fogOverlay = this.scene.add.rectangle(0, 0, this.scene.cameras.main.width * 2, this.scene.cameras.main.height * 2, 0x888888, 0.3);
+        this.fogOverlay = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0x888888, 0.3);
         this.fogOverlay.setDepth(98);
         this.fogOverlay.setAlpha(0);
         this.fogOverlay.setVisible(false);
-        this.fogOverlay.setScrollFactor(0);
+        // this.fogOverlay.setScrollFactor(1);
     }
 ;
     private createLightning() {
@@ -32,14 +35,8 @@ export default class WeatherManager {
         this.lightningFlash.setAlpha(0);
     };
 
-    private createRain() {
-        const drop = this.scene.make.graphics({ x: 0, y: 0 });
-        drop.fillStyle(0xffffff, 1);
-        drop.fillRect(0, 0, 2, 10);
-        drop.generateTexture("rainDrop", 2, 10);
-        drop.destroy();
-
-        this.rainParticles = this.scene.add.particles(0, 0, 'rainDrop', {
+    private rainSetting() {
+        return {
             x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
             y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
             lifespan: { min: 500, max: 1500 },
@@ -49,7 +46,31 @@ export default class WeatherManager {
             speedY: { min: 35, max: 75 },
             blendMode: 'ADD',
             visible: false
-        });
+        };
+    };
+
+    private snowSetting () {
+        return {
+            x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
+            y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            lifespan: { min: 2000, max: 4000 },
+            speedY: { min: 20, max: 40 },
+            scale: { start: 0.5, end: 0 },
+            quantity: 3,
+            frequency: 100,
+            blendMode: "ADD",
+            visible: false    
+        };
+    };
+
+    private createRain() {
+        const drop = this.scene.make.graphics({ x: 0, y: 0 });
+        drop.fillStyle(0xffffff, 1);
+        drop.fillRect(0, 0, 2, 10);
+        drop.generateTexture("rainDrop", 2, 10);
+        drop.destroy();
+
+        this.rainParticles = this.scene.add.particles(0, 0, 'rainDrop', this.rainSetting());
         this.rainParticles.setScrollFactor(0).setDepth(100).stop();
     };
 
@@ -60,17 +81,7 @@ export default class WeatherManager {
         flake.generateTexture("snowFlake", 8, 8);
         flake.destroy();
 
-        this.snowParticles = this.scene.add.particles(0, 0, "snowFlake", {
-            x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
-            y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
-            lifespan: { min: 2000, max: 4000 },
-            speedY: { min: 20, max: 40 },
-            scale: { start: 0.5, end: 0 },
-            quantity: 3,
-            frequency: 100,
-            blendMode: "ADD",
-            visible: false    
-        });
+        this.snowParticles = this.scene.add.particles(0, 0, "snowFlake", this.snowSetting());
         this.snowParticles.setScrollFactor(0).setDepth(100).stop();
     };
 
@@ -86,7 +97,7 @@ export default class WeatherManager {
             yoyo: true,
             onComplete: () => {
                 this.scene.time.delayedCall(Phaser.Math.Between(200, 500), () => {
-                    this.scene.sound.play('thunder', { volume: this.scene.hud.settings.volume });
+                    this.scene.sound.play("thunder", { volume: this.scene.hud.settings.volume });
                 });
             }
         });
@@ -96,7 +107,7 @@ export default class WeatherManager {
         this.scene.tweens.add({
             targets: obj,
             alpha: 0,
-            duration: 2000,
+            duration: FADE_DURATION,
             ease: "Sine.easeInOut",
             onComplete: () => {
                 obj.setActive(false).setVisible(false); 
@@ -110,25 +121,25 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        this.setWeather("fog");
+        // this.setWeather("rain");
         this.scene.time.addEvent({
             delay: 60000,
             loop: true,
             callback: () => {
                 const roll = Phaser.Math.Between(0, 100);
-                if (roll > 75) {
+                if (roll > 60) { // 40% Clear
                     this.setWeather("clear");
-                // } else if (roll > 60) {
-                //     this.setWeather("fog");
-                } else if (roll > 50) {
+                } else if (roll > 50) { // 10% Fog
+                    this.setWeather("fog");
+                } else if (roll > 40) { // 20% Rain
                     this.setWeather("rain");
-                } else if (roll > 25) {
+                } else if (roll > 20) { // 10% Snow
                     this.setWeather("snow");
-                } else {
+                } else { // 20% Storm
                     this.setWeather("storm");
                 };
             },
-        })
+        });
     };
 
     public setWeather(type: weather) {
@@ -149,47 +160,35 @@ export default class WeatherManager {
         };
         switch (type) {
             case "fog":
-                // const { width, height, x, y } = this.scene.cameras.main.worldView;
-                // this.fogOverlay.width = width + OVERLAY_BUFFER;
-                // this.fogOverlay.height = height + OVERLAY_BUFFER;
-                // this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
-                this.fogOverlay.setAlpha(0).setVisible(true);
+                this.fogOverlay.setAlpha(0.5).setVisible(true);
                 this.scene.tweens.add({ 
                     targets: this.fogOverlay, 
                     alpha: 1, 
-                    duration: 2000, 
+                    duration: 6000,
                     yoyo: true, 
-                    repeat: 30,
-                    onRepeat: () => {
+                    repeat: 10,
+                    onUpdate: () => {
+                        if (this.scene.frameCount % 12 !== 0) return;
                         const { width, height, x, y } = this.scene.cameras.main.worldView;
-                        console.log(width, height, x, y, "onRepeat Triggering");
-                        // this.fogOverlay.width = width + OVERLAY_BUFFER;
-                        // this.fogOverlay.height = height + OVERLAY_BUFFER;
-                        // this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);        
-                    } 
+                        this.fogOverlay.width = width + OVERLAY_BUFFER;
+                        this.fogOverlay.height = height + OVERLAY_BUFFER;
+                        this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);    
+                    }
                 });
                 break;
             case 'rain':
-                this.rainParticles.setAlpha(0).setActive(true).setVisible(true).start();
-                this.scene.tweens.add({
-                    targets: this.rainParticles,
-                    alpha: 1,
-                    duration: 2000
-                });
+                this.rainParticles.setAlpha(0).setVisible(true).start();
+                this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_DURATION });
                 break;
             case 'snow':
-                this.snowParticles.setAlpha(0).setActive(true).setVisible(true).start();
-                this.scene.tweens.add({
-                    targets: this.snowParticles,
-                    alpha: 1,
-                    duration: 2000
-                });
+                this.snowParticles.setAlpha(0).setVisible(true).start();
+                this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_DURATION });
                 break;
             case "storm":
-                this.rainParticles.setAlpha(0).setActive(true).setVisible(true).start();
-                this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: 2000 });
+                this.rainParticles.setAlpha(0).setVisible(true).start();
+                this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_DURATION });
                 this.lightningTimer = this.scene.time.addEvent({
-                    delay: Phaser.Math.Between(5000, 15000),
+                    delay: Phaser.Math.Between(5000, 10000),
                     loop: true,
                     callback: () => this.triggerLightningFlash()
                 });

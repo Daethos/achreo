@@ -28,7 +28,6 @@ import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
-import { useResizeListener } from "../../utility/dimensions";
 import WeatherManager from "../matter/Weather";
 
 export const CHUNK_SIZE = 4096;
@@ -36,8 +35,7 @@ const DISTANCE_CLOSE = 640000;
 const DISTANCE_MID = 1440000;
 const DISTANCE_FAR = 2560000;
 const TILE_SIZE = 32;
-export const OVERLAY_BUFFER = 24;
-const dimensions = useResizeListener();
+export const OVERLAY_BUFFER = 64;
 
 interface ChunkData {
     key: string;
@@ -772,7 +770,7 @@ export class Game extends Scene {
         return combatText;
     };
 
-    private cleanUp = (): void => {
+    cleanUp = (): void => {
         EventBus.off("combat");
         EventBus.off("enemyLootDrop");
         EventBus.off("minimap");

@@ -30,7 +30,6 @@ export default class WeatherManager {
         this.fogOverlay.setDepth(98);
         this.fogOverlay.setAlpha(0);
         this.fogOverlay.setVisible(false);
-        // this.fogOverlay.setScrollFactor(1);
         const fogClouds = this.scene.make.graphics({ x: 0, y: 0 });
         fogClouds.fillStyle(0xffffff, 0.1);
         fogClouds.fillEllipse(64, 64, 128, 64);
@@ -38,7 +37,7 @@ export default class WeatherManager {
         fogClouds.destroy();
 
         this.fogParticles = this.scene.add.particles(0, 0, "fogClouds", this.fogSetting());
-        this.fogParticles.setScrollFactor(0).setDepth(100).stop();
+        this.fogParticles.setScrollFactor(1).setDepth(100).stop();
     };
 ;
     private createLightning() {
@@ -47,10 +46,13 @@ export default class WeatherManager {
         this.lightningFlash.setAlpha(0);
     };
 
+
     private fogSetting() {
         return {
             x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
             y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            follow: this.scene.player,
+            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
             lifespan: { min: 5000, max: 75000 },
             quantity: 1,
             frequency: 3000,
@@ -60,6 +62,11 @@ export default class WeatherManager {
             speedX: { min: 5, max: 15 },
             speedY: { min: -1, max: 1 },
             blendMode: "NORMAL",
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                type: "random",
+                quantity: 5,
+            },
             visible: false
         };
     };
@@ -68,12 +75,19 @@ export default class WeatherManager {
         return {
             x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
             y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            follow: this.scene.player,
+            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
             lifespan: { min: 500, max: 1500 },
             accelerationY: { min: 50, max: 100 },
             scale: { start: 0.6, end: 0 },
             quantity: 5,
             speedY: { min: 35, max: 75 },
             blendMode: "ADD",
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                type: "random",
+                quantity: 5,
+            },
             visible: false
         };
     };
@@ -82,12 +96,19 @@ export default class WeatherManager {
         return {
             x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
             y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            follow: this.scene.player,
+            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
             lifespan: { min: 2000, max: 4000 },
             speedY: { min: 20, max: 40 },
             scale: { start: 0.5, end: 0 },
             quantity: 3,
             frequency: 100,
             blendMode: "ADD",
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                type: "random",
+                quantity: 5,
+            },
             visible: false    
         };
     };
@@ -100,7 +121,7 @@ export default class WeatherManager {
         drop.destroy();
 
         this.rainParticles = this.scene.add.particles(0, 0, "rainDrop", this.rainSetting());
-        this.rainParticles.setScrollFactor(0).setDepth(100).stop();
+        this.rainParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private createSnow() {
@@ -111,7 +132,7 @@ export default class WeatherManager {
         flake.destroy();
 
         this.snowParticles = this.scene.add.particles(0, 0, "snowFlake", this.snowSetting());
-        this.snowParticles.setScrollFactor(0).setDepth(100).stop();
+        this.snowParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private setupFog(start: number, end: number, color: number) {
@@ -181,7 +202,7 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        // this.setWeather("stormy");
+        // this.setWeather("foggy");
         this.scene.time.addEvent({
             delay: WEATHER_DURATION,
             loop: true,

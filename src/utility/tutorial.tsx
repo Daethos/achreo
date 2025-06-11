@@ -313,7 +313,7 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                         Equipment can be clicked for more information]</span>
                 </p>
             </div>}
-            {tutorial() === "deity" && <div 
+            {tutorial() === "deity" && <div class="deity-type"
                 style={{ position: "absolute", height: "100%", width: "100%", background: "rgba(0, 0, 0, 1)", display: "inline-flex", overflow: "scroll", "scrollbar-width": "none" }}>
                 <Typewriter stringText={deity} styling={{ "overflow-y": "auto", "scrollbar-width": "none", "text-align" : "center" }} performAction={performAction} />
             </div>}

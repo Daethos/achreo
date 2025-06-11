@@ -189,7 +189,12 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         element.setAttribute("onclick", `handleButton("${functionName}")`);
     };
     function setupScrollObserver(containerSelector: any) {
-        const container = document.querySelector(containerSelector);
+        let container = document.querySelector(containerSelector);
+
+        if (!container) {
+            console.log("Container doesn't exist");
+            container = document.querySelector(".deity-type");
+        };
 
         const observer = new MutationObserver(() => {
             if (scrolling()) return;

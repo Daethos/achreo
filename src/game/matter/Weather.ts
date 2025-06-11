@@ -4,7 +4,7 @@ const FADE_IN = 2050;
 const FADE_OUT = 2000;
 const OSCILLATE = 10;
 const WEATHER_DURATION = 60000;
-type weather = "clear" | "foggy" | "raining" | "snowing" | "stormy";
+type weather = "clear" | "foggy" | "foggy rain" | "foggy snow" | "raining" | "snowing" | "stormy" | "thundersnow";
 
 export default class WeatherManager {
     private scene: Game;
@@ -53,10 +53,10 @@ export default class WeatherManager {
             y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
             follow: this.scene.player,
             followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
-            lifespan: { min: 5000, max: 75000 },
+            lifespan: { min: 5000, max: 10000 },
             quantity: 1,
-            frequency: 3000,
-            maxParticles: 20,
+            frequency: 1500,
+            // maxParticles: 40,
             scale: { start: 0.5, end: 1 },
             alpha: { start: 0.5, end: 0 },
             speedX: { min: 5, max: 15 },
@@ -202,7 +202,7 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        // this.setWeather("foggy");
+        // this.setWeather("thundersnow");
         this.scene.time.addEvent({
             delay: WEATHER_DURATION,
             loop: true,
@@ -210,14 +210,20 @@ export default class WeatherManager {
                 const roll = Phaser.Math.Between(0, 100);
                 if (roll > 60) { // 40% Clear
                     this.setWeather("clear");
-                } else if (roll > 50) { // 10% Fog
+                } else if (roll > 52) { // 8% Fog
                     this.setWeather("foggy");
-                } else if (roll > 40) { // 20% Rain
+                } else if (roll > 44) { // 8% Foggy Rain
+                    this.setWeather("foggy rain");
+                } else if (roll > 36) { // 8% Foggy Snow
+                    this.setWeather("foggy snow");
+                } else if (roll > 28) { // 8% Rain                    
                     this.setWeather("raining");
-                } else if (roll > 20) { // 10% Snow
+                } else if (roll > 20) { // 8% Snow
                     this.setWeather("snowing");
-                } else { // 20% Storm
-                    this.setWeather("stormy");
+                } else if (roll > 10) { // 10% Stormy
+                    this.setWeather("snowing");
+                } else { // 10% Thundersnow
+                    this.setWeather("thundersnow");
                 };
             },
         });
@@ -228,6 +234,16 @@ export default class WeatherManager {
         switch (this.currentWeather) {
             case "foggy":
                 this.fadeOut(this.fogParticles);
+                this.fadeOut(this.fogOverlay);
+                break;
+            case "foggy rain":
+                this.fadeOut(this.fogParticles);
+                this.fadeOut(this.rainParticles);
+                this.fadeOut(this.fogOverlay);
+                break;
+            case "foggy snow":
+                this.fadeOut(this.fogParticles);
+                this.fadeOut(this.snowParticles);
                 this.fadeOut(this.fogOverlay);
                 break;
             case "raining":
@@ -242,6 +258,10 @@ export default class WeatherManager {
                 this.fadeOut(this.rainParticles);
                 this.fadeOut(this.fogOverlay);
                 break;
+            case "thundersnow":
+                this.fadeOut(this.snowParticles);
+                this.fadeOut(this.fogOverlay);
+                break;
         };
         this.scene.time.delayedCall(FADE_IN, () => {
             switch (type) {
@@ -251,6 +271,20 @@ export default class WeatherManager {
                 case "foggy":
                     this.fogParticles.setAlpha(0).setVisible(true).start();
                     this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.35, 0.5, 0x888888);
+                    break;
+                case "foggy rain":
+                    this.fogParticles.setAlpha(0).setVisible(true).start();
+                    this.rainParticles.setAlpha(0).setVisible(true).start();
+                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
+                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.35, 0.5, 0x888888);
+                    break;
+                case "foggy snow":
+                    this.fogParticles.setAlpha(0).setVisible(true).start();
+                    this.snowParticles.setAlpha(0).setVisible(true).start();
+                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
+                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
                     this.setupFog(0.35, 0.5, 0x888888);
                     break;
                 case "raining":
@@ -266,6 +300,16 @@ export default class WeatherManager {
                 case "stormy":
                     this.rainParticles.setAlpha(0).setVisible(true).start();
                     this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.35, 0.5, 0x050a30);
+                    this.lightningTimer = this.scene.time.addEvent({
+                        delay: Phaser.Math.Between(5000, 10000),
+                        loop: true,
+                        callback: () => this.triggerLightningFlash()
+                    });
+                    break;
+                case "thundersnow":
+                    this.snowParticles.setAlpha(0).setVisible(true).start();
+                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
                     this.setupFog(0.35, 0.5, 0x050a30);
                     this.lightningTimer = this.scene.time.addEvent({
                         delay: Phaser.Math.Between(5000, 10000),

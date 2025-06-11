@@ -1,6 +1,9 @@
 import { Game, OVERLAY_BUFFER } from "../scenes/Game";
 
-const FADE_DURATION = 2000;
+const FADE_IN = 2050;
+const FADE_OUT = 2000;
+const OSCILLATE = 10;
+const WEATHER_DURATION = 60000;
 type weather = "clear" | "foggy" | "raining" | "snowing" | "stormy";
 
 export default class WeatherManager {
@@ -70,7 +73,7 @@ export default class WeatherManager {
             scale: { start: 0.6, end: 0 },
             quantity: 5,
             speedY: { min: 35, max: 75 },
-            blendMode: 'ADD',
+            blendMode: "ADD",
             visible: false
         };
     };
@@ -96,7 +99,7 @@ export default class WeatherManager {
         drop.generateTexture("rainDrop", 2, 10);
         drop.destroy();
 
-        this.rainParticles = this.scene.add.particles(0, 0, 'rainDrop', this.rainSetting());
+        this.rainParticles = this.scene.add.particles(0, 0, "rainDrop", this.rainSetting());
         this.rainParticles.setScrollFactor(0).setDepth(100).stop();
     };
 
@@ -111,11 +114,34 @@ export default class WeatherManager {
         this.snowParticles.setScrollFactor(0).setDepth(100).stop();
     };
 
+    private setupFog(start: number, end: number, color: number) {
+        this.fogOverlay.setVisible(true).setFillStyle(color); // setAlpha(start).
+        this.scene.tweens.chain({
+            targets: this.fogOverlay,
+            tweens: [
+                {
+                    alpha: end,
+                    duration: WEATHER_DURATION / OSCILLATE,
+                    onUpdate: () => this.updateOverlay(this.fogOverlay, true)
+                },
+                {
+                    alpha: start,
+                    duration: WEATHER_DURATION / OSCILLATE,
+                    onUpdate: () => this.updateOverlay(this.fogOverlay, true)
+                },
+                {
+                    alpha: { from: start, to: end },
+                    duration: WEATHER_DURATION / OSCILLATE,
+                    yoyo: true,
+                    repeat: OSCILLATE - 2,
+                    onUpdate: () => this.updateOverlay(this.fogOverlay, true)
+                }
+            ]
+        });
+    };
+
     private triggerLightningFlash() {
-        const { width, height, x, y } = this.scene.cameras.main.worldView;
-        this.lightningFlash.width = width + OVERLAY_BUFFER;
-        this.lightningFlash.height = height + OVERLAY_BUFFER;
-        this.lightningFlash.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
+        this.updateOverlay(this.lightningFlash);
         this.scene.tweens.add({
             targets: this.lightningFlash,
             alpha: { from: 0, to: 0.8 },
@@ -129,11 +155,19 @@ export default class WeatherManager {
         });
     };
 
+    private updateOverlay(obj: Phaser.GameObjects.Rectangle, frameCheck: boolean = false) {
+        if (frameCheck && this.scene.frameCount % 6 !== 0) return;
+        const { width, height, x, y } = this.scene.cameras.main.worldView;
+        obj.width = width + OVERLAY_BUFFER;
+        obj.height = height + OVERLAY_BUFFER;
+        obj.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
+    };
+
     private fadeOut(obj: Phaser.GameObjects.Particles.ParticleEmitter | Phaser.GameObjects.Rectangle) {
         this.scene.tweens.add({
             targets: obj,
             alpha: 0,
-            duration: FADE_DURATION,
+            duration: FADE_OUT,
             ease: "Sine.easeInOut",
             onComplete: () => {
                 obj.setVisible(false); 
@@ -147,9 +181,9 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        this.setWeather("foggy");
+        // this.setWeather("stormy");
         this.scene.time.addEvent({
-            delay: 60000,
+            delay: WEATHER_DURATION,
             loop: true,
             callback: () => {
                 const roll = Phaser.Math.Between(0, 100);
@@ -172,8 +206,8 @@ export default class WeatherManager {
         if (this.currentWeather === type) return;
         switch (this.currentWeather) {
             case "foggy":
-                this.fadeOut(this.fogOverlay);
                 this.fadeOut(this.fogParticles);
+                this.fadeOut(this.fogOverlay);
                 break;
             case "raining":
                 this.fadeOut(this.rainParticles);
@@ -188,83 +222,30 @@ export default class WeatherManager {
                 this.fadeOut(this.fogOverlay);
                 break;
         };
-        this.scene.time.delayedCall(FADE_DURATION, () => {
+        this.scene.time.delayedCall(FADE_IN, () => {
             switch (type) {
+                case "clear":
+                    this.fadeOut(this.fogOverlay);
+                    break;
                 case "foggy":
                     this.fogParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_DURATION });
-                    this.fogOverlay.setAlpha(0.35).setVisible(true).setFillStyle(0x888888);
-                    this.scene.tweens.add({ 
-                        targets: this.fogOverlay, 
-                        alpha: 0.5,
-                        duration: 6000,
-                        yoyo: true, 
-                        repeat: 10,
-                        onUpdate: () => {
-                            if (this.scene.frameCount % 6 !== 0) return;
-                            const { width, height, x, y } = this.scene.cameras.main.worldView;
-                            this.fogOverlay.width = width + OVERLAY_BUFFER;
-                            this.fogOverlay.height = height + OVERLAY_BUFFER;
-                            this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);    
-                        }
-                    });
+                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.35, 0.5, 0x888888);
                     break;
-                case 'raining':
+                case "raining":
                     this.rainParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_DURATION });
-                    this.fogOverlay.setAlpha(0.2).setVisible(true).setFillStyle(0x6699CC);
-                    this.scene.tweens.add({ 
-                        targets: this.fogOverlay, 
-                        alpha: 0.3, 
-                        duration: 6000,
-                        yoyo: true, 
-                        repeat: 10,
-                        onUpdate: () => {
-                            if (this.scene.frameCount % 6 !== 0) return;
-                            const { width, height, x, y } = this.scene.cameras.main.worldView;
-                            this.fogOverlay.width = width + OVERLAY_BUFFER;
-                            this.fogOverlay.height = height + OVERLAY_BUFFER;
-                            this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);    
-                        }
-                    });
+                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.2, 0.3, 0x6699CC);
                     break;
-                case 'snowing':
+                case "snowing":
                     this.snowParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_DURATION });
-                    this.fogOverlay.setAlpha(0.3).setVisible(true).setFillStyle(0x38AEE6);
-                    this.scene.tweens.add({ 
-                        targets: this.fogOverlay, 
-                        alpha: 0.4,
-                        duration: 6000,
-                        yoyo: true, 
-                        repeat: 10,
-                        onUpdate: () => {
-                            if (this.scene.frameCount % 6 !== 0) return;
-                            const { width, height, x, y } = this.scene.cameras.main.worldView;
-                            this.fogOverlay.width = width + OVERLAY_BUFFER;
-                            this.fogOverlay.height = height + OVERLAY_BUFFER;
-                            this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);    
-                        }
-                    });
+                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.3, 0.4, 0x38AEE6);
                     break;
                 case "stormy":
                     this.rainParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_DURATION });
-                    this.fogOverlay.setAlpha(0.35).setVisible(true).setFillStyle(0x050a30);
-                    this.scene.tweens.add({ 
-                        targets: this.fogOverlay, 
-                        alpha: 0.5, 
-                        duration: 6000,
-                        yoyo: true, 
-                        repeat: 10,
-                        onUpdate: () => {
-                            if (this.scene.frameCount % 6 !== 0) return;
-                            const { width, height, x, y } = this.scene.cameras.main.worldView;
-                            this.fogOverlay.width = width + OVERLAY_BUFFER;
-                            this.fogOverlay.height = height + OVERLAY_BUFFER;
-                            this.fogOverlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);    
-                        }
-                    });
+                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                    this.setupFog(0.35, 0.5, 0x050a30);
                     this.lightningTimer = this.scene.time.addEvent({
                         delay: Phaser.Math.Between(5000, 10000),
                         loop: true,

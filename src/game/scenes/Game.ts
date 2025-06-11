@@ -145,22 +145,6 @@ export class Game extends Scene {
             this.player.setPosition(38, 72);
         };
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
-
-        // this.fog = this.make.renderTexture({
-        //     width: this.cameras.main.width,
-        //     height: this.cameras.main.height,
-        //     // add: true
-        // });
-        // this.fog.setDepth(98); // just below your overlay
-        // this.fog.setScrollFactor(0); // locks to screen
-
-        // Fill with darkness
-        // this.fog.fill(0x000000, 1);
-
-        // Create a reusable circle "brush" to erase
-        // this.fogBrush = this.make.graphics();
-        // this.fogBrush.fillStyle(0xffffff);
-        // this.fogBrush.fillCircle(0, 0, 64); // 128px diameter
         
         // this.matter.world.createDebugGraphic();
 
@@ -270,54 +254,6 @@ export class Game extends Scene {
         // map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
         //     this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
 
-        // Create a tiny vertical white line for raindrop
-        // const drop = this.make.graphics({ x: 0, y: 0 });
-        // drop.fillStyle(0xffffff, 1);
-        // drop.fillRect(0, 0, 2, 10); // 2px wide, 10px tall
-
-        // drop.generateTexture('rainDrop', 2, 10); // Save as texture
-        // drop.destroy(); // Clean up
-
-        // this.rainParticles = this.add.particles(0, 0, 'rainDrop', {
-        //     x: () => Phaser.Math.Between(0, this.cameras.main.width),
-        //     y: () => Phaser.Math.Between(0, this.cameras.main.height),
-        //     lifespan: {min:500, max:1500},
-        //     accelerationX: {min:2.5, max:7.5},
-        //     accelerationY: {min:50, max:100},
-        //     scale: {start: 0.6, end: 0},
-        //     frequency: 50,
-        //     quantity: 5,
-        //     speedX: {min:35, max:75},
-        //     speedY: {min:35, max:75},
-        //     reserve: 25,
-        //     blendMode: "ADD",
-        //     visible: true,
-        //     active: false
-        // });
-        // this.rainParticles.setScrollFactor(0); // Overlay effect
-        // this.rainParticles.setDepth(100);
-        // this.rainParticles.stop();
-        // // this.rainParticles.start();
-        
-        // this.time.addEvent({
-        //     delay: 6000,
-        //     loop: true,
-        //     callback: () => {
-        //         const change = Phaser.Math.Between(0, 100) > 50;
-        //         console.log(change, "Chance to change current activity");
-        //         if (!change) return;
-        //         if (!this.rainParticles.active) {
-        //             this.rainParticles.setActive(true);
-        //             this.rainParticles.setVisible(true);
-        //             this.rainParticles.start();
-        //         } else {
-        //             this.rainParticles.setVisible(false);
-        //             this.rainParticles.setActive(false);
-        //             this.rainParticles.stop();
-        //         };
-        //     }
-        // });
-
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions.camera.zoom || 0.8;
@@ -326,7 +262,6 @@ export class Game extends Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
         
-        // console.log(dimensions(), camera.worldView, "Dimensions");
         this.overlay = this.add.rectangle(0, 0, camera.worldView.width, camera.worldView.height, 0x000000, 1)
             .setDepth(99);
         this.weather = new WeatherManager(this);

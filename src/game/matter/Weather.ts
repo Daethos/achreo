@@ -46,24 +46,23 @@ export default class WeatherManager {
         this.lightningFlash.setAlpha(0);
     };
 
-
     private fogSetting() {
+        const { width, height} = this.scene.cameras.main;
         return {
-            x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
-            y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
+            followOffset: {x: -width * 0.625, y: -height * 0.5},
             lifespan: { min: 5000, max: 10000 },
             quantity: 1,
             frequency: 1500,
-            // maxParticles: 40,
             scale: { start: 0.5, end: 1 },
             alpha: { start: 0.5, end: 0 },
             speedX: { min: 5, max: 15 },
             speedY: { min: -1, max: 1 },
             blendMode: "NORMAL",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
                 type: "random",
                 quantity: 5,
             },
@@ -72,11 +71,12 @@ export default class WeatherManager {
     };
 
     private rainSetting() {
+        const { width, height} = this.scene.cameras.main;
         return {
-            x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
-            y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
+            followOffset: {x: -width * 0.625, y: -height * 0.5},
             lifespan: { min: 500, max: 1500 },
             accelerationY: { min: 50, max: 100 },
             scale: { start: 0.6, end: 0 },
@@ -84,7 +84,7 @@ export default class WeatherManager {
             speedY: { min: 35, max: 75 },
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
                 type: "random",
                 quantity: 5,
             },
@@ -93,11 +93,12 @@ export default class WeatherManager {
     };
 
     private snowSetting () {
+        const { width, height} = this.scene.cameras.main;
         return {
-            x: () => Phaser.Math.Between(0, this.scene.cameras.main.width),
-            y: () => Phaser.Math.Between(0, this.scene.cameras.main.height),
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -this.scene.cameras.main.width * 0.5, y: -this.scene.cameras.main.height * 0.5},
+            followOffset: {x: -width * 0.625, y: -height * 0.5},
             lifespan: { min: 2000, max: 4000 },
             speedY: { min: 20, max: 40 },
             scale: { start: 0.5, end: 0 },
@@ -105,11 +106,11 @@ export default class WeatherManager {
             frequency: 100,
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, this.scene.cameras.main.width, this.scene.cameras.main.height), // dummy, will override
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
                 type: "random",
                 quantity: 5,
             },
-            visible: false    
+            visible: false
         };
     };
 
@@ -202,7 +203,7 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        // this.setWeather("thundersnow");
+        this.setWeather("raining");
         this.scene.time.addEvent({
             delay: WEATHER_DURATION,
             loop: true,

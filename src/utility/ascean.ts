@@ -108,7 +108,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
     //     preference: 'Leather-Cloth',
     // },{
         name: "Lacheo of the Seyr",
-        description: 'Daethic Inquisitor. On Mission.',
+        description: 'Daethic Inquisitor. On Mission',
         sex: 'Man',
         origin: "Notheo",
         constitution: 12,
@@ -122,7 +122,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         preference: 'Leather-Cloth',
     },{
         name: "Maegaretha Raiq",
-        description: 'Daughter of the Eclipse.',
+        description: 'Daughter of the Eclipse',
         sex: 'Woman',
         origin: "Notheo",
         constitution: 12,
@@ -192,7 +192,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         preference: 'Leather-Cloth',
     },{
         name: 'Raulent Ilios',
-        description: "Blood Cloak. Sword of Soverain Myelle.",
+        description: "Blood Cloak. Sword of Soverain Myelle",
         sex: 'Man',
         origin: 'Nothos',
         constitution: 12,

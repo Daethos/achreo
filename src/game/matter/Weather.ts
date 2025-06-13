@@ -4,12 +4,66 @@ const FADE_IN = 2050;
 const FADE_OUT = 2000;
 const OSCILLATE = 10;
 const WEATHER_DURATION = 60000;
-type weather = "clear" | "foggy" | "foggy rain" | "foggy snow" | "raining" | "snowing" | "stormy" | "thundersnow";
+type weather = "clear" | "ashfall" | "celestial" | "foggy" | "foggy rain" | "foggy snow" | "rain" | "sandstorm" | "snowfall" | "thunderstorm" | "thundersnow";
+const weatherChain: { [key in weather]: weather[] } = { // EVentually { type: weather; weight: number } = { type: "clear", weight: 1 }
+    clear: ["clear", "celestial", "foggy", "rain", "snowfall"],
+    ashfall: ["clear", "ashfall", "thundersnow"],
+    celestial: ["clear", "ashfall", "sandstorm", "thundersnow", "thunderstorm"],
+    foggy: ["clear", "foggy rain", "foggy snow"],
+    "foggy rain": ["clear", "foggy", "rain", "foggy rain", "foggy snow", "thunderstorm"],
+    "foggy snow": ["clear", "foggy", "foggy rain", "foggy snow", "snowfall", "thundersnow"],
+    "rain": ["clear", "foggy rain", "rain", "snowfall", "thunderstorm"],
+    sandstorm: ["clear", "sandstorm", "thunderstorm"],
+    snowfall: ["clear", "foggy snow", "rain", "snowfall", "thundersnow"],
+    thunderstorm: ["clear", "rain", "thundersnow", "thunderstorm"],
+    thundersnow: ["clear", "snowfall", "thundersnow", "thunderstorm"]
+};
+const phrase = {
+    clear: "clear skies",
+    ashfall: "ashfall",
+    celestial: "celestial rainfall",
+    foggy: "a thick fog",
+    "foggy rain": "foggy rainfall",
+    "foggy snow": "foggy snowfall",
+    "rain": "rainfall",
+    sandstorm: "a sandstorm",
+    snowfall: "snowfall",
+    thunderstorm: "a thunderstorm",
+    thundersnow: "thundersnow"
+};
+type WeightedTransition = { type: weather; weight: number };
+
+// const weatherTransitions: { [key in weather]: WeightedTransition[] } = {
+//   clear: [
+//     { type: "clear", weight: 2 },
+//     { type: "celestial", weight: 1 },
+//     { type: "foggy", weight: 2 },
+//     { type: "rain", weight: 2 },
+//     { type: "snowfall", weight: 1 }
+//   ],
+//   rain: [
+//     { type: "clear", weight: 1 },
+//     { type: "foggy rain", weight: 3 },
+//     { type: "rain", weight: 2 },
+//     { type: "snowfall", weight: 1 },
+//     { type: "thunderstorm", weight: 1 },
+//     { type: "thundersnow", weight: 1 }
+//   ],
+//   foggy: [
+//     { type: "clear", weight: 1 },
+//     { type: "foggy", weight: 1 },
+//     { type: "foggy rain", weight: 2 },
+//     { type: "foggy snow", weight: 1 }
+//   ],
+// };
 
 export default class WeatherManager {
     private scene: Game;
+    private ashParticles: Phaser.GameObjects.Particles.ParticleEmitter;
+    private celestialParticles: Phaser.GameObjects.Particles.ParticleEmitter;
     private fogParticles: Phaser.GameObjects.Particles.ParticleEmitter;
     private rainParticles: Phaser.GameObjects.Particles.ParticleEmitter;
+    private sandParticles: Phaser.GameObjects.Particles.ParticleEmitter;
     private snowParticles: Phaser.GameObjects.Particles.ParticleEmitter;
     private fogOverlay: Phaser.GameObjects.Rectangle;
     private lightningFlash: Phaser.GameObjects.Rectangle;
@@ -18,11 +72,36 @@ export default class WeatherManager {
 
     constructor(scene: Game) {
         this.scene = scene;
+        this.createAshfall();
+        this.createCelestialRain();
         this.createRain();
         this.createFog();
         this.createLightning();
+        this.createSandstorm();
         this.createSnow();
         this.setupWeatherCycle();
+    };
+
+    private createAshfall() {
+        const ash = this.scene.make.graphics({ x: 0, y: 0 });
+        ash.fillStyle(0x333333, 0.4); // Dark gray
+        ash.fillRect(0, 0, 2, 4);
+        ash.generateTexture("ashFlake", 2, 4);
+        ash.destroy();
+
+        this.ashParticles = this.scene.add.particles(0, 0, "ashFlake", this.ashfallSetting());
+        this.ashParticles.setScrollFactor(1).setDepth(100).stop();
+    };
+
+    private createCelestialRain() {
+        const glow = this.scene.make.graphics({ x: 0, y: 0 });
+        glow.fillStyle(0xffffff, 1);
+        glow.fillCircle(4, 4, 4);
+        glow.generateTexture("celestialDrop", 8, 8);
+        glow.destroy();
+
+        this.celestialParticles = this.scene.add.particles(0, 0, "celestialDrop", this.celestialRainSetting());
+        this.celestialParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private createFog() {
@@ -44,6 +123,61 @@ export default class WeatherManager {
         this.lightningFlash = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0xffffff, 1);
         this.lightningFlash.setDepth(101);
         this.lightningFlash.setAlpha(0);
+    };
+
+    private createSandstorm() {
+        const dust = this.scene.make.graphics({ x: 0, y: 0 });
+        dust.fillStyle(0xDEB887, 0.5);
+        dust.fillCircle(4, 4, 4);
+        dust.generateTexture("sandDust", 8, 8);
+        dust.destroy();
+
+        this.sandParticles = this.scene.add.particles(0, 0, "sandDust", this.sandstormSetting());
+        this.sandParticles.setScrollFactor(1).setDepth(100).stop();
+    };
+
+    private ashfallSetting() {
+        const { width, height } = this.scene.cameras.main;
+        return {
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
+            follow: this.scene.player,
+            followOffset: { x: -width * 0.625, y: -height * 0.5 },
+            lifespan: { min: 3000, max: 5000 },
+            speedY: { min: 10, max: 20 },
+            scale: { start: 1, end: 0.1 },
+            alpha: { start: 1, end: 0 },
+            quantity: 4,
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
+                type: "random",
+                quantity: 4,
+            },
+            visible: false
+        };
+    };
+
+    private celestialRainSetting() {
+        const { width, height } = this.scene.cameras.main;
+        return {
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
+            follow: this.scene.player,
+            followOffset: { x: -width * 0.625, y: -height * 0.5 },
+            lifespan: { min: 2000, max: 4000 },
+            speedY: { min: 20, max: 40 },
+            scale: { start: 0.8, end: 0.2 },
+            alpha: { start: 0.6, end: 0 },
+            tint: [0x6f42c1, 0x42a5f5, 0x9c27b0],
+            quantity: 4,
+            blendMode: "ADD",
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
+                type: "random",
+                quantity: 4,
+            },
+            visible: false
+        };
     };
 
     private fogSetting() {
@@ -87,6 +221,29 @@ export default class WeatherManager {
                 source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
                 type: "random",
                 quantity: 5,
+            },
+            visible: false
+        };
+    };
+
+    private sandstormSetting() {
+        const { width, height } = this.scene.cameras.main;
+        return {
+            x: () => Phaser.Math.Between(0, width),
+            y: () => Phaser.Math.Between(0, height),
+            follow: this.scene.player,
+            followOffset: { x: -width * 0.625, y: -height * 0.5 },
+            lifespan: { min: 1500, max: 3000 },
+            speedX: { min: 100, max: 200 },
+            speedY: { min: -10, max: 10 },
+            scale: { start: 0.6, end: 0 },
+            alpha: { start: 0.5, end: 0 },
+            blendMode: "NORMAL",
+            quantity: 6,
+            emitZone: {
+                source: new Phaser.Geom.Rectangle(0, 0, width * 1.25, height),
+                type: "random",
+                quantity: 6,
             },
             visible: false
         };
@@ -185,6 +342,11 @@ export default class WeatherManager {
         obj.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
     };
 
+    private fadeIn(emitter: Phaser.GameObjects.Particles.ParticleEmitter) {
+        emitter.setAlpha(0).setVisible(true).start();
+        this.scene.tweens.add({ targets: emitter, alpha: 1, duration: FADE_IN });
+    };
+
     private fadeOut(obj: Phaser.GameObjects.Particles.ParticleEmitter | Phaser.GameObjects.Rectangle) {
         this.scene.tweens.add({
             targets: obj,
@@ -202,30 +364,52 @@ export default class WeatherManager {
         };
     };
 
+    // private getNextWeather(current: weather): weather {
+    //     const options = weatherTransitions[current];
+    //     if (!options || options.length === 0) return current;
+
+    //     const totalWeight = options.reduce((sum, opt) => sum + opt.weight, 0);
+    //     const roll = Phaser.Math.Between(1, totalWeight);
+
+    //     let accumulated = 0;
+    //     for (const opt of options) {
+    //         accumulated += opt.weight;
+    //         if (roll <= accumulated) return opt.type;
+    //     };
+
+    //     return current;
+    // };
+
+
     private setupWeatherCycle() {
-        this.setWeather("raining");
+        // this.setWeather("celestial");
         this.scene.time.addEvent({
             delay: WEATHER_DURATION,
             loop: true,
             callback: () => {
-                const roll = Phaser.Math.Between(0, 100);
-                if (roll > 60) { // 40% Clear
-                    this.setWeather("clear");
-                } else if (roll > 52) { // 8% Fog
-                    this.setWeather("foggy");
-                } else if (roll > 44) { // 8% Foggy Rain
-                    this.setWeather("foggy rain");
-                } else if (roll > 36) { // 8% Foggy Snow
-                    this.setWeather("foggy snow");
-                } else if (roll > 28) { // 8% Rain                    
-                    this.setWeather("raining");
-                } else if (roll > 20) { // 8% Snow
-                    this.setWeather("snowing");
-                } else if (roll > 10) { // 10% Stormy
-                    this.setWeather("snowing");
-                } else { // 10% Thundersnow
-                    this.setWeather("thundersnow");
-                };
+                const choices = weatherChain[this.currentWeather];
+                const choice = choices[Math.floor(Math.random() * choices.length)];
+                this.setWeather(choice);
+                // const roll = Phaser.Math.Between(0, 100);
+                // if (roll > 60) { // 32% Clear
+                //     this.setWeather("clear");
+                // } else if (roll > 56) { // 4% Celestial
+                //     this.setWeather("celestial");
+                // } else if (roll > 48) { // 8% Fog
+                //     this.setWeather("foggy");
+                // } else if (roll > 40) { // 8% Foggy Rain
+                //     this.setWeather("foggy rain");
+                // } else if (roll > 32) { // 8% Foggy Snow
+                //     this.setWeather("foggy snow");
+                // } else if (roll > 24) { // 8% Rain                    
+                //     this.setWeather("rain");
+                // } else if (roll > 16) { // 8% Snow
+                //     this.setWeather("snowfall");
+                // } else if (roll > 8) { // 8% Thundersnow
+                //     this.setWeather("thundersnow");
+                // } else { // 8% Thunderstorm
+                //     this.setWeather("thunderstorm");
+                // };
             },
         });
     };
@@ -233,6 +417,14 @@ export default class WeatherManager {
     public setWeather(type: weather) {
         if (this.currentWeather === type) return;
         switch (this.currentWeather) {
+            case "ashfall":
+                this.fadeOut(this.ashParticles);
+                this.fadeOut(this.fogOverlay);
+                break;
+            case "celestial":
+                this.fadeOut(this.celestialParticles);
+                this.fadeOut(this.fogOverlay);
+                break;
             case "foggy":
                 this.fadeOut(this.fogParticles);
                 this.fadeOut(this.fogOverlay);
@@ -247,18 +439,16 @@ export default class WeatherManager {
                 this.fadeOut(this.snowParticles);
                 this.fadeOut(this.fogOverlay);
                 break;
-            case "raining":
+            case "rain":
+            case "thunderstorm":
                 this.fadeOut(this.rainParticles);
                 this.fadeOut(this.fogOverlay);
                 break;
-            case "snowing":
-                this.fadeOut(this.snowParticles);
+            case "sandstorm":
+                this.fadeOut(this.sandParticles);
                 this.fadeOut(this.fogOverlay);
                 break;
-            case "stormy":
-                this.fadeOut(this.rainParticles);
-                this.fadeOut(this.fogOverlay);
-                break;
+            case "snowfall":
             case "thundersnow":
                 this.fadeOut(this.snowParticles);
                 this.fadeOut(this.fogOverlay);
@@ -266,41 +456,42 @@ export default class WeatherManager {
         };
         this.scene.time.delayedCall(FADE_IN, () => {
             switch (type) {
-                case "clear":
-                    this.fadeOut(this.fogOverlay);
+                case "ashfall":
+                    this.fadeIn(this.ashParticles);
+                    this.setupFog(0.2, 0.3, 0x666666);
+                    break;
+                case "celestial":
+                    this.fadeIn(this.celestialParticles);
+                    this.setupFog(0.2, 0.3, 0x00FFFF);
                     break;
                 case "foggy":
-                    this.fogParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
+                    this.fadeIn(this.fogParticles);
                     this.setupFog(0.35, 0.5, 0x888888);
                     break;
                 case "foggy rain":
-                    this.fogParticles.setAlpha(0).setVisible(true).start();
-                    this.rainParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
-                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                    this.fadeIn(this.rainParticles);
+                    this.fadeIn(this.fogParticles);
                     this.setupFog(0.35, 0.5, 0x888888);
                     break;
                 case "foggy snow":
-                    this.fogParticles.setAlpha(0).setVisible(true).start();
-                    this.snowParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.fogParticles, alpha: 1, duration: FADE_IN });
-                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
+                    this.fadeIn(this.fogParticles);
+                    this.fadeIn(this.snowParticles);
                     this.setupFog(0.35, 0.5, 0x888888);
                     break;
-                case "raining":
-                    this.rainParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                case "rain":
+                    this.fadeIn(this.rainParticles);
                     this.setupFog(0.2, 0.3, 0x6699CC);
                     break;
-                case "snowing":
-                    this.snowParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
+                case "sandstorm":
+                    this.fadeIn(this.sandParticles);
+                    this.setupFog(0.2, 0.3, 0xDEB887);
+                    break;
+                case "snowfall":
+                    this.fadeIn(this.snowParticles);
                     this.setupFog(0.3, 0.4, 0x38AEE6);
                     break;
-                case "stormy":
-                    this.rainParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.rainParticles, alpha: 1, duration: FADE_IN });
+                case "thundersnow":
+                    this.fadeIn(this.snowParticles);
                     this.setupFog(0.35, 0.5, 0x050a30);
                     this.lightningTimer = this.scene.time.addEvent({
                         delay: Phaser.Math.Between(5000, 10000),
@@ -308,9 +499,8 @@ export default class WeatherManager {
                         callback: () => this.triggerLightningFlash()
                     });
                     break;
-                case "thundersnow":
-                    this.snowParticles.setAlpha(0).setVisible(true).start();
-                    this.scene.tweens.add({ targets: this.snowParticles, alpha: 1, duration: FADE_IN });
+                case "thunderstorm":
+                    this.fadeIn(this.rainParticles);
                     this.setupFog(0.35, 0.5, 0x050a30);
                     this.lightningTimer = this.scene.time.addEvent({
                         delay: Phaser.Math.Between(5000, 10000),
@@ -320,7 +510,7 @@ export default class WeatherManager {
                     break;
             };
         }, undefined, this);
-        this.scene.hud.logger.log(`Console: The weather has changed from ${this.currentWeather} to ${type}.`);
+        this.scene.hud.logger.log(`Console: The weather has changed from ${this.currentWeather} to ${phrase[type]}.`);
         this.currentWeather = type;
     };
 };

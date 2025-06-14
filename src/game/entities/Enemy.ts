@@ -842,7 +842,7 @@ export default class Enemy extends Entity {
                 if (other.gameObjectB && other.gameObjectB.name === "player") {
                     this.isValidRushEnemy(other.gameObjectB);
                     this.touching.push(other.gameObjectB);
-                    this.scene.player.touching.push(this);
+                    // this.scene.player.touching.push(this);
                     EventBus.emit("add-touching", this.enemyID);
                     if (this.ascean && !other.gameObjectB.isStealthing && this.enemyAggressionCheck()) {
                         this.createCombat(other, "start");
@@ -875,7 +875,7 @@ export default class Enemy extends Entity {
                 if (this.isDeleting) return;
                 if (other.gameObjectB && other.gameObjectB.name === "player") {
                     this.touching = this.touching.filter((target) => target !== other.gameObjectB);
-                    this.scene.player.touching = this.scene.player.touching.filter((touch: Enemy) => touch.enemyID !== this.enemyID);
+                    // this.scene.player.touching = this.scene.player.touching.filter((touch: Enemy) => touch.enemyID !== this.enemyID);
                     EventBus.emit("remove-touching", this.enemyID);
                     if (this.playerStatusCheck(other.gameObjectB) && !this.isAggressive && !this.inComputerCombat && this.health > 0) {
                         if (this.healthbar) this.healthbar.setVisible(false);

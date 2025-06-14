@@ -31,6 +31,6 @@ export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.002) { 
 export function walk(scene: any, duration = 32, intensity = 0.000675) { // 32 || 0.0003
     scene.cameras.main.shake(duration, intensity);
 };
-export function vibrate(duration: number[] | number = 128) {
+export function vibrate(duration: number[] | number = 192) {
     if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(duration);
 };

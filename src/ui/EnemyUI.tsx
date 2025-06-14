@@ -58,7 +58,6 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
             return 0.8;
         };
     }; // style={{ "z-index": 99 }}
-    // <Portal></Portal>
     return <Portal>
         <div class="modal">
             <div class="border center" style={{ 

@@ -934,13 +934,23 @@ export default class Player extends Entity {
             if (newEnemy) this.rushedEnemies.push(enemy);
         };
     };
-    isValidTouching = (other: any): boolean => other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body") && other.gameObjectB.ascean;
+    isValidTouching = (other: any): boolean => other.gameObjectB && (other.bodyB.label === "legs" || other.bodyB.label === "body"); // && other.gameObjectB.ascean;
     
+    checkTouch = (entity: any, add: boolean) => {
+        if (entity.bodyB.label !== "body") return;
+        if (add) {
+            this.touching.push(entity.gameObjectB);
+        } else {
+            this.touching = this.touching.filter(obj => obj !== entity.gameObjectB);
+        };
+    };
+
     checkEnemyCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
+                this.checkTouch(other, true);
                 this.isValidRushEnemy(other.gameObjectB);
                 if (this.isValidEnemyCollision(other)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
@@ -978,6 +988,7 @@ export default class Player extends Entity {
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB?.isDeleting) return;
+                this.checkTouch(other, false);
                 if (this.isValidEnemyCollision(other) && !this.touching.length) {
                     this.actionAvailable = false;
                     this.triggeredActionAvailable = undefined;

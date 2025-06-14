@@ -656,7 +656,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             // if (target) this.hitBoxCheck(target as Enemy);
             if (this.touching.length > 0) {
-                for (let i = 0; i < this.touching.length; i++) {
+                for (let i = 0; i < this.touching.length; i++) {    
                     if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
                 };
             };
@@ -671,7 +671,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
     checkBow = (type: string) => type === "Bow" || type === "Greatbow";
+
     checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);
+    
     checkMeleeOrRanged = (weapon: Equipment) => {
         if (weapon === undefined) return;
         this.isRanged = weapon?.attackType === "Magic" || weapon?.type === "Bow" || weapon?.type === "Greatbow";
@@ -687,6 +689,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
         this.hasBow = this.checkBow(weapon.type);
     };
+
     checkPlayerResist = () => {
         if ((this.scene as Player_Scene).player.isShirking) {
             this.isCasting = false;
@@ -732,7 +735,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hitBoxCheck = (enemy: Enemy) => {
-        if (!enemy || !enemy.body || !enemy.body.position || enemy?.health <= 0) return; // enemy.isDefeated === true
+        if (!enemy || !enemy.body || !enemy.body.position || enemy.health <= 0) return; // enemy.isDefeated === true
         const weaponBounds = this.weaponHitbox.getBounds();
         const enemyBounds = enemy.getBounds();
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {
@@ -818,7 +821,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === (FRAME_COUNT.THRUST_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
+            if (this.frameCount === FRAME_COUNT.THRUST_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
         } else if (this.isRolling) {
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
@@ -837,7 +840,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                 };
             };
-            if (this.frameCount === (FRAME_COUNT.ROLL_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
+            if (this.frameCount === FRAME_COUNT.ROLL_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
         } else if (this.isAttacking) {
             const configKey = this.hasBow ? "bow" : "noBow";
@@ -871,7 +874,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === (FRAME_COUNT.ATTACK_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
+            if (this.frameCount === FRAME_COUNT.ATTACK_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
         } else if (this.isPosturing) {
             const configKey = this.hasBow ? "bow" : "noBow";
@@ -904,7 +907,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === (FRAME_COUNT.POSTURE_SUCCESS) && !this.isRanged) this.checkActionSuccess(entity, target);
+            if (this.frameCount === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
         } else if (this.movingVertical()) {
             if (!this.flipX) {

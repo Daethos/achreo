@@ -804,7 +804,7 @@ export class Gauntlet extends Phaser.Scene {
         };
         for (let i = 0; i < this.party.length; i++) {
             // if (this.party[i].isDefeated && !this.party[i].isDeleting) this.partyDestroy(this.party[i]);
-            if (this.party[i].isDeleting || !this.party[i].active) return;
+            if (this.party[i].isDeleting || !this.party[i].active) continue;
             this.party[i].update(delta);
         };
         const camera = this.cameras.main;

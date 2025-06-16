@@ -97,7 +97,7 @@ export class Arena extends Phaser.Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
-    
+
     constructor (view?: string) {
         const key = view || "Arena";
         super(key);
@@ -737,7 +737,7 @@ export class Arena extends Phaser.Scene {
         };
         for (let i = 0; i < this.party.length; i++) {
             // if (this.party[i].isDefeated && !this.party[i].isDeleting) this.partyDestroy(this.party[i]);
-            if (this.party[i].isDeleting || !this.party[i].active) return;
+            if (this.party[i].isDeleting || !this.party[i].active) continue;
             this.party[i].update(delta);
         };
         const camera = this.cameras.main;

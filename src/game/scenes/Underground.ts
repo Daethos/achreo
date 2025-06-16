@@ -716,7 +716,7 @@ export class Underground extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.party.length; i++) {
-            if (this.party[i].isDeleting) return;
+            if (this.party[i].isDeleting) continue;
             this.party[i].update(delta);
         };
         for (let i = 0; i < this.enemies.length; i++) {

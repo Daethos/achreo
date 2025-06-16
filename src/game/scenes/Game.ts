@@ -313,7 +313,6 @@ export class Game extends Scene {
 
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
-        console.log("Starting Scene!");
     };
 
     private updateChunks() {
@@ -321,7 +320,7 @@ export class Game extends Scene {
 
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
         
-        // Calculate 3x3 grid of chunks around player
+        // // Calculate 3x3 grid of chunks around player
         // const chunksToLoad: Array<{x: number, y: number}> = [];
         
         // for (let dx = -1; dx <= 1; dx++) {
@@ -362,16 +361,13 @@ export class Game extends Scene {
         this.updateCameraBounds();
         
         this.isTransitioning = false;
-        console.log(`%c Updated Chunks. Player at Chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
+        // console.log(`%c Updated Chunks. Player at Chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
     };
 
     private loadChunk(key: string, offsetX: number, offsetY: number): void {
         const chunkKey = `${offsetX},${offsetY}`;
+        if (this.loadedChunks.has(chunkKey)) return;
         
-        if (this.loadedChunks.has(chunkKey)) {
-            console.log(`%c ${chunkKey} has already been loaded.`, "color:red");
-            return;
-        };
         this.player.setActive(false);
         // console.log(`Loading chunk: ${chunkKey}`);
 
@@ -383,16 +379,13 @@ export class Game extends Scene {
         const campfire = map.addTilesetImage("CampFireB", "CampFireB", TILE_SIZE, TILE_SIZE, 0, 0);
         const light = map.addTilesetImage("light1A", "light1A", TILE_SIZE, TILE_SIZE, 0, 0);
         
-        // console.log(`Setting Up Layers: ${chunkKey}`);
         const layers = this.createMapLayers(map, offsetX, offsetY, { camps, decorations, tileSet, campfire, light });
         this.setupLayerPhysics(layers.collisionLayers);
         this.setupDecorationLayers(layers.decorationLayers);
         const navMesh = this.setupNavMesh(map, offsetX, offsetY);
-        // const overlay = this.createChunkOverlay(offsetX, offsetY);
 
         (this.sys as any).animatedTiles.init(map);
 
-        // console.log(`Loading Entities for Chunk: ${chunkKey}`);
         const entities = this.spawnChunkEntities(map, offsetX, offsetY);
 
         const chunkData: ChunkData = {
@@ -403,20 +396,10 @@ export class Game extends Scene {
             map,
             entities,
             navMesh,
-            // overlay
         };
 
-        // console.log(`Setting Chunk: ${chunkKey}`);
         this.loadedChunks.set(chunkKey, chunkData);
         
-        // Debug marker
-        // this.add.rectangle(offsetX + 25, offsetY + 25, 50, 50, 0x00ff00).setDepth(100);
-        // this.add.text(offsetX + 80, offsetY + 30, `Chunk ${offsetX},${offsetY}`, { 
-        //     color: '#00ff00',
-        //     fontSize: '24px'
-        // }).setDepth(100);
-
-        // this.matter.world.setBounds(offsetX, offsetY, CHUNK_SIZE, CHUNK_SIZE);
         // console.log(`Successfully Loaded Chunk ${chunkKey}`);
         this.player.setActive(true);
     };
@@ -528,7 +511,7 @@ export class Game extends Scene {
         const chunkData = this.loadedChunks.get(chunkKey);
         if (!chunkData) return;
 
-        console.log(`Unloading Chunk: ${chunkKey}`);
+        // console.log(`Unloading Chunk: ${chunkKey}`);
 
         // Clean up entities
         chunkData.entities.enemies.forEach(e => {
@@ -1240,10 +1223,6 @@ export class Game extends Scene {
         this.overlay.width = width + OVERLAY_BUFFER;
         this.overlay.height = height + OVERLAY_BUFFER;
         this.overlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
-        // const playerX = this.player.x - this.cameras.main.worldView.x;
-        // const playerY = this.player.y - this.cameras.main.worldView.y;
-
-        // this.fog.erase(this.fogBrush, playerX, playerY);
     };
 
     startCombatTimer = (): void => {

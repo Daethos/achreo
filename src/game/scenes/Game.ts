@@ -320,7 +320,7 @@ export class Game extends Scene {
 
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
         
-        // // Calculate 3x3 grid of chunks around player
+        // // 3x3 grid of chunks around player
         // const chunksToLoad: Array<{x: number, y: number}> = [];
         
         // for (let dx = -1; dx <= 1; dx++) {
@@ -360,16 +360,16 @@ export class Game extends Scene {
         // Update camera bounds to encompass loaded area
         this.updateCameraBounds();
         
-        this.isTransitioning = false;
         // console.log(`%c Updated Chunks. Player at Chunk (${this.playerChunkX}, ${this.playerChunkY})`, "color:gold");
+        this.isTransitioning = false;
     };
 
     private loadChunk(key: string, offsetX: number, offsetY: number): void {
         const chunkKey = `${offsetX},${offsetY}`;
         if (this.loadedChunks.has(chunkKey)) return;
         
-        this.player.setActive(false);
         // console.log(`Loading chunk: ${chunkKey}`);
+        this.player.setActive(false);
 
         const map = this.make.tilemap({ key });
 

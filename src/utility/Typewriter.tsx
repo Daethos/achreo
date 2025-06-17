@@ -192,7 +192,6 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         let container = document.querySelector(containerSelector);
 
         if (!container) {
-            console.log("Container doesn't exist");
             container = document.querySelector(".deity-type");
         };
 

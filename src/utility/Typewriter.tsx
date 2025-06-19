@@ -179,27 +179,27 @@ export default function Typewriter({ stringText, styling, performAction, main }:
     let typed: Typed | null = null;
     let isTyping = false; // Flag to track typing status
     (window as any).handleButton = (button: string) => performAction(button);
+
     const applyStyles = (element: any): void => {
         for (const [property, value] of Object.entries(styleMap[element?.attributes?.class?.value])) {
             element.style[property as any] = value;
         };
     };
+
     const applyEventListeners = (element: HTMLElement): void => {
         const functionName = element?.attributes?.["data-function-name" as any]?.value;
         element.setAttribute("onclick", `handleButton("${functionName}")`);
     };
+    
     function setupScrollObserver(containerSelector: any) {
         let container = document.querySelector(containerSelector);
-
-        if (!container) {
-            container = document.querySelector(".deity-type");
-        };
-
+        if (!container) container = document.querySelector(".deity-type");
+        
         const observer = new MutationObserver(() => {
             if (scrolling()) return;
             container.scrollTo({
                 top: container.scrollHeight,
-                behavior: 'smooth'
+                behavior: "smooth"
             });
         });
         
@@ -243,11 +243,11 @@ export default function Typewriter({ stringText, styling, performAction, main }:
             typeSpeed: 30,
             backSpeed: 0,
             showCursor: false,
-            onBegin: () => (isTyping = true), // Set flag when typing starts
+            onBegin: () => (isTyping = true),
             onComplete: () => {
                 if (main) EventBus.emit("typing-complete");
                 isTyping = false;
-            }, // Clear flag when typing completes
+            }
         };
         typed = new Typed(el(), typedContent);
         return () => (typed as Typed).destroy();
@@ -265,7 +265,7 @@ export default function Typewriter({ stringText, styling, performAction, main }:
 
     onMount(() => {
         const container = document.querySelector(".dialog-window");
-        container?.addEventListener('scroll', () => {
+        container?.addEventListener("scroll", () => {
             clearTimeout(scrollTimeout);
             setScrolling(true);
             scrollTimeout = setTimeout(() => {
@@ -280,7 +280,5 @@ export default function Typewriter({ stringText, styling, performAction, main }:
         });
     });
 
-    return (
-        <div id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>
-    );
+    return <div id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>;
 };

@@ -1,4 +1,4 @@
-import { Accessor, createSignal, For, onMount, Setter, Show } from "solid-js";
+import { Accessor, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";
@@ -22,13 +22,17 @@ export const LEVEL_SELECTOR = {
     6: { prev: 4, next: 8 },
     8: { prev: 6, next: 8 },
 };
+
+const ARENA = "ARENA";
+const GAUNTLET = "GAUNTLET";
+const UNDERGROUND = "UNDERGROUND";
+
 type NODE = {
     [key: string]: {
         key: string;
         next: string;
         prev: string;
     };
-    // [key: string]: any;
 };
 const SCENE_SWITCH: NODE = {
     ARENA: {
@@ -70,53 +74,64 @@ function getLevel(ascean: Accessor<Ascean>): number {
 
 export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
     const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: getLevel(ascean), mastery: "constitution", id: "" });
-    const [switchScene, setSwitchScene] = createSignal<any>("ARENA");
+    const [switchScene, setSwitchScene] = createSignal<any>(ARENA);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
     const [opponents, setOpponents] = createSignal<number>(1);
     const [party, setParty] = createSignal<any>(instance?.game?.registry.get("party"));
 
     function createArena() {
-        EventBus.emit("alert", { header: "Duel Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
-        // const p = instance?.game?.registry.get("party");
-        // setParty(p);
-        const enemies = fetchArena(arena().enemies);
-        let multiplier = 0;
-        for (let i = 0; i < arena().enemies.length; i++) {
-            multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
+        let enemies, multiplier = 0, wager;
+        switch (switchScene()) {
+            case ARENA:
+            case UNDERGROUND:
+                enemies = fetchArena(arena().enemies);
+                for (let i = 0; i < arena().enemies.length; i++) {
+                    multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
+                };
+                if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
+                if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
+                multiplier /= 2;
+                wager = { ...arena().wager, multiplier };
+                if (switchScene() === ARENA) {
+                    EventBus.emit("alert", { header: "Arena Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside the Arena. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                    EventBus.emit("set-wager-arena", {wager, enemies, team: arena().party});
+                } else {
+                    EventBus.emit("alert", { header: "Underground Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside these walls. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                    EventBus.emit("set-wager-underground", {wager, enemies});
+                };
+                setArena({ ...arena(), show: false });
+                if (!base) EventBus.emit("outside-press", "dialog");
+                break;
+            case GAUNTLET:
+                if (GAUNTLET_SWITCH[arena().gauntlet.type].key !== "Selected") randomizedGauntlet();
+                enemies = fetchArena(arena().enemies);
+                for (let i = 0; i < arena().enemies.length; i++) {
+                    multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
+                };
+                if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
+                if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
+                multiplier *= arena().gauntlet.round;
+                multiplier /= 2;
+                wager = { ...arena().wager, multiplier };
+                
+                EventBus.emit("alert", { header: "Gauntlet Commencing", body: `The Ancient Eulex has begun. You have chosen to run the gauntlet. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                EventBus.emit("set-wager-gauntlet", {enemies, team: arena().party, wager});
+                setArena({ ...arena(), show: false });
+                if (!base) EventBus.emit("outside-press", "dialog");
+                break;
         };
-        if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
-        if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
-        multiplier /= 2;
-        const wager = { ...arena().wager, multiplier };
-        if (switchScene()) {
-            EventBus.emit("set-wager-arena", {wager, enemies, team: arena().party});
-        } else {
-            EventBus.emit("set-wager-underground", {wager, enemies});
-        };
-        setArena({ ...arena(), show: false });
-        if (!base) EventBus.emit("outside-press", "dialog");
     };
 
-    function createGauntlet() {
-        EventBus.emit("alert", { header: "Gauntlet Constructing", body: `The Ancient Eulex has begun. You have chosen to run the gauntlet. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
-        if (GAUNTLET_SWITCH[arena().gauntlet.type].key !== "Selected") {
-            randomizedGauntlet();
+    function mapSetting() {
+        switch (switchScene()) {
+            case ARENA:
+                return settings().difficulty.arena ? "Arena [Manual]" : "Arena [Computer]";
+            case GAUNTLET:
+                return settings().difficulty.arena ? "Gauntlet [Manual]" : "Gauntlet [Computer]"
+            case UNDERGROUND:
+                return "Underground [Manual]";
         };
-        const enemies = fetchArena(arena().enemies);
-        let multiplier = 0;
-        for (let i = 0; i < arena().enemies.length; i++) {
-            multiplier += ((arena().enemies[i].level ** 2) / (ascean().level ** 2));
-        };
-        if (arena().enemies.length > 1) multiplier *= ((arena().enemies.length - 1) * 1.25);
-        if (party().length > 0 && arena().party) multiplier *= 1 / (1 + party().length);
-        multiplier *= arena().gauntlet.round;
-        multiplier /= 2;
-        const wager = { ...arena().wager, multiplier };
-
-        EventBus.emit("set-wager-gauntlet", {enemies, team: arena().party, wager});
-        setArena({ ...arena(), show: false });
-        if (!base) EventBus.emit("outside-press", "dialog");
     };
 
     function changeGauntletMode() {
@@ -124,7 +139,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
     };
 
     function checkGauntletReady(): boolean {
-        if (switchScene() !== "GAUNTLET") return false;    
+        if (switchScene() !== GAUNTLET) return false;    
         return arena().gauntlet.type !== "SELECTED" ? true : arena().enemies.length > 0;
     };
 
@@ -183,14 +198,15 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const partyAvailable = party().length > 0;
         let team: boolean = false;
         if (partyAvailable) {
-            team = switchScene() !== SCENE_SWITCH.UNDERGROUND.key && partyAvailable ? !arena().party : partyAvailable;
+            team = switchScene() !== UNDERGROUND && partyAvailable ? !arena().party : partyAvailable;
         };
         setArena({...arena(), party: team});
     };
     function switchScenes() {
+        console.log(SCENE_SWITCH[switchScene()].next, "New Combat Scene");
         setSwitchScene(SCENE_SWITCH[switchScene()].next);
-        setArena({...arena(), map:SCENE_SWITCH[switchScene()].key});
-        if (switchScene() === SCENE_SWITCH.UNDERGROUND.key) checkTeam();
+        setArena({...arena(), map: SCENE_SWITCH[switchScene()].key});
+        if (switchScene() === UNDERGROUND) checkTeam();
     };
     function clearWager() {
         let silver = ascean().currency.silver, gold = ascean().currency.gold;
@@ -204,8 +220,15 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         const currency = rebalanceCurrency({ silver, gold });
         EventBus.emit("update-currency", currency);
         setArena({ ...arena(), enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, win: false, show: false, result: false });
-        if (switchScene() === "ARENA") EventBus.emit("switch-arena");
-        if (switchScene() === "GAUNTLET") EventBus.emit("switch-gauntlet");
+        switch (switchScene()) {
+            case ARENA:
+                EventBus.emit("switch-arena");
+                break;
+            case GAUNTLET:
+                EventBus.emit("switch-gauntlet");
+                break;
+            default: break;        
+        };
     };
 
     function getRebalance() {
@@ -226,25 +249,31 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
                         <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
                         {/* settings().difficulty.arena ? "Arena [Computer]" : */}
-                        <h1 style={{ margin: "8px 0" }} onClick={switchScenes}><span style={{ color: "#fdf6d8" }}>Map: </span>{switchScene() === "ARENA" ? !settings().difficulty.arena ? "Arena [Computer]" : "Arena [Manual]" : switchScene() === "GAUNTLET"  ? !settings().difficulty.arena ? "Gauntlet [Computer]" : "Gauntlet [Manual]" : "Underground [Manual]"}</h1>
-                        <Show when={switchScene() === "GAUNTLET"}><h1 onClick={changeGauntletMode} style={{ margin: "8px 0" }}>{GAUNTLET_SWITCH[arena().gauntlet.type].key}</h1></Show>
+                        <h1 style={{ margin: "8px 0" }} onClick={switchScenes}><span style={{ color: "#fdf6d8" }}>Map: </span>{mapSetting()}</h1>
+                        <Show when={switchScene() === GAUNTLET}><h1 onClick={changeGauntletMode} style={{ margin: "8px 0" }}>{GAUNTLET_SWITCH[arena().gauntlet.type].key}</h1></Show>
                         <p style={{ color: "gold", "font-size": "0.75em", "margin": "0" }}>Click on Maps and/or Opponents to Switch Between Options<br /> [Note]: Player AI is available only in the Arena. <br /> If you have a party, you cannot fight [Solo] in the Underground.</p>
                         <h1 ></h1>
-                        {(arena().enemies.length > 0 && switchScene() !== "GAUNTLET") && <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
-                        {checkGauntletReady() && <button class="highlight animate" onClick={createGauntlet} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>}
+                        <Switch>
+                            <Match when={arena().enemies.length > 0 && switchScene() !== GAUNTLET}>
+                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>
+                            </Match>
+                            <Match when={checkGauntletReady()}>
+                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>
+                            </Match>
+                        </Switch>
                         <For each={arena().enemies}>{(enemy) => {
                             return (
                                 <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
                             )
                         }}</For>
-                        <Show when={switchScene() === "GAUNTLET"}>
+                        <Show when={switchScene() === GAUNTLET}>
                             <div>
                                 Rounds: {arena().gauntlet.round === 11 ? "∞" : arena().gauntlet.round}
                                 <button class="highlight" onClick={() => setArena({ ...arena(), gauntlet: { ...arena().gauntlet, round: Math.max(1, arena().gauntlet.round - 1) } })}>-</button>
                                 <button class="highlight" onClick={() => setArena({ ...arena(), gauntlet: { ...arena().gauntlet, round: Math.min(11, arena().gauntlet.round + 1) } })}>+</button>
                             </div>
                         </Show>
-                        <Show when={switchScene() === "GAUNTLET" && arena().gauntlet.type !== "SELECTED"} fallback={
+                        <Show when={switchScene() === GAUNTLET && arena().gauntlet.type !== "SELECTED"} fallback={
                             <div>
                                 <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em" }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
                             </div>

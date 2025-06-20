@@ -1902,7 +1902,7 @@ export default class PlayerMachine {
         screenShake(this.scene);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.5,
+            zoom: this.scene.cameras.main.zoom * 1.25,
             ease: Phaser.Math.Easing.Elastic.InOut,
             duration: 750,
             yoyo: true
@@ -2124,7 +2124,7 @@ export default class PlayerMachine {
         screenShake(this.scene);
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.5,
+            zoom: this.scene.cameras.main.zoom * 1.25,
             ease: Phaser.Math.Easing.Quintic.InOut,
             duration: 750,
             yoyo: true
@@ -2273,7 +2273,6 @@ export default class PlayerMachine {
     onRushExit = () => {
         this.player.rushedEnemies = [];
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.RUSH, PLAYER.COOLDOWNS.SHORT);
-        
         this.player.checkTalentCost(States.RUSH, PLAYER.STAMINA.RUSH);
     };
 
@@ -2997,7 +2996,7 @@ export default class PlayerMachine {
     onShimmerEnter = () => {
         this.scene.tweens.add({
             targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.5,
+            zoom: this.scene.cameras.main.zoom * 1.25,
             ease: Phaser.Math.Easing.Quintic.InOut,
             duration: 750,
             yoyo: true

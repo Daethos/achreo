@@ -252,7 +252,7 @@ export default class Player extends Entity {
             screenShake(this.scene, 64);
             this.scene.tweens.add({
                 targets: this.scene.cameras.main,
-                zoom: this.scene.cameras.main.zoom * 2,
+                zoom: this.scene.cameras.main.zoom * 1.5,
                 ease: Phaser.Math.Easing.Elastic.InOut,
                 duration: 500,
                 yoyo: true
@@ -694,13 +694,13 @@ export default class Player extends Entity {
             duration: 300,
             yoyo: true
         });
-        this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.5,
-            ease: Phaser.Math.Easing.Quintic.InOut,
-            duration: 600,
-            yoyo: true
-        });
+        // this.scene.tweens.add({
+        //     targets: this.scene.cameras.main,
+        //     zoom: this.scene.cameras.main.zoom * 1.5,
+        //     ease: Phaser.Math.Easing.Quintic.InOut,
+        //     duration: 600,
+        //     yoyo: true
+        // });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),

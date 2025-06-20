@@ -1,4 +1,4 @@
-import { Accessor, Setter, createEffect, createSignal } from "solid-js";
+import { Accessor, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
 import { blessAscean, curseAscean } from "../assets/db/db";
 import { EventBus } from "../game/EventBus";
 import Typewriter from "./Typewriter";
@@ -97,7 +97,11 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
     function highestFaith() {
         const influences = [ascean().weaponOne.influences?.[0], ascean()?.weaponTwo.influences?.[0], ascean()?.weaponThree.influences?.[0], ascean()?.amulet.influences?.[0], ascean().trinket.influences?.[0]];
         const faithsCount = influences.reduce((acc: any, faith: any) => {
-            if (acc[faith]) { acc[faith]++; } else { acc[faith] = 1; };
+            if (acc[faith]) { 
+                acc[faith]++; 
+            } else { 
+                acc[faith] = 1; 
+            };
             return acc;
         }, {});
         const faithsArray = Object.entries(faithsCount).filter((faith: any) => faith[0] !== "");
@@ -154,173 +158,190 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
             console.warn(err.message);
         };
     };
+    const styling = {"border": "0.1em solid #fdf6d8", "font-size":"1.25em", "font-weight": 700};
     return (
         <div class="modal" style={{ background: tutorial() === "deity" ? "rgba(0, 0, 0, 1)" : "rgba(0, 0, 0, 0.75)", "z-index": 1000 }}>
-            {tutorial() === "boot" && <div>
-                <p class="cornerTL gold highlight" style={{ left: "0", top: "17.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                   Game HUD {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[This Displays your Name, Health, Stamina, Grace and Weapon <br />
-                        Click your name, weapon or something else to Display More Information]</span>
-                </p>
-                <p class="cornerTR gold highlight" style={{ right: "0", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Specials Actions {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Actions of an othernature that are available during combat. <br />
-                        These abilities are much more varied than physical actions, augmented by your mastery. <br /> From crowd control, damage, and healing, to moving enemies and yourself.]</span>
-                </p>
-                <p class="verticalBottom gold highlight" style={{ bottom: "10%", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Physical Actions {arrows.right} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Physical Actions that perform various attacks and movements. <br />
-                        Each action performs a similar but distinct behavior. <br /> Some range from full fledged attacks, to forms of evasion and movement.]</span>
-                </p>
-                <p class="middleRight gold highlight" style={{ right: "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Joystick (Aim) {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Manual Aim for Ranged Attacks. This grants a finer grain for projectiles. <br /> Certain specials must be manually aimed.]</span>
-                </p>
-                <p class="cornerBL gold highlight" style={{ bottom: "0", left: "1em", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Joystick (Movement) {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[This Joystick allows you to move your Character. <br /> Omnidirectional, and the main way you navigate this world.]</span>
-                </p>
-            </div>}
-            {tutorial() === "death" && <div>
-                <p class="cornerTL gold highlight" style={{ left: "0", top: "5em", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                   Your Health! {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[It"s 0 and Red. You may get used to seeing that, unfortunately.]</span>
-                </p>
-                <p class="verticalTop gold highlight" style={{ "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.left} Your Weapon? <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Perhaps it isn't your fault, it's simply the tool you possess. Do you have another? <br /> Don't forget its damage types and your prayers!]</span>
-                </p>
-                <p class="cornerTR gold highlight" style={{ top: "5em", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Specials Actions {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Perhaps there are too many buttons? Juggling five specials on top of physicals. Maybe just have one big one?]</span>
-                </p>
-                <p class="verticalBottom gold highlight" style={{ bottom: "0", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    So You Died (I'm Sorry) <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[At the moment, death isn't so bad. The enemies that were attacking you revert to a docile state (I hope). You can still travel and play with 0 health, although combat is inaccessible until you gain at least 1 health point back. You can drink your firewater flask in your inventory, or acquire the healing special action and cast it. Good luck!]</span>
-                </p>
-                <p class="middleRight gold highlight" style={{ "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Joystick (Aim) {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Manual Aim, Should I Even Bother? Is this absurd or reasonable? It seems like it works fine, and auto aim is the default.]</span>
-                </p>
-            </div>}
-            {tutorial() === "character" && <div>
-                <p class="cornerTR gold highlight" style={{ right: "12.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Cycle between character information {arrows.right}  <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[(Reputation) Your standing with other enemy factions, enabling other interactions, <br />
-                        (Quests) A log of your current quests you have accumulated from the various peoples of this world, <br />
-                        (Reputation) Your current standing with the various factions and peoples of this world that you may encounter along your journey, <br />
-                        (Skills) Your ability to wield a type of weapon, affecting crit, glance, and blind attacks, <br />
-                        (Statistics) display your combat history, like which prayer you hope for the most, and to whom,<br /> 
-                        (Talents) display the enhancement of your mastery's special actions, and how they may have been optimized,<br /> 
-                        (Traits) display percularities of your character, e.g. who you embody of the Ancients or Daethos]</span>
-                </p>
-                <p class="verticalBottom gold highlight" style={{ bottom: "0", left: "49%", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.up} Expanded Character Info <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Extra information about your character"s combat statistics. <br />
-                        Attributes can be Clicked for Expanded information]</span>
-                </p>
-                <p class="cornerBR gold highlight" style={{ bottom: "25%", right: "2%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }} onClick={() => exitTutorial()}>
-                    Reputation / Skills / Statistics / Traits {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>
-                        [Information pertaining to the above theme]</span>
-                </p>
-            </div>}
-            {tutorial() === "controls" && <div class="border superCenter">
-                This is the controls tutorial
-            </div>}
-            {tutorial() === "dialog" && <div class="border superCenter">
-                This is the dialog tutorial
-            </div>}
-            {tutorial() === "faith" && <div>
-                <p class="cornerBL gold highlight" style={{ bottom: "15%", left: "3%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.up} Blessing Display {arrows.up}<br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Displaying equipment to inspect their influence.]</span>
-                </p>
-                <p class="verticalTop gold highlight" style={{ left: "49%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.down} Deific Concerns {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Your conscious and othernatural connections with the deities of this world.]</span>
-                </p> 
-                <p class="cornerBR gold highlight" style={{ bottom: "10%", right: "3.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }} onClick={() => exitTutorial()}>
-                    {arrows.up} Deity Display {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Contains all the deities you may have heard about. <br /> Displays their favored and governed attribute.]</span>
-                </p>
-            </div>}
-            {tutorial() === "inventory" && <div>
-                <p class="cornerTR gold highlight" style={{ right: "20%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Click here to view your Equipment or Expanded Stats {arrows.right} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[When equipping gear, will allow you to see its real time changes to your character.]</span>
-                </p> 
-                <p class="cornerTR gold highlight" style={{ right: "0%", top: "10%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Firewater {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Replenishes Health.]</span>
-                </p> 
-                <p class="superCenter gold highlight" style={{ "font-weight": 700, border: "0.1em solid #fdf6d8", "left": "65%", "width": "50%" }}>
-                {arrows.down} Click an Inventory Item to Compare {arrows.right} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Clicking on an inventory item will compare it to the like item you have equipped. <br /> You May Remove and Destroy, Equip such Items if you Qualify, or even Upgrade! <br /> You can Inspect to switch Rings and Weapons for Specific Comparison.]</span>
-                </p>
-                <p class="cornerBR gold highlight" style={{ bottom: "10%", right: "1.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }} onClick={() => exitTutorial()}>
-                    Inventory Pouch {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Contains All the Loot You've Collected. <br /> Click an Item to Highlight it for Comparison. <br /> Double-Click Items to Swap and Reorganize Your Inventory.]</span>
-                </p>
-            </div>}
-            {tutorial() === "loot" && <div style={{ "z-index": 1000 }}>
-                <p class="superCenter gold highlight" style={{ top: "30%", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                   Loot Drops from Enemies and the Wild {arrows.down} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Scrollable container displaying equipment information and the option to pick it up <br />
-                        This will stay on the ground in the world if you don't pick it up.]</span>
-                </p>
-            </div>}
-            {tutorial() === "settings" && <div>
-                <p class="cornerTL gold highlight" style={{ left: "1%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    Click to switch game topics {arrows.right} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[This Information is Displayed in the Third Panel <br />
-                        (Actions) Physical Action Button Info <br />
-                        (Specials) Othernaturual Action Button Info <br />
-                        (Control) Button Mapping / Difficulty / Post Fx <br />
-                        (General) Game Information <br />
-                        (Inventory) How to Use the Inventory Panel <br />
-                        (Tactics) Weapon / Damage Type / Prayer Info]</span>
-                </p>
-                <p class="cornerTL gold highlight" style={{ left: "49%", top: "25%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8", transform: "translateX(-50%)" }}> 
-                    Click to Control Setting Type 
-                    {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>
-                        [Adjust and/or Change Gameplay Settings<br />
-                        (Actions) Remap Physical and Special Action Buttons<br />
-                        (Difficulty) Toggle Aim Assist (Auto-Manual)<br />
-                        (Post Fx) Enable and Adjust Visual Effects.<br />
-                        (UI) Change the Position and Scale of your UI.
-                        ]
-                    </span>
-                </p>
-                <p class="cornerBR gold highlight" style={{ bottom: "10%", right: "1.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.up} Displayed Game Information
-                    <br /> 
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Each topic displays extended information and <br /> sheds clarity on aspects of the game and gameplay]</span>
-                </p>
-            </div>}
-            {tutorial() === "views" && <div>
-                <p class="cornerTL gold highlight" style={{ left: "12.5%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                   {arrows.left} Click here to cycle between different overall views. <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[(Inventory) Displays All Your Loot, (Character) Displays Expanded Player Info, <br /> (Settings) Show Gameplay Information, (Personal) Shows General and Personal Deific Info]</span>
-                </p>
-                <p class="cornerTR gold highlight" style={{ top: "15%", right: "5%", "font-weight": 700, border: "0.1em solid #fdf6d8", width: "20%" }}>
-                    {arrows.up} Equipment / Player Stats {arrows.up} <br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Toggles your current equipment and your current statistics.]</span>
-                </p>
-                <p class="cornerBL gold highlight" style={{ bottom: "0", left: "1.25%", "font-size": "1em", "font-weight": 700, border: "0.1em solid #fdf6d8" }}>
-                    {arrows.up} Character Display {arrows.up}<br />
-                    <span class="super" style={{ color: "#fdf6d8" }}>[Displaying your name, health, equipment, and experience. <br />
-                        Equipment can be clicked for more information]</span>
-                </p>
-            </div>}
-            {tutorial() === "deity" && <div class="deity-type"
-                style={{ position: "absolute", height: "100%", width: "100%", background: "rgba(0, 0, 0, 1)", display: "inline-flex", overflow: "scroll", "scrollbar-width": "none" }}>
-                <Typewriter stringText={deity} styling={{ "overflow-y": "auto", "scrollbar-width": "none", "text-align" : "center" }} performAction={performAction} />
-            </div>}
-            {tutorial() !== "deity" && <button class="cornerBR gold highlight animate" style={{ bottom: "0", right: "0", "font-weight": 700 }} onClick={() => exitTutorial()}>
-                {arrows.right} Exit
-            </button> }
+            <Switch>
+                <Match when={tutorial() === "boot"}>
+                    <div>
+                        <p class="cornerTL gold highlight" style={{ ...styling, top: "17.5%" }}>
+                        Game HUD {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[This Displays your Name, Health, Stamina, Grace and Weapon <br />
+                                Click your name, weapon or something else to Display More Information]</span>
+                        </p>
+                        <p class="cornerTR gold highlight" style={{ ...styling }}>
+                            Specials Actions {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Actions of an othernature that are available during combat. <br />
+                                These abilities are much more varied than physical actions, augmented by your mastery. <br /> From crowd control, damage, and healing, to moving enemies and yourself.]</span>
+                        </p>
+                        <p class="verticalBottom gold highlight" style={{ ...styling, bottom: "10%" }}>
+                            Physical Actions {arrows.right} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Physical Actions that perform various attacks and movements. <br />
+                                Each action performs a similar but distinct behavior. <br /> Some range from full fledged attacks, to forms of evasion and movement.]</span>
+                        </p>
+                        <p class="middleRight gold highlight" style={{ ...styling }}>
+                            {arrows.down} Joystick (Aim) {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Manual Aim for Ranged Attacks. This grants a finer grain for projectiles. <br /> Certain specials must be manually aimed.]</span>
+                        </p>
+                        <p class="cornerBL gold highlight" style={{ ...styling }}>
+                            {arrows.up} Joystick (Movement) {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[This Joystick allows you to move your Character. <br /> Omnidirectional, and the main way you navigate this world.]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "death"}>
+                    <div>
+                        <p class="cornerTL gold highlight" style={{ ...styling, left: "0", top: "5em" }}>
+                        Your Health! {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[It"s 0 and Red. You may get used to seeing that, unfortunately.]</span>
+                        </p>
+                        <p class="verticalTop gold highlight" style={{ ...styling }}>
+                            {arrows.left} Your Weapon? <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Perhaps it isn't your fault, it's simply the tool you possess. Do you have another? <br /> Don't forget its damage types and your prayers!]</span>
+                        </p>
+                        <p class="cornerTR gold highlight" style={{ ...styling, top: "5em" }}>
+                            Specials Actions {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Perhaps there are too many buttons? Juggling five specials on top of physicals. Maybe just have one big one?]</span>
+                        </p>
+                        <p class="verticalBottom gold highlight" style={{ ...styling, bottom: "0" }}>
+                            So You Died (I'm Sorry) <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[At the moment, death isn't so bad. The enemies that were attacking you revert to a docile state (I hope). You can still travel and play with 0 health, although combat is inaccessible until you gain at least 1 health point back. You can drink your firewater flask in your inventory, or acquire the healing special action and cast it. Good luck!]</span>
+                        </p>
+                        <p class="middleRight gold highlight" style={{ ...styling }}>
+                            Joystick (Aim) {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Manual Aim, Should I Even Bother? Is this absurd or reasonable? It seems like it works fine, and auto aim is the default.]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "character"}>
+                    <div>
+                        <p class="cornerTR gold highlight" style={{ ...styling, right: "12.5%" }}>
+                            Cycle between character information {arrows.right}  <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[(Reputation) Your standing with other enemy factions, enabling other interactions, <br />
+                                (Quests) A log of your current quests you have accumulated from the various peoples of this world, <br />
+                                (Reputation) Your current standing with the various factions and peoples of this world that you may encounter along your journey, <br />
+                                (Skills) Your ability to wield a type of weapon, affecting crit, glance, and blind attacks, <br />
+                                (Statistics) display your combat history, like which prayer you hope for the most, and to whom,<br /> 
+                                (Talents) display the enhancement of your mastery's special actions, and how they may have been optimized,<br /> 
+                                (Traits) display percularities of your character, e.g. who you embody of the Ancients or Daethos]</span>
+                        </p>
+                        <p class="verticalBottom gold highlight" style={{ ...styling, bottom: "0", left: "49%" }}>
+                            {arrows.up} Expanded Character Info <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Extra information about your character"s combat statistics. <br />
+                                Click on various aspects for Expanded information]</span>
+                        </p>
+                        <p class="cornerBR gold highlight" style={{ ...styling, bottom: "25%", right: "2%" }} onClick={() => exitTutorial()}>
+                            Reputation / Skills / Statistics / Traits {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>
+                                [Information pertaining to the above theme]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "faith"}>
+                    <div>
+                        <p class="cornerBL gold highlight" style={{ ...styling, bottom: "15%", left: "3%" }}>
+                            {arrows.up} Blessing Display {arrows.up}<br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Displaying equipment to inspect their influence.]</span>
+                        </p>
+                        <p class="verticalTop gold highlight" style={{ ...styling, left: "49%" }}>
+                            {arrows.down} Deific Concerns {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Your conscious and othernatural connections with the deities of this world.]</span>
+                        </p> 
+                        <p class="cornerBR gold highlight" style={{ ...styling, bottom: "10%", right: "2%" }} onClick={() => exitTutorial()}>
+                            {arrows.up} Deity Display {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Contains all the deities you may have heard about. <br /> Displays their favored and governed attribute.]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "inventory"}>
+                    <div>
+                        <p class="cornerTR gold highlight" style={{ ...styling, right: "20%" }}>
+                            Click here to view your Equipment or Expanded Stats {arrows.right} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[When equipping gear, will allow you to see its real time changes to your character.]</span>
+                        </p> 
+                        <p class="cornerTR gold highlight" style={{ ...styling, right: "0%", top: "10%" }}>
+                            Firewater {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Replenishes Health.]</span>
+                        </p> 
+                        <p class="superCenter gold highlight" style={{ border: "0.1em solid #fdf6d8", "left": "65%", "width": "50%" }}>
+                        {arrows.down} Click an Inventory Item to Compare {arrows.right} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Clicking on an inventory item will compare it to the like item you have equipped. <br /> You May Remove and Destroy, Equip such Items if you Qualify, or even Upgrade! <br /> You can Inspect to switch Rings and Weapons for Specific Comparison.]</span>
+                        </p>
+                        <p class="cornerBR gold highlight" style={{ ...styling, bottom: "10%", right: "1.5%" }} onClick={() => exitTutorial()}>
+                            Inventory Pouch {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Contains All the Loot You've Collected. <br /> Click an Item to Highlight it for Comparison. <br /> Double-Click Items to Swap and Reorganize Your Inventory.]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "loot"}>
+                    <div style={{ "z-index": 1000 }}>
+                        <p class="superCenter gold highlight" style={{ ...styling, top: "30%" }}>
+                        Loot Drops from Enemies and the Wild {arrows.down} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Scrollable container displaying equipment information and the option to pick it up <br />
+                                This will stay on the ground in the world if you don't pick it up.]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "settings"}>
+                    <div>
+                        <p class="cornerTL gold highlight" style={{ ...styling, left: "1%" }}>
+                            Click to switch game topics {arrows.right} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[This Information is Displayed in the Third Panel <br />
+                                (Actions) Physical Action Button Info <br />
+                                (Specials) Othernaturual Action Button Info <br />
+                                (Control) Button Mapping / Difficulty / Post Fx <br />
+                                (General) Game Information <br />
+                                (Inventory) How to Use the Inventory Panel <br />
+                                (Tactics) Weapon / Damage Type / Prayer Info]</span>
+                        </p>
+                        <p class="cornerTL gold highlight" style={{ ...styling, left: "49%", top: "25%", transform: "translateX(-50%)" }}> 
+                            Click to Control Setting Type 
+                            {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>
+                                [Adjust and/or Change Gameplay Settings<br />
+                                (Actions) Remap Physical and Special Action Buttons<br />
+                                (Difficulty) Toggle Aim Assist (Auto-Manual)<br />
+                                (Post Fx) Enable and Adjust Visual Effects.<br />
+                                (UI) Change the Position and Scale of your UI.
+                                ]
+                            </span>
+                        </p>
+                        <p class="cornerBR gold highlight" style={{ ...styling, bottom: "10%", right: "1%" }}>
+                            {arrows.up} Displayed Game Information
+                            <br /> 
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Each topic displays extended information and <br /> sheds clarity on aspects of the game and gameplay]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "views"}>
+                    <div>
+                        <p class="cornerTL gold highlight" style={{ ...styling, left: "12.5%" }}>
+                        {arrows.left} Click here to cycle between different overall views. <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[(Inventory) Displays All Your Loot, (Character) Displays Expanded Player Info, <br /> (Settings) Show Gameplay Information, (Personal) Shows General and Personal Deific Info]</span>
+                        </p>
+                        <p class="cornerTR gold highlight" style={{ ...styling, top: "15%", right: "1%", width: "25%" }}>
+                            {arrows.up} Equipment / Player Stats {arrows.up} <br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Toggles your current inventory equipment and your character's current statistics.]</span>
+                        </p>
+                        <p class="cornerBL gold highlight" style={{ ...styling, bottom: "0", left: "1.25%" }}>
+                            {arrows.up} Character Display {arrows.up}<br />
+                            <span class="super" style={{ color: "#fdf6d8" }}>[Displaying your name, health, equipment, and experience. <br />
+                                Equipment can be clicked for more information]</span>
+                        </p>
+                    </div>
+                </Match>
+                <Match when={tutorial() === "deity"}>
+                    <div class="deity-type"
+                        style={{ position: "absolute", height: "100%", width: "100%", background: "rgba(0, 0, 0, 1)", display: "inline-flex", overflow: "scroll", "scrollbar-width": "none" }}>
+                        <Typewriter stringText={deity} styling={{ "overflow-y": "auto", "scrollbar-width": "none", "text-align" : "center" }} performAction={performAction} />
+                    </div>
+                </Match>
+            </Switch>
+            <Show when={tutorial() !== "deity"}>
+                <button class="cornerBR gold highlight animate" style={{ bottom: "0", right: "0", "font-weight": 700 }} onClick={() => exitTutorial()}>
+                    {arrows.right} Exit
+                </button>
+            </Show>
         </div>
     );
 };

@@ -1,6 +1,6 @@
-import { useResizeListener } from '../../utility/dimensions';
-import { EventBus } from '../EventBus';
-import { Hud } from '../scenes/Hud';
+import { useResizeListener } from "../../utility/dimensions";
+import { EventBus } from "../EventBus";
+import { Hud } from "../scenes/Hud";
 const COLORS = {
     CAST: 0x0000FF,
     DAMAGE: 0xFF0000,
@@ -35,15 +35,15 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     };
 
     public cleanUp = () => {
-        EventBus.off('castbar-y', this.yCastbar);
-        EventBus.off('update-castbar', this.updateCastbar);
-        EventBus.off('show-castbar', this.showCastbar);
+        EventBus.off("castbar-y", this.yCastbar);
+        EventBus.off("update-castbar", this.updateCastbar);
+        EventBus.off("show-castbar", this.showCastbar);
         this.reset();
         this.destroy();
     };
 
     private create = (entity: any, scene: Phaser.Scene): void => {
-        if (entity.name === 'player') {
+        if (entity.name === "player") {
             this.barY = (scene as Hud).settings.positions.castbar.barY;
             this.barHeight = (scene as Hud).settings.positions.castbar.barHeight;
             this.barWidth = (scene as Hud).settings.positions.castbar.barWidth;
@@ -55,13 +55,13 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.bar.fillRect(-this.barWidth / 2, -this.barHeight / 2, this.barWidth, this.barHeight);
             this.add(this.bar);
 
-            this.castbar = new Phaser.GameObjects.Sprite(scene, 0, 0, 'player-castbar');
+            this.castbar = new Phaser.GameObjects.Sprite(scene, 0, 0, "player-castbar");
             this.castbar.setOrigin(0.5);
             this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
             this.add(this.castbar);
     
             this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
-                color: '#fdf6d8', fontSize: '1.75em', stroke: '#000', strokeThickness: 3, align: 'center' 
+                color: "#fdf6d8", fontSize: "1.75em", stroke: "#000", strokeThickness: 3, align: "center" 
             });
             this.add(this.timeText);
             this.timeText.setOrigin(0.5);
@@ -83,7 +83,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.add(this.border);
             
             this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
-                color: '#fdf6d8', fontSize: '1.15em', stroke: '#000', strokeThickness: 2, align: 'center' 
+                color: "#fdf6d8", fontSize: "1.15em", stroke: "#000", strokeThickness: 2, align: "center" 
             });
             this.add(this.timeText);
             this.timeText.setOrigin(0.5);
@@ -105,7 +105,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.total = 0;
         this.setVisible(false);
         this.bar.clear();
-        this.timeText.setText('');
+        this.timeText.setText("");
     };
     
     public setTime = (time: number, color?: number): void => {
@@ -124,9 +124,9 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     };
 
     private castbarListener = () => {
-        EventBus.on('castbar-y', this.yCastbar);
-        EventBus.on('update-castbar', this.updateCastbar);
-        EventBus.on('show-castbar', this.showCastbar);
+        EventBus.on("castbar-y", this.yCastbar);
+        EventBus.on("update-castbar", this.updateCastbar);
+        EventBus.on("show-castbar", this.showCastbar);
     };
 
     private yCastbar = (y: number) => {
@@ -145,7 +145,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.castbar.setDisplaySize(this.barWidth * 1.2, this.barHeight * 2.3);
     };
 
-    public update = (dt: number, type: string, color: string = 'CAST'): void => {
-        this.setTime(type === 'cast' ? this.time + dt : this.time - dt, COLORS[color as keyof typeof COLORS]);
+    public update = (dt: number, type: string, color: string = "CAST"): void => {
+        this.setTime(type === "cast" ? this.time + dt : this.time - dt, COLORS[color as keyof typeof COLORS]);
     };
 };

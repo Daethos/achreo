@@ -38,7 +38,7 @@ export const States = {
     HURT: "hurt",
     LULL: "lull",
 
-    ARC: 'arc',
+    ARC: "arc",
     BLINK: "blink",
     CHIOMISM: "chiomism",
     CONFUSE: "confuse",
@@ -68,16 +68,16 @@ export const States = {
     NETHERSWAP: "netherswap",
     RECALL: "recall",
 
-    ACHIRE: 'achire', // Casted, Damage Projectile, Manual Aim || Fuchsia & Teal
-    ASTRAVE: 'astrave', // Casted, AoE, Damage, Manual Aim || Yelllow & Bone
-    FYERUS: 'fyerus', // Channeled, AoE, Damage w/ Snare?, Manual Aim || Aqua & Ruby
-    KYNISOS: 'kynisos', // Casted, AoE, Root, Manual Aim || Gold & Green
-    QUOR: 'quor', // 3s, 6x, can crit, manual, mid grace, low cooldown
-    KYRISIAN: 'kyrisian',
-    LIKYR: 'likyr',
-    MAIERETH: 'maiereth', // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
-    ILIRECH: 'ilirech', // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
-    RECONSTITUTE: 'reconstitute', // channel, 5s, 1s/tick, +10-15% health
+    ACHIRE: "achire", // Casted, Damage Projectile, Manual Aim || Fuchsia & Teal
+    ASTRAVE: "astrave", // Casted, AoE, Damage, Manual Aim || Yelllow & Bone
+    FYERUS: "fyerus", // Channeled, AoE, Damage w/ Snare?, Manual Aim || Aqua & Ruby
+    KYNISOS: "kynisos", // Casted, AoE, Root, Manual Aim || Gold & Green
+    QUOR: "quor", // 3s, 6x, can crit, manual, mid grace, low cooldown
+    KYRISIAN: "kyrisian",
+    LIKYR: "likyr",
+    MAIERETH: "maiereth", // cast, 1-1.5s, direct, (var of Ascean).damage, can crit, mid range, low grace, low cooldown
+    ILIRECH: "ilirech", // cast, 1s, direct, -X health, X * 2 damage, low range, low grace, 2s cooldown
+    RECONSTITUTE: "reconstitute", // channel, 5s, 1s/tick, +10-15% health
     
     SHROUD: "shroud",
     SLOW: "slow",
@@ -117,7 +117,7 @@ export const States = {
     MYSTIFY: "mystify",
     PROTECT: "protect",
     RECOVER: "recover",
-    REIN: 'rein', // reactive shield, grace++
+    REIN: "rein", // reactive shield, grace++
     RENEWAL: "renewal",
     SCREAM: "scream",
     SHIELD: "shield",
@@ -130,10 +130,10 @@ export const States = {
     // Negative States
     CONFUSED: "confused",
     CONSUMED: "consumed",
-    COUNTERSPELLED: 'counterspelled',
+    COUNTERSPELLED: "counterspelled",
     FEARED: "feared",
     FROZEN: "frozen",
-    PARALYZED: 'paralyzed',
+    PARALYZED: "paralyzed",
     POLYMORPHED: "polymorphed",
     ROOTED: "rooted",
     SLOWED: "slowed",

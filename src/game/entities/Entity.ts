@@ -373,9 +373,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         this.glowSelf.destroy();
                         this.glowSelf = undefined;
                     };
-                    break;        
+                    break;
             };
-            return; 
+            return;
         };
         this.updateGlow(object);
         switch (type) {
@@ -445,7 +445,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let instance = glowFilter.get(object)[0];
         if (instance) {
             instance.outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
-            instance.innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;    
+            instance.innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
         } else {
             glowFilter.add(object, {
                 outerStrength: 2 + Math.sin(this.scene.time.now * 0.005) * 2,
@@ -492,8 +492,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.clearTint();
         this.anims.play(FRAMES.HURT, true).on(FRAMES.ANIMATION_COMPLETE, () => {
             this.isHurt = false;
-            if (this.name === "enemy") this.setTint(0xFF0000);    
-            if (this.name === "party") this.setTint(0x00FF00);    
+            if (this.name === "enemy") this.setTint(0xFF0000);
+            if (this.name === "party") this.setTint(0x00FF00);
         }); 
     };
 
@@ -526,14 +526,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting) return;
         force *= 0.65;
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
-        // target.anims.pause();
         this.scene.tweens.add({
             targets: target,
             ease: Phaser.Math.Easing.Expo.Out,
             x: target.x + Math.cos(angle) * force,
             y: target.y + Math.sin(angle) * force,
             duration: 300,
-            // onComplete: () => target.anims.resume()
         });
     };
 

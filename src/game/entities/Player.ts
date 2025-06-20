@@ -245,7 +245,6 @@ export default class Player extends Entity {
 
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
-        // console.log(this.isCaerenic, "Caerenic?");
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume / 3 });
         const enhanced = this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1;
         if (this.isCaerenic) {

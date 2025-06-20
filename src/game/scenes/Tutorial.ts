@@ -472,7 +472,7 @@ export class Tutorial extends Phaser.Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = this.showCombatText(saying, 1500, 'bone', false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DEATH);
         if (enemy.isCurrentTarget) {
             this.player.disengage();
@@ -536,7 +536,7 @@ export class Tutorial extends Phaser.Scene {
             callback: () => {
                 if (this.scene.isPaused()) return;
                 this.combatTime += 1;
-                EventBus.emit('update-combat-timer', this.combatTime);
+                EventBus.emit("update-combat-timer", this.combatTime);
             },
             callbackScope: this,
             loop: true
@@ -548,7 +548,7 @@ export class Tutorial extends Phaser.Scene {
             this.combatTimer.destroy();
         };
         this.combatTime = 0;
-        EventBus.emit('update-combat-timer', this.combatTime);
+        EventBus.emit("update-combat-timer", this.combatTime);
     };
 
     update(_time: number, delta: number): void {

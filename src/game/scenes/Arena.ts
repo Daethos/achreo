@@ -121,7 +121,7 @@ export class Arena extends Phaser.Scene {
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
         const map = this.make.tilemap({ key: "arena" });
         this.map = map;
-        this.add.rectangle(0, 0, 4096, 4096, 0x000000);
+        this.add.rectangle(0, 0, 2048, 2048, 0x000000);
         const tileSize = 32;
         const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);

@@ -126,9 +126,9 @@ export class Gauntlet extends Phaser.Scene {
         this.markers = [];
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
-        const map = this.make.tilemap({ key: "arena" });
+        const map = this.make.tilemap({ key: "gauntlet" }); // arena
         this.map = map;
-        this.add.rectangle(0, 0, 4096, 4096, 0x000000);
+        this.add.rectangle(0, 0, 2048, 2048, 0x000000);
         const tileSize = 32;
         const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);
@@ -165,6 +165,7 @@ export class Gauntlet extends Phaser.Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
+        console.log(this.markers, "Markers?");
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
         if (this.hud.settings.difficulty.arena) {
             this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });

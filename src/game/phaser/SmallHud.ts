@@ -2,7 +2,7 @@ import { EventBus } from "../EventBus";
 import { Play } from "../main";
 import { Hud } from "../scenes/Hud";
 
-const MOBILE = ['cursor-reset', 'minimap', 'pause'];
+const MOBILE = ["cursor-reset", "minimap", "pause"];
 
 function xModifier(x: number, index: number, offset = 43.75) {
     const mod = x * 1.35 + (index * offset);
@@ -73,20 +73,20 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     createBar = () => {
-        let open = this.scene.add.image(this.x, this.y, 'open');
-        let closed = this.scene.add.image(this.x, this.y, 'closed');
-        let pause = this.scene.add.image(this.x, this.y, 'pause');
-        // let minimap = this.scene.add.image(this.x, this.y, 'minimap');
-        let cursor = this.scene.add.image(this.x, this.y, 'cursor-reset');
-        let stealth = this.scene.add.image(this.x, this.y, 'stealth');
-        let stalwart = this.scene.add.image(this.x, this.y, 'stalwart');
-        let caerenic = this.scene.add.image(this.x, this.y, 'caerenic');
-        let logs = this.scene.add.image(this.x, this.y, 'logs');
-        let settings = this.scene.add.image(this.x, this.y, 'settings');
-        let info = this.scene.add.image(this.x, this.y, 'info');
-        let dialog = this.scene.add.image(this.x, this.y, 'dialog');
-        let loot = this.scene.add.image(this.x, this.y, 'loot');
-        let strafe = this.scene.add.image(this.x, this.y, 'strafe');
+        let open = this.scene.add.image(this.x, this.y, "open");
+        let closed = this.scene.add.image(this.x, this.y, "closed");
+        let pause = this.scene.add.image(this.x, this.y, "pause");
+        // let minimap = this.scene.add.image(this.x, this.y, "minimap");
+        let cursor = this.scene.add.image(this.x, this.y, "cursor-reset");
+        let stealth = this.scene.add.image(this.x, this.y, "stealth");
+        let stalwart = this.scene.add.image(this.x, this.y, "stalwart");
+        let caerenic = this.scene.add.image(this.x, this.y, "caerenic");
+        let logs = this.scene.add.image(this.x, this.y, "logs");
+        let settings = this.scene.add.image(this.x, this.y, "settings");
+        let info = this.scene.add.image(this.x, this.y, "info");
+        let dialog = this.scene.add.image(this.x, this.y, "dialog");
+        let loot = this.scene.add.image(this.x, this.y, "loot");
+        let strafe = this.scene.add.image(this.x, this.y, "strafe");
         this.bar.push(loot);
         this.bar.push(dialog);
         this.bar.push(info);
@@ -123,24 +123,24 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setInteractive();
             item.setScale(this.scene.settings.positions.smallHud.scale); // || 0.095
             if (this.closed === true) {
-                if (item.texture.key !== 'closed') {
+                if (item.texture.key !== "closed") {
                     item.setVisible(false);
                 };
             };
             item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
-            if (item.texture.key === 'dialog') {
+            if (item.texture.key === "dialog") {
                 const dialog = this.scene.gameState?.dialogTag as boolean;
                 const num = this.closed ? bar.length - 3 : 0;
                 item.setVisible(dialog);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
-            if (item.texture.key === 'loot') {
+            if (item.texture.key === "loot") {
                 const loot = this.scene.gameState?.lootTag as boolean;
                 const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 1;
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
-            item.on('pointerdown', () => {
+            item.on("pointerdown", () => {
                 this.pressButton(item);
             });
         });
@@ -159,20 +159,20 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setScale(this.scene.settings.positions.leftHud.scale); // || 0.095
             item.setVisible(true);
             item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
-            item.on('pointerdown', () => {
+            item.on("pointerdown", () => {
                 this.pressStance(item);
             });
         });
     };
 
     cleanUp = () => {
-        EventBus.off('outside-press');
-        EventBus.off('update-hud-position');
-        EventBus.off('update-left-hud-position');
-        EventBus.off('update-small-hud-scale');
-        EventBus.off('update-left-hud-scale');
-        EventBus.off('update-small-hud-offset');
-        EventBus.off('update-left-hud-offset');
+        EventBus.off("outside-press");
+        EventBus.off("update-hud-position");
+        EventBus.off("update-left-hud-position");
+        EventBus.off("update-small-hud-scale");
+        EventBus.off("update-left-hud-scale");
+        EventBus.off("update-small-hud-offset");
+        EventBus.off("update-left-hud-offset");
         this.bar.forEach((button) => {
             button.removeAllListeners();
             button.removeInteractive();
@@ -203,25 +203,25 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
             item.y = this.y;
             if (this.closed === true) {
-                if (item.texture.key === 'closed') {
+                if (item.texture.key === "closed") {
                     item.setVisible(true); // false
                 } else {
                     item.setVisible(false); // true
                 };
             } else {
-                if (item.texture.key === 'closed') {
+                if (item.texture.key === "closed") {
                     item.setVisible(false); // true
                 } else {
                     item.setVisible(true); // false
                 };
             };
-            if (item.texture.key === 'loot') {
+            if (item.texture.key === "loot") {
                 const loot = this.scene.gameState?.lootTag as boolean;
                 const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 0;
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
-            if (item.texture.key === 'dialog') {
+            if (item.texture.key === "dialog") {
                 const dialog = this.scene.gameState?.dialogTag as boolean;
                 const num = this.closed ? bar.length - 3 : 1;
                 item.setVisible(dialog);
@@ -236,37 +236,37 @@ export default class SmallHud extends Phaser.GameObjects.Container {
     };
 
     listener = () => {
-        EventBus.on('outside-press', this.outsidePress);
-        EventBus.on('outside-stance', this.outsideStance);
-        EventBus.on('smallhud-deactivate', this.deactivate);
-        EventBus.on('update-hud-position', (data: {x: number, y: number}) => {
+        EventBus.on("outside-press", this.outsidePress);
+        EventBus.on("outside-stance", this.outsideStance);
+        EventBus.on("smallhud-deactivate", this.deactivate);
+        EventBus.on("update-hud-position", (data: {x: number, y: number}) => {
             const { x, y } = data;
             this.x = this.scene.gameWidth * x;
             this.y = this.scene.gameHeight * y;
             this.draw();
         });
-        EventBus.on('update-left-hud-position', (data: {x: number, y: number}) => {
+        EventBus.on("update-left-hud-position", (data: {x: number, y: number}) => {
             const { x, y } = data;
             this.leftX = this.scene.gameWidth * x;
             this.leftY = this.scene.gameHeight * y;
             this.draw();
         });
-        EventBus.on('update-small-hud-scale', (scale: number) => {
+        EventBus.on("update-small-hud-scale", (scale: number) => {
             this.bar.forEach((item) => {
                 item.setScale(scale);
             });
         });
-        EventBus.on('update-left-hud-scale', (scale: number) => {
+        EventBus.on("update-left-hud-scale", (scale: number) => {
             this.stances.forEach((item) => {
                 item.setScale(scale);
             });
         });
-        EventBus.on('update-small-hud-offset', (offset: number) => {
+        EventBus.on("update-small-hud-offset", (offset: number) => {
             this.bar.forEach((item, index) => {
                 item.x = xModifier(this.x, Math.min(index, 8), offset); // || 43.75
             });
         });
-        EventBus.on('update-left-hud-offset', (offset: number) => {
+        EventBus.on("update-left-hud-offset", (offset: number) => {
             this.stances.forEach((item, index) => {
                 item.x = leftXModifier(this.leftX, Math.min(index, 4), offset);
             });
@@ -332,59 +332,59 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.forEach((button) => {
             if (button !== item) return;
             switch (button.texture.key) {
-                case 'open':
+                case "open":
                     this.closed = true;
-                    EventBus.emit('closed');
-                    EventBus.emit('action-button-sound');
+                    EventBus.emit("closed");
+                    EventBus.emit("action-button-sound");
                     this.draw();
                     break;
-                case 'closed':
+                case "closed":
                     this.closed = false;
-                    EventBus.emit('open');
-                    EventBus.emit('action-button-sound');
+                    EventBus.emit("open");
+                    EventBus.emit("action-button-sound");
                     this.draw();
                     break;
-                case 'pause':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('update-pause', !this.switches.pause); // variable
+                case "pause":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("update-pause", !this.switches.pause); // variable
                     this.switches.pause = !this.switches.pause;
                     break;
-                case 'minimap':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('minimap');
+                case "minimap":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("minimap");
                     this.switches.minimap = !this.switches.minimap;
                     break;
-                case 'cursor-reset':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('update-cursor');
+                case "cursor-reset":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("update-cursor");
                     break; 
-                case 'logs':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('show-combat'); // variable
+                case "logs":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("show-combat"); // variable
                     this.switches.logs = !this.switches.logs;
                     break;
-                case 'settings':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('useScroll');
+                case "settings":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("useScroll");
                     this.switches.settings = !this.switches.settings;
                     break;
-                case 'info':
+                case "info":
                     this.switches.info = !this.switches.info;
-                    EventBus.emit('set-show-player');
+                    EventBus.emit("set-show-player");
                     if (this.switches.info === true) {
                         this.closed = false;
                         this.draw();
                     };
                     break;
-                case 'dialog':
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('show-dialogue');
+                case "dialog":
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("show-dialogue");
                     this.switches.dialog = !this.switches.dialog;
                     break;
-                case 'loot':
+                case "loot":
                     this.switches.loot = !this.switches.loot;
-                    EventBus.emit('action-button-sound');
-                    EventBus.emit('blend-game', { showLoot: this.switches.loot });
+                    EventBus.emit("action-button-sound");
+                    EventBus.emit("blend-game", { showLoot: this.switches.loot });
                     break;
                 default:
                     break;
@@ -397,14 +397,14 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                 button.setAlpha(1);
             };
         });
-        EventBus.emit('update-small-hud');
+        EventBus.emit("update-small-hud");
     };
 
     pressStance = (stance: Phaser.GameObjects.Image) => {
         this.stances.forEach((button) => {
             if (button === stance) {
                 switch (button.texture.key) { 
-                    case 'stealth':
+                    case "stealth":
                         const currentScene = this.scene.scene.get(`${this.scene.currScene}`) as Play;
                         if (currentScene.combat) {
                             if (this.switches.stealth) {
@@ -413,23 +413,23 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                             break;
                         };
                         this.switches.stealth = !this.switches.stealth;
-                        EventBus.emit('update-stealth');
+                        EventBus.emit("update-stealth");
                         if (this.switches.stealth) {
                             EventBus.emit("use-stamina", 10);             
                             if (this.scene.talents.talents.stealth.enhanced) EventBus.emit("disengage");
                         };
                         break;
-                    case 'stalwart':
+                    case "stalwart":
                         this.switches.stalwart = !this.switches.stalwart;
-                        EventBus.emit('update-stalwart', this.switches.stalwart);
+                        EventBus.emit("update-stalwart", this.switches.stalwart);
                         if (this.switches.stalwart) EventBus.emit("use-stamina", 10);             
                         break;
-                    case 'caerenic':
+                    case "caerenic":
                         this.switches.caerenic = !this.switches.caerenic;
-                        EventBus.emit('update-caerenic');                
+                        EventBus.emit("update-caerenic");                
                         if (this.switches.caerenic) EventBus.emit("use-grace", 10);             
                         break; 
-                    case 'strafe':
+                    case "strafe":
                         this.switches.strafe = !this.switches.strafe;
                         let player = this.scene.registry.get("player");
                         player.isStrafing = this.switches.strafe;

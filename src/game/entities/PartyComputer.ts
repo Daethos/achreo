@@ -1324,6 +1324,7 @@ export default class Party extends Entity {
     };
 
     checkLineOfSight() {
+        if (this.scene.scene.key === "Game") return false;
         const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
         const points = line.getPoints(30);  // Adjust number of points based on precision
         for (let i = 0; i < points.length; i++) {
@@ -1412,33 +1413,6 @@ export default class Party extends Entity {
         const direction = this.getCombatDirection();
         if (!direction) return;
 
-
-        if (this.cachedDirection && this.cachedDirectionFrame && 
-            (this.scene.frameCount - this.cachedDirectionFrame) < 60) {
-            return this.cachedDirection;
-        };
-        
-        // Calculate direction manually (no clone needed)
-        const dx = this.currentTarget.x - this.x;
-        const dy = this.currentTarget.y - this.y;
-        
-        // Cache the direction vector
-        this.cachedDirection = { 
-            x: dx, 
-            y: dy, 
-            length: () => Math.sqrt(dx * dx + dy * dy),
-            lengthSq: () => dx * dx + dy * dy,
-            normalize: () => {
-                const len = Math.sqrt(dx * dx + dy * dy);
-                if (len > 0) {
-                    this.cachedDirection.x = dx / len;
-                    this.cachedDirection.y = dy / len;
-                };
-                return this.cachedDirection;
-            }
-        };
-        this.cachedDirectionFrame = this.scene.frameCount;
-        // let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         const climbingModifier = this.isClimbing ? 0.65 : 1;
@@ -1446,14 +1420,6 @@ export default class Party extends Entity {
         const distanceSq = direction.lengthSq();
         const chaseThresholdSq = (DISTANCE.CHASE * multiplier) ** 2;
         
-        if (!this.weaponTypeCache || (this.scene.frameCount - this.weaponTypeCacheFrame) >= 60) {
-            this.weaponTypeCache = {
-                thisIsRanged: this.isRanged,
-                targetIsRanged: this.currentTarget.isRanged
-            };
-            this.weaponTypeCacheFrame = this.scene.frameCount;
-        };
-
         if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
             // this.evasionTimer = 1000;
             this.playerMachine.stateMachine.setState(States.EVADE);
@@ -1461,7 +1427,7 @@ export default class Party extends Entity {
         } else if (distanceSq >= chaseThresholdSq) { // Switch to CHASE the Enemy
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
-        } else if (this.weaponTypeCache.thisIsRanged) { // RANGED ENEMY LOGIC
+        } else if (this.isRanged) { // RANGED ENEMY LOGIC
             this.playerMachine.stateMachine.setState(States.COMBAT);
             
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
@@ -1476,7 +1442,7 @@ export default class Party extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * climbingModifier);
                 this.setVelocityY(direction.y * this.speed * climbingModifier);
-            } else if (distanceSq < thresholdMinSq && !this.weaponTypeCache.targetIsRanged) { // Keep distance from melee target
+            } else if (distanceSq < thresholdMinSq && !this.currentTarget.isRanged) { // Keep distance from melee target
                 if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
                     // this.evasionTimer = 1000;
                     this.playerMachine.stateMachine.setState(States.EVADE);

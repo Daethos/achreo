@@ -1,7 +1,7 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ComputerCombat } from "../stores/computer";
-import { criticalCompiler, damageTypeCompiler } from "./combat";
+import { criticalCompiler, damageTypeCompiler, penetrationCompiler } from "./combat";
 import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
 // import { PRAYERS } from "./prayer";
 
@@ -110,18 +110,19 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     let computerPhysicalDamage: number = computerWeapon?.physicalDamage as number;
     let computerMagicalDamage: number = computerWeapon?.magicalDamage as number;
     let computerTotalDamage: number = 0;
-    let playerPhysicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.physicalDefenseModifier as number);
-    let playerMagicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.magicalDefenseModifier as number);
+    let playerPhysicalDefenseMultiplier = combat.computerEnemyDefense?.physicalDefenseModifier as number;
+    let playerMagicalDefenseMultiplier = combat.computerEnemyDefense?.magicalDefenseModifier as number;
+    const mastery = combat.computer?.mastery as string;
 
     if (combat.computerEnemyAction === ACTION_TYPES.POSTURE && combat.computerEnemyParrySuccess !== true && combat.computerEnemyRollSuccess !== true) {
-        playerPhysicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.physicalPosture as number);
-        playerMagicalDefenseMultiplier = 100 - (combat.computerEnemyDefense?.magicalPosture as number);
+        playerPhysicalDefenseMultiplier = combat.computerEnemyDefense?.physicalPosture as number;
+        playerMagicalDefenseMultiplier = combat.computerEnemyDefense?.magicalPosture as number;
     };
 
     if (computerAction === ACTION_TYPES.ATTACK) {
         if (computerWeapon?.grip === HOLD_TYPES.ONE_HAND) {
             if (computerWeapon?.attackType === ATTACK_TYPES.PHYSICAL) {
-                if (combat.computer?.mastery === MASTERY.AGILITY || combat.computer?.mastery === MASTERY.CONSTITUTION) {
+                if (mastery === MASTERY.AGILITY || mastery === MASTERY.CONSTITUTION) {
                     if (combat.computerAttributes?.totalAgility as number >= THRESHOLD.ONE_HAND) {
                         if (combat.computerWeapons[1]?.grip === HOLD_TYPES.ONE_HAND) {
                             combat.dualWielding = true;
@@ -141,7 +142,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                 };
             };
             if (computerWeapon?.attackType === ATTACK_TYPES.MAGIC) {
-                if (combat.computer?.mastery === MASTERY.ACHRE || combat.computer?.mastery === MASTERY.KYOSIR) {
+                if (mastery === MASTERY.ACHRE || mastery === MASTERY.KYOSIR) {
                     if (combat.computerAttributes?.totalAchre as number >= THRESHOLD.ONE_HAND) {
                         if (combat.computerWeapons[1]?.grip === HOLD_TYPES.ONE_HAND) {
                             combat.dualWielding = true;
@@ -163,7 +164,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
         };
         if (computerWeapon?.grip === HOLD_TYPES.TWO_HAND) {
             if (computerWeapon?.attackType === ATTACK_TYPES.PHYSICAL && computerWeapon?.type !== WEAPON_TYPES.BOW && computerWeapon?.type !== WEAPON_TYPES.GREATBOW) {
-                if (combat.computer?.mastery === MASTERY.STRENGTH || combat.computer?.mastery === MASTERY.CONSTITUTION) {
+                if (mastery === MASTERY.STRENGTH || mastery === MASTERY.CONSTITUTION) {
                     if (combat.computerAttributes?.totalStrength as number >= THRESHOLD.TWO_HAND) {
                         if (combat.computerWeapons[1]?.type !== WEAPON_TYPES.BOW) {
                             combat.dualWielding = true;
@@ -183,7 +184,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                 };
             };
             if (computerWeapon?.attackType === ATTACK_TYPES.MAGIC) {
-                if (combat.computer?.mastery === MASTERY.CAEREN || combat.computer?.mastery === MASTERY.KYOSIR) {
+                if (mastery === MASTERY.CAEREN || mastery === MASTERY.KYOSIR) {
                     if (combat.computerAttributes?.totalCaeren as number >= THRESHOLD.TWO_HAND) {
                         if (combat.computerWeapons[1]?.type !== WEAPON_TYPES.BOW) {
                             combat.dualWielding = true;
@@ -258,8 +259,8 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     computerMagicalDamage = criticalResult.magicalDamage;
     const physicalPenetration = computerWeapon.physicalPenetration as number;
     const magicalPenetration = computerWeapon.magicalPenetration as number;
-    computerPhysicalDamage *= (playerPhysicalDefenseMultiplier - physicalPenetration) / 100;
-    computerMagicalDamage *= (playerMagicalDefenseMultiplier - magicalPenetration) / 100;
+    computerPhysicalDamage *= penetrationCompiler(playerPhysicalDefenseMultiplier, physicalPenetration);
+    computerMagicalDamage *= penetrationCompiler(playerMagicalDefenseMultiplier, magicalPenetration);
     const damageType = damageTypeCompiler(combat.computerDamageType, combat.computerEnemy as Ascean, computerWeapon, computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;

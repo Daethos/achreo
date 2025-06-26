@@ -65,6 +65,22 @@ export type CombatStats =  {
     [key: string]: any;
 };
 
+// const actionMultipliers: { [key: string]: { physical: number; magical: number } } = {
+const actionMultipliers: { [key: string]: { physical: number; magical: number } } = {
+    [ACTION_TYPES.ACHIRE]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
+    [ACTION_TYPES.ARC]: { physical: DAMAGE.THREE, magical: DAMAGE.THREE },
+    [ACTION_TYPES.LEAP]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
+    [ACTION_TYPES.QUOR]: { physical: DAMAGE.THREE, magical: DAMAGE.THREE },
+    [ACTION_TYPES.RUSH]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
+    [ACTION_TYPES.WRITHE]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
+    [ACTION_TYPES.STORM]: { physical: DAMAGE.NEG_LOW, magical: DAMAGE.NEG_LOW },
+    [ACTION_TYPES.THRUST]: { physical: DAMAGE.NEG_LOW, magical: DAMAGE.NEG_LOW },
+    // [ACTION_TYPES.ROLL]: combat.rollSuccess
+    //     ? { physical: DAMAGE.MID, magical: DAMAGE.MID }
+    //     : { physical: DAMAGE.NEG_HIGH, magical: DAMAGE.NEG_HIGH }
+};
+
+
 // ====================================== HELPERS ====================================== \\
 
 export function roundToTwoDecimals(num: number, dec: number = 2): number {
@@ -80,76 +96,62 @@ export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Eq
         if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.FIFTEEN;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.EIGHT;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_TWO;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.EIGHTY_FIVE;
             };
+
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.TEN;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.NINETY;
             };
+
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.THREE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_SEVEN;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.NINETY_FIVE;
             };
         };
         if (weapon.attackType === ATTACK_TYPES.MAGIC) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.FIFTEEN;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.EIGHT;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.EIGHTY_FIVE;
             };
+
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.TEN;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.NINETY;
             };
+
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.THREE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.NINETY_SEVEN;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.NINETY_FIVE;
             };
         };
@@ -158,76 +160,62 @@ export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Eq
         if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.EIGHTY_FIVE;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_TWO;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.EIGHT;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.FIFTEEN;
             };
+
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.NINETY;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.TEN;
             };
+
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_SEVEN;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.THREE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.FIVE;
             };
         };
         if (weapon.attackType === ATTACK_TYPES.MAGIC) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.EIGHTY_FIVE;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.EIGHT;
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.FIFTEEN;
             };
+
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.NINETY;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.FIVE;
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.TEN;
             };
+
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.NINETY_FIVE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.NINETY_SEVEN;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.THREE;
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.FIVE;
             };
         };
@@ -236,78 +224,62 @@ export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Eq
         if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
     
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
     
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 physicalDamage *= ARMORS.NINETY + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 physicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 physicalDamage *= ARMORS.NINETY_FIVE + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 physicalDamage *= ARMORS.NINETY_SEVEN + (Math.random() * ARMORS.RANDOM);
             };
         };
         if (weapon.attackType === ATTACK_TYPES.MAGIC) {
             if (enemy.helmet.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.helmet.type === DEFENSE_TYPES.CHAIN_MAIL) {
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
+            } else if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_MAIL) {
-                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.helmet.type === DEFENSE_TYPES.LEATHER_CLOTH) {
-                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
+
             if (enemy.chest.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.chest.type === DEFENSE_TYPES.CHAIN_MAIL) {
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
+                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
+            } else if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_MAIL) {
-                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.chest.type === DEFENSE_TYPES.LEATHER_CLOTH) {
-                magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
+
             if (enemy.legs.type === DEFENSE_TYPES.PLATE_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.CHAIN_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_MAIL) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
-            };
-            if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
+            } else if (enemy.legs.type === DEFENSE_TYPES.LEATHER_CLOTH) {
                 magicalDamage *= ARMORS.NINETY_TWO + (Math.random() * ARMORS.RANDOM);
             };
         };
@@ -402,6 +374,10 @@ export function criticalCompiler(player: boolean, ascean: Ascean, critChance: nu
     };
     return { criticalSuccess, glancingBlow, physicalDamage, magicalDamage, isSeering };
 }; 
+
+export function penetrationCompiler(defense: number, penetration: number): number {
+    return 1 - (defense - penetration) / 100;
+};
 
 function phaserActionConcerns(action: string): boolean {
     return STRONG_ATTACKS.includes(action);
@@ -884,7 +860,7 @@ function faithCompiler(combat: Combat): Combat { // The influence will add a cha
 //     return combat;
 // };
 
-function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultiplier: number, playerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
+function computerDualWieldCompiler(combat: Combat, playerPhysicalDefense: number, playerMagicalDefense: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.computerWeapons;
     const computerAction = combat.computerAction;
@@ -918,10 +894,10 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
     computerWeaponTwoMagicalDamage = resultTwo.magicalDamage;
     if (weapTwoCrit >= weapTwoClearance) secondWeaponCrit = true;
     
-    computerWeaponOnePhysicalDamage *= (playerPhysicalDefenseMultiplier - (weapons[0].physicalPenetration as number)) / 100;
-    computerWeaponOneMagicalDamage *= (playerMagicalDefenseMultiplier - (weapons[0].magicalPenetration as number)) / 100;
-    computerWeaponTwoPhysicalDamage *= (playerPhysicalDefenseMultiplier - (weapons[1].physicalPenetration as number)) / 100;
-    computerWeaponTwoMagicalDamage *= (playerMagicalDefenseMultiplier - (weapons[1].magicalPenetration as number)) / 100;
+    computerWeaponOnePhysicalDamage *= penetrationCompiler(playerPhysicalDefense, weapons[0].physicalPenetration as number);
+    computerWeaponOneMagicalDamage *= penetrationCompiler(playerMagicalDefense, weapons[0].magicalPenetration as number);
+    computerWeaponTwoPhysicalDamage *= penetrationCompiler(playerPhysicalDefense, weapons[1].physicalPenetration as number);
+    computerWeaponTwoMagicalDamage *= penetrationCompiler(playerMagicalDefense, weapons[1].magicalPenetration as number);
 
     const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, weapons[0], computerWeaponOnePhysicalDamage, computerWeaponOneMagicalDamage);
     computerWeaponOnePhysicalDamage = damageType.physicalDamage;
@@ -993,14 +969,12 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefenseMultipli
 
 function computerAttackCompiler(combat: Combat, computerAction: string): Combat {
     if (combat.playerWin === true) return combat;
-    let computerPhysicalDamage: number = combat.computerWeapons[0].physicalDamage;
-    let computerMagicalDamage: number = combat.computerWeapons[0].magicalDamage;
     let computerTotalDamage: number = 0;
-    let playerPhysicalDefenseMultiplier = 100 - (combat.playerDefense?.physicalDefenseModifier as number);
-    let playerMagicalDefenseMultiplier = 100 - (combat.playerDefense?.magicalDefenseModifier as number);
+    let computerPhysicalDamage: number = combat.computerWeapons[0].physicalDamage, computerMagicalDamage: number = combat.computerWeapons[0].magicalDamage;
+    let playerPhysicalDefense = combat.playerDefense?.physicalDefenseModifier as number, playerMagicalDefense = combat.playerDefense?.magicalDefenseModifier as number;
     if ((combat.action === ACTION_TYPES.POSTURE || combat.isStalwart) && combat.computerParrySuccess !== true && combat.computerRollSuccess !== true) {
-        playerPhysicalDefenseMultiplier = 100 - (combat.playerDefense?.physicalPosture as number);
-        playerMagicalDefenseMultiplier = 100 - (combat.playerDefense?.magicalPosture as number);
+        playerPhysicalDefense = combat.playerDefense?.physicalPosture as number;
+        playerMagicalDefense = combat.playerDefense?.magicalPosture as number;
     };
     if (computerAction === ACTION_TYPES.ATTACK || computerAction === ACTION_TYPES.LEAP || computerAction === ACTION_TYPES.RUSH || computerAction === ACTION_TYPES.WRITHE) {
         if (combat.computerWeapons[0].grip === HOLD_TYPES.ONE_HAND) {
@@ -1009,7 +983,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                     if (combat.computerAttributes?.totalAgility as number >= THRESHOLD.ONE_HAND) {
                         if (combat.computerWeapons[1].grip === HOLD_TYPES.ONE_HAND) {
                            combat.computerDualWielding = true;
-                            computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
+                            computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
                             computerPhysicalDamage *= DAMAGE.HIGH;
@@ -1029,7 +1003,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                     if (combat.computerAttributes?.totalAchre as number >= THRESHOLD.ONE_HAND) {
                         if (combat.computerWeapons[1].grip === HOLD_TYPES.ONE_HAND) {
                             combat.computerDualWielding = true;
-                            computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
+                            computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
                             computerPhysicalDamage *= DAMAGE.MID;
@@ -1051,7 +1025,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                     if (combat.computerAttributes?.totalStrength as number >= THRESHOLD.TWO_HAND) {
                         if (combat.computerWeapons[1].type !== WEAPON_TYPES.BOW) {
                             combat.computerDualWielding = true;
-                            computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
+                            computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else { 
                             computerPhysicalDamage *= DAMAGE.HIGH;
@@ -1071,7 +1045,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                     if (combat.computerAttributes?.totalCaeren as number >= THRESHOLD.TWO_HAND) {
                         if (combat.computerWeapons[1].type !== WEAPON_TYPES.BOW) {
                             combat.computerDualWielding = true;
-                            computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
+                            computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
                             computerPhysicalDamage *= DAMAGE.MID;
@@ -1140,8 +1114,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     computerMagicalDamage = criticalResult.magicalDamage;
     const physicalPenetration = combat.computerWeapons?.[0].physicalPenetration as number;
     const magicalPenetration = combat.computerWeapons?.[0].magicalPenetration as number;
-    computerPhysicalDamage *= (playerPhysicalDefenseMultiplier - physicalPenetration) / 100;
-    computerMagicalDamage *= (playerMagicalDefenseMultiplier - magicalPenetration) / 100;
+    computerPhysicalDamage *= penetrationCompiler(playerPhysicalDefense, physicalPenetration);
+    computerMagicalDamage *= penetrationCompiler(playerMagicalDefense, magicalPenetration);
     const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;
@@ -1197,7 +1171,7 @@ function computerRollCompiler(combat: Combat, playerAction: string, computerActi
 };
 
 // ================================== PLAYER COMPILER FUNCTIONS ====================================== \\
-function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: number, computerMagicalDefenseMultiplier: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
+function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, computerMagicalDefense: number): Combat { // Triggers if 40+ Str/Caer for 2h, 1h + Agi/Achre Mastery and 2nd weapon is 1h
     const computer = combat.computer;
     const weapons = combat.weapons;
     let playerWeaponOnePhysicalDamage = weapons[0]?.physicalDamage;
@@ -1228,11 +1202,11 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     playerWeaponTwoMagicalDamage = resultTwo.magicalDamage;
     if (weapTwoCrit >= weapTwoClearance) secondWeaponCrit = true;
     
-    playerWeaponOnePhysicalDamage *= (computerPhysicalDefenseMultiplier - (weapons[0]?.physicalPenetration as number)) / 100;
-    playerWeaponOneMagicalDamage *= (computerMagicalDefenseMultiplier - (weapons[0]?.magicalPenetration as number)) / 100;
+    playerWeaponOnePhysicalDamage *= penetrationCompiler(computerPhysicalDefense, weapons[0]?.physicalPenetration as number);
+    playerWeaponOneMagicalDamage *= penetrationCompiler(computerMagicalDefense, weapons[0]?.magicalPenetration as number);
 
-    playerWeaponTwoPhysicalDamage *= (computerPhysicalDefenseMultiplier - (weapons[1]?.physicalPenetration as number)) / 100;
-    playerWeaponTwoMagicalDamage *= (computerMagicalDefenseMultiplier - (weapons[1]?.magicalPenetration as number)) / 100;
+    playerWeaponTwoPhysicalDamage *= penetrationCompiler(computerPhysicalDefense, weapons[1]?.physicalPenetration as number);
+    playerWeaponTwoMagicalDamage *= penetrationCompiler(computerMagicalDefense, weapons[1]?.magicalPenetration as number);
 
     const damageType = damageTypeCompiler(combat.playerDamageType, computer as Ascean, weapons[0] as Equipment, playerWeaponOnePhysicalDamage, playerWeaponOneMagicalDamage);
     playerWeaponOnePhysicalDamage = damageType.physicalDamage;
@@ -1259,7 +1233,7 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     let agility = combat.playerAttributes?.totalAgility as number + (weapons[0]?.agility as number)  + (weapons[1]?.agility as number);
     let achre = combat.playerAttributes?.totalAchre as number + (weapons[0]?.achre as number) + (weapons[1]?.achre as number);
     let caeren = combat.playerAttributes?.totalCaeren as number + (weapons[0]?.caeren as number)  + (weapons[1]?.caeren as number);
-
+    const playerAction = combat.action;
     if (weapons[0]?.grip === HOLD_TYPES.ONE_HAND) {
         if (weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
             combat.realizedPlayerDamage *= (agility / 200)
@@ -1282,41 +1256,17 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     if (combat.computerAction === ACTION_TYPES.POSTURE) {
         combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
     };
-    if (combat.action === ACTION_TYPES.LEAP) {
-        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (combat.action === ACTION_TYPES.RUSH) {
-        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
-    };
-    
-    if (combat.action === ACTION_TYPES.WRITHE) {
-        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (combat.action === ACTION_TYPES.ACHIRE) {
-        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (combat.action === ACTION_TYPES.ARC) {
-        combat.realizedPlayerDamage *= DAMAGE.THREE;
-    };
-    if (combat.action === ACTION_TYPES.LEAP) {
-        combat.realizedPlayerDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (combat.action === ACTION_TYPES.QUOR) {
-        combat.realizedPlayerDamage *= DAMAGE.THREE;
-    };
-    if (combat.action === ACTION_TYPES.RUSH) {
-        combat.realizedPlayerDamage *= DAMAGE.MID;
-    };
-    if (combat.action === ACTION_TYPES.STORM) {
-        combat.realizedPlayerDamage *= DAMAGE.NEG_LOW;
-    };
-    if (combat.action === ACTION_TYPES.ROLL ) {
-        if (combat.rollSuccess) {
-            combat.realizedPlayerDamage *= DAMAGE.MID;
-        } else {
-            combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+
+    if (playerAction === ACTION_TYPES.ROLL) {
+        const rollMult = combat.rollSuccess ? DAMAGE.MID : DAMAGE.NEG_HIGH;
+        combat.realizedPlayerDamage *= rollMult;
+    } else {
+        const mult = actionMultipliers[playerAction];
+        if (mult) {
+            combat.realizedPlayerDamage *= mult.physical;
         };
     };
+
     if (combat.isCaerenic === true) {
         combat.realizedPlayerDamage *= DAMAGE.MID;
     };
@@ -1359,24 +1309,24 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefenseMultiplier: nu
     
 function attackCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.computerWin === true) return combat;
-    let playerPhysicalDamage = combat.weapons[0]?.physicalDamage as number;
-    let playerMagicalDamage = combat.weapons[0]?.magicalDamage as number;
     let playerTotalDamage;
-    let computerPhysicalDefenseMultiplier = 100 - (combat.computerDefense?.physicalDefenseModifier as number);
-    let computerMagicalDefenseMultiplier = 100 - (combat.computerDefense?.magicalDefenseModifier as number);
-    
+    const mainWeapon = combat.weapons[0] as Equipment, offWeapon = combat.weapons[1] as Equipment;
+    const mastery = combat.player?.mastery as string;
+    let playerPhysicalDamage = mainWeapon.physicalDamage as number, playerMagicalDamage = mainWeapon.magicalDamage as number;
+    let computerPhysicalDefense = combat.computerDefense?.physicalDefenseModifier as number, computerMagicalDefense = combat.computerDefense?.magicalDefenseModifier as number;
+    let physPen = mainWeapon.physicalPenetration as number, magPen = mainWeapon.magicalPenetration as number;
     if (combat.computerAction === ACTION_TYPES.POSTURE && !combat.parrySuccess && !combat.rollSuccess) {
-        computerPhysicalDefenseMultiplier = 100 - (combat.computerDefense?.physicalPosture as number);
-        computerMagicalDefenseMultiplier = 100 - (combat.computerDefense?.magicalPosture as number);
+        computerPhysicalDefense = combat.computerDefense?.physicalPosture as number;
+        computerMagicalDefense = combat.computerDefense?.magicalPosture as number;
     };
     if (playerAction === ACTION_TYPES.ATTACK) {
-        if (combat.weapons[0]?.grip === HOLD_TYPES.ONE_HAND) {
-            if (combat.weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL) {
-                if (combat.player?.mastery === MASTERY.AGILITY || combat.player?.mastery === MASTERY.CONSTITUTION) {
+        if (mainWeapon.grip === HOLD_TYPES.ONE_HAND) {
+            if (mainWeapon.attackType === ATTACK_TYPES.PHYSICAL) {
+                if (mastery === MASTERY.AGILITY || mastery === MASTERY.CONSTITUTION) {
                     if (combat.playerAttributes?.totalAgility as number >= THRESHOLD.ONE_HAND) {
-                        if (combat.weapons[1]?.grip === HOLD_TYPES.ONE_HAND) { // If you're Focusing attack + 1h + Agi Mastery + 1h in Second Slot
+                        if (offWeapon.grip === HOLD_TYPES.ONE_HAND) { // If you're Focusing attack + 1h + Agi Mastery + 1h in Second Slot
                             combat.dualWielding = true;
-                            dualWieldCompiler(combat, computerPhysicalDefenseMultiplier, computerMagicalDefenseMultiplier);
+                            dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
                             playerPhysicalDamage *= DAMAGE.HIGH;
@@ -1391,12 +1341,12 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                     playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
-            if (combat.weapons[0]?.attackType === ATTACK_TYPES.MAGIC) {
-                if (combat.player?.mastery === MASTERY.ACHRE || combat.player?.mastery === MASTERY.KYOSIR) {
-                    if (combat.playerAttributes?.totalAchre as number + combat.weapons[0].achre >= THRESHOLD.ONE_HAND) {
-                        if (combat.weapons[1]?.grip === HOLD_TYPES.ONE_HAND) { // Might be a dual-wield compiler instead to take the rest of it
+            if (mainWeapon.attackType === ATTACK_TYPES.MAGIC) {
+                if (mastery === MASTERY.ACHRE || mastery === MASTERY.KYOSIR) {
+                    if (combat.playerAttributes?.totalAchre as number + mainWeapon.achre >= THRESHOLD.ONE_HAND) {
+                        if (offWeapon.grip === HOLD_TYPES.ONE_HAND) { // Might be a dual-wield compiler instead to take the rest of it
                             combat.dualWielding = true;
-                            dualWieldCompiler(combat, computerPhysicalDefenseMultiplier, computerMagicalDefenseMultiplier);
+                            dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
                             playerPhysicalDamage *= DAMAGE.MID;
@@ -1412,13 +1362,13 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                 };
             };
         };
-        if (combat.weapons[0]?.grip === HOLD_TYPES.TWO_HAND) { // Weapon is TWO HAND
-            if (combat.weapons[0]?.attackType === ATTACK_TYPES.PHYSICAL && combat.weapons[0]?.type !== WEAPON_TYPES.BOW && combat.weapons[0]?.type !== WEAPON_TYPES.GREATBOW) {
-                if (combat.player?.mastery === MASTERY.STRENGTH || combat.player?.mastery === MASTERY.CONSTITUTION) {
+        if (mainWeapon.grip === HOLD_TYPES.TWO_HAND) { // Weapon is TWO HAND
+            if (mainWeapon.attackType === ATTACK_TYPES.PHYSICAL && mainWeapon.type !== WEAPON_TYPES.BOW && mainWeapon.type !== WEAPON_TYPES.GREATBOW) {
+                if (mastery === MASTERY.STRENGTH || mastery === MASTERY.CONSTITUTION) {
                     if (combat.playerAttributes?.totalStrength as number >= THRESHOLD.TWO_HAND) { // Might be a dual-wield compiler instead to take the rest of it
-                        if (combat.weapons[1]?.type !== WEAPON_TYPES.BOW) {
+                        if (offWeapon.type !== WEAPON_TYPES.BOW) {
                             combat.dualWielding = true;
-                            dualWieldCompiler(combat, computerPhysicalDefenseMultiplier, computerMagicalDefenseMultiplier);
+                            dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
                             playerPhysicalDamage *= DAMAGE.HIGH;
@@ -1433,12 +1383,12 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                     playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
-            if (combat.weapons[0].attackType === ATTACK_TYPES.MAGIC) {
-                if (combat.player?.mastery === MASTERY.CAEREN || combat.player?.mastery === MASTERY.KYOSIR) {
+            if (mainWeapon.attackType === ATTACK_TYPES.MAGIC) {
+                if (mastery === MASTERY.CAEREN || mastery === MASTERY.KYOSIR) {
                     if (combat.playerAttributes?.totalCaeren as number >= THRESHOLD.TWO_HAND) {
-                        if (combat.weapons[1]?.type !== WEAPON_TYPES.BOW) {
+                        if (offWeapon.type !== WEAPON_TYPES.BOW) {
                             combat.dualWielding = true;
-                            dualWieldCompiler(combat, computerPhysicalDefenseMultiplier, computerMagicalDefenseMultiplier);
+                            dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
                             playerPhysicalDamage *= DAMAGE.MID;
@@ -1453,55 +1403,25 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                     playerMagicalDamage *= DAMAGE.LOW;
                 };
             };
-            if (combat.weapons[0]?.type === WEAPON_TYPES.BOW || combat.weapons[0]?.type !== WEAPON_TYPES.GREATBOW) {
+            if (mainWeapon.type === WEAPON_TYPES.BOW || mainWeapon.type !== WEAPON_TYPES.GREATBOW) {
                 playerPhysicalDamage *= DAMAGE.HIGH;
                 playerMagicalDamage *= DAMAGE.HIGH;
             };
         }; 
     };
-    if (playerAction === ACTION_TYPES.ACHIRE) {
-        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (playerAction === ACTION_TYPES.ARC) {
-        playerPhysicalDamage *= DAMAGE.THREE;
-        playerMagicalDamage *= DAMAGE.THREE;
-    };
-    if (playerAction === ACTION_TYPES.LEAP) {
-        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (playerAction === ACTION_TYPES.QUOR) {
-        playerPhysicalDamage *= DAMAGE.THREE;
-        playerMagicalDamage *= DAMAGE.THREE;
-    };
-    if (playerAction === ACTION_TYPES.RUSH) {
-        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (playerAction === ACTION_TYPES.WRITHE) {
-        playerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        playerMagicalDamage *= DAMAGE.ONE_FIFTY;
-    };
-    if (playerAction === ACTION_TYPES.STORM) {
-        playerPhysicalDamage *= DAMAGE.NEG_LOW;
-        playerMagicalDamage *= DAMAGE.NEG_LOW;
-    };
-    if (playerAction === ACTION_TYPES.ROLL ) {
-        if (combat.rollSuccess) {
-            playerPhysicalDamage *= DAMAGE.MID;
-            playerMagicalDamage *= DAMAGE.MID;
-        } else {
-            playerPhysicalDamage *= DAMAGE.NEG_HIGH;
-            playerMagicalDamage *= DAMAGE.NEG_HIGH;
+    if (playerAction === ACTION_TYPES.ROLL) {
+        const rollMult = combat.rollSuccess ? DAMAGE.MID : DAMAGE.NEG_HIGH;
+        playerPhysicalDamage *= rollMult;
+        playerMagicalDamage *= rollMult;
+    } else {
+        const mult = actionMultipliers[playerAction];
+        if (mult) {
+            playerPhysicalDamage *= mult.physical;
+            playerMagicalDamage *= mult.magical;
         };
     };
-    if (playerAction === ACTION_TYPES.THRUST ) {
-        playerPhysicalDamage *= DAMAGE.NEG_LOW;
-        playerMagicalDamage *= DAMAGE.NEG_LOW;
-    };
     const criticalClearance = Math.floor(Math.random() * 10100) / 100;
-    let criticalChance = combat.weapons[0]?.criticalChance as number;
+    let criticalChance = mainWeapon.criticalChance as number;
     criticalChance -= (combat.computerAttributes?.kyosirMod as number / 2);
     const criticalResult = criticalCompiler(true, combat.player as Ascean, criticalChance, criticalClearance, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess, combat.isSeering);
     combat.criticalSuccess = criticalResult.criticalSuccess;
@@ -1509,8 +1429,9 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     combat.isSeering = criticalResult.isSeering;
     playerPhysicalDamage = criticalResult.physicalDamage;
     playerMagicalDamage = criticalResult.magicalDamage;
-    playerPhysicalDamage *= (computerPhysicalDefenseMultiplier - (combat.weapons[0]?.physicalPenetration as number)) / 100;
-    playerMagicalDamage *= (computerMagicalDefenseMultiplier - (combat.weapons[0]?.magicalPenetration  as number)) / 100;
+    // 50% Defense, 30% Pen = 20% Defense. 1 - .2 = 0.8x Multiplier.
+    playerPhysicalDamage *= penetrationCompiler(computerPhysicalDefense, physPen);
+    playerMagicalDamage *= penetrationCompiler(computerMagicalDefense, magPen);
     const damageType = damageTypeCompiler(combat.playerDamageType, combat.computer as Ascean, combat.weapons[0] as Equipment, playerPhysicalDamage, playerMagicalDamage);
     playerPhysicalDamage = damageType.physicalDamage;
     playerMagicalDamage = damageType.magicalDamage;
@@ -1543,12 +1464,12 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
         combat.conviction.charges += 1;
     };
     combat.newComputerHealth -= combat.realizedPlayerDamage;
-    combat.typeAttackData.push(combat.weapons[0]?.attackType as string);
+    combat.typeAttackData.push(mainWeapon.attackType as string);
     combat.typeDamageData.push(combat.playerDamageType);
-    const skill = combat.weapons[0]?.type === "Ancient Shard" ? combat.weapons[0]?.damageType?.[0] : combat.weapons[0]?.type;
+    const skill = mainWeapon.type === "Ancient Shard" ? mainWeapon.damageType?.[0] : mainWeapon.type;
     combat.skillData.push(skill as string);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
-    combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${combat.weapons[0]?.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
+    combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${mainWeapon.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;
         combat.playerWin = true;

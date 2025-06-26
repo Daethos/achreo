@@ -188,6 +188,13 @@ export default class PlayerMachine {
             this.player.leashTimer?.destroy();
             this.player.leashTimer = undefined;
         };
+        let navMesh;
+        if (this.scene.navMesh) {
+            navMesh = this.scene.navMesh;
+        } else {
+            const chunk = this.scene.loadedChunks.get(`${this.scene.playerChunkX},${this.scene.playerChunkY}`);
+            navMesh = chunk?.navMesh;
+        };
         this.player.chaseTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
@@ -199,7 +206,7 @@ export default class PlayerMachine {
                     this.player.chaseTimer = undefined;
                     return;
                 };
-                this.player.path = this.scene.navMesh.findPath(this.player.position, this.player.currentTarget.position);
+                this.player.path = navMesh.findPath(this.player.position, this.player.currentTarget.position);
                 if (this.player.path && this.player.path.length > 1) {
                     if (!this.player.isPathing) this.player.isPathing = true;
                     const nextPoint = this.player.path[1];
@@ -289,12 +296,21 @@ export default class PlayerMachine {
             this.player.leashTimer?.destroy();
             this.player.leashTimer = undefined;
         };
+        
+        let navMesh;
+        if (this.scene.navMesh) {
+            navMesh = this.scene.navMesh;
+        } else {
+            const chunk = this.scene.loadedChunks.get(`${this.scene.playerChunkX},${this.scene.playerChunkY}`);
+            navMesh = chunk?.navMesh;
+        };
+
         this.player.leashTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
                 let originPoint = new Phaser.Math.Vector2(this.player.originalPosition.x, this.player.originalPosition.y);
                 // this.scene.navMesh.debugDrawClear();
-                this.player.path = this.scene.navMesh.findPath(this.player.position, originPoint);
+                this.player.path = navMesh.findPath(this.player.position, originPoint);
                 if (this.player.path && this.player.path.length > 1) {
                     if (!this.player.isPathing) this.player.isPathing = true;
                     const nextPoint = this.player.path[1];
@@ -433,6 +449,13 @@ export default class PlayerMachine {
             this.player.leashTimer?.destroy();
             this.player.leashTimer = undefined;
         };
+        let navMesh;
+        if (this.scene.navMesh) {
+            navMesh = this.scene.navMesh;
+        } else {
+            const chunk = this.scene.loadedChunks.get(`${this.scene.playerChunkX},${this.scene.playerChunkY}`);
+            navMesh = chunk?.navMesh;
+        };
         this.player.followTimer = this.scene.time.addEvent({
             delay: 500,
             callback: () => {
@@ -447,7 +470,7 @@ export default class PlayerMachine {
                 const followPosition = new Phaser.Math.Vector2(
                     this.scene.player.x + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].x, 
                     this.scene.player.y + PARTY_OFFSET[this.player.y < this.scene.player.y ? this.player.partyPosition : this.player.partyPosition + 5].y);
-                this.player.path = this.scene.navMesh.findPath(this.player.position, followPosition);
+                this.player.path = navMesh.findPath(this.player.position, followPosition);
                 if (this.player.path && this.player.path.length > 1) {
                     if (!this.player.isPathing) this.player.isPathing = true;
                     const nextPoint = this.player.path[1];

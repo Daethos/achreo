@@ -618,4 +618,9 @@ export class Hud extends Phaser.Scene {
             EventBus.emit("update-enemies", []);
         });
     };
+
+    updateCoordinates(x: number, y: number) {
+        console.log(x, y, "Saving Coordinates");
+        EventBus.emit("save-this-setting", { coordinates: { x, y } });
+    };
 };

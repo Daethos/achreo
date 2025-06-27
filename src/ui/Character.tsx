@@ -1,4 +1,4 @@
-import { Accessor, For, JSX, lazy, Match, Setter, Show, Suspense, Switch, createEffect, createSignal } from "solid-js";
+import { Accessor, For, JSX, lazy, Match, Setter, Show, Suspense, Switch, createEffect, createSignal, createMemo } from "solid-js";
 import { Form } from "solid-bootstrap";
 import AttributeModal, { AttributeCompiler, AttributeNumberModal } from "../components/Attributes";
 import Ascean from "../models/ascean";
@@ -41,12 +41,14 @@ export const COST = {
     "-30": "-45 Grace",
     "-15": "-30 Grace",
     "0": "-15 Grace",
+    "10": "0 Grace",
     "15": "0 Grace",
     "30": "15 Grace",
     "45": "30 Grace",
     "60": "45 Grace",
 };
 export const COOLDOWN = {
+    "0s": "0s",
     "3s": "1s",
     "6s": "3s",
     "10s": "6s",
@@ -216,10 +218,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const addTalent = (talent: string, type: string) => {
-        if (talents().points.spent === talents().points.total) {
-            setShowTalentConfirm({ show: false, type: "" });    
-            return;
-        };
+        // if (talents().points.spent === talents().points.total) {
+        //     setShowTalentConfirm({ show: false, type: "" });    
+        //     return;
+        // };
         let newTalents = JSON.parse(JSON.stringify(talents()));
         (newTalents.talents[talent as keyof typeof newTalents.talents] as any)[type] = true;
         newTalents.points.spent += 1;
@@ -329,6 +331,152 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </div>;
     };
 
+    const displayedSpecials = createMemo(() => {
+    return ["Caerenic", "Stalwart", "Stealth"]
+        .concat(specials())
+        .filter((spec) => talents().talents[spec.toLowerCase() as keyof typeof talents]);
+    });
+    
+    const characterInfo = createMemo(() => {
+        switch (settings()?.characterViews) {
+            case CHARACTERS.CHARACTER:
+                return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
+                    <div>
+                    { dimensions().ORIENTATION === "landscape" ? ( <>
+                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
+                        <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
+                    </> ) : ( <>
+                        <h2 style={{ "margin-top": "15%" }}>
+                            <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
+                            {combat()?.player?.description}
+                        </h2>
+                    </> ) }
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
+                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                    </div>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                        <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
+                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
+                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
+                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
+                        <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
+                        <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
+                        <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
+                        <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+                    </div>
+
+                </div>
+            </div>;
+            case CHARACTERS.QUESTS:
+                return <div class="creature-heading">
+                    <h1 style={{...bMargin}}>Quests</h1>
+                    <For each={quests().quests}>{(quest, _index) => {
+                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
+                            <h2 style={{ color: "gold" }}>{quest.title}</h2>
+                            <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
+                            <p style={{ color: "gold" }}>{quest.giver}</p>
+                        </div>
+                    }}</For>
+                </div>;
+            case CHARACTERS.REPUTATION:
+                const unnamed = reputationConcern() === "Enemy" 
+                    ? reputation().factions.filter((faction) => faction.named === false)
+                    : processReputation(reputationConcern().toLowerCase());
+                return <div class="creature-heading">
+                    <h1 onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={{...bMargin}}>Reputation ({reputationConcern()})</h1>
+                    <div style={bMargin}>
+                        <For each={unnamed}>
+                            {(faction: FACTION) => (
+                                createReputationBar(faction, reputationConcern())
+                            )}
+                        </For>
+                    </div>
+                </div>;
+            case CHARACTERS.SKILLS:
+                const skills = Object.keys(ascean().skills).map((skill) => {
+                    return createSkillBar(skill);
+                });
+                return <div class="creature-heading">
+                    <h1 style={{...bMargin}}>Skills</h1>
+                    <div style={bMargin}>
+                        {skills}
+                    </div>
+                </div>;
+            case CHARACTERS.STATISTICS:
+                let highestDeity = Object.entries(statistics().combat?.deities).reduce((a, b) => a?.[1] > b?.[1] ? a : b) || combat().weapons?.[0]?.influences?.[0]; // || combat().weapons?.[0]?.influences?.[0]
+                const highestPrayer = Object.entries(statistics().combat?.prayers).reduce((a, b) => a?.[1] > b?.[1] ? a : b);
+                let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
+                if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
+                if (highestDeity?.[1] === 0) highestDeity[0] = combat().weapons?.[0]?.influences?.[0] as string; 
+                return <div class="creature-heading ">
+                    <h1 style={{...bMargin}}>Attacks</h1>
+                        Magical: <span class="gold">{statistics().combat?.attacks?.magical}</span> <br />
+                        Physical: <span class="gold">{statistics().combat?.attacks?.physical}</span><br />
+                        Highest Damage: <span class="gold">{Math.round(statistics().combat?.attacks?.total)}</span>
+                    <h1 style={{...bMargin}}>Combat</h1>
+                        Mastery: <span class="gold">{highestMastery[0].charAt(0).toUpperCase() + highestMastery[0].slice(1)} - {highestMastery[1]}</span><br />
+                        Wins / Losses: <span class="gold">{statistics().combat?.wins} / {statistics().combat?.losses}</span>
+                    <h1 style={{...bMargin}}>Prayers</h1>
+                        Consumed / Invoked: <span class="gold">{statistics().combat?.actions?.consumes} / {statistics().combat?.actions?.prayers} </span><br />
+                        Highest Prayer: <span class="gold">{highestPrayer[0].charAt(0).toUpperCase() + highestPrayer[0].slice(1)} - {highestPrayer[1]}</span><br />
+                        Favored Deity: <span class="gold">{highestDeity[0]}</span><br />
+                        Blessings: <span class="gold">{highestDeity[1]}</span>
+                </div>;
+            case CHARACTERS.TALENTS:
+                return <div class="creature-heading">
+                    <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
+                    <h3 classList={{
+                        "animate-flicker-infinite":talents().points.spent !== talents().points.total,
+                        "animate-texty-infinite":talents().points.spent === talents().points.total,
+                    }} style={{color:"#fdf6d8", "--glow-color":"#fdf6d8", "margin":"2.5% 0 5%"}}>{talents().points.spent} / {talents().points.total}</h3>
+                    <For each={displayedSpecials()}>{(special) => {
+                        const lower = special.toLowerCase();
+                        const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+                        const talent = () => talents().talents[lower as keyof typeof talents] as any;
+                        const efficient = () => talent().efficient;
+                        const enhanced = () => talent().enhanced;
+                        const cost = () => efficient()
+                            ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST]
+                            : spec?.cost;
+                        const cooldown = () => efficient()
+                            ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
+                            : spec?.cooldown;
+                        // const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
+                        // const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
+                        // const cost = efficient ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST] : spec?.cost;
+                        // const cooldown = efficient ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN] : spec?.cooldown;
+                        return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
+                            <div style={{ padding: "1em" }}>
+                            <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
+                                {svg(spec?.svg)} {special.charAt(0).toUpperCase() + special.slice(1)} <br />
+                            </p>
+                            <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>
+                                {spec?.description} <span style={{ color: "gold" }}>{enhanced() ? spec?.talent.split(".")[1] : ""}</span>
+                            </p>
+                            <p style={{ color: "aqua" }}>
+                                {spec?.time} {spec?.special} <br />
+                                <span style={{ color: efficient() ? "gold" : "aqua" }}>{cost()}. {cooldown()} Cooldown</span> <br />
+                            </p>
+                            </div>
+                        </div>
+                    }}</For>
+                </div>;
+            case CHARACTERS.TRAITS:
+                return <div class="creature-heading">
+                    <h1>{playerTraitWrapper()?.primary?.name}</h1>
+                    <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
+                    <h1>{playerTraitWrapper()?.secondary?.name}</h1>
+                    <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitOneName}</span> - {playerTraitWrapper()?.secondary?.traitOneDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitTwoName}</span> - {playerTraitWrapper()?.secondary?.traitTwoDescription}</h2>
+                    <h1>{playerTraitWrapper()?.tertiary?.name}</h1>
+                    <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitOneName}</span> - {playerTraitWrapper()?.tertiary?.traitOneDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitTwoName}</span> - {playerTraitWrapper()?.tertiary?.traitTwoDescription}</h2>
+                </div>;
+            default: return ("");
+        };
+    });
+
     const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
             case CHARACTERS.CHARACTER:
@@ -421,7 +569,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         "animate-flicker-infinite":talents().points.spent !== talents().points.total,
                         "animate-texty-infinite":talents().points.spent === talents().points.total,
                     }} style={{color:"#fdf6d8", "--glow-color":"#fdf6d8", "margin":"2.5% 0 5%"}}>{talents().points.spent} / {talents().points.total}</h3>
-                    <For each={["Caerenic", "Stalwart", "Stealth"].concat(specials())}>{(special) => {
+                    <For each={displayedSpecials()}>{(special) => {
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
                         const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
@@ -430,7 +578,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
-                                {svg(spec?.svg)} {special} <br />
+                                {svg(spec?.svg)} {special.charAt(0).toUpperCase() + special.slice(1)} <br />
                             </p>
                             <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>
                                 {spec?.description} <span style={{ color: "gold" }}>{enhanced ? spec?.talent.split(".")[1] : ""}</span>
@@ -741,7 +889,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </Match>    
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
-                    {createCharacterInfo(CHARACTERS.CHARACTER)}
+                    {/* {createCharacterInfo(CHARACTERS.CHARACTER)} */}
+                    {characterInfo()}
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
                     <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
@@ -1079,11 +1228,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced || (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "flicker 0.75s infinite alternate" : ""}}>{showTalent()?.talent.name}</span>{" "} 
                         </p>
                         <span class="gold">
-                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent < talents().points.total ?
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent > talents().points.total ?
                             <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
                                 <p style={font("0.9em")}>Enhance</p>
                         </button> : ""}{" "}
-                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent < talents().points.total ?
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent > talents().points.total ?
                             <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
                                 <p style={font("0.9em")}>Optimize</p>
                             </button> : ""}{" "}

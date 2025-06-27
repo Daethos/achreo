@@ -89,7 +89,7 @@ function findMutationRange(value: number, ranges: Array<{threshold: number, rang
 export function getSpecificItem(name: string, rarity: string) {
     for (const collection of COLLECTION) {
         const found = collection.find(i => i.name === name && i.rarity === rarity);
-        if (found) return found;
+        if (found) return Object.freeze(found);
     };
 };
 
@@ -184,20 +184,22 @@ async function defaultMutate(equipment: Equipment[]) {
 
 function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefined {
     try {
-        const baseItem = getSpecificItem(eqp.name, eqp.rarity as string); // JSON.parse(JSON.stringify(getSpecificItem(item)));
-        const base = JSON.parse(JSON.stringify(baseItem));
-        let item = JSON.parse(JSON.stringify(eqp));
+        // console.log(eqp, "Starting EQP");
+        const baseItem = deepClone(getSpecificItem(eqp.name, eqp.rarity as string)); // JSON.parse(JSON.stringify(getSpecificItem(item)));
+        const base = deepClone(baseItem);
+        // console.log(base, "Base!");
+        let item = deepClone(eqp);
+        // console.log(item, "Item!");
         // console.log(base, "Base Item");
         for (const attribute of ATTRIBUTES) {
             if (sans.includes(attribute)) continue;
-            const baseline: number = base[attribute];
+            const baseline: number = base![attribute as keyof typeof base];
             if (!baseline || baseline <= 0 || baseline >= 20) continue;
             const [min, max] = ATTRIBUTE_MUTATION_RANGES[baseline as keyof typeof ATTRIBUTE_MUTATION_RANGES];
             item[attribute] = randomIntFromInterval(min, max);
         };
         for (const attribute of CHANCE) {
             if (sans.includes(attribute)) continue;
-            
             const baseline = base![attribute as keyof typeof base];
             const [minMod, maxMod] = findMutationRange(baseline, CHANCE_MUTATION_RANGES);
             item[attribute] = randomFloatFromInterval(

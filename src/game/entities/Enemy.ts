@@ -1399,14 +1399,14 @@ export default class Enemy extends Entity {
         return false;
     };
     
-    startCasting = (name: string, duration: number, style: string, channel = false) => {
+    startCasting = (name: string, duration: number, style: string, channel = false, beam = true) => {
         this.castbar.reset();
         this.castbar.setVisible(true); // Added
         this.castbar.setup(this.x, this.y);
         this.isCasting = true;
         this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
-        if (!(name === States.HEALING || name === States.RECONSTITUTE)) this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
+        if (beam) this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel === true) this.castbar.setTime(duration);
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
@@ -2412,7 +2412,7 @@ export default class Enemy extends Entity {
         this.enemySound("fire", this.castingSuccess);
         this.stopCasting("Countered Frost");
     };
-    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST);
+    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST, false, false);
     onHealingUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, CAST);
@@ -2796,7 +2796,7 @@ export default class Enemy extends Entity {
         this.stopCasting("Countered Quor");
     };
     onReconstituteEnter = () => {
-        this.startCasting("Reconstituting", PLAYER.DURATIONS.RECONSTITUTE, HEAL, true);
+        this.startCasting("Reconstituting", PLAYER.DURATIONS.RECONSTITUTE, HEAL, true, false);
         this.channelCount = 0;
         this.reconTimer = this.scene.time.addEvent({
             delay: 1000,

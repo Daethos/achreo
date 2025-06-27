@@ -379,7 +379,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
-            border: `0.15em solid ${getRarityColor(rarity)}`,
+            border: `0.2em solid ${getRarityColor(rarity)}`,
             "background-color": "#000",
         };
     };
@@ -1368,28 +1368,19 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <p class="blueMarkup">[Rare - 3g]</p>
                     <p class="purpleMarkup">[Epic - 12g]</p>
                     <p class="darkorangeMarkup">[Legendary - 60g]</p>
-                    <br /><button class="highlight" data-function-name="setRegistry">Check the Registry</button> 
-                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater?</button>
-                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess?</button>
-                    <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry?</button>
-                    <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith?</button>
+                    <br /><button class="highlight" data-function-name="setRegistry">Check the Registry.</button> 
+                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater.</button>
+                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess.</button>
+                    <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry.</button>
+                    <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith.</button>
                 `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
                 <br />
-                
-                {/* { party() && (
-                    <>
-                        <br />
-                        <Typewriter stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} styling={{...typewriterStyling, color: "gold"}} performAction={hollowClick} />
-                        <br />
-                        <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
-                    </>
-                ) } */}
-                {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%" }}> 
+                {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%" }}> 
                     {upgradeItems().map((item: any) => {
                         if (item === undefined) return;
                         return (
                             <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
-                                <img src={item?.imgUrl} alt={item?.name} />
+                                <img src={item?.imgUrl} alt={item?.name} /><br />
                                 Forge
                             </div>
                         );
@@ -1398,34 +1389,23 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 {forgings().show ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}>
-                    
-                    <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
-                        if (item === undefined) return;
-                        return (
-                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
-                                <img src={item?.imgUrl} alt={item?.name} />
-                                <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
-                            </div>
-                        );
-                    }}</For>
-                   
-                    {/* {forgings().items.concat(game().inventory.inventory).map((item: any) => {
-                        if (item === undefined) return;
-                        return (
-                            <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
-                                <img src={item?.imgUrl} alt={item?.name} />
-                                <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
-                            </div>
-                        );
-                    })} */}
+                    <div class="playerInventoryBag center" style={{ width: "90%", "margin": "0 auto 5%", "grid-template-columns":"repeat(7, 1fr)" }}>                    
+                        <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
+                            if (item === undefined) return;
+                            return (
+                                <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
+                                    <img src={item?.imgUrl} alt={item?.name} style={{ transform: "scale(1.1)" }} />
+                                    <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
+                                </div>
+                            );
+                        }}</For>
                     </div>
                     </div> ) 
                 : forgings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
                 {etchings().show && etchings().items.length > 0 ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}> 
+                    <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}> 
                     {etchings().items.map((item: any) => {
                         if (item === undefined) return;
                         return (
@@ -1439,7 +1419,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </div> ) 
                 : etchings().show ? ( <span style={{ color: "red" }}>There is nothing you possess that can be etched into another primal form of influence.</span> ) : ( "" )}
                 <br />
-                {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "65%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}>
+                {blacksmithSell() && <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}>
                     <For each={game()?.inventory.inventory}>{(item) => {
                         if (item === undefined || item === undefined) return;
                         return <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>

@@ -84,13 +84,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     createEffect(() => EventBus.emit("combat", combat()));  
     createEffect(() => EventBus.emit("game", game()));  
     createEffect(() => EventBus.emit("reputation", reputation()));
-    createEffect(() => {
-        // instance.game?.registry.set("settings", settings());
-        EventBus.emit("settings", settings());
-    });
-    createEffect(() => {
-        EventBus.emit("talents", talents());
-    });
+    createEffect(() => EventBus.emit("settings", settings()));
+    createEffect(() => EventBus.emit("talents", talents()));
     const sendEnemyData = () => EventBus.emit("get-enemy", combat().computer);
     function initiateCombat(data: any, type: string) {
         try {    

@@ -120,6 +120,7 @@ export class Gauntlet extends Phaser.Scene {
         this.gameEvent();
         this.state = this.registry.get("combat");
         this.gauntlet = this.registry.get("gauntlet");
+        console.log(this.gauntlet, "Current Gauntlet");
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
@@ -165,7 +166,6 @@ export class Gauntlet extends Phaser.Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
-        console.log(this.markers, "Markers?");
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
         if (this.hud.settings.difficulty.arena) {
             this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
@@ -332,6 +332,7 @@ export class Gauntlet extends Phaser.Scene {
         this.resumeMusic();
         this.state = this.registry.get("combat");
         this.gauntlet = this.registry.get("gauntlet");
+        console.log(this.gauntlet, "Current Gauntlet");
         this.player.health = this.state.newPlayerHealth;
         this.player.healthbar.setValue(this.state.newPlayerHealth);
         this.player.healthbar.setTotal(this.state.playerHealth);
@@ -569,9 +570,19 @@ export class Gauntlet extends Phaser.Scene {
     };
 
     createNewEnemies = (): void => {
+        if (this.gauntlet.type === "SELECTED") {
+            const enemies = this.registry.get("enemies");
+            const enemySet: ARENA_ENEMY[] = enemies.map((enemy: Compiler) => {
+                const { level, mastery } = enemy.ascean;
+                return { level, mastery } as ARENA_ENEMY;
+            });
+            const newEnemies = fetchArena(enemySet);
+            this.registry.set("enemies", newEnemies);
+            return;
+        };
         const range = [LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].prev, Math.min((this.player.ascean.level % 2 === 0 ? this.player.ascean.level : this.player.ascean.level + 1), 8), LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].next];
         const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
-        const enemies = []
+        const enemies = [];
         for (let i = 0; i < this.gauntlet.opponents; ++i) {
             const mastery = masteries[Math.floor(Math.random() * masteries.length)];
             enemies.push(mastery);    
@@ -621,7 +632,6 @@ export class Gauntlet extends Phaser.Scene {
                     };
                 };
                 if (this.gauntlet.type === "FREE_FOR_ALL") {
-                    console.log("FREE FOR ALL!");
                     for (let en = 0; en < this.enemies.length; en++) {
                         if (this.enemies[en].enemyID === enemy.enemyID) continue;
                         enemy.enemies.push({id:this.enemies[en].enemyID,threat:0});

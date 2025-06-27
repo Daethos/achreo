@@ -466,36 +466,46 @@ export default function App() {
     
     usePhaserEvent("add-party", addParty);
     usePhaserEvent("remove-party", removeParty);
-    usePhaserEvent("request-settings", sendSettings);
+    
     usePhaserEvent("alert", (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
     usePhaserEvent("set-tips", setTips);
     usePhaserEvent("scene-switch", (data:{current:string,next:string}) => switchScene(data.current,data.next));
     usePhaserEvent("enter-menu", enterMenu);
+    
+    usePhaserEvent("silent-save", silentSave);
     usePhaserEvent("fetch-ascean", fetchAscean);
     usePhaserEvent("loading-ascean", loadingAscean);
     usePhaserEvent("quick-ascean", quickAscean);
-    usePhaserEvent("fetch-inventory", fetchInventory);
     usePhaserEvent("save-ascean", saveAscean);
-    usePhaserEvent("silent-save", silentSave);
     usePhaserEvent("update-ascean", updateAscean);
+    
+    usePhaserEvent("fetch-inventory", fetchInventory);
     usePhaserEvent("update-inventory", saveInventory);
     usePhaserEvent("update-pause", togglePause);
-    usePhaserEvent("request-reputation", () => EventBus.emit("reputation", reputation()));
-    usePhaserEvent("request-statistics", () => EventBus.emit("statistics", statistics()));
-    usePhaserEvent("request-talents", () => EventBus.emit("talents", talents()));
+    
     usePhaserEvent("add-quest", addQuest);
     usePhaserEvent("complete-quest", completeQuest);
     usePhaserEvent("remove-quest", removeQuest);
     usePhaserEvent("update-quests", updateQuest);
+    
+    usePhaserEvent("request-reputation", () => EventBus.emit("reputation", reputation()));
     usePhaserEvent("update-reputation", updateRep);
+    
+    usePhaserEvent("request-statistics", () => EventBus.emit("statistics", statistics()));
     usePhaserEvent("update-statistics", updateStat);
+    
+    usePhaserEvent("request-talents", () => EventBus.emit("talents", talents()));
     usePhaserEvent("update-talents", updateTal);
+    
     usePhaserEvent("request-settings", () => EventBus.emit("settings", settings()));
     usePhaserEvent("save-settings", saveSettings);
     usePhaserEvent("save-this-setting", saveThisSetting);
     usePhaserEvent("insert-settings", insertSettings);
+    usePhaserEvent("request-settings", sendSettings);
     usePhaserEvent("update-settings", updateRep);
+    
     usePhaserEvent("player-ascean", () => EventBus.emit("player-ascean-ready", ascean()));
+    
     usePhaserEvent("save-intro", async () => {
         const update = { ...settings(), tutorial: { ...settings().tutorial, intro: true} };
         await saveSettings(update);

@@ -2176,20 +2176,21 @@ export default class PlayerMachine {
         if (this.player.moving() === true) return;
         this.player.isCasting = true;
         this.player.checkTalentCost(States.RECONSTITUTE, PLAYER.STAMINA.RECONSTITUTE);
-        const duration = this.player.checkTalentEnhanced(States.RECONSTITUTE) ? PLAYER.DURATIONS.RECONSTITUTE / 2 : PLAYER.DURATIONS.RECONSTITUTE;
+        const enhanced = this.player.checkTalentEnhanced(States.RECONSTITUTE);
+        const duration = enhanced ? PLAYER.DURATIONS.RECONSTITUTE / 2 : PLAYER.DURATIONS.RECONSTITUTE;
         this.player.specialCombatText = this.scene.showCombatText("Reconstitute", duration / 2, "heal", false, true, () => this.player.specialCombatText = undefined);
         this.player.castbar.setTotal(duration);
         this.player.castbar.setTime(duration);
         this.player.beam.startEmitter(this, duration);
         this.player.reconTimer = this.scene.time.addEvent({
-            delay: this.player.checkTalentEnhanced(States.RECONSTITUTE) ? 500 : 1000,
+            delay: enhanced ? 500 : 1000,
             callback: () => this.reconstitute(),
             callbackScope: this,
             repeat: 5,
         });
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.RECONSTITUTE, PLAYER.COOLDOWNS.MODERATE);
         this.scene.time.addEvent({
-            delay: this.player.checkTalentEnhanced(States.RECONSTITUTE) ? 2500 : 5000,
+            delay: enhanced ? 2500 : 5000,
             callback: () => this.player.isCasting = false,
             callbackScope: this,
             loop: false,

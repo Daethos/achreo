@@ -138,10 +138,12 @@ export class Game extends Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         if (this.hud.prevScene === "Underground") {
             this.player.setPosition(1410, 130);
-        };
-        if (this.hud.prevScene === "Tutorial") {
+        } else if (this.hud.prevScene === "Tutorial") {
             this.player.setPosition(38, 72);
+        } else {
+            this.player.setPosition(this.hud.settings?.coordinates?.x || 200, this.hud.settings?.coordinates?.y || 200);
         };
+        this.hud.updateCoordinates(this.player.x, this.player.y);
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
         
         // this.matter.world.createDebugGraphic();
@@ -310,7 +312,12 @@ export class Game extends Scene {
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
-
+        this.time.addEvent({
+            delay: 10000,
+            loop: true,
+            callback: () => this.hud.updateCoordinates(this.player.x, this.player.y),
+            callbackScope: this           
+        });
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
     };
@@ -872,6 +879,8 @@ export class Game extends Scene {
         };
         this.matter.resume();
         this.scene.wake();
+        // Add an EventBus.emit("save-this-setting", {coordinates:{x:this.player.x,y:this.player.y}});
+        this.hud.updateCoordinates(this.player.x, this.player.y);
         EventBus.emit("current-scene-ready", this);
     };
 

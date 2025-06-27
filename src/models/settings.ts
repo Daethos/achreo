@@ -47,6 +47,7 @@ export default class Settings {
     public reputationViews: string;
     public grace: string;
     public stamina: string;
+    public coordinates: { x: number; y: number; };
     public combatText: { 
         size: string;
         left: string; 
@@ -72,7 +73,7 @@ export default class Settings {
         parry: number;
         jump: number;
         special: number;
-    }; 
+    };
     public difficulty: {
         arena: boolean;
         aggression: number; 
@@ -218,6 +219,7 @@ export default class Settings {
         this.healthViews = "FULL";
         this.grace = "NUMBER";
         this.stamina = "NUMBER";
+        this.coordinates = { x: 200, y: 200 };
         this.combatText = { size: "1.25em", left: "20vw", top: "40vh", height: "50vh", width: "60vw" };
         this.combatSettings = { size: "1.25em", left: "20%", top: "40%", height: "50%", width: "60%" };
         this.control = "Buttons";

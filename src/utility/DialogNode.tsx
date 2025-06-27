@@ -2,7 +2,7 @@ import { Accessor, onMount } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import DialogNodes from "./DialogNodes.json";
-import EnemyDialogNodes from './EnemyDialogNodes.json';
+import EnemyDialogNodes from "./EnemyDialogNodes.json";
 import { EventBus } from "../game/EventBus";
 import { populateEnemy } from "../assets/db/db";
 import { asceanCompiler, Compiler } from "./ascean";
@@ -40,19 +40,19 @@ export function getNpcId(id: string) {
 };
 
 const REVERSE_KEY = {
-    'Traveling Alchemist': 'Merchant-Alchemy',
-    'Traveling Armorer': 'Merchant-Armor',
-    'Traveling Blacksmith': 'Merchant-Smith',
-    'Traveling Jeweler': 'Merchant-Jewelry',
-    'Traveling General Merchant': 'Merchant-General',
-    'Traveling Tailor': 'Merchant-Tailor',
-    'Traveling Senarian': 'Merchant-Mystic',
-    'Traveling Sevasi': 'Merchant-Weapon',
-    'Traveling Kyrisian': 'Merchant-All-Armor',
-    'Traveling Sedyreal': 'Merchant-All-Weapon',
-    'Kreceus': 'Merchant-All',
-    "Ashreu'ul": 'Merchant-All',
-    "Tutorial Teacher": 'Tutorial Teacher',
+    "Traveling Alchemist": "Merchant-Alchemy",
+    "Traveling Armorer": "Merchant-Armor",
+    "Traveling Blacksmith": "Merchant-Smith",
+    "Traveling Jeweler": "Merchant-Jewelry",
+    "Traveling General Merchant": "Merchant-General",
+    "Traveling Tailor": "Merchant-Tailor",
+    "Traveling Senarian": "Merchant-Mystic",
+    "Traveling Sevasi": "Merchant-Weapon",
+    "Traveling Kyrisian": "Merchant-All-Armor",
+    "Traveling Sedyreal": "Merchant-All-Weapon",
+    "Kreceus": "Merchant-All",
+    "Ashreu'ul": "Merchant-All",
+    "Tutorial Teacher": "Tutorial Teacher",
 };
 
 export const npcIds: NpcIds = {
@@ -88,38 +88,38 @@ export const TUTORIAL = {
     "caeren":10,
     "kyosir":10,
     "weaponOne":{
-        name: 'Pernach',
-        rarity: 'Common',
+        name: "Pernach",
+        rarity: "Common",
     },"weaponTwo":{
-        name: 'Spear',
-        rarity: 'Common',
+        name: "Spear",
+        rarity: "Common",
     },"weaponThree":{
-        name: 'Achestra',
-        rarity: 'Common',
+        name: "Achestra",
+        rarity: "Common",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Common',
+        name: "Parma",
+        rarity: "Common",
     },"helmet":{
-        name: 'Cloth Helm (Starter)',
-        rarity: 'Default',
+        name: "Cloth Helm (Starter)",
+        rarity: "Default",
     },"chest":{
-        name: 'Cloth Robes (Starter)',
-        rarity: 'Default',
+        name: "Cloth Robes (Starter)",
+        rarity: "Default",
     },"legs":{
-        name: 'Cloth Skirt (Starter)',
-        rarity: 'Default',
+        name: "Cloth Skirt (Starter)",
+        rarity: "Default",
     },"ringOne":{
-        name: 'Empty Ring Slow',
-        rarity: 'Default',
+        name: "Empty Ring Slow",
+        rarity: "Default",
     },"ringTwo":{
-        name: 'Empty Ring Slow',
-        rarity: 'Default',
+        name: "Empty Ring Slow",
+        rarity: "Default",
     },"amulet":{
-        name: 'Empty Amulet Slow',
-        rarity: 'Default',
+        name: "Empty Amulet Slow",
+        rarity: "Default",
     },"trinket":    {
-        name: 'Empty Trinket Slot',
-        rarity: 'Default',
+        name: "Empty Trinket Slot",
+        rarity: "Default",
     },
     "faith":"adherent",
     "currency":{"silver":0,"gold":0},
@@ -144,38 +144,38 @@ const KRECEUS = {
     "caeren":22,
     "kyosir":39,
     "weaponOne":{
-        name: 'Astral Spear',
-        rarity: 'Epic',
+        name: "Astral Spear",
+        rarity: "Epic",
     },"weaponTwo":{
-        name: 'Astral Spear',
-        rarity: 'Epic',
+        name: "Astral Spear",
+        rarity: "Epic",
     },"weaponThree":{
-        name: 'Achestra',
-        rarity: 'Epic',
+        name: "Achestra",
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
-        name: 'Astral Hood',
-        rarity: 'Epic',
+        name: "Astral Hood",
+        rarity: "Epic",
     },"chest":{
-        name: 'Astral Robes',
-        rarity: 'Epic',
+        name: "Astral Robes",
+        rarity: "Epic",
     },"legs":{
-        name: 'Astral Pants',
-        rarity: 'Epic',
+        name: "Astral Pants",
+        rarity: "Epic",
     },"ringOne":{
-        name: 'Astral Ring',
-        rarity: 'Epic',
+        name: "Astral Ring",
+        rarity: "Epic",
     },"ringTwo":{
-        name: 'Astral Ring',
-        rarity: 'Epic',
+        name: "Astral Ring",
+        rarity: "Epic",
     },"amulet":{
-        name: 'Astral Amulet',
-        rarity: 'Epic',
+        name: "Astral Amulet",
+        rarity: "Epic",
     },"trinket":    {
-        name: 'Astral Trinket',
-        rarity: 'Epic',
+        name: "Astral Trinket",
+        rarity: "Epic",
     },
     "faith":"adherent",
     "currency":{"silver":0,"gold":0},
@@ -200,38 +200,38 @@ const ASHREUUL = {
     "caeren":34,
     "kyosir":22,
     "weaponOne":{
-        name: 'War Hammer',
-        rarity: 'Epic',
+        name: "War Hammer",
+        rarity: "Epic",
     },"weaponTwo":{
-        name: 'Claymore',
-        rarity: 'Epic',
+        name: "Claymore",
+        rarity: "Epic",
     },"weaponThree":{
-        name: 'Battle Axe',
-        rarity: 'Epic',
+        name: "Battle Axe",
+        rarity: "Epic",
     },"shield":{
-        name: 'Shaorahi',
-        rarity: 'Epic',
+        name: "Shaorahi",
+        rarity: "Epic",
     },"helmet":{
-        name: 'Ashtre Helm',
-        rarity: 'Epic',
+        name: "Ashtre Helm",
+        rarity: "Epic",
     },"chest":{
-        name: 'Ashtre Armor',
-        rarity: 'Epic',
+        name: "Ashtre Armor",
+        rarity: "Epic",
     },"legs":{
-        name: 'Ashtre Greaves',
-        rarity: 'Epic',
+        name: "Ashtre Greaves",
+        rarity: "Epic",
     },"ringOne":{
-        name: 'Ashtre Ring',
-        rarity: 'Epic',
+        name: "Ashtre Ring",
+        rarity: "Epic",
     },"ringTwo":{
-        name: 'Ashtre Ring',
-        rarity: 'Epic',
+        name: "Ashtre Ring",
+        rarity: "Epic",
     },"amulet":{
-        name: 'Ashtre Amulet',
-        rarity: 'Epic',
+        name: "Ashtre Amulet",
+        rarity: "Epic",
     },"trinket":    {
-        name: 'Ashtre Trinket',
-        rarity: 'Epic',
+        name: "Ashtre Trinket",
+        rarity: "Epic",
     },
     "faith":"adherent",
     "currency":{"silver":0,"gold":0},
@@ -243,9 +243,9 @@ export function fetchTutorialEnemy() {
     try {
         let enemy: any = populateEnemy(TUTORIAL as any);
         const res = asceanCompiler(enemy);
-        EventBus.emit('tutorial-enemy-fetched', res);
+        EventBus.emit("tutorial-enemy-fetched", res);
     } catch (err) {
-        console.warn(err, 'Error Fetching Tutorial Enemy');
+        console.warn(err, "Error Fetching Tutorial Enemy");
     };
 };
 
@@ -254,7 +254,7 @@ export function fetchDm(_data: { enemy: string; npcType: string; }) {
         let dm: any = Math.random() > 0.5 ? KRECEUS : ASHREUUL;
         dm = populateEnemy(dm);
         const res: Compiler = asceanCompiler(dm) as Compiler;
-        EventBus.emit('dm-fetched', res); 
+        EventBus.emit("dm-fetched", res); 
     } catch (err: any) {
         console.log("Error Getting an NPC");
     };
@@ -294,7 +294,7 @@ export interface DialogOptionProps {
 
 export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) => {
     const handleClick = async () => {
-        if (option.action && typeof option.action === 'string') {
+        if (option.action && typeof option.action === "string") {
             const actionName = option.action.trim();
             const actionFunction = actions[actionName];
             if (actionFunction) {
@@ -306,7 +306,7 @@ export const DialogOption = ({ option, onClick, actions }: DialogOptionProps) =>
     };
 
     return <div>
-        <button onClick={handleClick} class='dialog-buttons inner'>
+        <button onClick={handleClick} class="dialog-buttons inner">
             {option.text}
         </button>
     </div>;
@@ -325,12 +325,12 @@ interface DialogTreeProps {
 const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, refillFlask }: DialogTreeProps) => {
     const actions = {
         getCombat: () => engageCombat(),
-        getArmor: () => getLoot('armor'),
-        getGeneral: () => getLoot('general'),
-        getJewelry: () => getLoot('jewelry'),
-        getMystic: () => getLoot('magical-weapon'),
-        getTailor: () => getLoot('cloth'),
-        getWeapon: () => getLoot('physical-weapon'),
+        getArmor: () => getLoot("armor"),
+        getGeneral: () => getLoot("general"),
+        getJewelry: () => getLoot("jewelry"),
+        getMystic: () => getLoot("magical-weapon"),
+        getTailor: () => getLoot("cloth"),
+        getWeapon: () => getLoot("physical-weapon"),
         getFlask: () => refillFlask()
     };
 
@@ -338,7 +338,7 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
         if (game()?.currentNode) {
             let newText = game()?.currentNode?.text;
             let newOptions: DialogNodeOption[] = [];
-            if (typeof game().currentNode?.text === 'string') {
+            if (typeof game().currentNode?.text === "string") {
                 newText = (game().currentNode?.text as string)?.replace(/\${(.*?)}/g, (_: any, g: string) => eval(g));
             } else if (Array.isArray(game().currentNode?.text)) {
                 if (game().currentNode?.text) {
@@ -348,15 +348,15 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
                                 const { key, operator, value } = condition;
                                 const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
                                 switch (operator) {
-                                case '>':
+                                case ">":
                                     return Number(optionValue) > Number(value);
-                                case '>=':
+                                case ">=":
                                     return Number(optionValue) >= Number(value);
-                                case '<':
+                                case "<":
                                     return Number(optionValue) < Number(value);
-                                case '<=':
+                                case "<=":
                                     return Number(optionValue) <= Number(value);
-                                case '=':
+                                case "=":
                                     return Number(optionValue) === Number(value);
                                 default:
                                     return false;
@@ -381,15 +381,15 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
                             const { key, operator, value } = condition;
                             const optionValue = ascean[key] !== undefined ? ascean[key] : state[key]; // Hopefully this works!
                             switch (operator) {
-                            case '>':
+                            case ">":
                                 return Number(optionValue) > Number(value);
-                            case '>=':
+                            case ">=":
                                 return Number(optionValue) >= Number(value);
-                            case '<':
+                            case "<":
                                 return Number(optionValue) < Number(value);
-                            case '<=':
+                            case "<=":
                                 return Number(optionValue) <= Number(value);
-                            case '=':
+                            case "=":
                                 return Number(optionValue) === Number(value);
                             default:
                                 return false;
@@ -406,17 +406,17 @@ const DialogTree = ({ ascean, engageCombat, getLoot, dialogNodes, game, state, r
                     };
                 }) as DialogNodeOption[];
             };
-            EventBus.emit('blend-game', { renderedText: newText, renderedOptions: newOptions });
+            EventBus.emit("blend-game", { renderedText: newText, renderedOptions: newOptions });
         };
     });
 
     const handleOptionClick = (nextNodeId: string | undefined) => {
         if (nextNodeId === undefined) {
-            EventBus.emit('blend-game', { setCurrentNodeIndex: 0 });
+            EventBus.emit("blend-game", { setCurrentNodeIndex: 0 });
         } else {
             let nextNodeIndex = dialogNodes.findIndex((node) => node.id === nextNodeId);
             if (nextNodeIndex === -1) nextNodeIndex = 0;
-            EventBus.emit('blend-game', { setCurrentNodeIndex: nextNodeIndex });
+            EventBus.emit("blend-game", { setCurrentNodeIndex: nextNodeIndex });
         };
     };
 

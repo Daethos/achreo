@@ -643,12 +643,15 @@ export class Game extends Scene {
 
         // Spawn NPCs
         map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => {
+            const type = npc.properties.find((prop: {name: string, value: string}) => prop.name === "name").value;
+            console.log(npc.properties, type, "NPC properties");
             const n = new NPC({ 
                 scene: this, 
                 x: npc.x + offsetX, 
                 y: npc.y + offsetY, 
                 texture: "player_actions", 
-                frame: "player_idle_0" 
+                frame: "player_idle_0",
+                type
             });
             this.npcs.push(n);
             npcs.push(n);

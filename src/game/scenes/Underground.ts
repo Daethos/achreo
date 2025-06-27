@@ -164,7 +164,6 @@ export class Underground extends Scene {
             if (tile?.properties && tile.properties?.key === "west") {
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
-            
         });
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3, this.layer4]);
         const objectLayer = map.getObjectLayer("navmesh");

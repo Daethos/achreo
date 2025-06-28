@@ -16,9 +16,9 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
         scene.add.existing(this);
         this.scene = scene;
         this._id = uuidv4();
-        this.setOrigin(0.5);
         this.setScale(0.75);
-        this.collider(scene);
+        this.setAlpha(0.75);
+        this.collider();
         this.listener();
     };
 
@@ -30,28 +30,28 @@ export default class Treasure extends Phaser.Physics.Matter.Image {
     };
 
 
-    collider = (scene: any) => {
+    collider = () => {
         this.sensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "treasureSensor" })
         this.setExistingBody(this.sensor);
         this.setStatic(true);
         this.setCollisionCategory(ENTITY_FLAGS.LOOT);
-        scene.matterCollision.addOnCollideStart({
+        this.scene.matterCollision.addOnCollideStart({
             objectA: [this.sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
                     EventBus.emit("lockpick", {id: this._id, interacting: true, type: "treasure"});
                 };
             },
-            context: scene
+            context: this.scene
         });
-        scene.matterCollision.addOnCollideEnd({
+        this.scene.matterCollision.addOnCollideEnd({
             objectA: [this.sensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && other.bodyB.label === "body") {
                     EventBus.emit("lockpick", {id: "", interacting: false, type: ""});
                 };
             },
-            context: scene
+            context: this.scene
         });
     };
 

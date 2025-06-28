@@ -603,7 +603,7 @@ export class Game extends Scene {
         map?.getObjectLayer("Treasure")?.objects.forEach((treasure: any) => {
             const t = new Treasure({ 
                 scene: this, 
-                x: treasure.x + offsetX, 
+                x: treasure.x + 16 + offsetX, 
                 y: treasure.y + offsetY 
             });
             this.treasures.push(t);
@@ -644,7 +644,6 @@ export class Game extends Scene {
         // Spawn NPCs
         map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => {
             const type = npc.properties.find((prop: {name: string, value: string}) => prop.name === "name").value;
-            console.log(npc.properties, type, "NPC properties");
             const n = new NPC({ 
                 scene: this, 
                 x: npc.x + offsetX, 

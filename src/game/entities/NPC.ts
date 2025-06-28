@@ -35,7 +35,6 @@ export default class NPC extends Entity {
 
     constructor(data: any) {
         let { scene, type } = data;
-        console.log(type, "Type?");
         super({ ...data, name: "npc", ascean: undefined, health: 0 }); 
         this.scene = scene;
         if (idCount >= 10) idCount = 0;

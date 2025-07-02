@@ -865,6 +865,15 @@ export default class PlayerMachine {
         this.scene.matter.world.remove(body, false);
         const vertical = forceX === 0;
         const hop = forceY === 0;
+        const chunk = this.scene.loadedChunks.get(`${this.scene.playerChunkX},${this.scene.playerChunkY}`);
+        let x, y;
+        if (chunk) {
+            x = chunk.map.widthInPixels;
+            y = chunk.map.heightInPixels;
+        } else {
+            x = this.scene.map.widthInPixels;
+            y = this.scene.map.heightInPixels;
+        };
         this.scene.tweens.add({
             targets: this.player.spriteWeapon,
             scale: this.player.spriteWeapon.scale * 1.25,
@@ -891,15 +900,17 @@ export default class PlayerMachine {
             },
             onComplete: () => {
                 this.scene.matter.world.add(body);
-                if (this.player.x as number > this.scene.map.widthInPixels) {
-                    this.player.setPosition(this.scene.map.widthInPixels, this.player.y);
-                } else if (this.player.x as number < 0) {
-                    this.player.setPosition(0, this.player.y);
-                };
-                if (this.player.y as number > this.scene.map.heightInPixels) {
-                    this.player.setPosition(this.player.x, this.scene.map.heightInPixels);
-                } else if (this.player.y as number < 0) {
-                    this.player.setPosition(this.player.x, 0);
+                if (!chunk) {
+                    if (this.player.x as number > x) {
+                        this.player.setPosition(x - 32, this.player.y);
+                    } else if (this.player.x as number < 0) {
+                        this.player.setPosition(32, this.player.y);
+                    };
+                    if (this.player.y as number > y) {
+                        this.player.setPosition(this.player.x, y - 32);
+                    } else if (this.player.y as number < 0) {
+                        this.player.setPosition(this.player.x, 32);
+                    };
                 };
             }
         });

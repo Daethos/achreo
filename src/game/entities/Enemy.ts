@@ -1506,7 +1506,9 @@ export default class Enemy extends Entity {
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.healthbar.setVisible(false);
-        this.setCollisionCategory(0);
+        const body = this.body as MatterJS.Body;
+        this.scene.matter.world.remove(body, false);
+        // this.setCollisionCategory(0);
         this.enemies = [];
         this.clearStatuses();
         if (Math.random() > 0.9 && this.scene.hud.currScene === "Game") {
@@ -1538,7 +1540,9 @@ export default class Enemy extends Entity {
         this.computerCombatSheet.newComputerHealth = this.ascean.health.max;
         this.isAggressive = this.startedAggressive;
         this.spriteWeapon.setVisible(true);
-        this.setCollisionCategory(1);
+        // this.setCollisionCategory(1);
+        const body = this.body as MatterJS.Body;
+        this.scene.matter.world.add(body);
         const texts = [`${this.weapons[0].influences[0]} be praised! I live again.`, `${this.weapons[0].influences[0]}, you have my caeren. Thank you for this change once more.`, "Alright, I feel better again.", "Well, that was unpleasant.", "Thank goodness that's over.", "Good as new!", "Hopefully, that's the end of that nonsense.", "My word, I didn't expect that to happen."];
         const text = texts[Math.floor(Math.random() * texts.length)];
         this.specialCombatText = this.scene.showCombatText(text, 1500, EFFECT, false, true, () => this.specialCombatText = undefined);

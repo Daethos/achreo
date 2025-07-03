@@ -3,6 +3,13 @@ import Equipment from "../../models/equipment";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 // @ts-ignore
 export const { Bodies } = Phaser.Physics.Matter.Matter;
+const COLORS = {
+    Common: 0xFDF6D8,
+    Uncommon: 0x00FF00,
+    Rare: 0x0000FF,
+    Epic: 0x800080,
+    Legendary: 0xFFD700
+};
 
 export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.Matter.Image  
     _id: string;
@@ -18,7 +25,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         if (enemy) {
             type = "enemy";
             x = enemy.body.position.x - 16;
-            y = enemy.body.position.y+ 16;
+            y = enemy.body.position.y + 16;
         } else { // Treasure Chest
             const treasure = scene.treasures?.find((e: any) => e._id === enemyID);
             type = "treasure";
@@ -30,7 +37,8 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         this.scene = scene;
         this.scene.plugins.get('rexGlowFilterPipeline').add(this, {
             outerStrength: 3,
-            glowColor: this.scene.player.setColor(this.scene.player.ascean?.mastery),
+            glowColor: COLORS[drop.rarity as keyof typeof COLORS],
+            // glowColor: this.scene.player.setColor(this.scene.player.ascean?.mastery),
             quality: 0.5,
             knockout: false,
         });

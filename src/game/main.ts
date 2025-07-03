@@ -29,12 +29,21 @@ const config: Phaser.Types.Core.GameConfig = {
     },
     parent: "game-container",
     backgroundColor: "#000",
-    dom: {createContainer: true},
-    input: {activePointers: 10, mouse:true, windowEvents:false},
+    dom: {
+        createContainer: true
+    },
+    input: {
+        activePointers: 10,
+        mouse:true, 
+        windowEvents:false
+    },
     scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Gauntlet,Hud],
     physics: {
         default: "matter",
-        matter: {gravity: {x: 0, y: 0}}, // debug: true,
+        matter: {
+            // debug: true,
+            gravity: {x: 0, y: 0}
+        }, 
     },
     fps: {target: 60,limit: 90},
     fullscreenTarget: "base-ui",

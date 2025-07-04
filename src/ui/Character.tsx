@@ -218,10 +218,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const addTalent = (talent: string, type: string) => {
-        // if (talents().points.spent === talents().points.total) {
-        //     setShowTalentConfirm({ show: false, type: "" });    
-        //     return;
-        // };
+        if (talents().points.spent === talents().points.total) {
+            setShowTalentConfirm({ show: false, type: "" });    
+            return;
+        };
         let newTalents = JSON.parse(JSON.stringify(talents()));
         (newTalents.talents[talent as keyof typeof newTalents.talents] as any)[type] = true;
         newTalents.points.spent += 1;
@@ -1228,11 +1228,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced || (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "flicker 0.75s infinite alternate" : ""}}>{showTalent()?.talent.name}</span>{" "} 
                         </p>
                         <span class="gold">
-                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent > talents().points.total ?
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent < talents().points.total ?
                             <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
                                 <p style={font("0.9em")}>Enhance</p>
                         </button> : ""}{" "}
-                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent > talents().points.total ?
+                        {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent < talents().points.total ?
                             <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
                                 <p style={font("0.9em")}>Optimize</p>
                             </button> : ""}{" "}

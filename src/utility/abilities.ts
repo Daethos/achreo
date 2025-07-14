@@ -357,6 +357,17 @@ export const TRAIT_SPECIALS = {
 };
 export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour"];
 
+export const BOW = "bow";
+export const NOBOW = "noBow";
+
+export const ATTACK = "attack";
+export const DODGE = "dodge";
+export const JUMP = "jump";
+export const PARRY = "parry";
+export const POSTURE = "posture";
+export const ROLL = "roll";
+export const THRUST = "thrust";
+
 export const INVOKE = "Invoke";
 export const CONSUME = "Consume";
 export const ABSORB = "Absorb";

@@ -115,7 +115,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         setLockpick(e);
     };
     function checkPickpocket() {
-        console.log(state().computer?.name, pickpocketEnemy());
+        // console.log(state().computer?.name, pickpocketEnemy());
         if (pickpocketItems().length === 0 || state().computer?.name !== pickpocketEnemy()) {
             let equipment: any[] = [];
             for (let i = 0; i < 3; ++i) {

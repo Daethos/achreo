@@ -2091,7 +2091,7 @@ export default class Enemy extends Entity {
         this.enemies = [];
         this.setSpecialCombat(false);
         this.leashTimer = this.scene.time.addEvent({
-            delay: 500,
+            delay: 1000, // 500
             callback: () => {
                 if (!this.scene || !this.scene.navMesh || this.isDeleting) {
                     this.leashTimer?.remove(false);

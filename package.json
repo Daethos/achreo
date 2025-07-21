@@ -22,11 +22,13 @@
     ],
     "scripts": {
         "dev": "vite --config vite/config.dev.mjs",
-        "build": "vite build --config vite/config.prod.mjs"
+        "build": "vite build --config vite/config.prod.mjs",
+        "android": "npm run build && npx cap sync android && npx cap open android"
     },
     "dependencies": {
         "@capacitor/android": "^5.7.4",
         "@capacitor/core": "^5.7.8",
+        "@capacitor/haptics": "^5.0.8",
         "@capacitor/ios": "^5.7.4",
         "localforage": "^1.10.0",
         "mrpas": "^2.0.0",

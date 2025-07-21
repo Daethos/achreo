@@ -21,7 +21,7 @@
 .compare-border {border: 0.1rem solid #fdf6d8;border-left: 0.1rem solid #fdf6d8;border-right: 0.1rem solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
 .borderCircle {border-radius: 50%;}
-.buttonBorderless {font-family: "Cinzel Regular";padding: 0.5rem;background-color: #000;color: rgba(253, 246, 216, 0.87);border: none;cursor: pointer;transition: all 0.3s;
+.buttonBorderless {font-family: "Cinzel Regular";padding: 0.5rem;background-color: transparent;color: rgba(253, 246, 216, 0.87);border: none;cursor: pointer;transition: all 0.3s;
     &:hover {color: gold;}
     &:active {color: gold;}
     &:disabled {cursor: not-allowed;color: rgba(253, 246, 216, 0.3);}
@@ -118,6 +118,9 @@
 .menu:focus-within .juiceNB:not(:focus) {
     transform: scale(0.8);
     transition: transform 0.5s ease;
+}
+.backgroundFocus:focus, .backgroundFocus:hover {
+    background: linear-gradient(#000, var(--background-color, gold));
 }
 @keyframes moist {
     0% { transform: scale(0.9); }
@@ -422,8 +425,8 @@ svg.defs {
     background:#000;border:0.1rem solid gold;border-radius:0.25em;box-shadow:0 0 0.5rem #ffc700;
 }
 .playerCombatUi {position: fixed;top: 0;left: 0;width: 50%;}
-.combatUiShield {position: absolute;top: 3vh;left: 41.25vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
-.combatUiWeapon {position: absolute;top: 3vh;left: 36.25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.3);max-height: 10vh;}
+.combatUiShield {position: absolute;top: 3vh;left: 42.75vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
+.combatUiWeapon {position: absolute;top: 3vh;left: 37.25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.3);max-height: 10vh;}
 .healthbar {display: flex;position: absolute;margin-left: 12.5%;width: 75%;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 1rem;}
 .healthbar > div {
     transition: width 0.5 ease;
@@ -447,7 +450,7 @@ svg.defs {
 .stamina { text-align: center;color: #fdf6d8;font-family: "Cinzel Regular";font-size: 1rem;z-index: 3; }
 .grace { text-align: center;color: #fdf6d8;font-family: "Cinzel Regular";font-size: 1rem;z-index: 3; }
 .staminaBubble {position: absolute;top: 2vh;left: 24.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
-.graceBubble {position: absolute;top: 2vh;left: 30vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
+.graceBubble {position: absolute;top: 2vh;left: 30.5vw; width: 5vw; height: 10vh; max-height: 44px; max-width: 44px; border-radius: 50%; overflow: hidden;align-items: center;justify-content: center;border: 0.2rem solid purple;box-shadow: 0 0 0.5rem rgba(183, 0, 255, 0.5);}
 #staminaPortrait {position: absolute;top: 2vh;left: 35vw;z-index: 1;border-radius: 50%;overflow: hidden;height: auto;width: auto;}
 .enemyCombatUi {position: fixed;top: 0;right: 0;width: 50vw;}
 .enemyUiWeapon {position: absolute;top: 3vh;right: 25.25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.3);}
@@ -685,7 +688,7 @@ svg.defs {
     .stat-block.wide .section-left {margin: 0;}
     .stat-block.wide .section-right {margin: 0;}
 }
-@media screen and (min-width: 920px) {
+@media screen and (min-width: 940px) {
     .creature-heading h1{
         font-size: 1.75em;
         margin: 12px 0 0;

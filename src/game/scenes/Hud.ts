@@ -620,7 +620,6 @@ export class Hud extends Phaser.Scene {
     };
 
     updateCoordinates(x: number, y: number) {
-        // console.log(x, y, "Saving Coordinates");
         EventBus.emit("save-this-setting", { coordinates: { x, y } });
     };
 };

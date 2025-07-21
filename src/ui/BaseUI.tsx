@@ -7,7 +7,7 @@ import { EventBus } from "../game/EventBus";
 import { GameState } from "../stores/game";
 import { Compiler, LevelSheet } from "../utility/ascean";
 import { usePhaserEvent } from "../utility/hooks";
-import { consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from "../utility/combat";
+import { caerenic, consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, stalwart, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from "../utility/combat";
 import { screenShake } from "../game/phaser/ScreenShake";
 import { Reputation } from "../utility/player";
 import { Puff } from "solid-spinner";
@@ -103,9 +103,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 playerMastery: number = validateMastery(combat().player?.[combat().player?.mastery as string]),
                 affectsHealth: boolean = true,
                 affectsStealth: boolean = true,
-                caerenic: number = combat().isCaerenic ? 1.15 : 1,
-                caerenicVulnerable: number = combat().isCaerenic ? 1.25 : 1,
-                stalwart: number = combat().isStalwart ? 0.85 : 1;
+                caerenicPos: number = caerenic(combat().caerenic).pos,
+                caerenicNeg: number = caerenic(combat().caerenic).neg,
+                stalwartDef: number = stalwart(combat().stalwart);
             switch (type) {
                 case "Weapon": // Targeted Weapon Action by Enemy or Player
                     if (combat().computer === undefined || newComputerHealth === 0) return;
@@ -222,7 +222,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Chiomic": // Mindflay
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const chiomic = Math.round(playerMastery / 2 * (1 + data / 100) * caerenic * playerLevel);
+                    const chiomic = Math.round(playerMastery / 2 * (1 + data / 100) * caerenicPos * playerLevel);
                     newComputerHealth = newComputerHealth - chiomic < 0 ? 0 : newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
                     playerActionDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
@@ -232,7 +232,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Enemy Chiomic": // Mindflay
                     if (combat().computer === undefined) return;
-                    const enemyChiomic = Math.round(computerMastery / 2 * (1 + data / 100) * caerenicVulnerable * stalwart  * computerLevel);
+                    const enemyChiomic = Math.round(computerMastery / 2 * (1 + data / 100) * caerenicNeg * stalwartDef  * computerLevel);
                     newPlayerHealth = newPlayerHealth - enemyChiomic < 0 ? 0 : newPlayerHealth - enemyChiomic;
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
@@ -241,7 +241,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Tshaeral": // Lifedrain (Tick, 100%)
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const drained = Math.round(combat().playerHealth * (data / 100) * caerenic * playerLevel);
+                    const drained = Math.round(combat().playerHealth * (data / 100) * caerenicPos * playerLevel);
                     newPlayerHealth = newPlayerHealth + drained > combat().playerHealth ? combat().playerHealth : newPlayerHealth + drained;
                     newComputerHealth = newComputerHealth - drained < 0 ? 0 : newComputerHealth - drained;
                     playerWin = newComputerHealth === 0;
@@ -251,7 +251,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Enemy Tshaeral": // Lifedrain (Tick, 100%)
                     if (combat().computer === undefined) return;
-                    const enemyDrain = Math.round(computerHealth * (data / 100) * caerenicVulnerable * stalwart * computerLevel);
+                    const enemyDrain = Math.round(computerHealth * (data / 100) * caerenicNeg * stalwartDef * computerLevel);
                     newPlayerHealth = newPlayerHealth - enemyDrain < 0 ? 0 : newPlayerHealth - enemyDrain;
                     newComputerHealth = newComputerHealth + enemyDrain > computerHealth ? computerHealth : newComputerHealth + enemyDrain;
                     computerWin = newPlayerHealth === 0;
@@ -329,18 +329,18 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Sacrifice": 
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const sacrifice = Math.round(playerMastery * caerenic * playerLevel);
-                    newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwart) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwart);
+                    const sacrifice = Math.round(playerMastery * caerenicPos * playerLevel);
+                    newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwartDef) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwartDef);
                     newComputerHealth = newComputerHealth - (sacrifice * (1 + data / 50)) < 0 ? 0 : newComputerHealth - (sacrifice * (1 + data / 50));
                     playerWin = newComputerHealth === 0;
                     computerWin = newPlayerHealth === 0;
-                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwart)} health to rip ${Math.round(sacrifice * (1 + data / 50))} from ${combat().computer?.name}.`;
+                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwartDef)} health to rip ${Math.round(sacrifice * (1 + data / 50))} from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin };
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case "Suture":
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const suture = Math.round(playerMastery * caerenic * playerLevel * (1 + data / 100) * 0.8);
+                    const suture = Math.round(playerMastery * caerenicPos * playerLevel * (1 + data / 100) * 0.8);
                     newPlayerHealth = newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : newPlayerHealth + suture;
                     newComputerHealth = newComputerHealth - suture < 0 ? 0 : newComputerHealth - suture;
                     playerActionDescription = `Your suture ${combat().computer?.name}"s caeren into you, absorbing and healing for ${suture}.`;    
@@ -350,7 +350,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Enemy Sacrifice": 
                     if (combat().computer === undefined) return;
-                    const enemySac = Math.round(computerMastery * computerLevel * caerenicVulnerable * stalwart);
+                    const enemySac = Math.round(computerMastery * computerLevel * caerenicNeg * stalwartDef);
                     newPlayerHealth = newPlayerHealth - (enemySac * (1 + data / 50)) < 0 ? 0 : newPlayerHealth - (enemySac * (1 + data / 50));
                     newComputerHealth = newComputerHealth - (enemySac / 2) < 0 ? 0 : newComputerHealth - (enemySac / 2);
                     computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySac * (1 + data / 50)} from you.`;
@@ -361,7 +361,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Enemy Suture":
                     if (combat().computer === undefined) return;
-                    const enemySut = Math.round(computerMastery * caerenicVulnerable * (1 + data / 100) * computerLevel * stalwart * 0.8);
+                    const enemySut = Math.round(computerMastery * caerenicNeg * (1 + data / 100) * computerLevel * stalwartDef * 0.8);
                     newPlayerHealth = newPlayerHealth - enemySut < 0 ? 0 : newPlayerHealth - enemySut;
                     newComputerHealth = newComputerHealth + enemySut > computerHealth ? computerHealth : newComputerHealth + enemySut;
                     computerActionDescription = `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;

@@ -1921,32 +1921,32 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <For each={game()?.inventory.inventory}>{(item, _index) => {
                         if (item === undefined || item === undefined) return;
                         return (
-                            <div class="row menu-item-3d center" style={{ width: "95%", height: "25%" }}>
-                                <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "0 5%", padding: "0.5em",width: "10%", height: "40%" }}>
+                            <div class="row menu-item-3d center" style={{ width: "100%", height: "25%" }}>
+                                <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "0 5%", padding: "0.5em",width: "12.5%", height: "50%" }}>
                                     <img src={item?.imgUrl} alt={item?.name} />
-                                </div>|
+                                </div>
                                 <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
-                                <span>|
-                                <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>|
+                                <span style={{width:"50%"}}>
+                                <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>
                                 <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
                                 </span>
                             </div>
                         );
                         }}</For>
                     }>
-                    <div class="playerInventoryBag center" style={{ width: "85%", "margin-bottom": "5%" }}> 
-                        <For each={game()?.inventory.inventory}>{(item, _index) => {
-                            if (item === undefined || item === undefined) return;
-                            return (
-                                <div>
-                                <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
-                                    <img src={item?.imgUrl} alt={item?.name} />
-                                </div>
-                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
-                                </div>
-                            );
-                        }}</For>
-                    </div>
+                        <div class="playerInventoryBag center" style={{ "margin-bottom": "5%" }}> 
+                            <For each={game()?.inventory.inventory}>{(item, _index) => {
+                                if (item === undefined || item === undefined) return;
+                                return (
+                                    <div>
+                                    <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
+                                        <img src={item?.imgUrl} alt={item?.name} />
+                                    </div>
+                                    <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
+                                    </div>
+                                );
+                            }}</For>
+                        </div>
                     </Show>
                     </div>
                 </div>

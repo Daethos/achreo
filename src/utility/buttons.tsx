@@ -36,6 +36,8 @@ export function BackForth({ id, left, right, menu, setMenu, createCharacter, new
     );
 };
 
+export const Button = ({text, classes, callback}: {text:string, classes: string, callback: () => void}) => <button class={classes} onClick={callback}>{text}</button>;
+
 export function StaticButton({ text, callback, textStyle, disabled = false }: { text: string, callback: () => void, textStyle: any, disabled?: boolean }) {
     return (
         <button onClick={callback} disabled={disabled} class="button">

@@ -120,7 +120,7 @@ export class Underground extends Scene {
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
         const map = this.make.tilemap({ key: "underground" });
         this.map = map;
-        this.add.rectangle(0, 0, 4096, 4096, 0x000000);
+        this.add.rectangle(0, 0, 2048, 2048, 0x000000);
         const tileSize = 32;
         const castleInterior = map.addTilesetImage("Castle Interior", "Castle Interior", tileSize, tileSize, 0, 0);
         const castleDecorations = map.addTilesetImage("Castle Decoratives", "Castle Decoratives", tileSize, tileSize, 0, 0);
@@ -171,7 +171,10 @@ export class Underground extends Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         (this.sys as any).animatedTiles.init(this.map);
-        this.player = new Player({ scene: this, x: this.centerX, y: 64, texture: "player_actions", frame: "player_idle_0" });
+        
+        this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
+        this.player.setPosition(500, 64);
+
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer("dms")?.objects.forEach((_dm: any) => {
             (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 }));
@@ -212,6 +215,7 @@ export class Underground extends Scene {
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
                 const p = new Party({scene:this,x: this.centerX, y: 64,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
+                p.setPosition(500, 64);
                 this.party.push(p);
             };
         };
@@ -487,7 +491,7 @@ export class Underground extends Scene {
             };
         };
         marker = markers[Math.floor(Math.random() * markers.length)];
-        const enemy = new Enemy({ scene: this, x: this.centerX, y: 64, texture: "player_actions", frame: "player_idle_0", data: undefined  });
+        const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined  });
         enemy.setPosition(marker.x, marker.y);
         this.enemies.push(enemy);
         return enemy;
@@ -504,7 +508,7 @@ export class Underground extends Scene {
         };
         for (let j = 0; j < data.length; j++) {
             marker = markers[Math.floor(Math.random() * markers.length)];
-            const enemy = new Enemy({ scene: this, x: this.centerX, y: 64, texture: "player_actions", frame: "player_idle_0", data: data[j] });
+            const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
             this.enemies.push(enemy);
             enemy.setPosition(marker.x, marker.y);
             const markerPosition = new Phaser.Math.Vector2(marker.x, marker.y);

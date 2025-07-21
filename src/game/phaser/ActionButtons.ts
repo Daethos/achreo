@@ -5,6 +5,8 @@ import { ACTION_ORIGIN } from "../../utility/actions";
 import { Hud } from "../scenes/Hud";
 import { COOLDOWN, COST } from "../../ui/Character";
 import Player from "../entities/Player";
+const ACTION = "action";
+const SPECIAL = "special";
 const ACTIONS = [
     { ATTACK: 0x800080 }, 
     { POSTURE: 0x800080 }, 
@@ -232,13 +234,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialX = width * scene.settings.positions.specialButtons.x; // width * 0.725 || / 1.375
         const centerSpecialY = height * scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
         ACTIONS.forEach((_element, index) => {
-            const { buttonX, buttonY } = this.displayButton('action', 
+            const { buttonX, buttonY } = this.displayButton(ACTION, 
                 this.scene.settings.positions.actionButtons.display, 
                 this.scene.settings.positions.actionButtons.spacing,
                 index, centerActionX, centerActionY, height
             );
             let button: ActionButton = {
-                key: "action",
+                key: ACTION,
                 name: scene.settings.actions[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
@@ -282,13 +284,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.add(button.graphic);
         });
         SPECIALS.forEach((_element, index) => {
-            const { buttonX, buttonY } = this.displayButton('special', 
+            const { buttonX, buttonY } = this.displayButton(SPECIAL, 
                 this.scene.settings.positions.specialButtons.display, 
                 this.scene.settings.positions.specialButtons.spacing,
                 index, centerSpecialX, centerSpecialY, height,
             );
             let button: ActionButton = {
-                key: "special",
+                key: SPECIAL,
                 name: "", // scene.settings.specials[index],
                 border: new Phaser.GameObjects.Graphics(scene),
                 graphic: new Phaser.GameObjects.Graphics(scene),
@@ -361,10 +363,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 button.graphic.clear();
                 button.border.clear();
                 switch (button.key) {
-                    case 'action':
+                    case ACTION:
                         this.animate(button, this.scene.settings.positions.actionButtons.color, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.width, 0.4);
                         break;
-                    case 'special':
+                    case SPECIAL:
                         this.animate(button, this.scene.settings.positions.specialButtons.color, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.width, 0.15);
                         break;
                     default:
@@ -375,11 +377,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 button.graphic.clear();
                 button.border.clear();
                 switch (button.key) {
-                    case 'action':
+                    case ACTION:
                         this.animate(button, this.scene.settings.positions.actionButtons.border, this.scene.settings.positions.actionButtons.color, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.width, 0);
                         button.graphic.setInteractive();
                         break;
-                    case 'special':
+                    case SPECIAL:
                         this.animate(button, this.scene.settings.positions.specialButtons.border, this.scene.settings.positions.specialButtons.color, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.width, 0);
                         button.graphic.setInteractive();
                         break;
@@ -392,9 +394,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
 
     cooldownButton(button: ActionButton, cooldown: number) {
         const type = button.key;
-        const display = type === 'action' ? this.scene.settings.positions.actionButtons.display : this.scene.settings.positions.specialButtons.display;
-        const spacing = type === 'action' ? this.scene.settings.positions.actionButtons.spacing : this.scene.settings.positions.specialButtons.spacing;
-        const index = type === 'action' ? this.actionButtons.indexOf(button) : this.specialButtons.indexOf(button);
+        const display = type === ACTION ? this.scene.settings.positions.actionButtons.display : this.scene.settings.positions.specialButtons.display;
+        const spacing = type === ACTION ? this.scene.settings.positions.actionButtons.spacing : this.scene.settings.positions.specialButtons.spacing;
+        const index = type === ACTION ? this.actionButtons.indexOf(button) : this.specialButtons.indexOf(button);
         const { buttonX, buttonY } = this.displayButton(button.key, 
             display,
             spacing,
@@ -427,9 +429,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const endAngle = Math.PI / 2; // End angle (90 degrees) for the quarter circle 
         let angle = 0, buttonX = 0, buttonY = 0; 
         if (this.scene.settings.desktop) {
-            const centerX = key === "action" ? this.scene.gameWidth / 33 : this.scene.gameWidth / 3;
+            const centerX = key === ACTION ? this.scene.gameWidth / 33 : this.scene.gameWidth / 3;
             const bottomY = this.scene.gameHeight * (this.scene.settings.positions.actionButtons.y * 1.05); // - (this.buttonHeight * 5);
-            // const centerX = key === "action" ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
+            // const centerX = key === ACTION ? this.scene.cameras.main.width * 0.003 : this.scene.cameras.main.width / 3;
             // const bottomY = this.scene.cameras.main.height - (this.buttonHeight * 3);
             buttonX = centerX + index * (radius / spacing);
             // buttonX = centerX - (index + 1) * (radius / spacing); // Clean but backwards
@@ -466,7 +468,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     public draw = (): void => {
         this.actionButtons = this.actionButtons.map((button: ActionButton) => {
             this.scaleButton(button, this.scene.settings.positions.actionButtons.width, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border); // * this.scene.settings.positions.specialButtons.width
-            this.repositionButtons({ type: "action", x: this.scene.settings.positions.actionButtons.x, y: this.scene.settings.positions.actionButtons.y });
+            this.repositionButtons({ type: ACTION, x: this.scene.settings.positions.actionButtons.x, y: this.scene.settings.positions.actionButtons.y });
             button.border.setActive(button.name !== "");
             button.border.setVisible(button.name !== "");
             button.graphic.setActive(button.name !== "");
@@ -475,7 +477,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         });
         this.specialButtons = this.specialButtons.map((button: ActionButton) => { 
             this.scaleButton(button, this.scene.settings.positions.specialButtons.width, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.border);
-            this.repositionButtons({ type: "special", x: this.scene.settings.positions.specialButtons.x, y: this.scene.settings.positions.specialButtons.y });    
+            this.repositionButtons({ type: SPECIAL, x: this.scene.settings.positions.specialButtons.x, y: this.scene.settings.positions.specialButtons.y });    
             return button;    
         });
     };
@@ -532,7 +534,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
 
         switch (type) {
-            case "action":
+            case ACTION:
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -547,7 +549,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     return button;
                 });
                 break;
-            case "special":
+            case SPECIAL:
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -577,7 +579,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
 
         switch (type) {
-            case "action":
+            case ACTION:
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -592,7 +594,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     return button;
                 });
                 break;
-            case "special":
+            case SPECIAL:
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -622,7 +624,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
 
         switch (type) {
-            case "action":
+            case ACTION:
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -637,7 +639,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     return button;
                 });
                 break;
-            case "special":
+            case SPECIAL:
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -667,7 +669,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
 
         switch (type) {
-            case "action":
+            case ACTION:
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -683,7 +685,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     return button;
                 });
                 break;
-            case "special":
+            case SPECIAL:
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -714,7 +716,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * this.scene.settings.positions.specialButtons.y; // height * 0.6 || / 1.675
 
         switch (type) {
-            case "action":
+            case ACTION:
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -729,7 +731,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     return button;
                 });
                 break;
-            case "special":
+            case SPECIAL:
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.clear();
                     button.border.clear();
@@ -755,7 +757,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         // const { width, height } = this.scene.cameras.main;
         
         switch (type) {
-            case "action": {
+            case ACTION: {
                 const centerActionX = width * x; // / 1.25
                 const centerActionY = height * y; // / 1.35
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
@@ -774,7 +776,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 });
                 break;
             };
-            case "special": {
+            case SPECIAL: {
                 const centerSpecialX = width * x; // width * 0.725 || / 1.375
                 const centerSpecialY = height * y; // height * 0.6 || / 1.675
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
@@ -800,14 +802,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
     private rewidthButtons = (data: {type: string, rewidth: number}): void => {
         const { type, rewidth } = data;
         switch (type) {
-            case "action": {
+            case ACTION: {
                 this.actionButtons = this.actionButtons.map((button: ActionButton) => {
                     this.scaleButton(button, rewidth, this.scene.settings.positions.actionButtons.opacity, this.scene.settings.positions.actionButtons.border);    
                     return button;
                 });
                 break;
             };
-            case "special": {
+            case SPECIAL: {
                 this.specialButtons = this.specialButtons.map((button: ActionButton) => {
                     this.scaleButton(button, rewidth, this.scene.settings.positions.specialButtons.opacity, this.scene.settings.positions.specialButtons.border);    
                     return button;    
@@ -915,14 +917,12 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         EventBus.off("stalwart-buttons", this.stalwartButtons);
     };
 
-    public reorder = () => {
-        EventBus.emit("fetch-button-reorder");
-    };
+    public reorder = () => EventBus.emit("fetch-button-reorder");
 
     private reorderButtons = (order: { list: string[], type: string }) => {
         const { list, type } = order;
         switch (type) {
-            case "action": {
+            case ACTION: {
                 this.actionButtons = this.actionButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
@@ -931,7 +931,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 });
                 break;
             };
-            case "special": {
+            case SPECIAL: {
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };
@@ -965,7 +965,7 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         button.graphic.setInteractive(new Phaser.Geom.Circle(button.x, button.y, button.width), Phaser.Geom.Circle.Contains)
             .on("pointerdown", (_pointer: Phaser.Input.Pointer, _localX: any, _localY: any, _event: any) => {
                 this.pressButton(button);
-        })
+            })
             .on("pointerover", (pointer: any) => {
                 this.setButtonText(button, pointer);
             })

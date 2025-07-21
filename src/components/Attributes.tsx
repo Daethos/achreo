@@ -87,7 +87,7 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow, setDisp
     };
     createEffect(() => compiler());
     const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block" };
-    return <div class="creature-heading attributes" style={{ width: "100%", display: "inline-flex" }}>
+    return <div class="creature-heading attributes" style={{ width: "100%", display: "inline-flex", background: "transparent" }}>
         <div style={inline}>
             <button class="buttonBorderless" onClick={() => toggle("constitution")} style={font}><p style={{ margin: "0 auto" }}>Con</p></button>
             <p class="gold" style={font} onClick={() => highlightAttribute("Constitution")}>{abilities()?.totalConstitution}</p>

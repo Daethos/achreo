@@ -6,14 +6,18 @@ export type DIMS = {
 };
 const useResizeListener = () => {
     const [dimensions, setDimensions] = createSignal<DIMS>({
-        WIDTH: window.innerWidth,
-        HEIGHT: window.innerHeight,
+        WIDTH: document.documentElement.clientWidth,
+        // WIDTH: window.innerWidth,
+        HEIGHT: document.documentElement.clientHeight,
+        // HEIGHT: window.innerHeight,
         ORIENTATION: window.innerWidth > window.innerHeight ? "landscape" : "portrait"
     });
     const handleResize = () => {
         const updated: DIMS = {
-            WIDTH: window.innerWidth,
-            HEIGHT: window.innerHeight,
+            WIDTH: document.documentElement.clientWidth,
+            HEIGHT: document.documentElement.clientHeight,
+            // WIDTH: window.innerWidth,
+            // HEIGHT: window.innerHeight,
             ORIENTATION: window.innerWidth > window.innerHeight ? "landscape" : "portrait"
         };
         setDimensions(updated);

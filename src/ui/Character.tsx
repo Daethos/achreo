@@ -351,10 +351,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
@@ -491,10 +491,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "" }}>
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
@@ -889,8 +889,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </Match>    
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
-                    {/* {createCharacterInfo(CHARACTERS.CHARACTER)} */}
-                    {characterInfo()}
+                    {createCharacterInfo(CHARACTERS.CHARACTER)}
+                    {/* {characterInfo()} */}
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
                     <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
@@ -972,7 +972,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 420 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
+                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
@@ -1014,7 +1014,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <div class="playerWindow" style={{height: `${dimensions().HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class="center wrap"> 
-                        {createCharacterInfo(settings()?.characterViews)}
+                        {/* {createCharacterInfo(settings()?.characterViews)} */}
+                        {characterInfo()}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
                     <Suspense fallback={<Puff color="gold"/>}>
@@ -1043,7 +1044,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show)}>
             <Suspense fallback={<Puff color="gold"/>}>
-                <ItemModal item={equipment()} stalwart={combat().isStalwart} caerenic={combat().isCaerenic} /> 
+                <ItemModal item={equipment()} stalwart={combat().stalwart.active} caerenic={combat().caerenic.active} /> 
             </Suspense>
             </div> 
         </Show>
@@ -1193,33 +1194,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em`, 
                     animation: "borderTalent 1.5s infinite ease alternate" 
                 }}>
-                    {/* <div
-                    style={{
-                        position: "relative",
-                        width: "100px",
-                        height: "100px",
-                        "border-radius": "50%",
-                        background: "#111",
-                        "::before": {
-                            content: '""',
-                            position: "absolute",
-                            inset: "-10px",
-                            "border-radius": "50%",
-                            background: `radial-gradient(circle, ${masteryColor(ascean().mastery)} 0%, transparent 70%)`,
-                            opacity: "0.7",
-                            animation: "pulse 3s infinite alternate",
-                            zIndex: -1,
-                        },
-                    }}
-                    /> */}
-                    {/* <div
-                    style={{
-                        background: "#222",
-                        padding: "1em",
-                        "border-radius": "8px",
-                        "box-shadow": "inset 0 0 10px #000, inset 0 0 20px rgba(0, 0, 0, 0.5)",
-                    }}
-                    /> */}
                     <div style={{ padding: "1em" }}>
                         <p class="row" style={{ color: "gold", "font-size": "1.5em", margin: "3%" }}>
                             <span style={{color:"#0ff", "margin": "1%", "--glow-color": "#0ff",

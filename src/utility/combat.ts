@@ -91,6 +91,16 @@ export function roundToTwoDecimals(num: number, dec: number = 2): number {
     return roundedNum;
 };
 
+export function caerenic(caer: { active: boolean, enhanced: boolean, optimized: boolean }): { pos: number, neg: number } {
+    const pos = caer.active ? caer.enhanced ? DAMAGE.CAERENIC_POS_EN : DAMAGE.CAERENEIC_POS : 1;
+    const neg = caer.active ? caer.optimized ? DAMAGE.CAERENIC_NEG_OP : DAMAGE.CAERENEIC_NEG : 1; 
+    return { pos, neg };
+};
+
+export function stalwart(stal: {active: boolean, enhanced: boolean, optimized: boolean}): number {
+    return stal.active ? stal.optimized ? DAMAGE.STALWART_EN : DAMAGE.STALWART : 1;
+};
+
 export function damageTypeCompiler(damageType: string, enemy: Ascean, weapon: Equipment, physicalDamage: number, magicalDamage: number): { physicalDamage: number, magicalDamage: number } {
     if (damageType === DAMAGE_TYPES.BLUNT || damageType === DAMAGE_TYPES.FIRE || damageType === DAMAGE_TYPES.EARTH || damageType === DAMAGE_TYPES.SPOOKY) {
         if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
@@ -471,8 +481,9 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 // };
 
 function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Combat {
+    const caer = caerenic(combat.caerenic);
     if (player) {
-        const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
+        const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.pos;
         combat.newComputerHealth -= playerDamage;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
@@ -481,7 +492,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         };
         combat.playerSpecialDescription = `${combat.computer?.name} is damaged for ${Math.round(playerDamage)} from your ${effect.name}.`;
     } else {
-        const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_NEG : 1);
+        const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.neg;
         combat.newPlayerHealth -= computerDamage;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
@@ -499,13 +510,14 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
 };
 
 function healTick(combat: Combat, effect:StatusEffect, player: boolean): Combat {
+    const caer = caerenic(combat.caerenic);
     if (player) {
-        const playerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
+        const playerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * caer.pos;
         combat.newPlayerHealth = Math.min(playerHeal + combat.newPlayerHealth, combat.playerHealth);
         combat.playerSpecialDescription = `You heal for ${Math.round(playerHeal)} from your ${effect.name}.`;
         if (combat.newPlayerHealth > 0) combat.computerWin = false;
     } else {
-        const computerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
+        const computerHeal = effect.effect.healing as number * DAMAGE.TICK_FULL * caer.pos;
         combat.newComputerHealth = Math.min(computerHeal + combat.newComputerHealth, combat.computerHealth);
         combat.computerSpecialDescription = `${combat.computer?.name} heals for ${Math.round(computerHeal)} from their ${effect.name}.`;
         if (combat.newComputerHealth > 0) combat.playerWin = false;
@@ -864,6 +876,8 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefense: number
     const computer = combat.computer;
     const weapons = combat.computerWeapons;
     const computerAction = combat.computerAction;
+    const caer = caerenic(combat.caerenic);
+    const stal = stalwart(combat.stalwart);
     let computerWeaponOnePhysicalDamage: number = weapons[0].physicalDamage;
     let computerWeaponOneMagicalDamage: number = weapons[0].magicalDamage;
     let computerWeaponTwoPhysicalDamage: number = weapons[1].physicalDamage;
@@ -950,8 +964,8 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefense: number
     if (computerAction === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
     if (computerAction === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
     if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
-    if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
-    if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
+    combat.realizedComputerDamage *= stal;
+    combat.realizedComputerDamage *= caer.neg;
     if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
     if (combat.newPlayerHealth < 0) {
@@ -972,7 +986,9 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     let computerTotalDamage: number = 0;
     let computerPhysicalDamage: number = combat.computerWeapons[0].physicalDamage, computerMagicalDamage: number = combat.computerWeapons[0].magicalDamage;
     let playerPhysicalDefense = combat.playerDefense?.physicalDefenseModifier as number, playerMagicalDefense = combat.playerDefense?.magicalDefenseModifier as number;
-    if ((combat.action === ACTION_TYPES.POSTURE || combat.isStalwart) && combat.computerParrySuccess !== true && combat.computerRollSuccess !== true) {
+    const caer = caerenic(combat.caerenic);
+    const stal = stalwart(combat.stalwart);
+    if ((combat.action === ACTION_TYPES.POSTURE || combat.stalwart.active) && combat.computerParrySuccess !== true && combat.computerRollSuccess !== true) {
         playerPhysicalDefense = combat.playerDefense?.physicalPosture as number;
         playerMagicalDefense = combat.playerDefense?.magicalPosture as number;
     };
@@ -1128,8 +1144,8 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
     if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
     if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
-    if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
-    if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
+    combat.realizedComputerDamage *= stal;
+    combat.realizedComputerDamage *= caer.neg;
     if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
     combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? "damage (Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
@@ -1182,6 +1198,7 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
     let playerWeaponTwoTotalDamage;
     let firstWeaponCrit = false;
     let secondWeaponCrit = false;
+    const caer = caerenic(combat.caerenic);
     const weapOneClearance = Math.floor(Math.random() * 10100) / 100;
     const weapTwoClearance = Math.floor(Math.random() * 10100) / 100;
     let weapOneCrit = weapons[0]?.criticalChance as number
@@ -1267,9 +1284,7 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
         };
     };
 
-    if (combat.isCaerenic === true) {
-        combat.realizedPlayerDamage *= DAMAGE.MID;
-    };
+    combat.realizedPlayerDamage *= caer.pos;
     if (combat.astrication.active === true) {
         combat.astrication.charges += 1;
     };
@@ -1312,6 +1327,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     let playerTotalDamage;
     const mainWeapon = combat.weapons[0] as Equipment, offWeapon = combat.weapons[1] as Equipment;
     const mastery = combat.player?.mastery as string;
+    const caer = caerenic(combat.caerenic);
     let playerPhysicalDamage = mainWeapon.physicalDamage as number, playerMagicalDamage = mainWeapon.magicalDamage as number;
     let computerPhysicalDefense = combat.computerDefense?.physicalDefenseModifier as number, computerMagicalDefense = combat.computerDefense?.magicalDefenseModifier as number;
     let physPen = mainWeapon.physicalPenetration as number, magPen = mainWeapon.magicalPenetration as number;
@@ -1446,9 +1462,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     if (combat.computerAction === ACTION_TYPES.ATTACK) {
         combat.realizedPlayerDamage *= DAMAGE.LOW;
     };
-    if (combat.isCaerenic) {
-        combat.realizedPlayerDamage *= DAMAGE.MID;
-    };
+    combat.realizedPlayerDamage *= caer.pos;
     if (combat.astrication.active === true) {
         combat.astrication.charges += 1;
     };
@@ -1806,8 +1820,8 @@ function weaponActionSplitter(combat: Combat): Combat {
         "computerWin": cleanData.computerWin,
 
         "isSeering": cleanData.isSeering,
-        "isCaerenic": cleanData.isCaerenic,
-        "isStalwart": cleanData.isStalwart,
+        "caerenic": cleanData.caerenic,
+        "stalwart": cleanData.stalwart,
         "isStealth": cleanData.isStealth,
         "isInsight": cleanData.isInsight,
         "isQuicken": cleanData.isQuicken,
@@ -1920,8 +1934,8 @@ function newDataCompiler(combat: Combat): any {
         enemyID: combat.enemyID,
         damagedID: combat.enemyID,
         combatTimer: combat.combatTimer,
-        isCaerenic: combat.isCaerenic,
-        isStalwart: combat.isStalwart,
+        caerenic: combat.caerenic,
+        stalwart: combat.stalwart,
         npcType: combat.npcType,
         isEnemy: combat.isEnemy,
         isAggressive: combat.isAggressive,
@@ -1965,7 +1979,8 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
     return combat;
 };
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
-    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * (combat.isCaerenic === true ? DAMAGE.CAERENEIC_POS : 1);
+    const caer = caerenic(combat.caerenic);
+    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * caer.pos;
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;

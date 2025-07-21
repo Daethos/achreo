@@ -225,11 +225,11 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} onClick={() => setShow(show => !show)} style={caerenic(state().isCaerenic, state().isStealth) as any}>
+            }} onClick={() => setShow(show => !show)} style={caerenic(state().caerenic.active, state().isStealth) as any}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
-        <Show when={state().isStalwart}>
-        <div class={`combatUiShield ${state().isStalwart ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().isCaerenic, state().isStealth), }}>
+        <Show when={state().stalwart.active}>
+        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), }}>
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
@@ -258,12 +258,12 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         <Portal>
             <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show())}>
-                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().isCaerenic} />
+                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().caerenic.active} />
             </div>
             </Show>
             <Show when={shieldShow()}>
             <div class="modal" onClick={() => setShieldShow(!shieldShow())}>
-                <ItemModal item={state()?.player?.shield} stalwart={state().isStalwart} caerenic={false} />
+                <ItemModal item={state()?.player?.shield} stalwart={state().stalwart.active} caerenic={false} />
             </div>
             </Show>
             <Show when={prayerShow()}>

@@ -21,6 +21,7 @@ import Talents, { initTalents } from "./utility/talents";
 import QuestManager, { getQuest, initQuests, Quest } from "./utility/quests";
 import { v4 as uuidv4 } from "uuid";
 import { lightning } from "./utility/lightning";
+import { Button } from "./utility/buttons";
 const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
 const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
@@ -575,26 +576,26 @@ export default function App() {
                 }>
                 <>{(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
                         <button class="highlight cornerBL" onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
-                            <div>Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                            Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.PREMADE.KEY) && 
                         <button class="highlight cornerBR" onClick={() => {click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
-                            <div>Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})</div>
+                            Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
                         <button class="highlight cornerBR animate" onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(" ")[0]}</div>
+                            Create {newAscean()?.name?.split(" ")[0]}
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.PREMADE.KEY) && 
                         <button class="highlight cornerBL animate" onClick={() => createCharacter(newAscean())}>
-                            <div>Create {newAscean()?.name?.split(" ")[0]}</div>
+                            Create {newAscean()?.name?.split(" ")[0]}
                         </button>
                     }
                     <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
-                        <div>Back (Menu)</div>
+                        Back (Menu)
                     </button>
                 </>
             </Show>
@@ -616,10 +617,12 @@ export default function App() {
                     <AsceanView ascean={ascean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length > 0}>
-                    <button class="highlight cornerTL" onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} }>Main Menu</button> 
+                    <Button text={"Main Menu"} classes={"highlight cornerTL"} callback={() => {click.play(); setMenu({...menu(), choosingCharacter: true})}} />
+                    {/* <button class="highlight cornerTL" onClick={() => {click.play(); setMenu({ ...menu(), choosingCharacter: true });} }>Main Menu</button>  */}
                 </Show>
                 <Show when={menu()?.asceans?.length < 3}>
-                    <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>
+                    <Button text={"Create Character"} classes={"highlight cornerTR"} callback={() => {click.play(); setMenu({...menu(), creatingCharacter: true})}} />
+                    {/* <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button> */}
                 </Show>
                 <Show when={menu().deleteModal}>
                     <div class="modal" onClick={() => setMenu({ ...menu(), deleteModal: false })} style={{ background: "rgba(0, 0, 0, 1)" }}>

@@ -28,7 +28,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         setEquipment(item);
         setShow(!show());
     }; 
-    return <div class="imageCardGrid" style={{ width: "80%", margin: "auto" }}>
+    return <div class="imageCardGrid" style={{ width: "90%", margin: "auto" }}>
         <div class="imageCardLeft menu" style={{ background: "transparent" }}>
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}

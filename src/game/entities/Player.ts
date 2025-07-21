@@ -196,8 +196,8 @@ export default class Player extends Entity {
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, "player");
         this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
         scene.time.delayedCall(1000, () => {
-            if (this.scene.state.isCaerenic) this.caerenicUpdate();
-            if (this.scene.state.isStalwart) this.stalwartUpdate(this.scene.state.isStalwart);
+            if (this.scene.state.caerenic.active) this.caerenicUpdate();
+            if (this.scene.state.stalwart.active) this.stalwartUpdate(this.scene.state.stalwart.active);
         }, undefined, this);
         this.rushedEnemies = [];
         this.playerStateListener();

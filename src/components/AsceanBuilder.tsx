@@ -3,7 +3,7 @@ import { useResizeListener } from "../utility/dimensions";
 import { Menu, SCREENS } from "../utility/screens";
 import { CharacterSheet, STARTING_CHARACTERS } from "../utility/ascean";
 import { Puff } from "solid-spinner";
-import { masteryColor } from "../utility/styling";
+import { backgroundGradient, masteryColor } from "../utility/styling";
 import { Attributes } from "../utility/attributes";
 import AttributeModal from "./Attributes";
 import { click } from "../App";
@@ -113,7 +113,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <div class="menu-3d">
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row juice glowJuice flickerJuiceInsert menu-item-3d" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em` }}>
+                                <div class="border row juice glowJuice flickerJuiceInsert menu-item-3d backgroundFocus" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`, "--background-color": backgroundGradient(ascean.mastery, false) }}>
                                     <img style={{...photo, "border-color": masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
                                     <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%" }}>{ascean.name}</h4>
                                 </div>

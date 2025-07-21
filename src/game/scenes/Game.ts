@@ -626,20 +626,20 @@ export class Game extends Scene {
         });
 
         // Spawn additional random enemies
-        // const enemyCount = this.hud.settings.desktop ? 60 : 10;
-        // for (let i = 0; i < enemyCount; i++) {
-        //     const e = new Enemy({
-        //         scene: this, 
-        //         x: 200, 
-        //         y: 200, 
-        //         texture: "player_actions", 
-        //         frame: "player_idle_0", 
-        //         data: undefined 
-        //     });
-        //     this.enemies.push(e);
-        //     enemies.push(e);
-        //     e.setPosition(Phaser.Math.Between(offsetX + 200, offsetX + CHUNK_SIZE - 200), Phaser.Math.Between(offsetY + 200, offsetY + CHUNK_SIZE - 200));
-        // };
+        const enemyCount = this.hud.settings.desktop ? 60 : 20;
+        for (let i = 0; i < enemyCount; i++) {
+            const e = new Enemy({
+                scene: this, 
+                x: 200, 
+                y: 200, 
+                texture: "player_actions", 
+                frame: "player_idle_0", 
+                data: undefined 
+            });
+            this.enemies.push(e);
+            enemies.push(e);
+            e.setPosition(Phaser.Math.Between(offsetX + 200, offsetX + CHUNK_SIZE - 200), Phaser.Math.Between(offsetY + 200, offsetY + CHUNK_SIZE - 200));
+        };
 
         // Spawn NPCs
         map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => {

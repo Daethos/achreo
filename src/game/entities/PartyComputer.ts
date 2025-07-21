@@ -240,8 +240,8 @@ export default class Party extends Entity {
         this.originPoint = {}; // For Leashing
         this.checkSpecials(ascean);
         scene.time.delayedCall(3000, () => {
-            if (this.scene.state.isCaerenic) this.caerenicUpdate();
-            if (this.scene.state.isStalwart) this.stalwartUpdate(this.scene.state.isStalwart);
+            if (this.scene.state.caerenic.active) this.caerenicUpdate();
+            if (this.scene.state.stalwart.active) this.stalwartUpdate(this.scene.state.stalwart.active);
         }, undefined, this);
     };
 

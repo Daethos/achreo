@@ -1208,8 +1208,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("update-combat-player", (e: any) => setCombat({ ...combat(), player: { ...e.ascean }, playerHealth: e.ascean.health.max, newPlayerHealth: e.ascean.health.current, playerAttributes: e.attributes, playerDefense: e.defense, playerDefenseDefault: e.defense }));
         EventBus.on("update-combat-state", (e: { key: string; value: string }) => setCombat({ ...combat(), [e.key]: e.value }));
         EventBus.on("update-combat-timer", (e: number) => setCombat({ ...combat(), combatTimer: e }));
-        EventBus.on("update-caerenic", () => setCombat({ ...combat(), isCaerenic: !combat().isCaerenic }));
-        EventBus.on("update-stalwart", () => setCombat({ ...combat(), isStalwart: !combat().isStalwart }));      
+        EventBus.on("update-caerenic", () => setCombat({ ...combat(), caerenic: {active: !combat().caerenic.active, enhanced: props.talents().talents.caerenic.enhanced, optimized: props.talents().talents.caerenic.efficient} }));
+        EventBus.on("update-stalwart", () => setCombat({ ...combat(), stalwart: {active:!combat().stalwart.active, enhanced: props.talents().talents.stalwart.enhanced, optimized: props.talents().talents.stalwart.efficient} }));      
         EventBus.on("update-stealth", () => {setCombat({ ...combat(), isStealth: !combat().isStealth }); EventBus.emit("stealth-sound");});
         EventBus.on("update-health", (e: number) => {
             const update = {

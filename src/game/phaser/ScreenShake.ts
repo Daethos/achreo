@@ -1,3 +1,4 @@
+import { Haptics } from "@capacitor/haptics";
 var totalTrauma = 0;
 var timeScale = false;
 
@@ -32,5 +33,9 @@ export function walk(scene: any, duration = 32, intensity = 0.000675) { // 32 ||
     scene.cameras.main.shake(duration, intensity);
 };
 export function vibrate(duration: number[] | number = 320) {
-    if ("vibrate" in navigator && navigator?.vibrate !== undefined) navigator.vibrate(duration);
+    if ("vibrate" in navigator && navigator?.vibrate !== undefined) {
+        navigator.vibrate(duration);
+    } else {
+        Haptics.vibrate({duration:320});
+    };
 };

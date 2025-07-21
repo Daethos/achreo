@@ -117,8 +117,8 @@ export interface Combat {
     astrication: { active: boolean; charges: number; };
     berserk: { active: boolean; charges: number; talent: boolean; };
     conviction: { active: boolean; charges: number; talent: boolean; };
-    isStalwart: boolean; // +15% Defense, Cannot Dodge, Roll
-    isCaerenic: boolean; // +15% Attack, -15% Defense
+    caerenic: {active:boolean; enhanced:boolean, optimized: boolean};
+    stalwart: {active:boolean; enhanced:boolean, optimized: boolean};
     isStealth: boolean; //
     isSeering: boolean;
     isInsight: boolean;
@@ -254,8 +254,8 @@ export const initCombat: Combat = {
     astrication: { active: false, charges: 0 },
     berserk: { active: false, charges: 0, talent: false },
     conviction: { active: false, charges: 0, talent: false },
-    isStalwart: false, // +15% Defense, Cannot Dodge, Roll
-    isCaerenic: false, // +15% Attack, -15% Defense
+    caerenic: {active:false, enhanced:false, optimized: false},
+    stalwart: {active:false, enhanced:false, optimized: false},
     isStealth: false,
     isSeering: false,
     isInsight: false,

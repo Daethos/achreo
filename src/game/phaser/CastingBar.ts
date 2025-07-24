@@ -18,6 +18,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     private border: Phaser.GameObjects.Graphics;
     private borderColor: number;
     private fillColor: number;
+    private castName: Phaser.GameObjects.Text;
     public time: number;
     private total: number;
     private castbar: Phaser.GameObjects.Sprite;
@@ -62,10 +63,16 @@ export default class CastingBar extends Phaser.GameObjects.Container {
     
             this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
                 color: "#fdf6d8", fontSize: "1.75em", stroke: "#000", strokeThickness: 3, align: "center" 
-            });
+            })
+                .setOrigin(0.5)
+                .setDepth(10);
             this.add(this.timeText);
-            this.timeText.setOrigin(0.5);
-            this.timeText.setDepth(10);
+
+            this.castName = new Phaser.GameObjects.Text(this.scene, 0, -24, "", { color: "#fdf6d8", fontSize: "1.75em", stroke: "#000", strokeThickness: 3, align: "center" })
+                .setOrigin(0.5)
+                .setDepth(10);
+            this.add(this.castName);
+
             this.castbarListener();
         } else {
             this.barHeight = 12;
@@ -84,10 +91,17 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             
             this.timeText = new Phaser.GameObjects.Text(this.scene, 0, 0, `${Math.round(this.time)} / ${this.total}`, { 
                 color: "#fdf6d8", fontSize: "1.15em", stroke: "#000", strokeThickness: 2, align: "center" 
-            });
+            })
+                .setOrigin(0.5)
+                .setDepth(10);
             this.add(this.timeText);
-            this.timeText.setOrigin(0.5);
-            this.timeText.setDepth(10);
+                
+            this.castName = new Phaser.GameObjects.Text(this.scene, 0, -16, "", { 
+                color: "#fdf6d8", fontSize: "1.15em", stroke: "#000", strokeThickness: 4, align: "center"
+            })
+                .setOrigin(0.5)
+                .setDepth(10);
+            this.add(this.castName);
         };
     };
 
@@ -106,6 +120,11 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.setVisible(false);
         this.bar.clear();
         this.timeText.setText("");
+        this.castName.setText("");
+    };
+
+    public setCastName = (name: string): void => {
+        this.castName.setText(name);
     };
     
     public setTime = (time: number, color?: number): void => {
@@ -118,9 +137,10 @@ export default class CastingBar extends Phaser.GameObjects.Container {
         this.draw(COLORS[color as string as keyof typeof COLORS] || COLORS.CAST);
     };
 
-    public setup = (x: number, y: number) => {
+    public setup = (x: number, y: number, name: string) => {
         this.setPosition(x, y + 40);
         this.setVisible(true);
+        this.castName.setText(name);
     };
 
     private castbarListener = () => {

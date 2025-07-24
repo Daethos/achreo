@@ -1402,9 +1402,9 @@ export default class Enemy extends Entity {
     startCasting = (name: string, duration: number, style: string, channel = false, beam = true) => {
         this.castbar.reset();
         this.castbar.setVisible(true); // Added
-        this.castbar.setup(this.x, this.y);
+        this.castbar.setup(this.x, this.y, name);
         this.isCasting = true;
-        this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
+        // this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
         if (beam) this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel === true) this.castbar.setTime(duration);

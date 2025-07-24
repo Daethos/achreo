@@ -8,6 +8,7 @@ import Entity, { ENEMY } from "../entities/Entity";
 import { Play } from "../main";
 import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { COLORS } from "../phaser/AoE";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
@@ -274,7 +275,7 @@ export default class ParticleManager extends Phaser.Scene {
     createImpacts(scene: Play) {
         let count = 0, collection = [];
         while (count < 100) {
-            const impact = scene.add.sprite(0, 0, "impact").setActive(false).setDepth(9).setOrigin(0.5).setScale(0.25).setVisible(false); // Add it to the scene
+            const impact = scene.add.sprite(0, 0, "impact").setActive(false).setDepth(9).setOrigin(0.5).setScale(0.35).setVisible(false); // Add it to the scene
             collection.push(impact);
             count++;
         };
@@ -284,10 +285,12 @@ export default class ParticleManager extends Phaser.Scene {
     impactEffect(particle: Particle) {
         const impact = this.impacts.find((imp) => !imp.active);
         if (impact) {
+            const color = COLORS[particle.key.split("_")[0] as keyof typeof COLORS];
             impact.active = true;
             impact.visible = true;
             impact.x = particle.effect.x;
             impact.y = particle.effect.y;
+            impact.setTint(color);
             impact.angle = 0;
             impact.angle = angleImpact(new Phaser.Math.Vector2(impact.x, impact.y));
             impact.play("impact", true).once("animationcomplete", () => {

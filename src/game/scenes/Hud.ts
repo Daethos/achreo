@@ -619,6 +619,15 @@ export class Hud extends Phaser.Scene {
         });
     };
 
+    hitStop = (duration: number) => {
+        const scene = this.scene.get(this.currScene) as Play;
+        scene.pause();
+
+        this.time.delayedCall(duration, () => {
+            scene.resume();
+        });
+    };
+
     updateCoordinates(x: number, y: number) {
         EventBus.emit("save-this-setting", { coordinates: { x, y } });
     };

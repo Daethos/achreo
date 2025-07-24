@@ -90,6 +90,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     function initiateCombat(data: any, type: string) {
         try {    
             let res: Combat | undefined | any = undefined,
+                shake: boolean = false,
                 playerWin: boolean = false,
                 computerWin: boolean = false,
                 playerActionDescription: string = "", 
@@ -135,6 +136,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     prayer = consumePrayer(prayer) as Combat;
                     res = { ...combat(), ...prayer };
                     playerWin = res.playerWin;
+                    shake = true;
                     EventBus.emit("blend-combat", { newComputerHealth: res.newComputerHealth, newPlayerHealth: res.newPlayerHealth, playerEffects: res.playerEffects, playerWin });
                     break;
                 case "Instant": // Invoking Prayer
@@ -143,6 +145,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     insta = instantActionCompiler(insta) as Combat;
                     playerWin = insta.playerWin;
                     res = { ...combat(), ...insta };
+                    shake = true;
                     EventBus.emit("blend-combat", insta);
                     break;
                 case "Tick": // Prayer Tick
@@ -156,7 +159,6 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Remove Tick": // Removing Prayer
                     const remove = prayerRemoveTick(combat(), data);
-
                     playerActionDescription = `${data.playerName === combat().player?.name ? "Your" : `${combat().computer?.name}"s`} ${data.name} prayer has expired.`;
                     res = { ...combat(), ...remove, playerActionDescription };
                     EventBus.emit("blend-combat", remove);
@@ -229,6 +231,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     res = { ...combat(), newComputerHealth, playerWin, playerActionDescription };
                     EventBus.emit("blend-combat", { newComputerHealth, playerWin });
                     affectsHealth = false;
+                    shake = true;
                     break;
                 case "Enemy Chiomic": // Mindflay
                     if (combat().computer === undefined) return;
@@ -237,6 +240,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} flays ${enemyChiomic} health from you with their hush.`;
                     res = { ...combat(), newPlayerHealth, computerWin, computerActionDescription };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, computerWin, damagedID: combat().enemyID });
                     break;
                 case "Tshaeral": // Lifedrain (Tick, 100%)
@@ -247,6 +251,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     playerWin = newComputerHealth === 0;
                     playerActionDescription = `You tshaer and devour ${drained} health from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin,playerActionDescription };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case "Enemy Tshaeral": // Lifedrain (Tick, 100%)
@@ -257,6 +262,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     computerActionDescription = `${combat().computer?.name} tshaers and devours ${enemyDrain} health from you.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, damagedID: combat().enemyID };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, computerWin });
                     break;
                 case "Health": // Either Enemy or Player Gaining / Losing Health
@@ -336,6 +342,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwartDef)} health to rip ${Math.round(sacrifice * (1 + data / 50))} from ${combat().computer?.name}.`;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case "Suture":
@@ -346,6 +353,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     playerActionDescription = `Your suture ${combat().computer?.name}"s caeren into you, absorbing and healing for ${suture}.`;    
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
                     break;
                 case "Enemy Sacrifice": 
@@ -357,6 +365,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, playerWin, damagedID: combat().enemyID };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     break;
                 case "Enemy Suture":
@@ -368,6 +377,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, computerActionDescription, computerWin, playerWin, damagedID: combat().enemyID };
+                    shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     break;
                 case "Remove Enemy":
@@ -387,10 +397,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             } else if (affectsHealth === true) {
                 timer.adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
-            if (affectsStealth && combat().isStealth) {
-                EventBus.emit("update-stealth");
-            };
-            screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
+            if (affectsStealth && combat().isStealth) EventBus.emit("update-stealth");
+            if (shake) screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
         } catch (err: any) {
             console.warn(err, "Error Initiating Combat");
         };

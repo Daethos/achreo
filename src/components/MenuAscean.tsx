@@ -36,8 +36,6 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
                         "border-color": `${currentFocus ? masteryColor(asc.mastery) : "#fdf6d8"}`,
                         "--glow-color": masteryColor(asc.mastery),
                         "--mastery-color": backgroundGradient(asc.mastery, true),
-                        // "--mastery-color-seen": backgroundTransparency(asc.mastery, true),
-                        // "--mastery-color-transparent": backgroundTransparency(asc.mastery, false),
                         "--mastery-base": backgroundGradient(asc.mastery, false),
                         "--pulse-duration": "2s",
                         "background": `linear-gradient(#000, ${mastery})`,

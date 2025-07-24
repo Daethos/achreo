@@ -403,7 +403,7 @@ export default class PlayerMachine {
     };
     onHurtUpdate = (dt: number) => {
         this.player.hurtTime += dt;
-        if (this.player.hurtTime >= 300) this.player.isHurt = false;
+        if (this.player.hurtTime >= 500) this.player.isHurt = false;
         if (!this.player.isHurt) {
             if (this.player.inCombat === true && this.player.health > 0) {
                 this.stateMachine.setState(States.COMBAT);
@@ -842,7 +842,6 @@ export default class PlayerMachine {
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.frameCount = 0;
-
     }; 
     onAttackUpdate = (_dt: number) => {
         if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
@@ -1123,7 +1122,8 @@ export default class PlayerMachine {
     };
 
     onAchireEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Achire", PLAYER.DURATIONS.ACHIRE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Achire", PLAYER.DURATIONS.ACHIRE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Achire");
         this.player.castbar.setTotal(PLAYER.DURATIONS.ACHIRE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
@@ -1157,7 +1157,8 @@ export default class PlayerMachine {
     };
 
     onAstraveEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Astrave", PLAYER.DURATIONS.ASTRAVE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Astrave", PLAYER.DURATIONS.ASTRAVE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Astrave");
         this.player.castbar.setTotal(PLAYER.DURATIONS.ASTRAVE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
@@ -1199,7 +1200,8 @@ export default class PlayerMachine {
     onArcEnter = () => {
         this.player.isArcing = true;
         this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
-        this.player.specialCombatText = this.scene.showCombatText("Arcing", PLAYER.DURATIONS.ARCING / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Arcing", PLAYER.DURATIONS.ARCING / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Arc");
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
@@ -1293,7 +1295,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.specialCombatText = this.scene.showCombatText("Chiomism", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Chiomism", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Chiomism");
         this.player.castbar.setTotal(PLAYER.DURATIONS.CHIOMISM);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.CHIOMISM);                          
         this.player.isCasting = true;
@@ -1335,7 +1338,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText("Confusing", PLAYER.DURATIONS.CONFUSE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Confusing", PLAYER.DURATIONS.CONFUSE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Confuse");
         this.player.castbar.setTotal(PLAYER.DURATIONS.CONFUSE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
@@ -1413,7 +1417,8 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.DEVOUR, PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play("absorb", { volume: this.scene.hud.settings.volume });
         this.player.flickerCaerenic(2000); 
-        this.player.specialCombatText = this.scene.showCombatText("Devouring", PLAYER.DURATIONS.DEVOUR / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Devouring", PLAYER.DURATIONS.DEVOUR / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Devour");
         this.player.castbar.setTotal(PLAYER.DURATIONS.DEVOUR);
         this.player.castbar.setTime(PLAYER.DURATIONS.DEVOUR);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.DEVOUR);
@@ -1465,7 +1470,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText("Fearing", PLAYER.DURATIONS.FEAR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Fearing", PLAYER.DURATIONS.FEAR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Fear");
         this.player.castbar.setTotal(PLAYER.DURATIONS.FEAR);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
@@ -1504,7 +1510,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.specialCombatText = this.scene.showCombatText("Frost", PLAYER.DURATIONS.FROST / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Frost", PLAYER.DURATIONS.FROST / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Frost");
         this.player.castbar.setTotal(PLAYER.DURATIONS.FROST);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.FROST);
         this.player.isCasting = true;
@@ -1549,7 +1556,8 @@ export default class PlayerMachine {
         this.player.isCasting = true;
         if (this.player.isMoving === true) this.player.isCasting = false;
         if (this.player.isCasting === false) return;
-        this.player.specialCombatText = this.scene.showCombatText("Fyerus", PLAYER.DURATIONS.FYERUS / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Fyerus", PLAYER.DURATIONS.FYERUS / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Fyerus");
         this.player.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
         this.player.castbar.setTime(PLAYER.DURATIONS.FYERUS);
         this.player.castbar.setVisible(true);  
@@ -1585,7 +1593,8 @@ export default class PlayerMachine {
     };
 
     onHealingEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Healing", PLAYER.DURATIONS.HEALING / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Healing", PLAYER.DURATIONS.HEALING / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Healing");
         this.player.castbar.setTotal(PLAYER.DURATIONS.HEALING);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
@@ -1618,7 +1627,8 @@ export default class PlayerMachine {
     onIlirechEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.specialCombatText = this.scene.showCombatText("Ilirech", PLAYER.DURATIONS.ILIRECH / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Ilirech", PLAYER.DURATIONS.ILIRECH / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Ilirech");
         this.player.castbar.setTotal(PLAYER.DURATIONS.ILIRECH);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ILIRECH);
         this.player.isCasting = true;
@@ -1682,7 +1692,8 @@ export default class PlayerMachine {
     };
 
     onKynisosEnter = () => { 
-        this.player.specialCombatText = this.scene.showCombatText("Kynisos", PLAYER.DURATIONS.KYNISOS / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Kynisos", PLAYER.DURATIONS.KYNISOS / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Kynisos");
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYNISOS);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
@@ -1724,7 +1735,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.specialCombatText = this.scene.showCombatText("Kyrisian", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Kyrisian", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Kyrisian");
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYRISIAN);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.KYRISIAN);                          
         this.player.isCasting = true;
@@ -1770,7 +1782,8 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.KYRNAICISM, PLAYER.STAMINA.KYRNAICISM);    
         this.scene.sound.play("absorb", { volume: this.scene.hud.settings.volume });
         this.player.flickerCaerenic(3000); 
-        this.player.specialCombatText = this.scene.showCombatText("Kyrnaicism", PLAYER.DURATIONS.KYRNAICISM / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Kyrnaicism", PLAYER.DURATIONS.KYRNAICISM / 2, "damage", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Kyrnaicism");
         this.player.castbar.setTotal(PLAYER.DURATIONS.KYRNAICISM);
         this.player.castbar.setTime(PLAYER.DURATIONS.KYRNAICISM);
         this.player.currentTarget.isConsumed = true;
@@ -1814,7 +1827,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean.name;
-        this.player.specialCombatText = this.scene.showCombatText("Likyr", PLAYER.DURATIONS.LIKYR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Likyr", PLAYER.DURATIONS.LIKYR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Li'kyr");
         this.player.castbar.setTotal(PLAYER.DURATIONS.LIKYR);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.LIKYR);
         this.player.isCasting = true;
@@ -1863,7 +1877,8 @@ export default class PlayerMachine {
     onMaierethEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.specialCombatText = this.scene.showCombatText("Maiereth", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Maiereth", 750, "effect", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Maiereth");
         this.player.castbar.setTotal(PLAYER.DURATIONS.MAIERETH);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.MAIERETH);                          
         this.player.isCasting = true;
@@ -2037,7 +2052,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText("Paralyzing", PLAYER.DURATIONS.PARALYZE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Paralyzing", PLAYER.DURATIONS.PARALYZE / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Paralyze");
         this.player.castbar.setTotal(PLAYER.DURATIONS.PARALYZE);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
@@ -2077,7 +2093,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name
-        this.player.specialCombatText = this.scene.showCombatText("Polymorphing", PLAYER.DURATIONS.POLYMORPH / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Polymorphing", PLAYER.DURATIONS.POLYMORPH / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Polymorph");
         this.player.castbar.setTotal(PLAYER.DURATIONS.POLYMORPH);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
@@ -2150,7 +2167,8 @@ export default class PlayerMachine {
     };
 
     onQuorEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Quor", PLAYER.DURATIONS.QUOR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Quor", PLAYER.DURATIONS.QUOR / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Quor");
         this.player.castbar.setTotal(PLAYER.DURATIONS.QUOR);
         this.player.isCasting = true;
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true); 
@@ -2189,7 +2207,8 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.RECONSTITUTE, PLAYER.STAMINA.RECONSTITUTE);
         const enhanced = this.player.checkTalentEnhanced(States.RECONSTITUTE);
         const duration = enhanced ? PLAYER.DURATIONS.RECONSTITUTE / 2 : PLAYER.DURATIONS.RECONSTITUTE;
-        this.player.specialCombatText = this.scene.showCombatText("Reconstitute", duration / 2, "heal", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Reconstitute", duration / 2, "heal", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Reconstitute");
         this.player.castbar.setTotal(duration);
         this.player.castbar.setTime(duration);
         this.player.beam.startEmitter(this, duration);
@@ -2241,8 +2260,9 @@ export default class PlayerMachine {
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
         this.player.isCasting = true;
+        this.player.castbar.setCastName("Root");
         this.player.castbar.setTotal(PLAYER.DURATIONS.ROOTING);
-        this.player.specialCombatText = this.scene.showCombatText("Rooting", PLAYER.DURATIONS.ROOTING / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Rooting", PLAYER.DURATIONS.ROOTING / 2, "cast", false, true, () => this.player.specialCombatText = undefined);
         if (this.player.isCaerenic === false && this.player.isGlowing === false) this.player.checkCaerenic(true);
         this.player.castbar.setVisible(true);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.ROOTING);
@@ -2331,7 +2351,8 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.spellName = this.player.currentTarget.ascean?.name;
-        this.player.specialCombatText = this.scene.showCombatText("Snaring", PLAYER.DURATIONS.SNARE, "cast", false, true, () => this.player.specialCombatText = undefined);
+        // this.player.specialCombatText = this.scene.showCombatText("Snaring", PLAYER.DURATIONS.SNARE, "cast", false, true, () => this.player.specialCombatText = undefined);
+        this.player.castbar.setCastName("Snare");
         this.player.castbar.setTotal(PLAYER.DURATIONS.SNARE);
         this.player.beam.startEmitter(this.player.currentTarget, PLAYER.DURATIONS.SNARE);
         this.player.isCasting = true;

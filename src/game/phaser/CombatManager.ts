@@ -10,14 +10,17 @@ import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
 import { HEAL } from "./ScrollingCombatText";
 import { PLAYER } from "../../utility/player";
+import { HitFeedbackSystem } from "./HitFeedbackSystem";
 
 export class CombatManager {
     combatMachine: CombatMachine;
     context: Play;
+    hitFeedbackSystem: HitFeedbackSystem;
 
     constructor(scene: Play) {
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
+        this.hitFeedbackSystem = new HitFeedbackSystem(scene);
         EventBus.on("use-stamina", this.useStamina);
         EventBus.on("use-grace", this.useGrace);
     };

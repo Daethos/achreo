@@ -12,7 +12,7 @@ import { Gauntlet } from "../scenes/Gauntlet";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 
-const COLORS = {
+export const COLORS = {
     "astrave": 0xFFFF00,
     "blind": 0xCC5500,
     "caerenesis": 0x00FFFF,
@@ -27,6 +27,7 @@ const COLORS = {
     "tendril": 0x00FF00,
     "writhe": 0x080080,
 
+    "arrow": 0xFFFFFF,
     "earth": 0x000000,
     "fire": 0xFF0000,
     "frost": 0x0000FF,

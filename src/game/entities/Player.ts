@@ -16,6 +16,7 @@ import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { getHitFeedbackContext } from "../phaser/HitFeedbackSystem";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -581,7 +582,9 @@ export default class Player extends Entity {
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);
         if (this.currentRound !== e.combatRound && this.scene.combat === true) {
             this.currentRound = e.combatRound;
-            if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
+            // if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
+            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, true));
+            if (e.playerDamaged || computerParrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, false));
         };
         if (e.newComputerHealth <= 0 && e.playerWin === true) {
             this.defeatedEnemyCheck(e.enemyID);
@@ -794,39 +797,50 @@ export default class Player extends Entity {
 
     soundEffects(sfx: Combat) {
         try {
-            const soundEffectMap = (type: string, weapon: Equipment) => {
+            const isCrit = sfx.criticalSuccess;
+            const isGlance = sfx.glancingBlow;
+            const rate = isCrit ? 1.2 : isGlance ? 0.8 : Phaser.Math.FloatBetween(0.95, 1.05);
+            const detune = Phaser.Math.Between(-30, 30);
+
+            let volume = this.scene.hud.settings.volume;
+            const soundEffectMap = (type: string, weapon: Equipment, player: boolean) => {
+                if (player) { 
+                    volume = isCrit ? this.scene.hud.settings.volume * 1.2 : isGlance ? this.scene.hud.settings.volume * 0.7 : this.scene.hud.settings.volume;
+                } else {
+                    volume = sfx.computerCriticalSuccess ? this.scene.hud.settings.volume * 1.2 : sfx.computerGlancingBlow ? this.scene.hud.settings.volume * 0.7 : this.scene.hud.settings.volume;
+                };
                 switch (type) {
                     case "Spooky":
-                        return this.scene.sound.play("spooky", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("spooky", { volume, rate, detune });
                     case "Righteous":
-                        return this.scene.sound.play("righteous", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("righteous", { volume, rate, detune });
                     case "Wild":
-                        return this.scene.sound.play("wild", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("wild", { volume, rate, detune });
                     case "Earth":
-                        return this.scene.sound.play("earth", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("earth", { volume, rate, detune });
                     case "Fire":
-                        return this.scene.sound.play("fire", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("fire", { volume, rate, detune });
                     case "Frost":
-                        return this.scene.sound.play("frost", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("frost", { volume, rate, detune });
                     case "Lightning":
-                        return this.scene.sound.play("lightning", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("lightning", { volume, rate, detune });
                     case "Sorcery":
-                        return this.scene.sound.play("sorcery", { volume: this.scene.hud.settings.volume / 3 });
+                        return this.scene.sound.play("sorcery", { volume: volume / 3, rate, detune });
                     case "Wind":
-                        return this.scene.sound.play("wind", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("wind", { volume, rate, detune });
                     case "Pierce":
-                        return (weapon.type === "Bow" || weapon.type === "Greatbow") ? this.scene.sound.play("bow", { volume: this.scene.hud.settings.volume }) : this.scene.sound.play("pierce", { volume: this.scene.hud.settings.volume });
+                        return (weapon.type === "Bow" || weapon.type === "Greatbow") ? this.scene.sound.play("bow", { volume, rate, detune }) : this.scene.sound.play("pierce", { volume, rate, detune });
                     case "Slash":
-                        return this.scene.sound.play("slash", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("slash", { volume, rate, detune });
                     case "Blunt":
-                        return this.scene.sound.play("blunt", { volume: this.scene.hud.settings.volume });
+                        return this.scene.sound.play("blunt", { volume, rate, detune });
                 };
             };
-            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment);
-            if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0]);
-            if (sfx.religiousSuccess === true) this.scene.sound.play("righteous", { volume: this.scene.hud.settings.volume });
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play("parry", { volume: this.scene.hud.settings.volume });
+            if (sfx.religiousSuccess === true) this.scene.sound.play("righteous", { volume, rate, detune });
+            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play("roll", { volume: volume / 2, rate, detune });
+            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play("parry", { volume, rate, detune });
+            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment, true);
+            if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0], false);
         } catch (err) {
             console.warn(err, "Error Setting Sound Effects");
         };

@@ -10,6 +10,7 @@ import { RANGE } from "../../utility/enemy";
 import { Play } from "../main";
 import PlayerComputer from "../entities/PlayerComputer";
 import Party from "../entities/PartyComputer";
+import { getHitFeedbackContext } from "./HitFeedbackSystem";
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,

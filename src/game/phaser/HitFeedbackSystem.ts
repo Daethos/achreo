@@ -7,7 +7,7 @@ import { screenShake } from "./ScreenShake";
 type HitFeedbackContext = {
     // source: "player" | "enemy" | "party";
     damageType: string;
-    // pos: Phaser.Math.Vector2;
+    pos: Phaser.Math.Vector2;
     weaponType: string | undefined;
     critical: boolean;
     glancing: boolean;
@@ -17,11 +17,11 @@ type HitFeedbackContext = {
     miss: boolean; // deterimed by lack of .computerDamaged / .playerDamaged boolean
 };
 
-export function getHitFeedbackContext(combat: Combat, player: boolean) {
+export function getHitFeedbackContext(combat: Combat, pos: Phaser.Math.Vector2, player: boolean) {
     if (player) {
         return {
             damageType: combat.playerDamageType,
-            // pos: target,
+            pos,
             weaponType: combat.weapons[0]?.type,
             critical: combat.criticalSuccess,
             glancing: combat.glancingBlow,
@@ -33,7 +33,7 @@ export function getHitFeedbackContext(combat: Combat, player: boolean) {
     } else {
         return {
             damageType: combat.computerDamageType,
-            // pos: target,
+            pos,
             weaponType: combat.computerWeapons[0]?.type,
             critical: combat.computerCriticalSuccess,
             glancing: combat.computerGlancingBlow,
@@ -53,11 +53,11 @@ export class HitFeedbackSystem {
     constructor(scene: Play) {
         this.scene = scene;
         this.profiles = HitProfiles;
-        // this.particleCreate();    
+        this.particleCreate();
     };
 
     play(context: HitFeedbackContext): void {
-        const { damageType, weaponType, critical, glancing, miss, parry, prayer, roll } = context;
+        const { damageType, weaponType, critical, glancing, miss, parry, prayer, roll, pos } = context;
         // console.log({damageType, critical, glancing, parry});
         const profile = this.profiles[damageType];
 
@@ -67,11 +67,6 @@ export class HitFeedbackSystem {
         let volume = this.scene.hud.settings.volume;
         let rate = profile.rate;
 
-        if (glancing) {
-            volume *= randomFloatFromInterval(0.6, 0.8);
-            rate *= randomFloatFromInterval(0.8, 1);
-        };
-        
         if (roll) this.scene.sound.play("roll", { volume, rate });
         if (parry) this.scene.sound.play("parry", { volume, rate });
         if (prayer) this.scene.sound.play("righteous", { volume, rate });
@@ -88,12 +83,14 @@ export class HitFeedbackSystem {
             this.flashScreen(profile.flashColor, profile.hitStop * 10);
         };
 
-        if (profile.hitStop) this.hitStop(profile.hitStop);
-        // if (profile.particles) this.emitParticles(pos, [profile.flashColor]);
-        
-        if (profile.screenShake) {
-            screenShake(this.scene);
+        if (glancing) {
+            volume *= randomFloatFromInterval(0.6, 0.8);
+            rate *= randomFloatFromInterval(0.8, 1);
         };
+
+        if (profile.hitStop) this.hitStop(profile.hitStop);
+        if (profile.particles) this.emitParticles(pos, critical, glancing, parry);
+        if (profile.screenShake) screenShake(this.scene);
 
         this.scene.sound.play(key, { volume, rate });
     };
@@ -147,34 +144,31 @@ export class HitFeedbackSystem {
     private particleCreate() {
         const particle = this.scene.make.graphics({x:0,y:0});
         particle.fillStyle(0xFFFFFF, 1);
-        particle.fillCircle(4, 4, 4);
-        particle.generateTexture("particle", 8, 8);
+        particle.fillCircle(3, 3, 3);
+        particle.generateTexture("particle", 6, 6);
         particle.destroy();
 
         this.particles = this.scene.add.particles(0, 0, "particle", {
             x: 0,
             y: 0,
             blendMode: "NORMAL",
-            color: [0xFFFFFF],
+            color: [0xFF0000],
             // follow: pos,
             frequency: 100,
-            lifespan: 500,
-            quantity: 5,
-            alpha: { start: 0.7, end: 0 },
-            scale: { start: 0.5, end: 1 },
-            speed: { min:-50, max:50 },
-        }).setScrollFactor(0).setDepth(100).stop();
+            angle: { min: -90 - 45, max: -90 + 45 },
+            lifespan: { min: 200, max: 500 },
+            quantity: 10,
+            alpha: { start: 1, end: 0 },
+            scale: { start: 1, end: 0 },
+            speed: { min: 100, max: 250 },
+            followOffset: { x: -265, y: -165 },
+            gravityY: 300,
+        }).setScrollFactor(1).setDepth(100).stop();
     }
 
-    private emitParticles(pos: Phaser.Math.Vector2, color: number[]) {
-        this.particles.ops.color.loadConfig({color});
-        this.particles.ops.x.loadConfig({x:pos.x});
-        this.particles.ops.y.loadConfig({y:pos.y});
-        this.particles.startFollow(pos);
-        this.particles.start();
-        // this.particles.ops.follow.loadConfig({follow:pos});
-
-        
-        this.scene.time.delayedCall(500, () => this.particles.stop(), undefined, this);
+    private emitParticles(pos: Phaser.Math.Vector2, crit: boolean, glance: boolean, parry: boolean) {
+        if (parry) return;
+        const count = crit ? 40 : glance ? 10 : 20;
+        this.particles.explode(count, pos.x, pos.y);
     };
 };

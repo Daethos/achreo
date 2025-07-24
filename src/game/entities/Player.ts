@@ -580,11 +580,11 @@ export default class Player extends Entity {
             this.scene.combatManager.useStamina(-5);
         };
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);
-        if (this.currentRound !== e.combatRound && this.scene.combat === true) {
+        if (e.combatRound === 1 || (this.currentRound !== e.combatRound && this.scene.combat === true)) {
             this.currentRound = e.combatRound;
             // if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
-            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, true));
-            if (e.playerDamaged || computerParrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, false));
+            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.scene.getEnemy(e.enemyID)?.position as Phaser.Math.Vector2, true));
+            if (e.playerDamaged || computerParrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.position, false));
         };
         if (e.newComputerHealth <= 0 && e.playerWin === true) {
             this.defeatedEnemyCheck(e.enemyID);
@@ -595,11 +595,11 @@ export default class Player extends Entity {
         };    
         if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
         if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
-        if (e.criticalSuccess || e.glancingBlow || parrySuccess || rollSuccess || e.computerGlancingBlow || computerCriticalSuccess || computerParrySuccess) {
-            EventBus.emit("blend-combat", { 
-                computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
-            });
-        };
+        // if (e.criticalSuccess || e.glancingBlow || parrySuccess || rollSuccess || e.computerGlancingBlow || computerCriticalSuccess || computerParrySuccess) {
+        // };
+        EventBus.emit("blend-combat", {
+            computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
+        });
         if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
     };
 
@@ -651,7 +651,6 @@ export default class Player extends Entity {
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.scene.sound.play("leap", { volume: this.scene.hud.settings.volume });
-                // this.flickerCaerenic(800);
             },
             onComplete: () => { 
                 screenShake(this.scene);
@@ -696,13 +695,6 @@ export default class Player extends Entity {
             duration: 300,
             yoyo: true
         });
-        // this.scene.tweens.add({
-        //     targets: this.scene.cameras.main,
-        //     zoom: this.scene.cameras.main.zoom * 1.5,
-        //     ease: Phaser.Math.Easing.Quintic.InOut,
-        //     duration: 600,
-        //     yoyo: true
-        // });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),

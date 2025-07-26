@@ -580,10 +580,10 @@ export default class Player extends Entity {
             this.scene.combatManager.useStamina(-5);
         };
         if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);
-        if (e.combatRound === 1 || (this.currentRound !== e.combatRound && this.scene.combat === true)) {
+        if (e.combatRound <= 1 || (this.currentRound !== e.combatRound && this.scene.combat === true)) {
             this.currentRound = e.combatRound;
             // if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
-            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.scene.getEnemy(e.enemyID)?.position as Phaser.Math.Vector2, true));
+            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.scene.getEnemy(e.damagedID)?.position as Phaser.Math.Vector2, true));
             if (e.playerDamaged || computerParrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.position, false));
         };
         if (e.newComputerHealth <= 0 && e.playerWin === true) {

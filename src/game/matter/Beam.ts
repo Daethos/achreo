@@ -30,10 +30,6 @@ const CONVERSION = {
     Gauntlet: Default,
     Tutorial: Default,
     Underground: Default
-    // Underground: {
-    //     X: 555, // 500
-    //     Y: 30 // 35
-    // },
 };
 
 type Entity = Enemy | Party | Player;

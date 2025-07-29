@@ -126,7 +126,6 @@ export interface Combat {
     enemyID: string;
     damagedID: string;
     combatTimer: number;
-    soundEffects: boolean;
 
     isEnemy: boolean;
     npcType: string;
@@ -263,7 +262,6 @@ export const initCombat: Combat = {
     enemyID: '',
     damagedID: '',
     combatTimer: 0,
-    soundEffects: false,
 
     isEnemy: false,
     npcType: '',

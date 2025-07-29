@@ -950,6 +950,7 @@ export class Game extends Scene {
                 };
             };
         };
+        this.player.currentRound = 0;
     };
 
     combatEngaged = (bool: boolean) => {

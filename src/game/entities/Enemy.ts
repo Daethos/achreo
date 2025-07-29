@@ -6,10 +6,9 @@ import { v4 as uuidv4 } from "uuid";
 import { PLAYER, ENEMY_ENEMIES, FACTION } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import Bubble from "../phaser/Bubble";
-import { BROADCAST_DEATH, COMPUTER_BROADCAST, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { BROADCAST_DEATH, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { Underground } from "../scenes/Underground";
-import { Combat } from "../../stores/combat";
 import Player from "./Player";
 import Equipment, { randomFloatFromInterval } from "../../models/equipment";
 import { Particle } from "../matter/ParticleManager";
@@ -346,10 +345,6 @@ export default class Enemy extends Entity {
     };
 
     cleanUp() {
-        EventBus.off("update-combat", this.playerCombatUpdate); 
-        EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
-        EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.off("personal-update", this.personalUpdate);    
         EventBus.off("enemy-persuasion", this.persuasionUpdate);
         EventBus.off("convert-enemy", this.enemyConversion);
@@ -372,10 +367,6 @@ export default class Enemy extends Entity {
     };
 
     enemyStateListener() {
-        EventBus.on("update-combat", this.playerCombatUpdate);
-        EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
-        EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.on("personal-update", this.personalUpdate);
         EventBus.on("enemy-persuasion", this.persuasionUpdate);
         EventBus.on("enemy-luckout", this.luckoutUpdate);
@@ -526,7 +517,6 @@ export default class Enemy extends Entity {
 
     removeComputerEnemy = (id: string) => {
         if (this.currentTarget && this.currentTarget.enemyID === id) {
-            // console.log("removing computer enemy");
             this.clearComputerCombatWin(id);
         };
         this.enemies = this.enemies.filter(e => e.id !== id);
@@ -536,42 +526,6 @@ export default class Enemy extends Entity {
         const enemy = this.scene.enemies.some((e: Enemy) => e.enemyID === id); 
         if (!enemy) return true; // Party
         return this.scene.hud.currScene === "Game"; // Making sure it's not Arena or Underground
-    };
-
-    /*
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
-    */
-    computerBroadcast = (e: { id: string; key: string; value: number; }) => {
-        if (this.computerCombatSheet.enemyID !== e.id) return;
-        (this.computerCombatSheet as any)[e.key] = e.value;
-    };
-
-    computerDamage = (e: { damage: number; id: string; origin: string; }) => {
-        if (e.id !== this.enemyID) return;
-        const { damage, origin } = e;
-        this.health = Math.max(this.health - damage, 0);
-        this.updateHealthBar(this.health);
-        this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => this.scrollingCombatText = undefined);
-        this.checkHurt();
-        if (this.isFeared) this.checkFear();
-        if (this.isConfused) this.checkConfuse();
-        if (this.isPolymorphed) this.isPolymorphed = false;
-        if (this.isMalicing) this.malice(origin);
-        if (this.isMending) this.mend(origin);
-        if ((!this.inComputerCombat || !this.currentTarget) && this.health > 0) {
-            const enemy = this.scene.enemies.find((en: Enemy) => en.enemyID === origin && origin !== this.enemyID) || this.scene.party.find((p: Party) => p.enemyID === origin);
-            if (enemy && enemy.health > 0) this.checkComputerEnemyCombatEnter(enemy);
-        };
-        this.computerCombatSheet.newComputerHealth = this.health;
-        const enemy = this.enemies.find((en: ENEMY) => en.id === origin && origin !== this.enemyID);
-        if (enemy && this.health > 0 && this.checkEnemyGame(origin)) {
-            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
-        } else if (!enemy && this.health > 0 && origin !== "" && this.checkEnemyGame(origin)) {
-            this.enemies.push({id:origin,threat:0});
-            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max))
-        };
-        if (this.health <= 0) this.killingBlow = origin;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
     };
 
     updateThreat(id: string, threat: number) {
@@ -665,7 +619,6 @@ export default class Enemy extends Entity {
     };
 
     computerCombatUpdate = (e: ComputerCombat) => {
-        if (this.enemyID !== e.personalID) return;
         const { computerDamageType, enemyID, computerWeapons, computerWin, computerHealth, newComputerHealth, computerEnemyParrySuccess, rollSuccess } = e;
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
@@ -721,57 +674,9 @@ export default class Enemy extends Entity {
             this.clearComputerCombatWin(enemyID);
         };
         if (this.health <= 0) this.killingBlow = enemyID;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+        this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
     };
     
-    playerCombatUpdate = (e: Combat) => {
-        if (this.enemyID !== e.enemyID) {
-            if (this.inCombat) this.currentRound = e.combatRound;
-            if (this.inCombat && e.newPlayerHealth <= 0 && e.computerWin === true) {
-                this.isTriumphant = true;
-                this.clearCombatWin();
-            };
-            return;
-        };
-        const { criticalSuccess, computerDamageType, computerWeapons, computerWin, computerHealth, newComputerHealth, newPlayerHealth } = e;
-        if (this.health > newComputerHealth) {
-            let damage: number | string = Math.round(this.health - newComputerHealth);
-            // damage = criticalSuccess ? `${damage} (Critical)` : glancingBlow ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, "bone", criticalSuccess, false, () => this.scrollingCombatText = undefined);
-            this.checkHurt();
-            if (this.isFeared) this.checkFear();
-            if (this.isConfused) this.checkConfuse();
-            if (this.isPolymorphed) this.isPolymorphed = false;
-            if (this.isMalicing) this.malice(this.scene.player.playerID);
-            if (this.isMending) this.mend(this.scene.player.playerID);
-            if (!this.inCombat && newComputerHealth > 0 && newPlayerHealth > 0) this.checkEnemyCombatEnter();
-            const id = this.enemies.find((en: ENEMY) => en.id === this.scene.player.playerID);
-            if (id && newComputerHealth > 0) {
-                this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
-            } else if (!id && newComputerHealth > 0) {
-                this.enemies.push({id:this.scene.player.playerID, threat:0});
-                this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, computerHealth));
-            };
-        } else if (this.health < newComputerHealth) { 
-            let heal = Math.round(newComputerHealth - this.health);
-            this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-        };
-        this.health = newComputerHealth;
-        this.computerCombatSheet.newComputerHealth = this.health;
-        if (this.healthbar.getTotal() < computerHealth) this.healthbar.setTotal(computerHealth);
-        this.updateHealthBar(newComputerHealth);
-        this.weapons = computerWeapons;
-        this.setWeapon(computerWeapons[0]); 
-        this.checkDamage(computerDamageType.toLowerCase()); 
-        this.checkMeleeOrRanged(computerWeapons?.[0]);
-        this.currentWeaponCheck();
-        this.currentRound = e.combatRound;
-        if (newPlayerHealth <= 0 && computerWin === true) {
-            this.isTriumphant = true;
-            this.clearCombatWin();
-        };
-    };
-
     persuasionUpdate = (e: any) => {
         if (this.enemyID !== e.enemy) return;
         if (e.persuaded) {
@@ -1297,8 +1202,9 @@ export default class Enemy extends Entity {
             };
         } else { // Computer Combat
             const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * ((this.ascean?.level + 9) / 10));
+            this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= chiomic;
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: chiomic, id, origin: this.enemyID });
+            this.scene.combatManager.updateComputerDamage(chiomic, id, this.enemyID);
         };
     };
 
@@ -1320,10 +1226,10 @@ export default class Enemy extends Entity {
             let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
             this.health = newComputerHealth;
             this.updateHealthBar(this.health);
+            this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= dev;
             this.computerCombatSheet.newComputerHealth = this.health;
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: dev, id, origin: this.enemyID });
+            this.scene.combatManager.updateComputerDamage(dev, id, this.enemyID);
         };
     };
 
@@ -1345,11 +1251,11 @@ export default class Enemy extends Entity {
         } else { // CvC
             const sacrifice = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10));
             this.health -= (sacrifice / 2);
+            this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 * power / 100));
             this.computerCombatSheet.newComputerHealth = this.health;
             this.updateHealthBar(this.health);
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: sacrifice, id, origin: this.enemyID });
+            this.scene.combatManager.updateComputerDamage(sacrifice, id, this.enemyID);
         };
     };
 
@@ -1371,10 +1277,10 @@ export default class Enemy extends Entity {
         } else { // CvC
             const suture = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
             let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
+            this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= suture;
             this.computerCombatSheet.newComputerHealth = newComputerHealth;
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: newComputerHealth });
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage: suture, id, origin: this.enemyID });
+            this.scene.combatManager.updateComputerDamage(suture, id, this.enemyID);
         };
     };
 
@@ -1399,7 +1305,7 @@ export default class Enemy extends Entity {
         return false;
     };
     
-    startCasting = (name: string, duration: number, style: string, channel = false, beam = true) => {
+    startCasting = (name: string, duration: number, _style: string, channel = false, beam = true) => {
         this.castbar.reset();
         this.castbar.setVisible(true); // Added
         this.castbar.setup(this.x, this.y, name);
@@ -2438,7 +2344,7 @@ export default class Enemy extends Entity {
                 this.updateHealthBar(total);
                 this.computerCombatSheet.newComputerHealth = total;
                 this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-                EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
+                this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
             };
         };
         this.enemySound("phenomena", this.castingSuccess);
@@ -2836,7 +2742,7 @@ export default class Enemy extends Entity {
             this.updateHealthBar(total);
             this.computerCombatSheet.newComputerHealth = total;
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: total });
+            this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
         this.enemySound("phenomena", true);
         this.channelCount++;
@@ -3348,7 +3254,7 @@ export default class Enemy extends Entity {
             this.health = heal;
             this.updateHealthBar(heal);
             this.scrollingCombatText = this.scene.showCombatText(`${mend}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
-            EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: heal });
+            this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
         this.enemySound("caerenic", true);
@@ -4163,7 +4069,7 @@ export default class Enemy extends Entity {
                             this.updateHealthBar(this.health);
                         };
                         this.computerCombatSheet.newComputerHealth = this.health;
-                        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+                        this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
                     };
                 };
             },

@@ -4,13 +4,14 @@ import { EventBus } from "../EventBus";
 import Player from "../entities/Player";
 import { Play } from "../main";
 import StatusEffect, { PRAYERS } from "../../utility/prayer";
-import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
 import { computerCombatCompiler } from "../../utility/computerCombat";
 import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
-import { HEAL } from "./ScrollingCombatText";
+import { DAMAGE, EFFECT, HEAL } from "./ScrollingCombatText";
 import { PLAYER } from "../../utility/player";
-import { HitFeedbackSystem } from "./HitFeedbackSystem";
+import { getHitFeedbackContext, HitFeedbackSystem } from "./HitFeedbackSystem";
+import { Combat } from "../../stores/combat";
+import { calculateThreat, ENEMY } from "../entities/Entity";
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -21,48 +22,304 @@ export class CombatManager {
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
         this.hitFeedbackSystem = new HitFeedbackSystem(scene);
-        EventBus.on("use-stamina", this.useStamina);
-        EventBus.on("use-grace", this.useGrace);
+        EventBus.on("update-combat", this.updateCombat.bind(this));
+        EventBus.on("use-stamina", this.useStamina.bind(this));
+        EventBus.on("use-grace", this.useGrace.bind(this));
+    };
+
+    public combatant(id: string) {
+        if (id === this.context.player.playerID) {
+            return this.context.player;
+        } else {
+            const enemy = this.context.enemies.find(e => e.enemyID === id);
+            const party = this.context.party.find(p => p.enemyID === id);
+            return enemy || party;
+        };
+    };
+
+    private updateCombat = (e: Combat) => {
+        if (this.context.scene.isSleeping(this.context.scene.key)) return;
+
+        const { computerCriticalSuccess, newPlayerHealth } = e;
+        const player = this.context.player;
+
+        player.currentRound = e.combatRound;
+        
+        if (player.health > newPlayerHealth) {
+            this.handlePlayerDamage(e);
+        } else  if (player.health < newPlayerHealth) {
+            player.scrollingCombatText = this.context.showCombatText(`${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => player.scrollingCombatText = undefined);
+        };
+        
+        player.health = newPlayerHealth;
+        player.healthbar.setValue(player.health);
+        if (player.healthbar.getTotal() < e.playerHealth) player.healthbar.setTotal(e.playerHealth);
+        
+        if (e.parrySuccess) {
+            player.specialCombatText = this.context.showCombatText("Parry", PLAYER.DURATIONS.TEXT, HEAL, true, false, () => player.specialCombatText = undefined);
+            this.stunned(e.enemyID);
+            this.useStamina(-5);
+        };
+        
+        if (e.rollSuccess) {
+            player.specialCombatText = this.context.showCombatText("Roll", PLAYER.DURATIONS.TEXT, HEAL, e.criticalSuccess, false, () => player.specialCombatText = undefined);
+            this.useStamina(-5);
+        };
+        
+        if (e.computerParrySuccess) {
+            this.stunned(player.playerID);
+            // this.combatMachine.input("computerParrySuccess", false);
+            player.resistCombatText = this.context.showCombatText("Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false, () => player.resistCombatText = undefined);    
+        };
+
+        if (e.computerRollSuccess) {
+            player.resistCombatText = this.context.showCombatText("Roll", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false, () => player.resistCombatText = undefined);
+        };
+        
+        if (e.newComputerHealth <= 0 && e.playerWin === true) player.defeatedEnemyCheck(e.enemyID);
+        if (newPlayerHealth <= 0) {
+            player.isDefeated = true;
+            player.disengage();
+        };
+        player.maxStamina = Math.max(player.maxStamina, e.playerAttributes?.stamina ?? 0);
+        player.maxGrace = Math.max(player.maxGrace, e.playerAttributes?.grace ?? 0);
+    
+        if (player.inCombat === false && this.context.combat === true) this.context.combatEngaged(false);
+
+        this.handleEnemyUpdate(e);
+        
+        this.handleHitFeedback(e);
+        this.resetCombatFlags();
+    };
+
+    private handleEnemyUpdate = (e: Combat) => {
+        const enemy = this.context.getEnemy(e.enemyID);
+        if (!enemy) return;
+        const { criticalSuccess, computerDamageType, computerWeapons, computerWin, computerHealth, newComputerHealth, newPlayerHealth } = e;
+        const player = this.context.player;
+        if (enemy.health > newComputerHealth) {
+            let damage: number | string = Math.round(enemy.health - newComputerHealth);
+            enemy.scrollingCombatText = this.context.showCombatText(`${damage}`, 1500, "bone", criticalSuccess, false, () => enemy.scrollingCombatText = undefined);
+            enemy.checkHurt();
+            if (enemy.isFeared) enemy.checkFear();
+            if (enemy.isConfused) enemy.checkConfuse();
+            if (enemy.isPolymorphed) enemy.isPolymorphed = false;
+            if (enemy.isMalicing) enemy.malice(player.playerID);
+            if (enemy.isMending) enemy.mend(player.playerID);
+            if (!enemy.inCombat && newComputerHealth > 0 && newPlayerHealth > 0) enemy.checkEnemyCombatEnter();
+            const id = enemy.enemies.find((en: ENEMY) => en.id === player.playerID);
+            if (id && newComputerHealth > 0) {
+                enemy.updateThreat(player.playerID, calculateThreat(Math.round(enemy.health - newComputerHealth), newComputerHealth, computerHealth));
+            } else if (!id && newComputerHealth > 0) {
+                enemy.enemies.push({ id: player.playerID, threat: 0 });
+                enemy.updateThreat(player.playerID, calculateThreat(Math.round(enemy.health - newComputerHealth), newComputerHealth, computerHealth));
+            };
+        } else if (enemy.health < newComputerHealth) { 
+            let heal = Math.round(newComputerHealth - enemy.health);
+            enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
+        };
+        enemy.health = newComputerHealth;
+        enemy.computerCombatSheet.newComputerHealth = enemy.health;
+        if (enemy.healthbar.getTotal() < computerHealth) enemy.healthbar.setTotal(computerHealth);
+        enemy.updateHealthBar(newComputerHealth);
+        enemy.weapons = computerWeapons;
+        enemy.setWeapon(computerWeapons[0]); 
+        enemy.checkDamage(computerDamageType.toLowerCase()); 
+        enemy.checkMeleeOrRanged(computerWeapons?.[0]);
+        enemy.currentWeaponCheck();
+        enemy.currentRound = e.combatRound;
+        if (newPlayerHealth <= 0 && computerWin === true) {
+            enemy.isTriumphant = true;
+            enemy.clearCombatWin();
+        };
+    };
+
+    private checkFearBreak() {
+        const player = this.context.player;
+        if (!player.isFeared) return;
+        const chance = Math.random() < 0.1 + player.fearCount;
+        if (chance) {
+            player.resistCombatText = this.context.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => player.resistCombatText = undefined);
+            player.isFeared = false;
+        } else {
+            player.fearCount += 0.1;
+        };
+    };
+
+    private handlePlayerDamage(e: Combat) {
+        const player = this.context.player;
+        const damage = Math.round(player.health - e.newPlayerHealth);
+        player.scrollingCombatText = this.context.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false, () => player.scrollingCombatText = undefined);
+
+        player.isHurt ||= !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
+
+        player.isConfused = false;
+        player.isPolymorphed = false;
+
+        this.handleReactiveEffects(e.damagedID);
+        this.checkFearBreak();
+    };
+
+    private handleReactiveEffects(id: string) {
+        const player = this.context.player;
+        if (!player.reactiveBubble) return;
+        if (player.isMalicing) player.playerMachine.malice(id);
+        if (player.isMending) player.playerMachine.mend();
+        if (player.isRecovering) player.playerMachine.recover();
+        if (player.isReining) player.playerMachine.rein();
+        if (player.isMenacing) player.playerMachine.menace(player.reactiveTarget);
+        if (player.isModerating) player.playerMachine.moderate(player.reactiveTarget);
+        if (player.isMultifaring) player.playerMachine.multifarious(player.reactiveTarget);
+        if (player.isMystifying) player.playerMachine.mystify(player.reactiveTarget);
+    };
+
+    private handleHitFeedback(e: Combat) {
+        const isPlayerHit = e.playerDamaged || e.computerParrySuccess;
+        const isEnemyHit = e.computerDamaged || e.parrySuccess;
+        const player = this.context.player;
+        const comp = player.currentTarget?.enemyID === e.enemyID
+            ? player.currentTarget
+            : this.context.getEnemy(e.enemyID);
+
+        if (isEnemyHit && comp?.body) {
+            this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(comp.x, comp.y), true));
+        };
+
+        if (isPlayerHit) {
+            this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(player.x, player.y), false));
+        };
+    };
+
+    private resetCombatFlags() {
+        EventBus.emit("blend-combat", {
+            computerDamaged: false,
+            playerDamaged: false,
+            glancingBlow: false,
+            computerGlancingBlow: false,
+            parrySuccess: false,
+            computerParrySuccess: false,
+            rollSuccess: false,
+            computerRollSuccess: false,
+            criticalSuccess: false,
+            computerCriticalSuccess: false,
+            religiousSuccess: false,
+        });
+    };
+
+    public updateComputerDamage = (damage: number, id: string, origin: string) => {
+        const computer = this.combatant(id);
+        computer.health = Math.max(computer.health - damage, 0);
+        computer.updateHealthBar(computer.health);
+        if (computer.name === "enemy") {
+            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => computer.scrollingCombatText = undefined);
+            computer.checkHurt();
+    
+            if (computer.isFeared) computer.checkFear();
+            if (computer.isConfused) computer.checkConfuse();
+            computer.isPolymorphed = false;
+            if (computer.isMalicing) computer.malice(origin);
+            if (computer.isMending) computer.mend(origin);
+    
+            if ((!computer.inComputerCombat || !computer.currentTarget) && computer.health > 0) {
+                const enemy = this.context.enemies.find((en: Enemy) => en.enemyID === origin && origin !== computer.enemyID) || this.context.party.find((p: Party) => p.enemyID === origin);
+                if (enemy && enemy.health > 0) computer.checkComputerEnemyCombatEnter(enemy);
+            };
+    
+            computer.computerCombatSheet.newComputerHealth = computer.health;
+    
+            const enemy = computer.enemies.find((en: ENEMY) => en.id === origin && origin !== computer.enemyID);
+    
+            if (enemy && computer.health > 0 && computer.checkEnemyGame(origin)) {
+                computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max));
+            } else if (!enemy && computer.health > 0 && origin !== "" && computer.checkEnemyGame(origin)) {
+                computer.enemies.push({id:origin,threat:0});
+                computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max))
+            };
+    
+            if (computer.health <= 0) computer.killingBlow = origin;
+        } else {
+            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, EFFECT, false, false, () => computer.scrollingCombatText = undefined);
+            computer.hurt ||= !computer.isSufferintg() && !computer.isTrying() && !computer.isCasting && !computer.isContemplating;
+
+            if (computer.isFeared) {
+                const chance = Math.random() < 0.1 + computer.fearCount;
+                if (chance) {
+                    computer.specialCombatText = this.context.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => computer.specialCombatText = undefined);
+                    computer.isFeared = false;
+                } else {
+                    computer.fearCount += 0.1;
+                };
+            };
+            computer.isConfused = false;
+            computer.isPolymorphed = false;
+            if (computer.isMalicing) computer.malice(origin);
+            if (computer.isMending) computer.mend();
+
+            if ((!computer.inComputerCombat || !computer.currentTarget) && computer.health > 0) {
+                const enemy = this.context.getEnemy(origin);
+                if (enemy && enemy.health > 0) computer.checkComputerEnemyCombatEnter(enemy);
+            };
+
+            computer.computerCombatSheet.newComputerHealth = computer.health;
+
+            const enemy = computer.enemies.find((en: ENEMY) => en.id === origin);
+
+            if (enemy && enemy.health > 0 && computer.health > 0) {
+                computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max));
+            } else if (!enemy && computer.health > 0 && origin !== "") {
+                const enemy = this.context.getEnemy(origin);
+                if (enemy && enemy.health > 0 && computer.health > 0) {
+                    computer.enemies.push({id:origin,threat:0});
+                    computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max));
+                };
+            };
+        };
+
+        this.checkPlayerFocus(computer.enemyID, computer.health);
+    };
+
+    checkPlayerFocus = (id: string, value: number) => {
+        if (this.context.state.enemyID !== id) return;
+        EventBus.emit("update-combat-state", { key: "newComputerHealth", value });
     };
         
     checkPlayerSuccess = (): void => {
         if (!this.context.player.actionSuccess && (this.context.state.action !== "parry" && this.context.state.action !== "roll" && this.context.state.action !== "")) this.combatMachine.input("action", "");
     };
 
-    ifPlayer = (concern: string) => {
-        return this.context.player[concern];
-    };
+    ifPlayer = (concern: string): boolean => this.context.player[concern];
 
     playerCaerenicNeg = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.efficient ? 1.15 : 1.25) : 1;
     playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
     playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
     // ============================ Computer Combat ============================= \\
+
     computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {
-        const { type, payload } = combat;
+        const { payload } = combat;
         const { action, origin, enemyID } = payload;
-        switch (type) {
-            case "Weapon":
-                let computerOne = this.context.enemies.find((e: Enemy) => e.enemyID === origin).computerCombatSheet;
-                let computerTwo;
-                let computer = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
-                if (computer) {
-                    computerTwo = computer.computerCombatSheet;
-                } else {
-                    computerTwo = this.context.party.find((e: Party) => e.enemyID === enemyID)?.computerCombatSheet;
-                };
-                computerOne.computerAction = action;
-                computerOne.computerEnemyAction = computerTwo.computerAction;
-                computerTwo.computerEnemyAction = action;
-                computerOne.enemyID = computerTwo.personalID;
-                computerTwo.enemyID = computerOne.personalID;
-                const result = computerCombatCompiler({computerOne, computerTwo});
-                EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
-                EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);
-                break;
-            default: break;
-        };
+
+        const computerOneEntity = this.context.enemies.find((e: Enemy) => e.enemyID === origin);
+        const computerTwoEntity = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID) ?? this.context.party.find((e: Party) => e.enemyID === enemyID);
+
+        if (!computerOneEntity || !computerTwoEntity) return;
+
+        const computerOne = computerOneEntity.computerCombatSheet;
+        const computerTwo = computerTwoEntity.computerCombatSheet;
+
+        computerOne.computerAction = action;
+        computerOne.computerEnemyAction = computerTwo.computerAction;
+        computerTwo.computerEnemyAction = action;
+
+        computerOne.enemyID = computerTwo.personalID;
+        computerTwo.enemyID = computerOne.personalID;
+
+        const result = computerCombatCompiler({ computerOne, computerTwo });
+
+        computerOneEntity.computerCombatUpdate(result.computerOne);
+        computerTwoEntity.computerCombatUpdate(result.computerTwo);
     };
+
     computerMelee = (id: string, type: string): void => {
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
@@ -102,26 +359,26 @@ export class CombatManager {
             const health = target.health - damage;
             (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
             (target as Enemy).computerCombatSheet.newComputerHealth = health;
-            EventBus.emit(COMPUTER_BROADCAST, { id: (target as Enemy | Party).enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: (target as Enemy | Party).enemyID, origin: (entity as Enemy | Party).enemyID });
+            this.updateComputerDamage(damage, (target as Enemy | Party).enemyID, (entity as Enemy | Party).enemyID);
         };
     };
 
     partyAction = (payload: { action: string; origin: string; enemyID: string; }) => {
         const { action, origin, enemyID } = payload;
-        let computerOne = this.context.party.find((e: Party) => e.enemyID === origin)!.computerCombatSheet;
-        let computerTwo = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID).computerCombatSheet;
+        let computerOneEntity = this.context.party.find((e: Party) => e.enemyID === origin)!;
+        let computerTwoEntity = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+        let computerOne = computerOneEntity.computerCombatSheet;
+        let computerTwo = computerTwoEntity.computerCombatSheet;
         computerOne.computerAction = action;
         computerOne.computerEnemyAction = computerTwo.computerAction;
         computerTwo.computerEnemyAction = action;
         computerOne.enemyID = computerTwo.personalID;
         computerTwo.enemyID = computerOne.personalID;
-        const result = computerCombatCompiler({computerOne,computerTwo});
-        EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerOne);
-        EventBus.emit(UPDATE_COMPUTER_COMBAT, result?.computerTwo);
+        const result = computerCombatCompiler({computerOne, computerTwo});
+        computerOneEntity.computerCombatUpdate(result.computerOne);
+        computerTwoEntity.computerCombatUpdate(result.computerTwo);
         // EventBus.emit("party-combat-text", { text: `${result?.computerOne?.computer?.name} ${ENEMY_ATTACKS[result?.computerOne?.computerAction as keyof typeof ENEMY_ATTACKS]} ${result?.computerOne?.computerEnemy?.name} with their ${result?.computerOne?.computerWeapons[0]?.name} for ${Math.round(result?.computerOne?.realizedComputerDamage as number)} ${result?.computerOne?.computerDamageType} damage.` });
     };
-
 
     // ============================ Combat Specials ============================ \\ 
     playerMelee = (id: string, type: string): void => {
@@ -167,13 +424,13 @@ export class CombatManager {
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (comp) { // CvC Combat
                 const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean]);
-                EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
+                this.updateComputerDamage(damage, id, enemyID);
                 return;
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
                 if (party) {  
                     const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean]);
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
+                    this.updateComputerDamage(damage, id, enemyID);
                 };
             };
             return;
@@ -184,7 +441,7 @@ export class CombatManager {
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (comp) {
                 const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean]);
-                EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: enemyID });
+                this.updateComputerDamage(damage, id, enemyID);
             };
         };
     };
@@ -203,7 +460,7 @@ export class CombatManager {
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
                     const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin });
+                    this.updateComputerDamage(damage, id, origin);
                 };
             };
         };
@@ -233,8 +490,7 @@ export class CombatManager {
                     const newComputerHealth = Math.min(party.health + damage, party.computerCombatSheet.computerHealth);
                     party.health = newComputerHealth;
                     party.computerCombatSheet.newComputerHealth = party.health;
-                    EventBus.emit(COMPUTER_BROADCAST, { id: origin, key: NEW_COMPUTER_ENEMY_HEALTH, value: party.health })
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin });
+                    this.updateComputerDamage(damage, id, origin);
                 };
             };
         };
@@ -332,7 +588,7 @@ export class CombatManager {
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
                     const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean] * 0.35);
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin });
+                    this.updateComputerDamage(damage, id, origin);
                 };
             };
             enemy.slowDuration = 1000;
@@ -354,7 +610,7 @@ export class CombatManager {
         if (enemy) {
             this.root(id);
             const damage = Math.round(enemy.ascean[enemy.ascean.mastery as keyof typeof enemy.ascean]) * ((enemy.ascean.level as number + 9) / 10);
-            EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin });
+            this.updateComputerDamage(damage, id, origin);
         };
     };
     paralyze = (id: string): void => {
@@ -410,7 +666,7 @@ export class CombatManager {
                 enemy.updateHealthBar(health);
                 enemy.computerCombatSheet.newComputerHealth = health;
                 enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
-                EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+                this.checkPlayerFocus(id, health);
             };
             return; 
         };
@@ -423,7 +679,7 @@ export class CombatManager {
             party.updateHealthBar(health);
             party.computerCombatSheet.newComputerHealth = health;
             party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
-            EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+            this.checkPlayerFocus(id, health);
             return;
         };
 
@@ -442,7 +698,7 @@ export class CombatManager {
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
             enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
-            EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+            this.checkPlayerFocus(id, health);
         };
     };
     partyRenewal = (id: string): void => {
@@ -457,7 +713,7 @@ export class CombatManager {
             party.updateHealthBar(health);
             party.computerCombatSheet.newComputerHealth = health;
             party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
-            EventBus.emit(COMPUTER_BROADCAST, { id, key: NEW_COMPUTER_ENEMY_HEALTH, value: health });    
+            this.checkPlayerFocus(id, health);
         };
     };
     root = (id: string): void => {
@@ -596,13 +852,13 @@ export class CombatManager {
                 if (origin) { // CvC
                     // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
                     const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
+                    this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 } else {
                     const party = this.context.party.find((e: Party) => e.enemyID === enemySpecialID);
                     if (!party) return;
                     const damage = Math.round(party.mastery() / 2 * (1 + (party.entropicMultiplier(10))) * ((party.ascean.level + 9) / 10));
                     // const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
+                    this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 };  
             };
         } else { // Party Taking Damage
@@ -612,7 +868,7 @@ export class CombatManager {
                 if (origin) { // CvC
                     const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
                     // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
-                    EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id: combatID, origin: enemySpecialID });
+                    this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 };
             };
         };
@@ -668,8 +924,10 @@ export class CombatManager {
             };
         };
     };
+
     caerenic = (): boolean => EventBus.emit("update-caerenic");
     stalwart = (): boolean => EventBus.emit("update-stalwart");
+
     useGrace = (value: number) => {
         if (this.context.state.isInsight && value > 0) {
             const effect = this.context.state.playerEffects.find((prayer: StatusEffect) => prayer.prayer === PRAYERS.INSIGHT);

@@ -425,6 +425,7 @@ export class Gauntlet extends Phaser.Scene {
                 };
             };
         };
+        this.player.currentRound = 0;
     };
 
     switchGauntlet = () => {

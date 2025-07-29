@@ -400,6 +400,7 @@ export class Underground extends Scene {
                 };
             };
         };
+        this.player.currentRound = 0;
     };
 
     combatEngaged = (bool: boolean) => {

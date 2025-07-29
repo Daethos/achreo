@@ -14,9 +14,8 @@ import Equipment from "../../models/equipment";
 import { Compiler } from "../../utility/ascean";
 import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
-import { BROADCAST_DEATH, COMPUTER_BROADCAST } from "../../utility/enemy";
+import { BROADCAST_DEATH } from "../../utility/enemy";
 import { ENTITY_FLAGS } from "../phaser/Collision";
-import { getHitFeedbackContext } from "../phaser/HitFeedbackSystem";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -289,7 +288,6 @@ export default class Player extends Entity {
     cleanUp() {
         EventBus.off("set-player", this.setPlayer);
         EventBus.off("combat", this.constantUpdate);
-        EventBus.off("update-combat", this.eventUpdate);
         EventBus.off("disengage", this.disengage);
         EventBus.off("engage", this.engage);
         EventBus.off("speed", this.speedUpdate);
@@ -360,17 +358,16 @@ export default class Player extends Entity {
     };
 
 
-    computerBroadcast = (e: any) => {
-        if (this.scene.state.enemyID !== e.id) return;
-        EventBus.emit("update-combat-state", { key: "newComputerHealth", value: e.value });
-    };
+    // computerBroadcast = (e: any) => {
+    //     if (this.scene.state.enemyID !== e.id) return;
+    //     EventBus.emit("update-combat-state", { key: "newComputerHealth", value: e.value });
+    // };
 
     playerStateListener = () => {
         EventBus.on("set-player", this.setPlayer)
         EventBus.on("combat", this.constantUpdate);
-        EventBus.on("update-combat", this.eventUpdate);
         EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
-        EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
+        // EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on("disengage", this.disengage); 
         EventBus.on("engage", this.engage);
         EventBus.on("speed", this.speedUpdate);
@@ -531,78 +528,6 @@ export default class Player extends Entity {
 
     constantUpdate = (e: Combat) => this.checkGear(e.player?.shield as Equipment, e.weapons?.[0] as Equipment, e.playerDamageType.toLowerCase());
     
-    eventUpdate = (e: Combat) => {
-        if (this.scene.scene.isSleeping(this.scene.scene.key)) return;
-        const { computerCriticalSuccess, computerParrySuccess, newPlayerHealth, parrySuccess, rollSuccess } = e;
-        if (this.health > newPlayerHealth) {
-            let damage: number | string = Math.round(this.health - newPlayerHealth);
-            // damage = computerCriticalSuccess === true ? `${damage} (Critical)` : e.computerGlancingBlow === true ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.scrollingCombatText = undefined);
-            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating && !this.isPraying) this.isHurt = true;
-            if (this.isConfused) this.isConfused = false;
-            if (this.isPolymorphed) this.isPolymorphed = false;
-            if (this.reactiveBubble) {
-                if (this.isMalicing) this.playerMachine.malice(e.damagedID);
-                if (this.isMending) this.playerMachine.mend();
-                if (this.isRecovering) this.playerMachine.recover();
-                if (this.isReining) this.playerMachine.rein();
-                if (this.isMenacing) this.playerMachine.menace(this.reactiveTarget);
-                if (this.isModerating) this.playerMachine.moderate(this.reactiveTarget);
-                if (this.isMultifaring) this.playerMachine.multifarious(this.reactiveTarget);
-                if (this.isMystifying) this.playerMachine.mystify(this.reactiveTarget);
-            };
-            if (this.isFeared) {
-                const chance = Math.random() < 0.1 + this.fearCount;
-                if (chance) {
-                    this.resistCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, "effect", false, false, () => this.resistCombatText = undefined);
-                    this.isFeared = false;    
-                } else {
-                    this.fearCount += 0.1;
-                };
-            };
-        };
-        if (this.health < newPlayerHealth) this.scrollingCombatText = this.scene.showCombatText(`${Math.round(newPlayerHealth - this.health)}`, PLAYER.DURATIONS.TEXT, "heal", false, false, () => this.scrollingCombatText = undefined);
-        this.health = newPlayerHealth;
-        this.healthbar.setValue(this.health);
-        if (this.healthbar.getTotal() < e.playerHealth) this.healthbar.setTotal(e.playerHealth);
-        if (computerParrySuccess === true) {
-            this.isStunned = true;
-            this.scene.combatManager.combatMachine.input("computerParrySuccess", false);
-            this.resistCombatText = this.scene.showCombatText("Parry", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);    
-        };
-        if (rollSuccess === true) {
-            this.specialCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "heal", true, false, () => this.specialCombatText = undefined);
-            this.scene.combatManager.useStamina(-5);
-        };
-        if (parrySuccess === true) {
-            this.specialCombatText = this.scene.showCombatText("Parry", PLAYER.DURATIONS.TEXT, "heal", true, false, () => this.specialCombatText = undefined);
-            this.scene.combatManager.stunned(e.enemyID);
-            this.scene.combatManager.useStamina(-5);
-        };
-        if (e.computerRollSuccess === true) this.resistCombatText = this.scene.showCombatText("Roll", PLAYER.DURATIONS.TEXT, "damage", computerCriticalSuccess, false, () => this.resistCombatText = undefined);
-        if (e.combatRound <= 1 || (this.currentRound !== e.combatRound && this.scene.combat === true)) {
-            this.currentRound = e.combatRound;
-            // if (e.computerDamaged || e.playerDamaged || parrySuccess || rollSuccess || e.computerRollSuccess || computerParrySuccess) this.soundEffects(e);
-            if (e.computerDamaged || parrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.scene.getEnemy(e.damagedID)?.position as Phaser.Math.Vector2, true));
-            if (e.playerDamaged || computerParrySuccess) this.scene.combatManager.hitFeedbackSystem.play(getHitFeedbackContext(e, this.position, false));
-        };
-        if (e.newComputerHealth <= 0 && e.playerWin === true) {
-            this.defeatedEnemyCheck(e.enemyID);
-        };
-        if (newPlayerHealth <= 0) {
-            this.isDefeated = true;
-            this.disengage();
-        };    
-        if (e.playerAttributes?.stamina as number > this.maxStamina) this.maxStamina = e.playerAttributes?.stamina as number;
-        if (e.playerAttributes?.grace as number > this.maxGrace) this.maxGrace = e.playerAttributes?.grace as number;
-        // if (e.criticalSuccess || e.glancingBlow || parrySuccess || rollSuccess || e.computerGlancingBlow || computerCriticalSuccess || computerParrySuccess) {
-        // };
-        EventBus.emit("blend-combat", {
-            computerDamaged: false, playerDamaged: false, glancingBlow: false, computerGlancingBlow: false, parrySuccess: false, computerParrySuccess: false, rollSuccess: false, computerRollSuccess: false, criticalSuccess: false, computerCriticalSuccess: false, religiousSuccess: false,
-        });
-        if (this.inCombat === false && this.scene.combat === true) this.scene.combatEngaged(false);
-    };
-
     resist = () => {
         this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, "effect", false, false, () => this.resistCombatText = undefined);
     };

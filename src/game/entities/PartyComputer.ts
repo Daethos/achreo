@@ -3,7 +3,7 @@ import Equipment from "../../models/equipment";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { Compiler } from "../../utility/ascean";
 import { ENEMY_ATTACKS } from "../../utility/combatTypes";
-import { BROADCAST_DEATH, COMPUTER_BROADCAST, DISTANCE, NEW_COMPUTER_ENEMY_HEALTH, UPDATE_COMPUTER_COMBAT, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { BROADCAST_DEATH, DISTANCE } from "../../utility/enemy";
 import { PARTY_SPECIAL } from "../../utility/party";
 import { ENEMY_ENEMIES, PLAYER } from "../../utility/player";
 import { EventBus } from "../EventBus";
@@ -255,16 +255,13 @@ export default class Party extends Entity {
         };
     };
 
-    computerBroadcast = (e: { id: string; key: string; value: number; }) => {
-        if (this.computerCombatSheet.enemyID !== e.id) return;
-        (this.computerCombatSheet as any)[e.key] = e.value;
-    };
+    // computerBroadcast = (e: { id: string; key: string; value: number; }) => {
+    //     if (this.computerCombatSheet.enemyID !== e.id) return;
+    //     (this.computerCombatSheet as any)[e.key] = e.value;
+    // };
 
     cleanUp() {
         EventBus.off(BROADCAST_DEATH, this.clearComputerCombatWin);
-        EventBus.off(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.off(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
-        EventBus.off(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.off("engage", this.engage);
         EventBus.off("speed", this.speedUpdate);
         EventBus.off("update-stealth", this.stealthUpdate);
@@ -289,9 +286,6 @@ export default class Party extends Entity {
 
     playerStateListener = () => {
         EventBus.on(BROADCAST_DEATH, this.clearComputerCombatWin);
-        EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
-        EventBus.on(UPDATE_COMPUTER_COMBAT, this.computerCombatUpdate);
-        EventBus.on(UPDATE_COMPUTER_DAMAGE, this.computerDamage);
         EventBus.on("engage", this.engage);
         EventBus.on("speed", this.speedUpdate);
         EventBus.on("update-stealth", this.stealthUpdate);
@@ -428,44 +422,6 @@ export default class Party extends Entity {
         return this.healthbar.setValue(health);
     };
 
-    computerDamage = (e: { damage: number; id: string; origin: string; }) => {
-        if (e.id !== this.enemyID) return;
-        const { damage, origin } = e;
-        this.health = Math.max(this.health - damage, 0);
-        this.updateHealthBar(this.health);
-        this.scrollingCombatText = this.scene.showCombatText(`${Math.round(damage)}`, 1500, EFFECT, false, false, () => this.scrollingCombatText = undefined);
-        if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
-        if (this.isFeared) {
-            const chance = Math.random() < 0.1 + this.fearCount;
-            if (chance) {
-                this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
-                this.isFeared = false;
-            } else {
-                this.fearCount += 0.1;
-            };
-        };
-        if (this.isConfused) this.isConfused = false;
-        if (this.isPolymorphed) this.isPolymorphed = false;
-        if (this.isMalicing) this.malice(origin);
-        if (this.isMending) this.mend();
-        if ((!this.inComputerCombat || !this.currentTarget) && this.health > 0) {
-            const enemy = this.scene.getEnemy(origin);
-            if (enemy && enemy.health > 0) this.checkComputerEnemyCombatEnter(enemy);
-        };
-        this.computerCombatSheet.newComputerHealth = this.health;
-        const enemy = this.enemies.find((en: ENEMY) => en.id === origin);
-        if (enemy && enemy.health > 0 && this.health > 0) {
-            this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
-        } else if (!enemy && this.health > 0 && origin !== "") {
-            const enemy = this.scene.getEnemy(origin);
-            if (enemy && enemy.health > 0 && this.health > 0) {
-                this.enemies.push({id:origin,threat:0});
-                this.updateThreat(origin, calculateThreat(damage, this.health, this.ascean.health.max));
-            };
-        };
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
-    };
-
     updateEnemyTarget(target: Enemy) {
         this.currentTarget = target;
         this.inComputerCombat = true;
@@ -539,7 +495,7 @@ export default class Party extends Entity {
     };
 
     computerCombatUpdate = (e: ComputerCombat) => {
-        if (this.enemyID !== e.personalID) return;
+        // if (this.enemyID !== e.personalID) return;
         const { enemyID, newComputerHealth } = e;
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
@@ -591,7 +547,7 @@ export default class Party extends Entity {
             this.clearComputerCombatWin(enemyID);
         };
         this.checkGear(e.computer?.shield as Equipment, e.computerWeapons?.[0] as Equipment, e.computerDamageType.toLowerCase());
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.health });
+        this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         if (e?.realizedComputerDamage > 0) {
             EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction as keyof typeof ENEMY_ATTACKS]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
         };
@@ -819,7 +775,7 @@ export default class Party extends Entity {
     startCasting = (name: string, duration: number, style: string, channel = false) => {
         this.castbar.reset();
         this.castbar.setVisible(true); // Added
-        this.castbar.setup(this.x, this.y);
+        this.castbar.setup(this.x, this.y, name);
         this.isCasting = true;
         this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);

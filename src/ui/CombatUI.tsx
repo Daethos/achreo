@@ -154,9 +154,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             case len < 10 && dimensions().WIDTH > 1200: return "1.5em"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "1.3em"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "1.1em"; // 0.85em
-            case len < 10: return "1.25em"; // 1.15em
-            case len < 20: return "1.15em"; // 1em
-            case len < 30: return "1em"; // 0.85em
+            case len < 10: return "1.35em"; // 1.15em
+            case len < 20: return "1.25em"; // 1em
+            case len < 30: return "1.1em"; // 0.85em
             default:  return "0.85em"; // 0.6em
         };
     };
@@ -165,9 +165,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             case len < 10 && dimensions().WIDTH > 1200: return "3vh"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "3.5vh"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "4vh"; // 0.85em
-            case len < 10: return "1.5vh"; // -3%
-            case len < 20: return "2vh"; // -2%
-            case len < 30: return "2.5vh"; // -1%
+            case len < 10: return "1.25vh"; // -3%
+            case len < 20: return "1.5vh"; // -2%
+            case len < 30: return "2vh"; // -1%
             default: return "3vh";
         };
     };
@@ -229,7 +229,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
         <Show when={state().stalwart.active}>
-        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), }}>
+        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth) }}>
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
@@ -285,7 +285,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
                 <div class="modal">
                 <div class="border" style={{ display: "inline-block", position: "absolute", height: "90%", width: "35%", left: "32.5%", top: "5%", "z-index": 6 }}>
-                    <div class="center creature-heading" style={{ height: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
+                    <div class="center creature-heading" style={{ height: "90%" }}>
+                        {/* overflow: "scroll", "scrollbar-width": "none" */}
                         <h1 style={{margin:"5%"}}>Pickpocketing</h1>
                         <h2 class="wrap" style={{margin:"5% auto"}}>You are speculating on what prospective items are on or near their person. Are you crafty enough to steal these items of consequence?</h2>
                         <For each={pickpocketItems()}>{(item) => (

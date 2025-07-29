@@ -4,7 +4,7 @@ import { FRAME_COUNT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
-import { COMPUTER_BROADCAST, NEW_COMPUTER_ENEMY_HEALTH, RANGE, UPDATE_COMPUTER_DAMAGE } from "../../utility/enemy";
+import { RANGE } from "../../utility/enemy";
 import { Play } from "../main";
 import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from "../../utility/party";
 import { PLAYER } from "../../utility/player";
@@ -961,7 +961,7 @@ export default class PlayerMachine {
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
-        this.player.castbar.setup(this.player.x, this.player.y);
+        this.player.castbar.setup(this.player.x, this.player.y, "Arc");
         this.player.flickerCaerenic(3000); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} begins arcing with their ${this.scene.state.weapons[0]?.name}.`
@@ -1361,7 +1361,9 @@ export default class PlayerMachine {
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
         const damage = Math.round(this.mastery() / 2 * (1 + modifiedPower / 100) * this.caerenicDamage() * this.levelModifier());
-        EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        // EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+
         const text = `${this.player.ascean.name}'s hush flays ${damage} health from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
         this.player.enemySound("absorb", true);
@@ -1371,7 +1373,7 @@ export default class PlayerMachine {
         this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
+        this.scene.combatManager.checkPlayerFocus(this.player.enemyID, this.player.health);
     };
     devour = (id: string) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
@@ -1386,8 +1388,8 @@ export default class PlayerMachine {
         this.player.health = newComputerHealth;
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
-        EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+
         const text = `${this.player.ascean.name} tshaers and devours ${damage} health from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
     };
@@ -1399,8 +1401,8 @@ export default class PlayerMachine {
         this.player.health -= (damage / 2);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
         damage *= (1 + power / 100);
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: this.player.health });
-        EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+
         const text = `${this.player.ascean.name} sacrifices ${Math.round(damage) / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${Math.round(damage)} from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
         enemy.flickerCaerenic(750);
@@ -1413,8 +1415,7 @@ export default class PlayerMachine {
         
         let newComputerHealth = Math.min(this.player.health + damage, this.player.computerCombatSheet.computerHealth);
         this.player.computerCombatSheet.newComputerHealth = newComputerHealth;
-        EventBus.emit(COMPUTER_BROADCAST, { id: this.player.enemyID, key: NEW_COMPUTER_ENEMY_HEALTH, value: newComputerHealth });
-        EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
 
         const text = `${this.player.ascean.name}'s suture ${enemy.ascean?.name}'s caeren into them, absorbing and healing for ${damage}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });

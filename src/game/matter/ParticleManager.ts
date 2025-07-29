@@ -133,24 +133,20 @@ export class Particle {
                 if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "player") { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
-                    this.scene.particleManager.impactEffect(this);
                 };
                 if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "party" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
-                    this.scene.particleManager.impactEffect(this);
                 }; // (other.bodyB.label === "body" || other.bodyB.label === "legs") && 
                 if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "player" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
-                    this.scene.particleManager.impactEffect(this);
                 };
                 if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "party") { // Party v Computer
                     const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
                     if (!isEnemy) return;
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
-                    this.scene.particleManager.impactEffect(this);
                 };
                 if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect 
                     && other.gameObjectB.name === "enemy" && player.name === "enemy" 
@@ -160,7 +156,6 @@ export class Particle {
                     if (!isEnemy) return;
                     player.attackedTarget = other.gameObjectB;
                     player.particleEffect.success = true;
-                    this.scene.particleManager.impactEffect(this);
                 };
             },
             context: this.scene,

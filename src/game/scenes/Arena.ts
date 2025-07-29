@@ -410,6 +410,7 @@ export class Arena extends Phaser.Scene {
                 };
             };
         };
+        this.player.currentRound = 0;
     };
 
     switchArena = () => {

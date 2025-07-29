@@ -339,6 +339,7 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
         return {computerOne, computerTwo};
     } catch (err) {
         console.warn(err, "Error in the Computer Combat Splitter of Game Services");
+        return data;
     };
 };
 
@@ -436,13 +437,14 @@ function validateComputer(combat: ComputerCombat): boolean {
     return combat.computer !== undefined;
 };
 
-function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerTwo: ComputerCombat }): { computerOne: ComputerCombat, computerTwo: ComputerCombat } | undefined {
+function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerTwo: ComputerCombat }): { computerOne: ComputerCombat, computerTwo: ComputerCombat } {
     try {
         if (!validateComputer(combat.computerOne) || !validateComputer(combat.computerTwo)) return combat;
         const res = computerCombatSplitter(combat);
         return res;
     } catch (err) {
         console.warn(err, "Error in the Computer Combat Compiler of Game Services");
+        return combat;
     };
 };
 

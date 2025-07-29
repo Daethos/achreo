@@ -690,6 +690,11 @@ export const ENEMY_ENEMIES = {
     "Soverain Blood Cloak": [ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, LIIVI_LEGIONNAIRE, MAVROSIN_OCCULTIST, KINGSMAN, NORTHREN_WANDERER],
     "Tshaeral Shaman": [ACHREON_DRUID, CAMBIREN_DRUID, DAETHIC_KNIGHT, DAETHIC_INQUISITOR, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYREAL_GUARD],
 
+    "Ashreu'ul": [AHNARE_APOSTLE, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR],
+    // Ashreu'ul is Anashtre; stamping out the occult and wickedry that profranes Astra. 
+    // Druid/Shaman are more 'loungers' in their eyes, xaplostra in greek, their reference
+    // chymostra
+    // Astra imbued with cosmos
     "Cyrian Shyne": ["King Mathyus Caderyn"],
     "Dorien Caderyn": ["Garris Ashenus"],
     "Eugenes Ma'ier": ["Dorien Caderyn"],
@@ -740,7 +745,7 @@ export const NAMED_ENEMY = [
     "Quor'estes", 
     "Rangiltan Caderyn", 
     "Relien Myelle", 
-    "Sedeysus", 
+    "Sedesyus", 
     "Sera Lorian", 
     "Seria Capulo", 
     "Se'teyo Nati",

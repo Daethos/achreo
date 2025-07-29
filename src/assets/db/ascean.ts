@@ -25,7 +25,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: 'Achreon Helm',
@@ -79,7 +79,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Dae Hood",
@@ -187,7 +187,7 @@ export const Asceans: any[] = [
         name: 'Pernach',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fireland Helm",
@@ -235,13 +235,13 @@ export const Asceans: any[] = [
         name: "War Hammer",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Battle Axe',
+        name: "Battle Axe",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Claymore',
+        name: "Claymore",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fang Helm",
@@ -289,10 +289,10 @@ export const Asceans: any[] = [
         name: 'Hand Axe',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Scutum',
@@ -505,10 +505,10 @@ export const Asceans: any[] = [
         name: 'Longsword',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Pavise',
@@ -619,7 +619,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -670,10 +670,10 @@ export const Asceans: any[] = [
         name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Achreon Helm",
@@ -781,7 +781,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: 'Achreon Helm',
@@ -835,7 +835,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Dae Hood",
@@ -943,7 +943,7 @@ export const Asceans: any[] = [
         name: 'Pernach',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fireland Helm",
@@ -991,13 +991,13 @@ export const Asceans: any[] = [
         name: "War Hammer",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Battle Axe',
+        name: "Battle Axe",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Claymore',
+        name: "Claymore",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fang Helm",
@@ -1042,16 +1042,16 @@ export const Asceans: any[] = [
     "caeren":11,
     "kyosir":12,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"weaponThree":{
         name: "Kynshear",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -1099,10 +1099,10 @@ export const Asceans: any[] = [
         name: 'Hand Axe',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Scutum',
@@ -1315,10 +1315,10 @@ export const Asceans: any[] = [
         name: 'Longsword',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Pavise',
@@ -1429,7 +1429,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -1474,7 +1474,7 @@ export const Asceans: any[] = [
     "caeren":13,
     "kyosir":10,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
         name: 'Hand Axe',
@@ -1588,10 +1588,10 @@ export const Asceans: any[] = [
         name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Achreon Helm",
@@ -1753,7 +1753,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: 'Achreon Helm',
@@ -1807,7 +1807,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Dae Hood",
@@ -1915,7 +1915,7 @@ export const Asceans: any[] = [
         name: 'Pernach',
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fireland Helm",
@@ -1963,13 +1963,13 @@ export const Asceans: any[] = [
         name: "War Hammer",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Battle Axe',
+        name: "Battle Axe",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Claymore',
+        name: "Claymore",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fang Helm",
@@ -2023,7 +2023,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Fireland Helm",
@@ -2122,16 +2122,16 @@ export const Asceans: any[] = [
     "caeren":12,
     "kyosir":14,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"weaponThree":{
         name: "Kynshear",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -2185,7 +2185,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Licivitan Helm",
@@ -2233,10 +2233,10 @@ export const Asceans: any[] = [
         name: 'Hand Axe',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Scutum',
@@ -2449,10 +2449,10 @@ export const Asceans: any[] = [
         name: 'Kynshear',
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Common",
     },"shield":{
         name: 'Pavise',
@@ -2725,7 +2725,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Common",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -2770,7 +2770,7 @@ export const Asceans: any[] = [
     "caeren":15,
     "kyosir":10,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
         name: 'Hand Axe',
@@ -2941,7 +2941,7 @@ export const Asceans: any[] = [
         name: "Ahn'vyer's Wing",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Ahn'vel Hood",
@@ -3049,7 +3049,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Astral Hood",
@@ -3100,10 +3100,10 @@ export const Asceans: any[] = [
         name: "Wildstrike",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Achreon Helm",
@@ -3175,10 +3175,10 @@ export const Asceans: any[] = [
         name: "Cambiren Ring",
         rarity: "Uncommon",
     },"amulet":{
-        name: 'Cambiren Amulet',
+        name: "Cambiren Amulet",
         rarity: "Uncommon",
     },"trinket":    {
-        name: 'Cambiren Trinket',
+        name: "Cambiren Trinket",
         rarity: "Uncommon",
     },
     "faith":"Adherent",
@@ -3211,7 +3211,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Dae Hood",
@@ -3265,7 +3265,7 @@ export const Asceans: any[] = [
         name: 'Hush of Daethos',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Daethic Helm",
@@ -3319,7 +3319,7 @@ export const Asceans: any[] = [
         name: 'Pernach',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fireland Helm",
@@ -3340,7 +3340,7 @@ export const Asceans: any[] = [
         name: "Se'narian Necklace",
         rarity: "Uncommon",
     },"trinket":    {
-        name: 'Kyrison Trinket',
+        name: "Kyrison Trinket",
         rarity: "Uncommon",
     },
     "faith":"Adherent",
@@ -3367,13 +3367,13 @@ export const Asceans: any[] = [
         name: "War Hammer",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Battle Axe',
+        name: "Battle Axe",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Claymore',
+        name: "Claymore",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fang Helm",
@@ -3385,16 +3385,16 @@ export const Asceans: any[] = [
         name: "Fang Greaves",
         rarity: "Uncommon",
     },"ringOne":{
-        name: 'Fang Ring',
+        name: "Fang Ring",
         rarity: "Uncommon",
     },"ringTwo":{
-        name: 'Fang Ring',
+        name: "Fang Ring",
         rarity: "Uncommon",
     },"amulet":{
-        name: 'Fang Amulet',
+        name: "Fang Amulet",
         rarity: "Uncommon",
     },"trinket":    {
-        name: 'Fang Trinket',
+        name: "Fang Trinket",
         rarity: "Uncommon",
     },
     "faith":"Adherent",
@@ -3427,7 +3427,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fireland Helm",
@@ -3478,10 +3478,10 @@ export const Asceans: any[] = [
         name: "Lava Spit",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fyers Hood",
@@ -3526,16 +3526,16 @@ export const Asceans: any[] = [
     "caeren":14,
     "kyosir":16,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Uncommon",
     },"weaponThree":{
         name: "Kynshear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Marauder's Helm",
@@ -3643,7 +3643,7 @@ export const Asceans: any[] = [
         name: 'Shrenari',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -3697,7 +3697,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Licivitan Helm",
@@ -3751,7 +3751,7 @@ export const Asceans: any[] = [
         name: 'Moontear',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Occult Helm",
@@ -3799,10 +3799,10 @@ export const Asceans: any[] = [
         name: 'Hand Axe',
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Uncommon",
     },"shield":{
         name: 'Scutum',
@@ -4177,10 +4177,10 @@ export const Asceans: any[] = [
         name: 'Kynshear',
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Uncommon",
     },"shield":{
         name: 'Pavise',
@@ -4507,7 +4507,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: 'Achreon Helm',
@@ -4561,7 +4561,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -4582,7 +4582,7 @@ export const Asceans: any[] = [
         name: "Se'narian Necklace",
         rarity: "Uncommon",
     },"trinket":    {
-        name: 'Kyrison Trinket',
+        name: "Kyrison Trinket",
         rarity: "Uncommon",
     },
     "faith":"Adherent",
@@ -4666,10 +4666,10 @@ export const Asceans: any[] = [
         name: "Wildstrike",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Achreon Helm",
@@ -4795,10 +4795,10 @@ export const Asceans: any[] = [
         name: "Cambiren Ring",
         rarity: "Uncommon",
     },"amulet":{
-        name: 'Cambiren Amulet',
+        name: "Cambiren Amulet",
         rarity: "Uncommon",
     },"trinket":    {
-        name: 'Cambiren Trinket',
+        name: "Cambiren Trinket",
         rarity: "Uncommon",
     },
     "faith":"Adherent",
@@ -4831,7 +4831,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Dae Hood",
@@ -4885,7 +4885,7 @@ export const Asceans: any[] = [
         name: 'Hush of Daethos',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Daethic Helm",
@@ -4939,7 +4939,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Fireland Helm",
@@ -4990,10 +4990,10 @@ export const Asceans: any[] = [
         name: "Lava Spit",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fyers Hood",
@@ -5092,16 +5092,16 @@ export const Asceans: any[] = [
     "caeren":16,
     "kyosir":18,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Rare",
     },"weaponThree":{
         name: "Kynshear",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Marauder's Helm",
@@ -5155,7 +5155,7 @@ export const Asceans: any[] = [
         name: 'Shrenari',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -5209,7 +5209,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: "Licivitan Helm",
@@ -5263,7 +5263,7 @@ export const Asceans: any[] = [
         name: 'Moontear',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Occult Helm",
@@ -5803,7 +5803,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Uncommon",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
         name: 'Achreon Helm',
@@ -5911,7 +5911,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -5932,7 +5932,7 @@ export const Asceans: any[] = [
         name: "Se'narian Necklace",
         rarity: "Rare",
     },"trinket":    {
-        name: 'Kyrison Trinket',
+        name: "Kyrison Trinket",
         rarity: "Rare",
     },
     "faith":"Adherent",
@@ -6016,10 +6016,10 @@ export const Asceans: any[] = [
         name: "Wildstrike",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Achreon Helm",
@@ -6102,6 +6102,60 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
+    "_id":"ashreu'ul_12",
+    "origin":"Ashtre",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":12,
+    "experience":0,
+    "inventory":[],
+    "name":"Ashreu'ul",
+    "description":"Warden of the Ancient Eulex",
+    "constitution":36,
+    "strength":50,
+    "agility":24,
+    "achre":20,
+    "caeren":28,
+    "kyosir":32,
+    "weaponOne":{
+        name: "Daethic Halberd",
+        rarity: "Legendary",
+    },"weaponTwo":{
+        name: "Daethic Greatbow",
+        rarity: "Legendary",
+    },"weaponThree":{
+        name: "Tendril of Daethos",
+        rarity: "Legendary",
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: "Legendary",
+    },"helmet":{
+        name: "Daethic Helm",
+        rarity: "Legendary",
+    },"chest":{
+        name: "Daethic Cuirass",
+        rarity: "Legendary",
+    },"legs":{
+        name: "Daethic Greaves",
+        rarity: "Legendary",
+    },"ringOne":{
+        name: "Daethic Ring",
+        rarity: "Legendary",
+    },"ringTwo":{
+        name: "Daethic Ring",
+        rarity: "Legendary",
+    },"amulet":{
+        name: "Daethic Amulet",
+        rarity: "Legendary",
+    },"trinket":    {
+        name: "Daethic Trinket",
+        rarity: "Legendary",
+    },
+    "faith":"Devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":497,"max":497}
+},{
     "_id":"cambiren_druid_8",
     "origin":"Nothos",
     "sex":"Woman",
@@ -6145,10 +6199,10 @@ export const Asceans: any[] = [
         name: "Cambiren Ring",
         rarity: "Rare",
     },"amulet":{
-        name: 'Cambiren Amulet',
+        name: "Cambiren Amulet",
         rarity: "Rare",
     },"trinket":    {
-        name: 'Cambiren Trinket',
+        name: "Cambiren Trinket",
         rarity: "Rare",
     },
     "faith":"Adherent",
@@ -6181,7 +6235,7 @@ export const Asceans: any[] = [
         name: 'Wildstrike',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: 'Achreon Helm',
@@ -6235,7 +6289,7 @@ export const Asceans: any[] = [
         name: 'Daethic Bow',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Dae Hood",
@@ -6289,7 +6343,7 @@ export const Asceans: any[] = [
         name: 'Hush of Daethos',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Daethic Helm",
@@ -6318,216 +6372,216 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
 },{
-    "_id":"dorien_8",
+    "_id":"dorien_10",
     "origin":"Notheo",
     "sex":"Man",
     "mastery":"strength",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Dorien Caderyn",
     "description":"Prince of the Daethic Kingdom",
-    "constitution":25,
-    "strength":29,
-    "agility":16,
-    "achre":14,
-    "caeren":20,
-    "kyosir":24,
+    "constitution":30,
+    "strength":37,
+    "agility":20,
+    "achre":18,
+    "caeren":24,
+    "kyosir":28,
     "weaponOne":{
         name: "Daethic Halberd",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Daethic Greatbow",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Tendril of Daethos",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
         name: 'Shaorahi',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"helmet":{
         name: "Daethic Helm",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Daethic Cuirass",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Daethic Greaves",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Daethic Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Daethic Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Daethic Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Daethic Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
 },{
-    "_id":"evrio_lorian_peroumes_8",
+    "_id":"evrio_lorian_peroumes_12",
     "origin":"Li'ivi",
     "sex":"Man",
     "mastery":"kyosir",
-    "level":8,
+    "level":12,
     "experience":0,
     "inventory":[],
     "name":"Evrio Lorian Peroumes",
     "description":"General of Licivitas, current Ascean va'Esai of 140AE",
-    "constitution":21,
-    "strength":12,
-    "agility":24,
-    "achre":23,
-    "caeren":12,
-    "kyosir":27,
+    "constitution":30,
+    "strength":20,
+    "agility":33,
+    "achre":32,
+    "caeren":20,
+    "kyosir":45,
     "weaponOne":{
         name: "Gladius",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Hush",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Daethic Bow",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
         name: 'Heater',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"helmet":{
         name: "Licivitan Helm",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Licivitan Cuirass",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Licivitan Greaves",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Daethic Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Dae Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Daethic Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Dae Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
 },{
-    "_id":"eugenes_8",
+    "_id":"eugenes_10",
     "origin":"Ashtre",
     "sex":"Man",
     "mastery":"caeren",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Eugenes Ma'ier",
     "description":"Southron Cultist of Ma'anre",
-    "constitution":20,
-    "strength":28,
+    "constitution":24,
+    "strength":35,
     "agility":23,
-    "achre":14,
-    "caeren":28,
-    "kyosir":13,
+    "achre":18,
+    "caeren":35,
+    "kyosir":17,
     "weaponOne":{
         name: "Whirlwind",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Scythe",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Moontear",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: "Occult Helm",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Occult Armor",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Occult Greaves",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Occult Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Occult Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Occult Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Occult Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
 },{
-    "_id":"fierous_8",
+    "_id":"fierous_10",
     "origin":"Fyers",
     "sex":"Man",
     "mastery":"caeren",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Fierous Ashfyre",
     "description":"The Phoenix",
-    "constitution":25,
+    "constitution":30,
     "strength":10,
-    "agility":11,
-    "achre":16,
-    "caeren":34,
-    "kyosir":21,
+    "agility":13,
+    "achre":20,
+    "caeren":45,
+    "kyosir":25,
     "weaponOne":{
         name: 'Ashfyre',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: 'Ashfyre',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Ahn'vyer's Wing",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: 'Fyers Hood',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: 'Fyers Robes',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: 'Fyers Pants',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: 'Fyers Ring',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: 'Fyers Ring',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: 'Fyers Amulet',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: 'Fyers Trinket',
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
@@ -6559,7 +6613,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Fireland Helm",
@@ -6610,10 +6664,10 @@ export const Asceans: any[] = [
         name: "Lava Spit",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Achestra',
+        name: "Achestra",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Fyers Hood",
@@ -6642,162 +6696,162 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":147,"max":147}
 },{
-    "_id":"garris_ashenus_8",
+    "_id":"garris_ashenus_10",
     "origin":"Fyers",
     "sex":"Man",
     "mastery":"agility",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Garris Ashenus",
     "description":"Merchant-Knight of the Firelands",
-    "constitution":25,
-    "strength":14,
-    "agility":35,
-    "achre":18,
-    "caeren":12,
-    "kyosir":18,
+    "constitution":30,
+    "strength":16,
+    "agility":45,
+    "achre":22,
+    "caeren":14,
+    "kyosir":12,
     "weaponOne":{
         name: "Scythe",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Scythe",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Moontear",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: "Fireland Helm",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Fireland Cuirass",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Fireland Greaves",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Fireland Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Fireland Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Occult Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Occult Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":497,"max":497}
 },{
-    "_id":"leaf_8",
+    "_id":"leaf_10",
     "origin":"Quor'eite",
     "sex":"Man",
     "mastery":"agility",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Leaf",
     "description":"Achreon Druid of the Eye",
-    "constitution":26,
-    "strength":14,
-    "agility":35,
-    "achre":22,
-    "caeren":12,
-    "kyosir":22,
+    "constitution":30,
+    "strength":18,
+    "agility":45,
+    "achre":25,
+    "caeren":16,
+    "kyosir":25,
     "weaponOne":{
-        name: 'Longbow',
-        rarity: 'Epic',
+        name: "Longbow",
+        rarity: "Epic",
     },"weaponTwo":{
-        name: 'Spear',
-        rarity: 'Epic',
+        name: "Spear",
+        rarity: "Epic",
     },"weaponThree":{
         name: 'Wildstrike',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: 'Achreon Helm',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: 'Achreon Armor',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: 'Achreon Greaves',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: 'Achreon Ring',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Quor'eite Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: 'Achreon Amulet',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: 'Achreon Trinket',
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
     "firewater":{"current":5,"max":5},
     "health":{"current":279,"max":279}
 },{
-    "_id":"kreceus_8",
+    "_id":"kreceus_12",
     "origin":"Ashtre",
     "sex":"Man",
     "mastery":"achre",
-    "level":8,
+    "level":12,
     "experience":0,
     "inventory":[],
     "name":"Kreceus",
     "description":"Apostle of Astra",
-    "constitution":24,
+    "constitution":32,
     "strength":10,
-    "agility":22,
-    "achre":36,
+    "agility":30,
+    "achre":54,
     "caeren":10,
-    "kyosir":23,
+    "kyosir":31,
     "weaponOne":{
         name: 'Astral Spear',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"weaponTwo":{
         name: 'Astral Spear',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"weaponThree":{
-        name: 'Achestra',
-        rarity: 'Epic',
+        name: "Achestra",
+        rarity: "Legendary",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Legendary",
     },"helmet":{
         name: 'Astral Hood',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"chest":{
         name: 'Astral Robes',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"legs":{
         name: 'Astral Pants',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"ringOne":{
         name: 'Astral Ring',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"ringTwo":{
         name: 'Astral Ring',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"amulet":{
         name: 'Astral Amulet',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },"trinket":    {
         name: 'Astral Trinket',
-        rarity: 'Epic',
+        rarity: "Legendary",
     },
     "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
@@ -6820,16 +6874,16 @@ export const Asceans: any[] = [
     "caeren":18,
     "kyosir":20,
     "weaponOne":{
-        name: 'Longbow',
+        name: "Longbow",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Spear',
+        name: "Spear",
         rarity: "Rare",
     },"weaponThree":{
         name: "Kynshear",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Marauder's Helm",
@@ -6883,7 +6937,7 @@ export const Asceans: any[] = [
         name: 'Shrenari',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -6937,7 +6991,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Licivitan Helm",
@@ -6966,54 +7020,54 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
-    "_id":"mirio_8",
+    "_id":"mirio_10",
     "origin":"Li'ivi",
     "sex":"Man",
     "mastery":"achre",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Mirio Lorian Kyr'na",
     "description":"Merchant Trader of Licivitas",
-    "constitution":22,
-    "strength":12,
-    "agility":23,
-    "achre":29,
-    "caeren":12,
-    "kyosir":24,
+    "constitution":25,
+    "strength":14,
+    "agility":27,
+    "achre":33,
+    "caeren":16,
+    "kyosir":28,
     "weaponOne":{
         name: "Hand of Se'dyro",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Gladius",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Achestra",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: "Licivitan Helm",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Licivitan Cuirass",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Licivitan Greaves",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Sedyrus Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Daethic Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Daethic Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Achreon Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Devoted",
     "currency":{"silver":0,"gold":0},
@@ -7045,7 +7099,7 @@ export const Asceans: any[] = [
         name: 'Moontear',
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Occult Helm",
@@ -7398,60 +7452,6 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
-    "_id":"sera_8",
-    "origin":"Notheo",
-    "sex":"Woman",
-    "mastery":"achre",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Sera Lorian",
-    "description":"Daestra in the Outskirts of Lor",
-    "constitution":25,
-    "strength":10,
-    "agility":10,
-    "achre":33,
-    "caeren":27,
-    "kyosir":20,
-    "weaponOne":{
-        name: 'Tendril',
-        rarity: 'Epic',
-    },"weaponTwo":{
-        name: 'Hush',
-        rarity: 'Epic',
-    },"weaponThree":{
-        name: "Daethic Bow",
-        rarity: 'Epic',
-    },"shield":{
-        name: 'Heater',
-        rarity: 'Epic',
-    },"helmet":{
-        name: 'Dae Hood',
-        rarity: 'Epic',
-    },"chest":{
-        name: 'Dae Robes',
-        rarity: 'Epic',
-    },"legs":{
-        name: 'Dae Pants',
-        rarity: 'Epic',
-    },"ringOne":{
-        name: 'Dae Ring',
-        rarity: 'Epic',
-    },"ringTwo":{
-        name: 'Dae Ring',
-        rarity: 'Epic',
-    },"amulet":{
-        name: 'Dae Amulet',
-        rarity: 'Epic',
-    },"trinket":    {
-        name: 'Dae Trinket',
-        rarity: 'Epic',
-    },
-    "faith":"Adherent",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":399,"max":399}
-},{
     "_id":"sedyrist_8",
     "origin":"Ashtre",
     "sex":"Man",
@@ -7585,7 +7585,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Rare",
     },"shield":{
-        name: 'Parma',
+        name: "Parma",
         rarity: "Rare",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -7606,7 +7606,7 @@ export const Asceans: any[] = [
         name: "Se'narian Necklace",
         rarity: "Rare",
     },"trinket":    {
-        name: 'Kyrison Trinket',
+        name: "Kyrison Trinket",
         rarity: "Rare",
     },
     "faith":"Adherent",
@@ -7668,108 +7668,54 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
-    "_id":"synaethi_8",
-    "origin":"Ashtre",
-    "sex":"Man",
-    "mastery":"achre",
-    "level":8,
-    "experience":0,
-    "inventory":[],
-    "name":"Synaethi Spiras",
-    "description":"Ghost-Child of Theogeni Spiras",
-    "constitution":25,
-    "strength":12,
-    "agility":18,
-    "achre":35,
-    "caeren":22,
-    "kyosir":16,
-    "weaponOne":{
-        name: "Windshear",
-        rarity: 'Epic',
-    },"weaponTwo":{
-        name: "Astral Spear",
-        rarity: 'Epic',
-    },"weaponThree":{
-        name: "Lava Spit",
-        rarity: 'Epic',
-    },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
-    },"helmet":{
-        name: "Fireland Helm",
-        rarity: 'Epic',
-    },"chest":{
-        name: "Fireland Cuirass",
-        rarity: 'Epic',
-    },"legs":{
-        name: "Fireland Greaves",
-        rarity: 'Epic',
-    },"ringOne":{
-        name: "Astral Ring",
-        rarity: 'Epic',
-    },"ringTwo":{
-        name: "Fireland Ring",
-        rarity: 'Epic',
-    },"amulet":{
-        name: "Occult Amulet",
-        rarity: 'Epic',
-    },"trinket":    {
-        name: "Occult Trinket",
-        rarity: 'Epic',
-    },
-    "faith":"Devoted",
-    "currency":{"silver":0,"gold":0},
-    "firewater":{"current":5,"max":5},
-    "health":{"current":497,"max":497}
-},{
-    "_id":"torreous_8",
+    "_id":"torreous_10",
     "origin":"Fyers",
     "sex":"Man",
     "mastery":"achre",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Torreous Ashfyre",
     "description":"Eldest Ashfyre Brother",
-    "constitution":22,
+    "constitution":24,
     "strength":10,
-    "agility":14,
-    "achre":20,
-    "caeren":26,
-    "kyosir":24,
+    "agility":16,
+    "achre":24,
+    "caeren":30,
+    "kyosir":28,
     "weaponOne":{
         name: 'Lava Spit',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: 'Lava Spit',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
         name: "Achestra",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: 'Fyers Hood',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: 'Fyers Robes',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: 'Fyers Pants',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: 'Fyers Ring',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: 'Fyers Ring',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: 'Fyers Amulet',
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: 'Fyers Trinket',
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Adherent",
     "currency":{"silver":0,"gold":0},
@@ -7830,54 +7776,162 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":115,"max":115}
 },{
-    "_id":"vincere_8",
+    "_id":"sera_10",
+    "origin":"Notheo",
+    "sex":"Woman",
+    "mastery":"achre",
+    "level":10,
+    "experience":0,
+    "inventory":[],
+    "name":"Sera Lorian",
+    "description":"Daestra in the Outskirts of Lor",
+    "constitution":30,
+    "strength":10,
+    "agility":10,
+    "achre":39,
+    "caeren":31,
+    "kyosir":24,
+    "weaponOne":{
+        name: 'Tendril',
+        rarity: "Epic",
+    },"weaponTwo":{
+        name: 'Hush',
+        rarity: "Epic",
+    },"weaponThree":{
+        name: "Daethic Bow",
+        rarity: "Epic",
+    },"shield":{
+        name: 'Heater',
+        rarity: "Epic",
+    },"helmet":{
+        name: 'Dae Hood',
+        rarity: "Epic",
+    },"chest":{
+        name: 'Dae Robes',
+        rarity: "Epic",
+    },"legs":{
+        name: 'Dae Pants',
+        rarity: "Epic",
+    },"ringOne":{
+        name: 'Dae Ring',
+        rarity: "Epic",
+    },"ringTwo":{
+        name: 'Dae Ring',
+        rarity: "Epic",
+    },"amulet":{
+        name: 'Dae Amulet',
+        rarity: "Epic",
+    },"trinket":    {
+        name: 'Dae Trinket',
+        rarity: "Epic",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":399,"max":399}
+}, {
+    "_id":"synaethi_10",
+    "origin":"Ashtre",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":10,
+    "experience":0,
+    "inventory":[],
+    "name":"Synaethi Spiras",
+    "description":"Ghost-Child of Theogeni Spiras",
+    "constitution":30,
+    "strength":16,
+    "agility":24,
+    "achre":45,
+    "caeren":24,
+    "kyosir":18,
+    "weaponOne":{
+        name: "Windshear",
+        rarity: "Epic",
+    },"weaponTwo":{
+        name: "Astral Spear",
+        rarity: "Epic",
+    },"weaponThree":{
+        name: "Lava Spit",
+        rarity: "Epic",
+    },"shield":{
+        name: "Parma",
+        rarity: "Epic",
+    },"helmet":{
+        name: "Fireland Helm",
+        rarity: "Epic",
+    },"chest":{
+        name: "Fireland Cuirass",
+        rarity: "Epic",
+    },"legs":{
+        name: "Fireland Greaves",
+        rarity: "Epic",
+    },"ringOne":{
+        name: "Astral Ring",
+        rarity: "Epic",
+    },"ringTwo":{
+        name: "Fireland Ring",
+        rarity: "Epic",
+    },"amulet":{
+        name: "Occult Amulet",
+        rarity: "Epic",
+    },"trinket":    {
+        name: "Occult Trinket",
+        rarity: "Epic",
+    },
+    "faith":"Devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":497,"max":497}
+},{
+    "_id":"vincere_10",
     "origin":"Quor'eite",
     "sex":"Man",
     "mastery":"achre",
-    "level":8,
+    "level":10,
     "experience":0,
     "inventory":[],
     "name":"Vincere",
     "description":"Arbiter of the Ley",
     "constitution":24,
-    "strength":14,
-    "agility":24,
-    "achre":32,
-    "caeren":16,
-    "kyosir":16,
+    "strength":16,
+    "agility":32,
+    "achre":40,
+    "caeren":20,
+    "kyosir":20,
     "weaponOne":{
         name: "Quor'eite Crush",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponTwo":{
         name: "Wildstrike",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"weaponThree":{
-        name: 'Achestra',
-        rarity: 'Epic',
+        name: "Achestra",
+        rarity: "Epic",
     },"shield":{
-        name: 'Parma',
-        rarity: 'Epic',
+        name: "Parma",
+        rarity: "Epic",
     },"helmet":{
         name: "Quor'eite Hood",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"chest":{
         name: "Quor'eite Robes",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"legs":{
         name: "Quor'eite Pants",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringOne":{
         name: "Quor'eite Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"ringTwo":{
         name: "Quor'eite Ring",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"amulet":{
         name: "Quor'eite Amulet",
-        rarity: 'Epic',
+        rarity: "Epic",
     },"trinket":    {
         name: "Quor'eite Trinket",
-        rarity: 'Epic',
+        rarity: "Epic",
     },
     "faith":"Adherent",
     "currency":{"silver":0,"gold":0},

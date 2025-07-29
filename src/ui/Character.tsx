@@ -371,10 +371,26 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class="creature-heading">
                     <h1 style={{...bMargin}}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
-                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em` }}>
-                            <h2 style={{ color: "gold" }}>{quest.title}</h2>
+                        const completed = quest.requirements.technical.id === "fetch" 
+                            ? quest.requirements.technical.current === quest.requirements.technical.total 
+                            : quest.requirements.technical.solved && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
+                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{
+                                "borderTalent": completed,
+                            }}
+                        style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", 
+                            "border-color": masteryColor(quest.mastery), 
+                            "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em`, 
+                            // animation: `borderTalent 1.5s infinite ease alternate`,
+                            "--base-shadow":"#000 0 0 0 0.2em", 
+                            "--glow-color": masteryColor(quest.mastery) 
+                        }}>
+                            <h2 classList={{
+                                "animate-flicker-infinite": completed,
+                            }} style={{ color: "gold" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
-                            <p style={{ color: "gold" }}>{quest.giver}</p>
+                            <p classList={{
+                                "animate-flicker-infinite": completed,
+                            }} style={{ color: "gold", "font-size": completed ? "1.25em" : "" }}>{quest.giver}</p>
                         </div>
                     }}</For>
                 </div>;

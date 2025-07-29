@@ -250,7 +250,8 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             experience: 0,
             imgUrl: `../assets/images/${data.origin}-${data.sex}.jpg`
         });
-        const res = await addAscean(ascean);
+        // const res = 
+        await addAscean(ascean);
         return ascean;
     };
 };

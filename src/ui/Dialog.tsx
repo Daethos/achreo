@@ -1277,7 +1277,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     function changeEnemyToParty() {
-        EventBus.emit("add-party", {name: combat().computer?.name, level: combat().computer?.level});
+        EventBus.emit("add-party", {name: combat().computer?.name.split(" (Converted)")[0], level: combat().computer?.level});
         EventBus.emit("despawn-enemy-to-party", combat().enemyID);
         EventBus.emit("clear-enemy");
         EventBus.emit("action-button-sound");
@@ -1286,7 +1286,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("show-dialog-false");
     };
     function checkConditions() {
-        const name = combat().computer?.name.split("(Converted)")[0];
+        const name = combat().computer?.name.split(" (Converted)")[0];
         const enemies = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`})
         return enemies;
     };

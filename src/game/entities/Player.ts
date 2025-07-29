@@ -357,17 +357,10 @@ export default class Player extends Entity {
         this.highlightAnimation = false;
     };
 
-
-    // computerBroadcast = (e: any) => {
-    //     if (this.scene.state.enemyID !== e.id) return;
-    //     EventBus.emit("update-combat-state", { key: "newComputerHealth", value: e.value });
-    // };
-
     playerStateListener = () => {
         EventBus.on("set-player", this.setPlayer)
         EventBus.on("combat", this.constantUpdate);
         EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
-        // EventBus.on(COMPUTER_BROADCAST, this.computerBroadcast);
         EventBus.on("disengage", this.disengage); 
         EventBus.on("engage", this.engage);
         EventBus.on("speed", this.speedUpdate);

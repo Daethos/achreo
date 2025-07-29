@@ -5,6 +5,44 @@ import { useResizeListener } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
 import { getRarityColor } from "../utility/styling";
 
+function canEquip(level: number, rarity: string): boolean {
+    switch (rarity) {
+        case "Common":
+            return true;
+        case "Uncommon":
+            if (level > 3) return true;
+            return false;
+        case "Rare":
+            if (level > 5) return true;
+            return false;
+        case "Epic":
+            if (level > 9) return true; // 11
+            return false;
+        case "Legendary":
+            if (level > 11) return true; // 15 | 19
+            return false;
+        default:
+            return false;
+    };
+};
+
+function equipLevel(rarity: string): number {
+    switch (rarity) {
+        case "Common":
+            return 0;
+        case "Uncommon":
+            return 4;
+        case "Rare":
+            return 6;
+        case "Epic":
+            return 10; // 12
+        case "Legendary":
+            return 12; // 16 | 20
+        default:
+            return 0;
+    };
+};
+
 interface Props {
     ascean: Accessor<Ascean>;
     pouch: Accessor<Equipment[]>;
@@ -34,44 +72,6 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         };
         canUpgrade(pouch, highlighted()?.item?.name, highlighted()?.item?.rarity as string);
     });
-
-    function canEquip(level: number, rarity: string): boolean {
-        switch (rarity) {
-            case "Common":
-                return true;
-            case "Uncommon":
-                if (level > 3) return true;
-                return false;
-            case "Rare":
-                if (level > 5) return true;
-                return false;
-            case "Epic":
-                if (level > 11) return true;
-                return false;
-            case "Legendary":
-                if (level > 19) return true;
-                return false;
-            default:
-                return false;
-        };
-    };
-
-    function equipLevel(rarity: string): number {
-        switch (rarity) {
-            case "Common":
-                return 0;
-            case "Uncommon":
-                return 4;
-            case "Rare":
-                return 6;
-            case "Epic":
-                return 12;
-            case "Legendary":
-                return 20;
-            default:
-                return 0;
-        };
-    };
 
     function setEquipper() {
         let type;

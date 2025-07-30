@@ -20,8 +20,8 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
     createEffect(() => {
         if (combatTextEl) {
             const handler = () => setScrollPosition(combatTextEl.scrollTop);
-            combatTextEl.addEventListener('scroll', handler);
-            onCleanup(() => combatTextEl.removeEventListener('scroll', handler));
+            combatTextEl.addEventListener("scroll", handler);
+            onCleanup(() => combatTextEl.removeEventListener("scroll", handler));
         };
     });
     createEffect(() => {

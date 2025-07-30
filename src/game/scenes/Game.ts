@@ -990,6 +990,7 @@ export class Game extends Scene {
             };
             this.stopCombatTimer();    
             this.registry.set("inCombat", false);
+            this.combatManager.resetCombatFlags();
         };
         this.combat = bool;
         EventBus.emit("combat-engaged", bool);

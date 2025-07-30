@@ -7,7 +7,7 @@ import StatusEffect, { PRAYERS } from "../../utility/prayer";
 import { computerCombatCompiler } from "../../utility/computerCombat";
 import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
-import { DAMAGE, EFFECT, HEAL } from "./ScrollingCombatText";
+import { BONE, DAMAGE, EFFECT, HEAL } from "./ScrollingCombatText";
 import { PLAYER } from "../../utility/player";
 import { getHitFeedbackContext, HitFeedbackSystem } from "./HitFeedbackSystem";
 import { Combat } from "../../stores/combat";
@@ -68,7 +68,6 @@ export class CombatManager {
         
         if (e.computerParrySuccess) {
             this.stunned(player.playerID);
-            // this.combatMachine.input("computerParrySuccess", false);
             player.resistCombatText = this.context.showCombatText("Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false, () => player.resistCombatText = undefined);    
         };
 
@@ -99,7 +98,7 @@ export class CombatManager {
         const player = this.context.player;
         if (enemy.health > newComputerHealth) {
             let damage: number | string = Math.round(enemy.health - newComputerHealth);
-            enemy.scrollingCombatText = this.context.showCombatText(`${damage}`, 1500, "bone", criticalSuccess, false, () => enemy.scrollingCombatText = undefined);
+            enemy.scrollingCombatText = this.context.showCombatText(`${damage}`, 1500, BONE, criticalSuccess, false, () => enemy.scrollingCombatText = undefined);
             enemy.checkHurt();
             if (enemy.isFeared) enemy.checkFear();
             if (enemy.isConfused) enemy.checkConfuse();
@@ -151,7 +150,7 @@ export class CombatManager {
         const damage = Math.round(player.health - e.newPlayerHealth);
         player.scrollingCombatText = this.context.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false, () => player.scrollingCombatText = undefined);
 
-        player.isHurt ||= !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
+        player.isHurt = !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
 
         player.isConfused = false;
         player.isPolymorphed = false;
@@ -190,7 +189,7 @@ export class CombatManager {
         };
     };
 
-    private resetCombatFlags() {
+    public resetCombatFlags() {
         EventBus.emit("blend-combat", {
             computerDamaged: false,
             playerDamaged: false,
@@ -211,7 +210,7 @@ export class CombatManager {
         computer.health = Math.max(computer.health - damage, 0);
         computer.updateHealthBar(computer.health);
         if (computer.name === "enemy") {
-            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, "bone", false, false, () => computer.scrollingCombatText = undefined);
+            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, BONE, false, false, () => computer.scrollingCombatText = undefined);
             computer.checkHurt();
     
             if (computer.isFeared) computer.checkFear();
@@ -239,7 +238,7 @@ export class CombatManager {
             if (computer.health <= 0) computer.killingBlow = origin;
         } else {
             computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, EFFECT, false, false, () => computer.scrollingCombatText = undefined);
-            computer.hurt ||= !computer.isSufferintg() && !computer.isTrying() && !computer.isCasting && !computer.isContemplating;
+            computer.hurt = !computer.isSuffering() && !computer.isTrying() && !computer.isCasting && !computer.isContemplating;
 
             if (computer.isFeared) {
                 const chance = Math.random() < 0.1 + computer.fearCount;

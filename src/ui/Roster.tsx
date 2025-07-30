@@ -14,13 +14,16 @@ import ItemModal from "../components/ItemModal";
 import { roundToTwoDecimals } from "../utility/combat";
 import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import Settings from "../models/settings";
+
 export const LEVEL_SELECTOR = {
     0.5: { prev: 0.5, next: 1 },
     1: { prev: 0.5, next: 2 },
     2: { prev: 1, next: 4 },
     4: { prev: 2, next: 6 },
     6: { prev: 4, next: 8 },
-    8: { prev: 6, next: 8 },
+    8: { prev: 6, next: 10 },
+    10: { prev: 8, next: 12 },
+    12: { prev: 10, next: 12 },
 };
 
 const ARENA = "ARENA";
@@ -34,6 +37,7 @@ type NODE = {
         prev: string;
     };
 };
+
 const SCENE_SWITCH: NODE = {
     ARENA: {
         key:"ARENA",
@@ -51,6 +55,7 @@ const SCENE_SWITCH: NODE = {
         prev: "GAUNTLET",
     },
 };
+
 const GAUNTLET_SWITCH: NODE = {
     FREE_FOR_ALL: {
         key: "Free For All",
@@ -68,8 +73,9 @@ const GAUNTLET_SWITCH: NODE = {
         prev: "RANDOMIZED"
     },
 };
+
 function getLevel(ascean: Accessor<Ascean>): number {
-    return Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8);
+    return Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 10);
 };
 
 export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
@@ -94,10 +100,10 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                 multiplier /= 2;
                 wager = { ...arena().wager, multiplier };
                 if (switchScene() === ARENA) {
-                    EventBus.emit("alert", { header: "Arena Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside the Arena. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                    EventBus.emit("alert", { header: "Arena Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside the Arena. Dae Ky'veshyr, ${ascean().name}.`, key: "Close" }); // godspeed
                     EventBus.emit("set-wager-arena", {wager, enemies, team: arena().party});
                 } else {
-                    EventBus.emit("alert", { header: "Underground Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside these walls. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                    EventBus.emit("alert", { header: "Underground Commencing", body: `The Eulex has begun. You have chosen to face ${arena().enemies.length} enemies of various might inside these walls. Dae Ky'veshyr, ${ascean().name}.`, key: "Close" }); // godspeed
                     EventBus.emit("set-wager-underground", {wager, enemies});
                 };
                 setArena({ ...arena(), show: false });
@@ -115,7 +121,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                 multiplier /= 2;
                 wager = { ...arena().wager, multiplier };
                 
-                EventBus.emit("alert", { header: "Gauntlet Commencing", body: `The Ancient Eulex has begun. You have chosen to run the gauntlet. Dae Ky'veshyr, ${ascean().name}.` }); // godspeed
+                EventBus.emit("alert", { header: "Gauntlet Commencing", body: `The Ancient Eulex has begun. You have chosen to run the gauntlet. Dae Ky'veshyr, ${ascean().name}.`, key: "Close" }); // godspeed
                 EventBus.emit("set-wager-gauntlet", {enemies, team: arena().party, wager});
                 setArena({ ...arena(), show: false });
                 if (!base) EventBus.emit("outside-press", "dialog");

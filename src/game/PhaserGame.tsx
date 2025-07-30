@@ -620,8 +620,8 @@ export default function PhaserGame (props: IProps) {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
                 if (enemies.includes(enemy.name) && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
-                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 3000, key: "Close"});
-                    }, updateTimer * 3000);
+                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 4000, key: "Close"});
+                    }, updateTimer * 4000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
                     updated = true;
@@ -630,8 +630,8 @@ export default function PhaserGame (props: IProps) {
             if (quest.title === "Replenish Firewater") {
                 if (enemy.level >= props.ascean().level && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
-                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 3000, key: "Close"});
-                    }, updateTimer * 3000);
+                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 4000, key: "Close"});
+                    }, updateTimer * 4000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
                     updated = true;
@@ -655,7 +655,7 @@ export default function PhaserGame (props: IProps) {
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
             if (newSkills[skill as keyof typeof newSkills] % 10 === 0) {
-                EventBus.emit("alert", {header: "Skill Up!", body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 3000, key: "Close"});    
+                EventBus.emit("alert", {header: "Skill Up!", body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 6000, key: "Close"});    
             };
         });
         return newSkills;

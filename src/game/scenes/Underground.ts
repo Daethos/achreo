@@ -25,6 +25,7 @@ import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
+import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 interface ChunkData {
     key: string;
     x: number;
@@ -428,6 +429,7 @@ export class Underground extends Scene {
                 this.musicBackground.resume();
             };
             this.stopCombatTimer();    
+            this.combatManager.resetCombatFlags();
         };
         this.combat = bool;
         EventBus.emit("combat-engaged", bool);
@@ -542,14 +544,7 @@ export class Underground extends Scene {
 
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        const defeated = ["Something is tearing into me. Please, help!", "Noooooooo! This wasn't supposed to happen.", 
-            `Curse you, ${this.state.player?.name}! I'll be back for your head.`, `Well fought, ${this.state.player?.name}.`,
-            `Can't believe I lost to you. I'm in utter digust with myself.`, "Why did it have to be you?"
-        ];
-        const victorious = [`I'll be seeing you, ${this.state.player?.name}.`, "Perhaps try fighting someone of a different mastery, may be easier for you.",
-            "You're joking?", "Why did you even bother me with this.", `Well fought, ${this.state.player?.name}.`, "Very good! May we meet again."
-        ];
-        const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
+        const saying = enemy.isDefeated ? DEFEATED[Math.floor(Math.random() * DEFEATED.length)] : VICTORIOUS[Math.floor(Math.random() * VICTORIOUS.length)];
         enemy.specialCombatText = this.showCombatText(saying, 2000, BONE, false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(3000, () => {

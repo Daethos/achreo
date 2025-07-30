@@ -1230,12 +1230,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted ${enemyArticle()} ${combat().computer?.name} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
         EventBus.emit("update-quests", newQuestManager);
         EventBus.emit("convert-enemy", { _id: combat().enemyID, faith: quest.requirements.action.value });
-        // const newEnemy = {
-        //     ...combat().computer,
-        //     weaponOne: {...combat().weapons[0], rarity: combat().weapons[0]?.name.includes("Default") ? "Default" :  combat().computerWeapons[0].rarity},
-        //     weaponTwo: {...combat().weapons[1], rarity: combat().weapons[1]?.name.includes("Default") ? "Default" :  combat().computerWeapons[1].rarity},
-        //     weaponThree: {...combat().weapons[2], rarity: combat().weapons[2]?.name.includes("Default") ? "Default" :  combat().computerWeapons[2].rarity},
-        // };
     };
     function convertPlayer(quest: Quest) {
         const newQuests = quests().quests.map((q: Quest) => {
@@ -1405,7 +1399,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 {etchings().show && etchings().items.length > 0 ? ( 
                     <div>
                     <Currency ascean={ascean} />
-                    <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)" }}> 
+                    <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)", "grid-template-rows": "repeat(3, 1fr)" }}> 
                     {etchings().items.map((item: any) => {
                         if (item === undefined) return;
                         return (

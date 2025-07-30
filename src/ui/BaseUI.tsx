@@ -390,8 +390,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             };
             if (playerWin === true) res.computerDeathDescription = `${res.computer?.name || "The Enemy"} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
-            EventBus.emit("update-combat", res);
             EventBus.emit("add-combat-logs", res);
+            EventBus.emit("update-combat", res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {

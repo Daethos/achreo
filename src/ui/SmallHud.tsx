@@ -55,8 +55,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         EventBus.on("update-small-hud", () => {
             setClicked({
                 ...clicked(),
-                caerenic: combat().isCaerenic,
-                stalwart: combat().isStalwart,
+                caerenic: combat().caerenic.active,
+                stalwart: combat().stalwart.active,
                 stealth: combat().isStealth,
                 showCombat: game().showCombat,
                 showPlayer: game().showPlayer,

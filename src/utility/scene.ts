@@ -73,6 +73,7 @@ export const image: {key: string, value:string}[] = [
     {key: "CampFireB", value: "../assets/gui/CampFireB.png"},
     {key: "light1A", value: "../assets/gui/light1A.png"},
     {key: "tooltip", value: "../assets/gui/equip_slot.png"},
+    {key: "cloud", value: "../assets/images/Cloud-7.png"},
 
     {key: "Castle Decoratives", value: "../assets/gui/Castle Decoratives.png"},
     {key: "Castle Interior", value: "../assets/gui/Castle Interior.png"},

@@ -1,0 +1,138 @@
+{
+    "frames": [
+        {
+            "filename": "cloud-21",
+            "frame": {
+                "w": 227,
+                "h": 147,
+                "x": 1,
+                "y": 1
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-7",
+            "frame": {
+                "w": 223,
+                "h": 60,
+                "x": 1,
+                "y": 149
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-31",
+            "frame": {
+                "w": 189,
+                "h": 90,
+                "x": 1,
+                "y": 210
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-5",
+            "frame": {
+                "w": 188,
+                "h": 98,
+                "x": 229,
+                "y": 1
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-2",
+            "frame": {
+                "w": 118,
+                "h": 58,
+                "x": 191,
+                "y": 210
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-10",
+            "frame": {
+                "w": 108,
+                "h": 61,
+                "x": 229,
+                "y": 100
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-43",
+            "frame": {
+                "w": 101,
+                "h": 50,
+                "x": 310,
+                "y": 162
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-23",
+            "frame": {
+                "w": 95,
+                "h": 55,
+                "x": 310,
+                "y": 213
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-25",
+            "frame": {
+                "w": 49,
+                "h": 24,
+                "x": 191,
+                "y": 269
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        },
+        {
+            "filename": "cloud-27",
+            "frame": {
+                "w": 44,
+                "h": 25,
+                "x": 241,
+                "y": 269
+            },
+            "anchor": {
+                "x": 0.5,
+                "y": 0.5
+            }
+        }
+    ],
+    "meta": {
+        "description": "Atlas generado con Atlas Packer Gamma V2",
+        "web": "https://gammafp.github.io/atlas-packer-phaser/"
+    }
+}

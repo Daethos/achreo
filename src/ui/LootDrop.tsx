@@ -25,13 +25,15 @@ export default function LootDrop({ lootDrop, setShow, setLootDrop, x = true }: P
         setShow(true);
     };
     return <div style={{ width: "75%", display: "inline-block", margin: "2.5%" }}>
-        <div style={{ color: getRarityColor(lootDrop.rarity as string) }}>This appears to be {article} {excess} {lootDrop?.type}</div>
+        {/* <div style={{ color: getRarityColor(lootDrop.rarity as string) }}>This appears to be {article} {excess} {lootDrop?.type}</div> */}
+        <div class="bone">{lootDrop?.name}</div>
         <button class="center" onClick={handleLootDrop} style={{ border: `0.15em solid ${getRarityColor(lootDrop.rarity as string)}`, "margin": "1em 0 0.5em", "background-color": "#000" }}>
             <img src={lootDrop.imgUrl} alt={lootDrop.name} />
         </button>
         <div>
-            <button class="highlight" onClick={() => saveItem()}>
-                <div class="gold">Take the {lootDrop?.name}?</div>
+            <button class="highlight gold" onClick={() => saveItem()}>
+                Pick up the {lootDrop?.type}
+                {/* <div class="gold">Take the {lootDrop?.name}?</div> */}
             </button>
         </div>
         <Show when={x}>

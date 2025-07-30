@@ -177,7 +177,7 @@ export default function App() {
         };
     };
     const loadingAscean = () => EventBus.emit("enter-game");
-    const makeToast = (header: string, body: string, delay = 3000, key = "", extra = "", arg: any): void => {
+    const makeToast = (header: string, body: string, delay = 4000, key = "", extra = "", arg: any): void => {
         setShow(false);
         setAlert({ header, body, delay, key, extra, arg });
         setShow(true);

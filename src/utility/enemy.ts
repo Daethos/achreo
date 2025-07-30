@@ -11,6 +11,38 @@ export const NEW_COMPUTER_ENEMY_HEALTH = "newComputerEnemyHealth";
 export const UPDATE_COMPUTER_COMBAT = "update-computer-combat";
 export const UPDATE_COMPUTER_DAMAGE = "update-computer-damage";
 
+export const DEFEATED = [
+    "Something is tearing into me. Please, help!", 
+    "I hope you feel good about yourself, bullying someone like me.", 
+    "Get ahold of yourself man, you're feverish over a calm duel.", 
+    "Does your cruelty know no bounds, savage?", 
+    "I'm sure you think could could take Evrio on now, don't you?", 
+    "Noooooooo! This wasn't supposed to happen.", 
+    "I still don't believe you are that capable. Absurd.",
+    `Curse you! I'll be back for your head.`, 
+    `Well fought.`,
+    `You did well, I commend you.`,
+    `Can't believe I lost to you. I'm in utter digust with myself.`, 
+    "Why did it have to be you?",
+    "Very good! May we meet again."
+];
+  
+export const VICTORIOUS = [
+    `I'll be seeing you again.`, 
+    "Perhaps try fighting someone of a different mastery, may be easier for you.",
+    "You're joking?", 
+    "You will never defeat the likes of me. I can't believe you would even try.", 
+    "What is the matter with you, playing at some grand hero.",
+    "What did you think was going to happen here?",
+    "Why did you even bother me with this?", 
+    "Goodness, maybe find someone of a weaker nature.", 
+    "Oh my, well, no need to tell anyone about this.", 
+    "Apologies for thrashing you, I had no idea it was going to be so easy.", 
+    `Well fought.`, 
+    `Well, perchance you could do better... next time.`, 
+    "Very good! May we meet again."
+];
+
 export const ENEMY_SPECIAL = {
     "constitution": [ // 17
         "Desperation",

@@ -254,13 +254,13 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                 </Show>
             </div>
         </div>
-        <div style={{ display: "inline-flex" }}>
+        {/* <div style={{ display: "inline-flex" }}>
             <p style={{ margin: "1%" }}>Durability:</p>
             <div class="durability-bar">
                 <div class="durability-fill" style={{ width: `${pickDurability()}%`}} />
             </div>
             <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p>
-        </div>
+        </div> */}
         <p style={{ margin: "0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
         <Show when={gameStatus() !== PLAYING}>
             <div class="result modal">

@@ -24,8 +24,11 @@ import Party from "../entities/PartyComputer";
 import { PARTY_OFFSET } from "../../utility/party";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
-import { ARENA_ENEMY, fetchArena } from "../../utility/enemy";
+import { ARENA_ENEMY, DEFEATED, fetchArena, VICTORIOUS } from "../../utility/enemy";
 import { LEVEL_SELECTOR } from "../../ui/Roster";
+
+
+
 interface ChunkData {
     key: string;
     x: number;
@@ -487,7 +490,8 @@ export class Gauntlet extends Phaser.Scene {
                 this.musicBackground.resume();
             };
             this.stopCombatTimer();
-        };
+            this.combatManager.resetCombatFlags();
+        };1
         this.combat = bool;
         EventBus.emit("combat-engaged", bool);
     };
@@ -581,7 +585,10 @@ export class Gauntlet extends Phaser.Scene {
             this.registry.set("enemies", newEnemies);
             return;
         };
-        const range = [LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].prev, Math.min((this.player.ascean.level % 2 === 0 ? this.player.ascean.level : this.player.ascean.level + 1), 8), LEVEL_SELECTOR[this.player.ascean.level as keyof typeof LEVEL_SELECTOR].next];
+        const level = Math.min((this.player.ascean.level % 2 === 0 
+            ? this.player.ascean.level 
+            : this.player.ascean.level + 1), 10);
+        const range = [LEVEL_SELECTOR[level as keyof typeof LEVEL_SELECTOR].prev, level, LEVEL_SELECTOR[level as keyof typeof LEVEL_SELECTOR].next];
         const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
         const enemies = [];
         for (let i = 0; i < this.gauntlet.opponents; ++i) {
@@ -657,6 +664,7 @@ export class Gauntlet extends Phaser.Scene {
                         };
                     };
                     if (this.player.isComputer || !this.hud.settings.difficulty.arena) this.player.playerMachine.stateMachine.setState(States.CHASE);
+                    this.player.sendEnemies(this.player.targets);
                 }, undefined, this);
             };
         }, undefined, this);
@@ -665,33 +673,7 @@ export class Gauntlet extends Phaser.Scene {
 
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        const defeated = [
-            "Something is tearing into me. Please, help!", 
-            "I hope you feel good about yourself, bullying someone like me.", 
-            "Get ahold of yourself man, you're feverish over a calm duel.", 
-            "Does your cruelty know no bounds, savage?", 
-            "I'm sure you think could could take Evrio on now, don't you?", 
-            "Noooooooo! This wasn't supposed to happen.", 
-            "I still don't believe you are that capable. Absurd.",
-            `Curse you, ${this.state.player?.name}! I'll be back for your head.`, 
-            `Well fought, ${this.state.player?.name}.`,
-            `Can't believe I lost to you. I'm in utter digust with myself.`, 
-            "Why did it have to be you?"
-        ];
-        const victorious = [
-            `I'll be seeing you, ${this.state.player?.name}.`, 
-            "Perhaps try fighting someone of a different mastery, may be easier for you.",
-            "You're joking?", 
-            "You will never defeat the likes of me. I can't believe you would even try.", 
-            "What is the matter with you, playing at some grand hero.",
-            "What did you think was going to happen here?",
-            "Why did you even bother me with this?", 
-            "Goodness, maybe find someone of a weaker nature.", 
-            "Apologies for thrashing you, I had no idea it was going to be so easy.", 
-            `Well fought, ${this.state.player?.name}.`, 
-            "Very good! May we meet again."
-        ];
-        const saying = enemy.isDefeated ? defeated[Math.floor(Math.random() * defeated.length)] : victorious[Math.floor(Math.random() * victorious.length)];
+        const saying = enemy.isDefeated ? DEFEATED[Math.floor(Math.random() * DEFEATED.length)] : VICTORIOUS[Math.floor(Math.random() * VICTORIOUS.length)];
         enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
         enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(2000, () => {

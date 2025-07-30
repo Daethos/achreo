@@ -7,7 +7,7 @@ const OSCILLATE = 10;
 const WEATHER_DURATION = 60000;
 type weather = "clear" | "ash" | "celestial" | "fog" | "fog rain" | "fog snow" | "hail" | "meteor" | "rain" | "sand" | "snow" | "thunderash" | "thunderstorm" | "thundersnow";
 const phrase = {
-    clear: "clear skies",
+    clear: "clear sky",
     ash: "ashfall",
     celestial: "celestial rainfall",
     fog: "a thick fog",
@@ -151,81 +151,77 @@ export default class WeatherManager {
     };
 
     private createAshfall() {
-        const ash = this.scene.make.graphics({ x: 0, y: 0 });
-        ash.fillStyle(0x333333, 0.4); // Dark gray
-        ash.fillRect(0, 0, 2, 4);
-        ash.generateTexture("ashFlake", 2, 4);
-        ash.destroy();
+        this.scene.make.graphics({ x: 0, y: 0 })
+            .fillStyle(0x333333, 0.4) // Dark gray
+            .fillRect(0, 0, 2, 4)
+            .generateTexture("ashFlake", 2, 4)
+            .destroy();
 
         this.ashParticles = this.scene.add.particles(0, 0, "ashFlake", this.ashfallSetting());
         this.ashParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private createCelestialRain() {
-        const glow = this.scene.make.graphics({ x: 0, y: 0 });
-        glow.fillStyle(0xffffff, 1);
-        glow.fillCircle(4, 4, 4);
-        glow.generateTexture("celestialDrop", 8, 8);
-        glow.destroy();
+        this.scene.make.graphics({ x: 0, y: 0 })
+            .fillStyle(0xffffff, 1)
+            .fillCircle(4, 4, 4)
+            .generateTexture("celestialDrop", 8, 8)
+            .destroy();
 
         this.celestialParticles = this.scene.add.particles(0, 0, "celestialDrop", this.celestialRainSetting());
         this.celestialParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private createFog() {
-        this.fogOverlay = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0x888888, 0.3);
-        this.fogOverlay.setDepth(98);
-        this.fogOverlay.setAlpha(0);
-        this.fogOverlay.setVisible(false);
-        const fogClouds = this.scene.make.graphics({ x: 0, y: 0 });
-        fogClouds.fillStyle(0xffffff, 0.1);
-        fogClouds.fillEllipse(64, 64, 128, 64);
-        fogClouds.generateTexture("fogClouds", 128, 128);
-        fogClouds.destroy();
+        this.fogOverlay = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0x888888, 0.3)
+            .setDepth(98)
+            .setAlpha(0)
+            .setVisible(false);
 
-        this.fogParticles = this.scene.add.particles(0, 0, "fogClouds", this.fogSetting());
+        this.fogParticles = this.scene.add.particles(0, 0, "clouds", this.fogSetting());
         this.fogParticles.setScrollFactor(1).setDepth(100).stop();
+
     };
 
     private createHail() {
-        const hail = this.scene.make.graphics({ x: 0, y: 0 });
-        hail.fillStyle(0xccccff, 1);
-        hail.fillCircle(1, 1, 2);
-        hail.generateTexture("hailDrop", 4, 4);
-        hail.destroy();
+        this.scene.make.graphics({ x: 0, y: 0 })
+            .fillStyle(0xccccff, 1)
+            .fillCircle(1, 1, 2)
+            .generateTexture("hailDrop", 4, 4)
+            .destroy();
 
         this.hailParticles = this.scene.add.particles(0, 0, "hailDrop", this.hailSetting());
         this.hailParticles.setScrollFactor(1).setDepth(100).stop();
     };
 
     private createLightning() {
-        this.lightningFlash = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0xffffff, 1);
-        this.lightningFlash.setDepth(101);
-        this.lightningFlash.setAlpha(0);
+        this.lightningFlash = this.scene.add.rectangle(0, 0, this.scene.cameras.main.worldView.width, this.scene.cameras.main.worldView.height, 0xffffff, 1)
+            .setDepth(101)
+            .setAlpha(0);
     };
 
     private createMeteors() {
-        const meteor = this.scene.make.graphics({ x: 0, y: 0 });
-        meteor.fillStyle(0xffdd99, 1);
-        meteor.beginPath();
-        meteor.moveTo(0, 0);
-        meteor.lineTo(2, 10);
-        meteor.lineTo(4, 0);
-        meteor.closePath();
-        meteor.fillPath();
-        meteor.generateTexture("meteorStreak", 4, 10);
-        meteor.destroy();
+        this.scene.make.graphics({ x: 0, y: 0 })
+            .fillStyle(0xffdd99, 1)
+            .beginPath()
+            .moveTo(0, 0)
+            .lineTo(2, 10)
+            .lineTo(4, 0)
+            .closePath()
+            .fillPath()
+            .generateTexture("meteorStreak", 4, 10)
+            .destroy();
 
         this.meteorParticles = this.scene.add.particles(0, 0, "meteorStreak", this.meteorSetting());
         this.meteorParticles.setScrollFactor(1).setDepth(150).stop();
     };
 
     private createSandstorm() {
-        const dust = this.scene.make.graphics({ x: 0, y: 0 });
-        dust.fillStyle(0xDEB887, 0.5);
-        dust.fillCircle(4, 4, 4);
-        dust.generateTexture("sandDust", 8, 8);
-        dust.destroy();
+        this.scene.make.graphics({ x: 0, y: 0 })
+            .fillStyle(0xDEB887, 0.5)
+            .fillCircle(4, 4, 4)
+            .generateTexture("sandDust", 8, 8)
+            .destroy();
 
         this.sandParticles = this.scene.add.particles(0, 0, "sandDust", this.sandstormSetting());
         this.sandParticles.setScrollFactor(1).setDepth(100).stop();
@@ -278,15 +274,16 @@ export default class WeatherManager {
     private fogSetting() {
         const { width, height} = this.scene.cameras.main;
         return {
+            frame: ["cloud-21", "cloud-7", "cloud-31", "cloud-5", "cloud-2", "cloud-10", "cloud-43", "cloud-23", "cloud-25", "cloud-27"],
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
             followOffset: {x: -width * 0.75, y: -height * 0.6},
             lifespan: { min: 5000, max: 10000 },
             quantity: 1,
-            frequency: 1500,
+            frequency: 1250,
             scale: { start: 0.5, end: 1 },
-            alpha: { start: 0.5, end: 0 },
+            alpha: { start: 0.35, end: 0 },
             speedX: { min: 5, max: 15 },
             speedY: { min: -1, max: 1 },
             blendMode: "NORMAL",
@@ -574,7 +571,7 @@ export default class WeatherManager {
     };
 
     private setupWeatherCycle() {
-        // this.setWeather("thunderstorm");
+        // this.setWeather("fog");
         this.scene.time.addEvent({
             delay: WEATHER_DURATION,
             loop: true,
@@ -584,7 +581,7 @@ export default class WeatherManager {
 
     public setWeather(type: weather) {
         if (this.currentWeather === type) {
-            this.scene.hud.logger.log(`Console: The weather continues.`);
+            this.scene.hud.logger.log(`Console: ${phrase[this.currentWeather]} continues.`);
             this.quickFog(this.currentWeather);
             return;
         };

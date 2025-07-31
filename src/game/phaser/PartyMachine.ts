@@ -1360,9 +1360,9 @@ export default class PlayerMachine {
         const modifiedPower = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        const damage = Math.round(this.mastery() / 2 * (1 + modifiedPower / 100) * this.caerenicDamage() * this.levelModifier());
-        // EventBus.emit(UPDATE_COMPUTER_DAMAGE, { damage, id, origin: this.player.enemyID });
+        const damage = Math.round(this.mastery() * (1 + modifiedPower / 100) * this.caerenicDamage() * (this.levelModifier() ** 2));
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Pierce");
 
         const text = `${this.player.ascean.name}'s hush flays ${damage} health from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
@@ -1374,6 +1374,7 @@ export default class PlayerMachine {
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
         this.scene.combatManager.checkPlayerFocus(this.player.enemyID, this.player.health);
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
     };
     devour = (id: string) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);
@@ -1383,39 +1384,45 @@ export default class PlayerMachine {
             this.player.devourTimer = undefined;
             return;
         };
-        const damage = Math.round(this.player.computerCombatSheet.computerHealth * 0.04 * this.caerenicDamage() * (this.player.ascean.level + 9) / 10);
+        const damage = Math.round(this.player.computerCombatSheet.computerHealth * 0.04 * this.caerenicDamage() * (this.levelModifier() ** 2));
         let newComputerHealth = Math.min(this.player.health + damage, this.player.computerCombatSheet.computerHealth);        
         this.player.health = newComputerHealth;
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Pierce");
 
         const text = `${this.player.ascean.name} tshaers and devours ${damage} health from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
     };
     sacrifice = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        let damage = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier());
+        let damage = Math.round(this.mastery() * this.caerenicDamage() * (this.levelModifier() ** 2));
         this.player.health -= (damage / 2);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
         damage *= (1 + power / 100);
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+        this.scene.combatManager.hitFeedbackSystem.bleed(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Spooky");
 
         const text = `${this.player.ascean.name} sacrifices ${Math.round(damage) / 2 * (this.player.isStalwart ? 0.85 : 1)} health to rip ${Math.round(damage)} from ${enemy.ascean?.name}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });
         enemy.flickerCaerenic(750);
     };
     suture = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        const damage = Math.round(this.mastery() * this.caerenicDamage() * this.levelModifier()) * (1 * power / 100) * 0.8;
+        const damage = Math.round(this.mastery() * this.caerenicDamage() * (this.levelModifier() ** 2)) * (1 * power / 100);
         
         let newComputerHealth = Math.min(this.player.health + damage, this.player.computerCombatSheet.computerHealth);
         this.player.computerCombatSheet.newComputerHealth = newComputerHealth;
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Righteous");
 
         const text = `${this.player.ascean.name}'s suture ${enemy.ascean?.name}'s caeren into them, absorbing and healing for ${damage}.`;
         EventBus.emit(PARTY_COMBAT_TEXT, { text });

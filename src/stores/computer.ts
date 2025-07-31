@@ -22,7 +22,7 @@ export interface ComputerCombat {
     computerEffects: StatusEffect[];
     potentialComputerDamage: number;
     realizedComputerDamage: number;
-    // computerDamaged: boolean;
+    computerDamaged: boolean;
 
     criticalSuccess: boolean;
     parrySuccess: boolean;
@@ -98,7 +98,7 @@ export const initComputerCombat: ComputerCombat = {
     // computerDefenseDefault: undefined,
     potentialComputerDamage: 0,
     realizedComputerDamage: 0,
-    // computerDamaged: false,
+    computerDamaged: false,
 
     criticalSuccess: false,
     parrySuccess: false,

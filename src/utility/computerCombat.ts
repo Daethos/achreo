@@ -276,6 +276,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     // if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     // if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newComputerEnemyHealth -= combat.realizedComputerDamage;
+    combat.computerEnemyDamaged = true;
     if (combat.newComputerEnemyHealth <= 0) {
         // if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
         //     combat.newComputerEnemyHealth = 1;
@@ -330,11 +331,13 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
         computerOne.computerEnemyCriticalSuccess = computerTwo.criticalSuccess;
         computerOne.computerEnemyGlancingBlow = computerTwo.glancingBlow;
         computerOne.computerEnemyParrySuccess = computerTwo.parrySuccess;
+        computerOne.computerDamaged = computerTwo.computerEnemyDamaged;
         
         computerTwo.computerEnemyDamageType = computerOne.computerDamageType;
         computerTwo.computerEnemyCriticalSuccess = computerOne.criticalSuccess;
         computerTwo.computerEnemyGlancingBlow = computerOne.glancingBlow;
         computerTwo.computerEnemyParrySuccess = computerOne.parrySuccess;
+        computerTwo.computerDamaged = computerOne.computerEnemyDamaged;
 
         return {computerOne, computerTwo};
     } catch (err) {

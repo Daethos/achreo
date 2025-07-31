@@ -1314,6 +1314,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             kyosir: item?.kyosir > 0 ? item.kyosir : undefined,
         };
     };
+
+    function addFunds() {
+        const update = {
+            ...ascean(),
+            currency: {
+                silver: ascean().currency.silver,
+                gold: ascean().currency.gold + 100
+            }
+        };
+        EventBus.emit("update-ascean", update);
+    };
     return (
         <Show when={combat().computer}>
         <Show when={combat().isEnemy}>
@@ -1973,6 +1984,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 </Show>
                
                 <button class="cornerBR highlight" onClick={() => {setShowBuy(false); setShowSell(false)}} style={{ "background-color": "red" }}>X</button>
+                {/* <button class="cornerBL highlight" onClick={addFunds} style={{ "background-color": "green" }}>Add</button> */}
             </div>
         </Show>
         <Show when={specialMerchant()}>

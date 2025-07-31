@@ -60,6 +60,7 @@ export class HitFeedbackSystem {
     private spooky: Phaser.GameObjects.Particles.ParticleEmitter;
     private wild: Phaser.GameObjects.Particles.ParticleEmitter;
     private wind: Phaser.GameObjects.Particles.ParticleEmitter;
+    private heal: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor(scene: Play) {
         this.scene = scene;
@@ -99,9 +100,9 @@ export class HitFeedbackSystem {
             rate *= randomFloatFromInterval(0.8, 1);
         };
 
-        if (profile.hitStop) this.hitStop(profile.hitStop);
-        if (profile.particles) this.emitParticles(pos, damageType, critical, glancing, parry);
-        if (profile.screenShake) screenShake(this.scene);
+        this.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.5 : 1));
+        this.emitParticles(pos, damageType, critical, glancing, parry);
+        screenShake(this.scene);
 
         this.scene.sound.play(key, { volume, rate });
     };
@@ -217,7 +218,6 @@ export class HitFeedbackSystem {
             }
         }).setScrollFactor(1).setDepth(100).stop();
 
-        // this.scene.make.graphics({x:0,y:0}).fillStyle(0xFFFFFF, 1).fillCircle(3, 3, 3).generateTexture("frost", 6, 6).destroy();
         this.frost = this.scene.add.particles(0, 0, "frost", {
             x: 0, y: 0,
             blendMode: "SCREEN",
@@ -343,9 +343,25 @@ export class HitFeedbackSystem {
                 quantity: 10
             },
         }).setScrollFactor(1).setDepth(100).stop();
+
+        this.heal = this.scene.add.particles(0, 0, "healing", {
+            frame: ["healing_1", "healing_2", "healing_3", "healing_4", "healing_5", "healing_6", "healing_7"],
+            x: 0, y: 0,
+            blendMode: "ADD",
+            color: [0x00FF00, 0x66FF99],
+            lifespan: { min: 750, max: 1250 },
+            speedY: { min: -25, max: -50 },
+            speedX: { min: -25, max: 25 },
+            quantity: 8,
+            frequency: -1,
+            alpha: { start: 0.8, end: 0 },
+            scale: { start: 0.02, end: 0.1 },
+            // gravityY: -25,
+            tint: [0x00FF00, 0x66FF66, 0xAAFFAA]
+        }).setScrollFactor(1).setDepth(100).stop();
     };
 
-    private emitParticles(pos: Phaser.Math.Vector2, type: string, crit: boolean, glance: boolean, parry: boolean) {
+    public emitParticles(pos: Phaser.Math.Vector2, type: string, crit: boolean, glance: boolean, parry: boolean): void {
         if (parry) return;
         const count = crit ? 40 : glance ? 10 : 20;
         switch (type) {
@@ -382,5 +398,20 @@ export class HitFeedbackSystem {
                 this.wind.explode(count, pos.x, pos.y);
                 break;
         };
+    };
+
+    public spotEmit(id: string, type: string): void {
+        const entity = this.scene.combatManager.combatant(id);
+        if (!entity) return;
+        const pos = new Phaser.Math.Vector2(entity.x, entity.y);
+        this.emitParticles(pos, type, false, false, false);
+    };
+
+    public bleed = (pos: Phaser.Math.Vector2): void => {
+        this.blood.explode(20, pos.x, pos.y);
+    };
+
+    public healing = (pos: Phaser.Math.Vector2): void => {
+        this.heal.explode(25, pos.x, pos.y+6);
     };
 };

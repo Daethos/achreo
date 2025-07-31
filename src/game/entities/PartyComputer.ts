@@ -529,7 +529,7 @@ export default class Party extends Entity {
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, this.ascean.health.max));
             };
             this.computerSoundEffects(e);
-        } else if (this.health < newComputerHealth) { 
+        } else if (this.health < newComputerHealth) {
             let heal = Math.round(newComputerHealth - this.health);
             this.scrollingCombatText = this.scene.showCombatText(`+${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
         }; 
@@ -539,6 +539,7 @@ export default class Party extends Entity {
         this.updateHealthBar(newComputerHealth);
         this.weapons = e.computerWeapons;
         this.currentRound = e.combatRound;
+        if (e.computerDamaged) this.scene.combatManager.hitFeedbackSystem.spotEmit(this.enemyID, e.computerEnemyDamageType);
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
         this.computerCombatSheet.computerWin = e.computerWin;

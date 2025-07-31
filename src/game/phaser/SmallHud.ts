@@ -422,12 +422,14 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     case "stalwart":
                         this.switches.stalwart = !this.switches.stalwart;
                         EventBus.emit("update-stalwart", this.switches.stalwart);
-                        if (this.switches.stalwart) EventBus.emit("use-stamina", 10);             
+                        if (this.switches.stalwart) EventBus.emit("use-stamina", 10);
+                        // if (this.switches.stalwart) this.scene.combatManager.useStamina(10);
                         break;
                     case "caerenic":
                         this.switches.caerenic = !this.switches.caerenic;
                         EventBus.emit("update-caerenic");                
-                        if (this.switches.caerenic) EventBus.emit("use-grace", 10);             
+                        if (this.switches.caerenic) EventBus.emit("use-grace", 10);
+                        // if (this.switches.caerenic) EventBus.emit("use-grace", 10);
                         break; 
                     case "strafe":
                         this.switches.strafe = !this.switches.strafe;

@@ -62,6 +62,26 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         setGameStatus(PLAYING);
     };
 
+    const breakPick = () => {
+        if (!load.ended) {   
+            load.pause();
+        };
+        load.play();
+        vibrate(1000); // Long buzz
+        setBroke(true);
+        setTimeout(() => {
+            setBroke(false);
+            setLockpicks(prev => Math.max(prev - 1, 0));
+            if (lockpicks() > 0) {
+                setPickDurability(100);
+                setAngle(0);
+            } else {
+                setPickDurability(0);
+                setGameStatus(FAILURE);
+            };
+        }, 1000);
+    };
+
     const checkSweetSpot = () => {
         const currentAngle = angle();
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
@@ -159,22 +179,23 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             setTotalRotation(prev => prev + 1);
             checkDistance();
             if (totalRotation() > lockDifficulty().ROTATION) {
-                if (!load.ended) {   
-                    load.pause();
-                };
-                load.play();
-                setTotalRotation(0);
-                setPickDurability(0);
-                vibrate(1000); // Long buzz
-                setBroke(true);
-                setTimeout(() => {
-                    setBroke(false);
-                    setLockpicks(prev => Math.max(prev - 1, 0));
-                    if (lockpicks() > 0) {
-                        setPickDurability(100);
-                        return;
-                    };
-                }, 1000);
+                breakPick();
+                // if (!load.ended) {   
+                //     load.pause();
+                // };
+                // load.play();
+                // setTotalRotation(0);
+                // setPickDurability(0);
+                // vibrate(1000); // Long buzz
+                // setBroke(true);
+                // setTimeout(() => {
+                //     setBroke(false);
+                //     setLockpicks(prev => Math.max(prev - 1, 0));
+                //     if (lockpicks() > 0) {
+                //         setPickDurability(100);
+                //         return;
+                //     };
+                // }, 1000);
             };
         } else if (activeTouch() === "wrench") {
             if (!isInSweetSpot()) {
@@ -184,22 +205,23 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             vibrate(16); // totalRotation() > lockDifficulty().ROTATION * 0.5 && 
 
             if (pickDurability() === 0) {
-                if (!load.ended) {   
-                    load.pause();
-                };
-                load.play();
-                vibrate(1000); // Long buzz
-                setBroke(true);
-                setTimeout(() => {
-                    setBroke(false);
-                }, 1000);
-                setLockpicks(prev => Math.max(prev - 1, 0));
-                if (lockpicks() > 0) {
-                    setPickDurability(100);
-                    return;
-                };
-                setPickDurability(0);
-                setGameStatus(FAILURE);
+                breakPick();
+                // if (!load.ended) {
+                //     load.pause();
+                // };
+                // load.play();
+                // vibrate(1000); // Long buzz
+                // setBroke(true);
+                // setTimeout(() => {
+                //     setBroke(false);
+                // }, 1000);
+                // setLockpicks(prev => Math.max(prev - 1, 0));
+                // if (lockpicks() > 0) {
+                //     setPickDurability(100);
+                //     return;
+                // };
+                // setPickDurability(0);
+                // setGameStatus(FAILURE);
             };
 
             if (tension() >= 205 || tension() <= 25) {

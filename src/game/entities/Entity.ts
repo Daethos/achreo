@@ -712,7 +712,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     rangedDistanceMultiplier = (num: number) => this.isRanged ? num : 1;
 
     entropicMultiplier = (power: number): number => {
-        return Phaser.Math.Between(power * 0.75, power * 1.5);
+        return Phaser.Math.Between(power * (this.ascean.level + 9) / 20, power * (this.ascean.level + 9) / 10);
     };
 
     currentNegativeState = (type: string) => {

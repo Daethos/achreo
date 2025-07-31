@@ -10,7 +10,6 @@ import { RANGE } from "../../utility/enemy";
 import { Play } from "../main";
 import PlayerComputer from "../entities/PlayerComputer";
 import Party from "../entities/PartyComputer";
-import { getHitFeedbackContext } from "./HitFeedbackSystem";
 import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
 const DURATION = {
     CONSUMED: 2000,
@@ -176,12 +175,13 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const chiomic = Math.round(this.mastery() / 2 * (1 + power / 100) * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + power / 100) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id } });
         };
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Pierce");
     };
 
     devour = (power: number) => {
@@ -195,7 +195,7 @@ export default class PlayerMachine {
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Tshaeral", data: 4 });
         } else {
-            const drained = Math.round(this.scene.state.playerHealth * power * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
+            const drained = Math.round(this.scene.state.playerHealth * power * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newPlayerHealth = drained / this.scene.state.playerHealth * 100;
             const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
             const playerActionDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -203,6 +203,8 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "player", value: newPlayerHealth, id: this.player.playerID } });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newHealth, id: this.player.spellTarget } });
         };
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Pierce");
     };
 
     kyrnaicism = (power: number) => {
@@ -214,27 +216,29 @@ export default class PlayerMachine {
             return;
         };
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
+        power = this.player.entropicMultiplier(power);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: this.player.entropicMultiplier(power) }); 
+            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power }); 
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
+            const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: this.player.spellTarget } });
         };
         this.scene.sound.play("absorb", { volume: this.scene.hud.settings.volume });
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Spooky");
     };
 
     sacrifice = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        power = this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Sacrifice", data: power });
             this.player.currentTarget?.flickerCaerenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
+            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart()) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart());
             let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
             const playerActionDescription = `You sacrifice ${sacrifice / 2 * this.scene.combatManager.playerStalwart()} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
@@ -243,17 +247,19 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySacrifice, id } });
             enemy.flickerCaerenic(750);    
         };
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Spooky");
+        this.scene.combatManager.hitFeedbackSystem.bleed(new Phaser.Math.Vector2(this.player.x, this.player.y));
     };
 
     suture = (id: string, power: number) => {
-        this.player.entropicMultiplier(power);
+        power = this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Suture", data: power });
             this.player.currentTarget?.flickerCaerenic(750);
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * this.levelModifier()) * (1 * power / 100) * 0.8;
+            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2)) * (1 * power / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `Your suture ${enemy.ascean?.name}"s caeren into you, absorbing and healing for ${suture}.`;
@@ -262,6 +268,8 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySuture, id } });
             enemy.flickerCaerenic(750);
         };
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Righteous");
     };
 
     healCheck = (power: number) => {
@@ -290,6 +298,7 @@ export default class PlayerMachine {
             };
         };
         this.scene.combatManager.combatMachine.action({ data: { key: "player", value: power, id: this.player.playerID }, type: "Health" });
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
     };
 
     
@@ -1312,7 +1321,7 @@ export default class PlayerMachine {
     };
     onChiomismExit = () => {
         if (this.player.castingSuccess === true) {
-            this.sacrifice(this.player.spellTarget, 30);
+            this.sacrifice(this.player.spellTarget, 65);
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.CHIOMISM) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.confuse(this.player.spellTarget, this.player.checkTalentEnhanced(States.CONFUSE));
@@ -1743,7 +1752,7 @@ export default class PlayerMachine {
     };
     onKyrisianExit = () => {
         if (this.player.castingSuccess === true) {
-            this.sacrifice(this.player.spellTarget, 30);
+            this.sacrifice(this.player.spellTarget, 65);
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.KYRISIAN) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.paralyze(this.player.spellTarget);
@@ -1882,7 +1891,7 @@ export default class PlayerMachine {
     };
     onMaierethExit = () => {
         if (this.player.castingSuccess === true) {
-            this.sacrifice(this.player.spellTarget, 30);
+            this.sacrifice(this.player.spellTarget, 65);
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.MAIERETH) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.fear(this.player.spellTarget);
@@ -2319,7 +2328,7 @@ export default class PlayerMachine {
         this.player.specialCombatText = this.scene.showCombatText("Sacrifice", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
         this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
         this.player.checkTalentCost(States.SACRIFICE, PLAYER.STAMINA.SACRIFICE);
-        this.sacrifice(this.player.spellTarget, 10);
+        this.sacrifice(this.player.spellTarget, 30);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.SACRIFICE, PLAYER.COOLDOWNS.MODERATE);
         if (this.player.checkTalentEnhanced(States.SACRIFICE)) this.scene.combatManager.combatMachine.action({ type: "Prayer", data: "Damage" });
         this.player.flickerCaerenic(500);  

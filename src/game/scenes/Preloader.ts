@@ -39,6 +39,8 @@ export class Preloader extends Scene {
         this.load.tilemapTiledJSON("arena", "../assets/gui/arena.json");
         this.load.tilemapTiledJSON("gauntlet", "../assets/gui/gauntlet.json");
         this.load.atlas("clouds", "../assets/images/clouds.png", "../assets/images/clouds_atlas.json");
+        this.load.atlas("healing", "../assets/gui/healing.png", "../assets/gui/healing_atlas.json");
+        this.load.animation("healing_anim", "../assets/gui/healing_anim.json")
         this.load.plugin("rexvirtualjoystickplugin", "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js", true); 
         this.load.plugin("rexglowfilterpipelineplugin", "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexglowfilterpipelineplugin.min.js", true);
         this.load.plugin("rextexttypingplugin", "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextexttypingplugin.min.js", true);

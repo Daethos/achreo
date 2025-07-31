@@ -67,7 +67,7 @@ export default class Beam {
             followOffset: { x: -this.xOffset, y: -this.yOffset },
             visible: true
         };
-        this.emitter = this.scene.add.particles(player.x, player.y, 'beam', this.settings);
+        this.emitter = this.scene.add.particles(player.x, player.y, 'beam', this.settings).setDepth(100);
         this.scene.add.existing(this.emitter);
         this.emitter.stop();
         this.emitter.setVisible(false);
@@ -124,6 +124,9 @@ export default class Beam {
             };
         };
         this.emitter.setConfig({...this.settings, ...dynamicConfig});
+        if (Math.random() >= 0.75) {
+            this.drawLightning(new Phaser.Math.Vector2(this.player.x, this.player.y), new Phaser.Math.Vector2(target.x, target.y));
+        };
     };
 
     updateEnemyEmitter = (enemy: any, color: number) => {
@@ -136,6 +139,40 @@ export default class Beam {
         };
         this.emitter.setConfig({ ...this.settings, ...dynamicConfig });
     };
+
+    drawLightning(from: Phaser.Math.Vector2, to: Phaser.Math.Vector2) {
+        const graphics = this.scene.add.graphics();
+        graphics.lineStyle(2, this.color, 1);
+
+        let points = [from];
+
+        const segmentCount = 10;
+        const dx = (to.x - from.x) / segmentCount;
+        const dy = (to.y - from.y) / segmentCount;
+
+        for (let i = 1; i < segmentCount; i++) {
+            const x = from.x + dx * i + Phaser.Math.Between(-5, 5);
+            const y = from.y + dy * i + Phaser.Math.Between(-5, 15);
+            points.push(new Phaser.Math.Vector2(x, y));
+        };
+
+        points.push(to);
+
+        graphics.beginPath();
+        graphics.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            graphics.lineTo(points[i].x, points[i].y);
+        }
+        graphics.strokePath();
+
+        this.scene.tweens.add({
+            targets: graphics,
+            alpha: 0,
+            duration: 150,
+            onComplete: () => graphics.destroy(),
+        });
+    }
+
     
     glow = (): number => Math.random() / 10;
     

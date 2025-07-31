@@ -21,7 +21,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 64,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0xFFFFFF,
@@ -35,7 +35,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 24,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0xFFFFFF,
@@ -64,7 +64,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 40,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0x000000,
@@ -106,7 +106,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 24,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0xFFFF00,
@@ -134,7 +134,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 24,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0xA700FF,
@@ -148,7 +148,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 40,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0x800080,
@@ -176,7 +176,7 @@ export const HitProfiles = {
         particles: true,
 
         screenShake: true,
-        hitStop: 24,
+        hitStop: 32,
 
         screenFlash: true,
         flashColor: 0x00FFFF,

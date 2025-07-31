@@ -47,7 +47,7 @@ export class CombatManager {
         
         if (player.health > newPlayerHealth) {
             this.handlePlayerDamage(e);
-        } else  if (player.health < newPlayerHealth) {
+        } else if (player.health < newPlayerHealth) {
             player.scrollingCombatText = this.context.showCombatText(`${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => player.scrollingCombatText = undefined);
         };
         
@@ -95,7 +95,9 @@ export class CombatManager {
         const enemy = this.context.getEnemy(e.enemyID);
         if (!enemy) return;
         const { criticalSuccess, computerDamageType, computerWeapons, computerWin, computerHealth, newComputerHealth, newPlayerHealth } = e;
+
         const player = this.context.player;
+        
         if (enemy.health > newComputerHealth) {
             let damage: number | string = Math.round(enemy.health - newComputerHealth);
             enemy.scrollingCombatText = this.context.showCombatText(`${damage}`, 1500, BONE, criticalSuccess, false, () => enemy.scrollingCombatText = undefined);
@@ -117,16 +119,19 @@ export class CombatManager {
             let heal = Math.round(newComputerHealth - enemy.health);
             enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
         };
+        
         enemy.health = newComputerHealth;
         enemy.computerCombatSheet.newComputerHealth = enemy.health;
         if (enemy.healthbar.getTotal() < computerHealth) enemy.healthbar.setTotal(computerHealth);
         enemy.updateHealthBar(newComputerHealth);
+        
         enemy.weapons = computerWeapons;
         enemy.setWeapon(computerWeapons[0]); 
         enemy.checkDamage(computerDamageType.toLowerCase()); 
         enemy.checkMeleeOrRanged(computerWeapons?.[0]);
         enemy.currentWeaponCheck();
         enemy.currentRound = e.combatRound;
+        
         if (newPlayerHealth <= 0 && computerWin === true) {
             enemy.isTriumphant = true;
             enemy.clearCombatWin();

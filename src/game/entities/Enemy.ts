@@ -662,6 +662,7 @@ export default class Enemy extends Entity {
         this.checkDamage(computerDamageType.toLowerCase()); 
         this.checkMeleeOrRanged(computerWeapons?.[0] as Equipment);
         this.currentWeaponCheck();
+        if (e.computerDamaged) this.scene.combatManager.hitFeedbackSystem.spotEmit(this.enemyID, e.computerEnemyDamageType);
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
         this.computerCombatSheet.parrySuccess = false;
@@ -675,6 +676,7 @@ export default class Enemy extends Entity {
         };
         if (this.health <= 0) this.killingBlow = enemyID;
         this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
+        
     };
     
     persuasionUpdate = (e: any) => {
@@ -1186,6 +1188,8 @@ export default class Enemy extends Entity {
 
     mastery = () => this.ascean[this.ascean.mastery] || 20;
 
+    levelModifier = () => (this.ascean?.level + 9) / 10;
+
     chiomic = (power: number, id: string) => {
         power = this.entropicMultiplier(power);
         if (id === this.scene?.player?.playerID) { // Player Combat
@@ -1194,18 +1198,19 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Chiomic", data: power });
             } else {
-                const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * ((this.ascean?.level + 9) / 10));
+                const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 const ratio = chiomic / this.scene.state.computerHealth * 100;
                 const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: "player", value: -ratio, id: this.enemyID } });
             };
         } else { // Computer Combat
-            const chiomic = Math.round(this.mastery() / 2 * (1 + (power / 100)) * ((this.ascean?.level + 9) / 10));
+            const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * (this.levelModifier() ** 2));
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= chiomic;
             this.scene.combatManager.updateComputerDamage(chiomic, id, this.enemyID);
         };
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Pierce");
     };
 
     devour = (power: number, id: string) => {
@@ -1214,7 +1219,7 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Tshaeral", data: 5 });
             } else {
-                const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.ascean.level + 9) / 10);
+                const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
                 const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
@@ -1222,7 +1227,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: NAME, value: newComputerHealth, id: this.enemyID } });
             };
         } else { // CvC
-            const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * (this.ascean.level + 9) / 10);
+            const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * (this.levelModifier() ** 2));
             let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
             this.health = newComputerHealth;
             this.updateHealthBar(this.health);
@@ -1231,16 +1236,18 @@ export default class Enemy extends Entity {
             this.computerCombatSheet.newComputerHealth = this.health;
             this.scene.combatManager.updateComputerDamage(dev, id, this.enemyID);
         };
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Pierce");
     };
 
     sacrifice = (power: number, id: string) => {
-        this.entropicMultiplier(power);
+        power = this.entropicMultiplier(power);
         if (id === this.scene?.player?.playerID) {
             if (this.scene.state.newPlayerHealth <= 0) return;
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Sacrifice", data: power });
             } else {
-                const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * ((this.ascean?.level + 9) / 10));
+                const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
                 const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice} from you.`;
                 const ratio = (sacrifice * (1 + power / 50)) / this.scene.state.playerHealth * 100;
@@ -1249,24 +1256,26 @@ export default class Enemy extends Entity {
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
             };
         } else { // CvC
-            const sacrifice = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10));
+            const sacrifice = Math.round(this.mastery() * (this.levelModifier() ** 2));
             this.health -= (sacrifice / 2);
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
-            this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 * power / 100));
+            this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 + power / 50));
             this.computerCombatSheet.newComputerHealth = this.health;
             this.updateHealthBar(this.health);
             this.scene.combatManager.updateComputerDamage(sacrifice, id, this.enemyID);
         };
+        this.scene.combatManager.hitFeedbackSystem.bleed(new Phaser.Math.Vector2(this.x, this.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Spooky");
     };
 
     suture = (power: number, id: string) => {
-        this.entropicMultiplier(power);
+        power = this.entropicMultiplier(power);
         if (id === this.scene?.player?.playerID) {
             if (this.scene.state.newPlayerHealth <= 0) return;
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Suture", data: power });
             } else {
-                const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
+                const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2)) * (1 + power / 100);
                 let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
                 const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
                 const ratio = suture / this.scene.state.playerHealth * 100;
@@ -1275,13 +1284,15 @@ export default class Enemy extends Entity {
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
             };
         } else { // CvC
-            const suture = Math.round(this.mastery() * ((this.ascean?.level + 9) / 10)) * (1 + power / 100) * 0.8;
+            const suture = Math.round(this.mastery() * (this.levelModifier() ** 2)) * (1 + power / 100);
             let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= suture;
             this.computerCombatSheet.newComputerHealth = newComputerHealth;
             this.scene.combatManager.updateComputerDamage(suture, id, this.enemyID);
         };
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
+        this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Righteous");
     };
 
     checkDamage = (damage: string) => {
@@ -2257,6 +2268,7 @@ export default class Enemy extends Entity {
             this.checkCaerenic(false);
             this.count.stunned += 1;
             this.isStunned = true;
+            this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
             this.stateMachine.setState(States.STUNNED);
         }, undefined, this);
     };
@@ -2346,6 +2358,7 @@ export default class Enemy extends Entity {
                 this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
                 this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
             };
+            this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
         };
         this.enemySound("phenomena", this.castingSuccess);
         this.stopCasting("Countered Healing");
@@ -2744,6 +2757,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = this.scene.showCombatText(`${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
         this.enemySound("phenomena", true);
         this.channelCount++;
         if (this.channelCount >= 5) {
@@ -3257,6 +3271,7 @@ export default class Enemy extends Entity {
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
         this.computerCombatSheet.newComputerHealth = this.health;
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
         this.enemySound("caerenic", true);
     };
 

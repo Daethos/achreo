@@ -1,0 +1,40 @@
+{
+    "anims": [
+        {
+            "key": "healing",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 10,
+            "frames": [
+                {
+                    "key": "healing",
+                    "frame": "healing_1"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_2"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_3"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_4"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_5"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_6"
+                },
+                {
+                    "key": "healing",
+                    "frame": "healing_7"
+                }
+            ]
+        }
+    ]
+}

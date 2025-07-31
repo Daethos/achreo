@@ -16,6 +16,7 @@ import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH } from "../../utility/enemy";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { EFFECT } from "../phaser/ScrollingCombatText";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -149,18 +150,15 @@ export default class Player extends Entity {
         this.dt = this.scene.sys.game.loop.delta;
         this.playerMachine = new PlayerMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);
-        // let playerColliderFull = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, {
-        //     isSensor: false, label: "playerCollider",
-        // }); // Y + 10 For Platformer
         const underground = this.scene.hud.currScene === "Underground" || this.scene.hud.currScene === "Arena" || this.scene.hud.currScene === "Gauntlet";
         let playerColliderUpper = Bodies.rectangle(this.x, this.y + 2, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: !underground,
             label: "body",
-        }); // Y + 10 For Platformer
+        });
         let playerColliderLower = Bodies.rectangle(this.x, this.y + 18, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT / 2, {
             isSensor: underground,
             label: "legs", 
-        }); // Y + 10 For Platformer
+        });
         let playerSensor = Bodies.circle(this.x, this.y + 2, PLAYER.SENSOR.DEFAULT, { isSensor: true, label: "playerSensor" }); // Y + 2 For Platformer
         const compoundBody = Body.create({
             parts: [playerSensor, playerColliderLower, playerColliderUpper],
@@ -298,6 +296,22 @@ export default class Player extends Entity {
         EventBus.off("tab-target", this.tabUpdate);
         EventBus.off("updated-stamina", this.updateStamina);
     };
+    
+    playerStateListener = () => {
+        EventBus.on("set-player", this.setPlayer)
+        EventBus.on("combat", this.constantUpdate);
+        EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
+        EventBus.on("disengage", this.disengage); 
+        EventBus.on("engage", this.engage);
+        EventBus.on("speed", this.speedUpdate);
+        EventBus.on("update-stealth", this.stealthUpdate);
+        EventBus.on("update-caerenic", this.caerenicUpdate);
+        EventBus.on("update-stalwart", this.stalwartUpdate);
+        EventBus.on("remove-enemy", this.enemyUpdate);
+        EventBus.on("tab-target", this.tabUpdate);
+        EventBus.on("updated-grace", this.updateGrace);
+        EventBus.on("updated-stamina", this.updateStamina);
+    }; 
 
     clearBubbles = () => {
         this.isMalicing = false;
@@ -356,22 +370,6 @@ export default class Player extends Entity {
         this.highlight.setVisible(false);
         this.highlightAnimation = false;
     };
-
-    playerStateListener = () => {
-        EventBus.on("set-player", this.setPlayer)
-        EventBus.on("combat", this.constantUpdate);
-        EventBus.on(BROADCAST_DEATH, this.enemyDeath);    
-        EventBus.on("disengage", this.disengage); 
-        EventBus.on("engage", this.engage);
-        EventBus.on("speed", this.speedUpdate);
-        EventBus.on("update-stealth", this.stealthUpdate);
-        EventBus.on("update-caerenic", this.caerenicUpdate);
-        EventBus.on("update-stalwart", this.stalwartUpdate);
-        EventBus.on("remove-enemy", this.enemyUpdate);
-        EventBus.on("tab-target", this.tabUpdate);
-        EventBus.on("updated-grace", this.updateGrace);
-        EventBus.on("updated-stamina", this.updateStamina);
-    }; 
     
     enemyDeath = (id: string) => {
         const enemy = this.targets.find((e: Enemy) => e.enemyID === id);
@@ -521,9 +519,7 @@ export default class Player extends Entity {
 
     constantUpdate = (e: Combat) => this.checkGear(e.player?.shield as Equipment, e.weapons?.[0] as Equipment, e.playerDamageType.toLowerCase());
     
-    resist = () => {
-        this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, "effect", false, false, () => this.resistCombatText = undefined);
-    };
+    resist = () => this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.resistCombatText = undefined);
 
     checkTalentCost = (type: string, cost: number) => {
         const grace = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COST[cost as unknown as keyof typeof TALENT_COST] : cost;
@@ -705,57 +701,6 @@ export default class Player extends Entity {
         screenShake(this.scene);
     };
 
-    soundEffects(sfx: Combat) {
-        try {
-            const isCrit = sfx.criticalSuccess;
-            const isGlance = sfx.glancingBlow;
-            const rate = isCrit ? 1.2 : isGlance ? 0.8 : Phaser.Math.FloatBetween(0.95, 1.05);
-            const detune = Phaser.Math.Between(-30, 30);
-
-            let volume = this.scene.hud.settings.volume;
-            const soundEffectMap = (type: string, weapon: Equipment, player: boolean) => {
-                if (player) { 
-                    volume = isCrit ? this.scene.hud.settings.volume * 1.2 : isGlance ? this.scene.hud.settings.volume * 0.7 : this.scene.hud.settings.volume;
-                } else {
-                    volume = sfx.computerCriticalSuccess ? this.scene.hud.settings.volume * 1.2 : sfx.computerGlancingBlow ? this.scene.hud.settings.volume * 0.7 : this.scene.hud.settings.volume;
-                };
-                switch (type) {
-                    case "Spooky":
-                        return this.scene.sound.play("spooky", { volume, rate, detune });
-                    case "Righteous":
-                        return this.scene.sound.play("righteous", { volume, rate, detune });
-                    case "Wild":
-                        return this.scene.sound.play("wild", { volume, rate, detune });
-                    case "Earth":
-                        return this.scene.sound.play("earth", { volume, rate, detune });
-                    case "Fire":
-                        return this.scene.sound.play("fire", { volume, rate, detune });
-                    case "Frost":
-                        return this.scene.sound.play("frost", { volume, rate, detune });
-                    case "Lightning":
-                        return this.scene.sound.play("lightning", { volume, rate, detune });
-                    case "Sorcery":
-                        return this.scene.sound.play("sorcery", { volume: volume / 3, rate, detune });
-                    case "Wind":
-                        return this.scene.sound.play("wind", { volume, rate, detune });
-                    case "Pierce":
-                        return (weapon.type === "Bow" || weapon.type === "Greatbow") ? this.scene.sound.play("bow", { volume, rate, detune }) : this.scene.sound.play("pierce", { volume, rate, detune });
-                    case "Slash":
-                        return this.scene.sound.play("slash", { volume, rate, detune });
-                    case "Blunt":
-                        return this.scene.sound.play("blunt", { volume, rate, detune });
-                };
-            };
-            if (sfx.religiousSuccess === true) this.scene.sound.play("righteous", { volume, rate, detune });
-            if (sfx.rollSuccess === true || sfx.computerRollSuccess === true) this.scene.sound.play("roll", { volume: volume / 2, rate, detune });
-            if (sfx.parrySuccess === true || sfx.computerParrySuccess === true) this.scene.sound.play("parry", { volume, rate, detune });
-            if (sfx.computerDamaged === true) soundEffectMap(sfx.playerDamageType, sfx.weapons[0] as Equipment, true);
-            if (sfx.playerDamaged === true) soundEffectMap(sfx.computerDamageType, sfx.computerWeapons[0], false);
-        } catch (err) {
-            console.warn(err, "Error Setting Sound Effects");
-        };
-    };
-
     enemyUpdate = (e: string) => {
         const index = this.targets.findIndex(obj => obj.enemyID === e);
         this.targets = this.targets.filter(obj => obj.enemyID !== e);
@@ -816,9 +761,7 @@ export default class Player extends Entity {
         };
     };
 
-    isPlayerInCombat = () => {
-        return this.scene.enemies.some((e: Enemy) => e.inCombat && e.health > 0) || (this.inCombat && this.scene.combat && this.scene.state.combatEngaged);
-    };
+    isPlayerInCombat = () => this.scene.enemies.some((e: Enemy) => e.inCombat && e.health > 0) || (this.inCombat && this.scene.combat && this.scene.state.combatEngaged);
 
     shouldPlayerEnterCombat = (other: any) => {
         if (!this.isPlayerInCombat() && !this.isStealthing && this.scene.state.newPlayerHealth > 0) {
@@ -923,6 +866,7 @@ export default class Player extends Entity {
             context: this.scene,
         });
     };
+
     checkWorldCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
@@ -1071,9 +1015,7 @@ export default class Player extends Entity {
         }, undefined, this);
     };
 
-    swingTime = (type: string): number => {
-        return (type === "dodge" || type === "parry" || type === "roll") ? 750 : this.swingTimer;
-    };
+    swingTime = (type: string): number => (type === "dodge" || type === "parry" || type === "roll") ? 750 : this.swingTimer;
 
     checkCaerenic = (caerenic: boolean) => {
         this.isGlowing = caerenic;

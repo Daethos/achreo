@@ -375,7 +375,7 @@ export class Game extends Scene {
         const chunkKey = `${offsetX},${offsetY}`;
         if (this.loadedChunks.has(chunkKey)) return;
         
-        // console.log(`Loading chunk: ${chunkKey}`);
+        console.log(`Loading chunk: ${chunkKey}`);
         this.player.setActive(false);
 
         const map = this.make.tilemap({ key });
@@ -407,7 +407,7 @@ export class Game extends Scene {
 
         this.loadedChunks.set(chunkKey, chunkData);
         
-        // console.log(`Successfully Loaded Chunk ${chunkKey}`);
+        console.log(`Successfully Loaded Chunk ${chunkKey}`);
         this.player.setActive(true);
     };
 

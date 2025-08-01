@@ -124,7 +124,7 @@ export default class Beam {
             };
         };
         this.emitter.setConfig({...this.settings, ...dynamicConfig});
-        if (Math.random() >= 0.75) {
+        if (Math.random() >= 0.85) {
             this.drawLightning(new Phaser.Math.Vector2(this.player.x, this.player.y), new Phaser.Math.Vector2(target.x, target.y));
         };
     };

@@ -1,22 +1,22 @@
 const COLORS = {
-    'aqua': 0x00FFFF,
-    'bone': 0xFDF6D8,
-    'black': 0x000000,
-    'blue': 0x0000FF,
-    'gold': 0xFFD700,
-    'green': 0x00FF00,
-    'red': 0xFF0000,
-    'purple': 0x800080,
+    "aqua": 0x00FFFF,
+    "bone": 0xFDF6D8,
+    "black": 0x000000,
+    "blue": 0x0000FF,
+    "gold": 0xFFD700,
+    "green": 0x00FF00,
+    "red": 0xFF0000,
+    "purple": 0x800080,
 
-    'teal': 0x008080,
-    'lightblue': 0xADD8E6,
-    'sapphire': 0x0F52BA,
-    'ultramarine': 0x0437F2,
-    'dread': 0x8B0000, // Menace ?
-    'burned': 0xCC5500,
-    'chartreuse': 0xDFFF00, // Mystify?
-    'fuchsia': 0xFF00FF,
-    'malachite': 0x0BDA51,
+    "teal": 0x008080,
+    "lightblue": 0xADD8E6,
+    "sapphire": 0x0F52BA,
+    "ultramarine": 0x0437F2,
+    "dread": 0x8B0000, // Menace ?
+    "burned": 0xCC5500,
+    "chartreuse": 0xDFFF00, // Mystify?
+    "fuchsia": 0xFF00FF,
+    "malachite": 0x0BDA51,
 };
 
 export default class Bubble extends Phaser.GameObjects.Graphics {
@@ -31,7 +31,7 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         this.calling = false;  
         this.charges = 6;
         this.color = COLORS[type as keyof typeof COLORS];
-        this.glowFilter = scene.plugins.get('rexGlowFilterPipeline');
+        this.glowFilter = scene.plugins.get("rexGlowFilterPipeline");
         this.glowFilter.add(this, {
             outerStrength: 1,
             innerStrength: 1,
@@ -91,11 +91,11 @@ export default class Bubble extends Phaser.GameObjects.Graphics {
         if (!this || this.calling === false || !this.glowFilter || !this.warp || !scene || !this.scene?.sys) return;
         let instance = this.glowFilter.get(this)[0];
         if (instance) {
-            instance.outerStrength = (this.charges / 2) + Math.sin(scene.time.now * 0.005); // * (this.charges / 2); // Adjust the frequency and amplitude as needed
-            instance.innerStrength = (this.charges / 2) + Math.cos(scene.time.now * 0.005); // * (this.charges / 2);            
+            instance.outerStrength = (this.charges / 2) + Math.sin(scene.time.now * 0.005);
+            instance.innerStrength = (this.charges / 2) + Math.cos(scene.time.now * 0.005);
         } else {
-            const outerStrength = (this.charges / 2) + Math.sin(scene.time.now * 0.005); // * (this.charges / 2); // Adjust the frequency and amplitude as needed
-            const innerStrength = (this.charges / 2) + Math.cos(scene.time.now * 0.005); // * (this.charges / 2);
+            const outerStrength = (this.charges / 2) + Math.sin(scene.time.now * 0.005);
+            const innerStrength = (this.charges / 2) + Math.cos(scene.time.now * 0.005);
             const intensity = 0.25;
             const glowColor = this.color;  
             this.glowFilter.add?.(this, {

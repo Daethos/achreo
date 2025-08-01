@@ -1324,7 +1324,7 @@ export default class Enemy extends Entity {
         // this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
         this.castbar.setTotal(duration);
         if (beam) this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
-        if (channel === true) this.castbar.setTime(duration);
+        if (channel) this.castbar.setTime(duration);
         if (this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
         this.anims.play(FRAMES.CAST, true);
@@ -3254,10 +3254,10 @@ export default class Enemy extends Entity {
         this.specialCombatText = this.scene.showCombatText("Mending", 500, "tendril", false, true, () => this.specialCombatText = undefined);
         const mend = Phaser.Math.Between(this.healthbar.getTotal() * 0.075, this.healthbar.getTotal() * 0.125);
         const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
+        
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
-        if (this.reactiveBubble.charges <= 0) {
-            this.isMending = false;
-        };
+        if (this.reactiveBubble.charges <= 0) this.isMending = false;
+
         if (id === this.scene?.player?.playerID && this.isCurrentTarget) { // Player Combat
             this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: heal, id: this.enemyID }, type: HEALTH });
         } else if (id === this.scene?.player?.playerID) { // Non Targerted Player Combat
@@ -3270,6 +3270,7 @@ export default class Enemy extends Entity {
             this.scrollingCombatText = this.scene.showCombatText(`${mend}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
+        
         this.computerCombatSheet.newComputerHealth = this.health;
         this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
         this.enemySound("caerenic", true);

@@ -540,6 +540,30 @@ export default class Player extends Entity {
         this.playerMachine.chiomism(enemy.enemyID, distance);
     };
 
+    startCasting = (name: string, duration: number, harm = true, channel = false, beam = true) => {
+        this.isCasting = true;
+        this.castbar.setCastName(name);
+        this.castbar.setVisible(true);
+        this.castbar.setTotal(duration);
+        if (beam) this.beam.startEmitter(this.currentTarget, duration);
+        if (channel) this.castbar.setTime(duration);
+        if (harm) {
+            this.spellTarget = this.currentTarget!.enemyID;
+            this.spellName = this.currentTarget!.ascean.name;
+        };
+        if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true); 
+    };
+
+    stopCasting = () => {
+        this.isCasting = false;
+        this.spellTarget = "";
+        this.spellName = "";
+        this.frameCount = 0;
+        this.beam.reset();
+        this.castbar.reset();
+        if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false); 
+    };
+
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;

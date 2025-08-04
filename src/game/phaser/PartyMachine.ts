@@ -285,7 +285,7 @@ export default class PlayerMachine {
     onLeashEnter = () => {
         this.player.inComputerCombat = false;
         this.player.healthbar.setVisible(false);
-        this.player.specialCombatText = this.scene.showCombatText("Leashing", 1500, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Leashing", 1500, EFFECT, false, true);
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
             this.player.chaseTimer.destroy();
@@ -367,7 +367,7 @@ export default class PlayerMachine {
         this.player.isDefeated = true;
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
-        this.player.specialCombatText = this.scene.showCombatText("Defeated", 3000, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Defeated", 3000, DAMAGE, false, true);
         this.player.defeatedDuration = PLAYER.DURATIONS.DEFEATED * 3;
         this.player.setCollisionCategory(0);
     };
@@ -665,7 +665,7 @@ export default class PlayerMachine {
             };
         };
 
-        this.player.specialCombatText = this.scene.showCombatText("Instinct", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Instinct", 750, HUSH, false, true);
         this.scene.hud.logger.log(`${this.player.ascean.name}'s instinct leads them to ${value}.`);
         this.player.prevInstinct = instinct;
         (this as any)[key].setState(value);
@@ -737,7 +737,7 @@ export default class PlayerMachine {
         this.player.isParrying = true;
         this.player.frameCount = 0;
         if (this.player.hasMagic === true) {
-            this.player.specialCombatText = this.scene.showCombatText("Counter Spell", 1000, HUSH, false, true, () => this.player.specialCombatText = undefined);
+            this.scene.showCombatText(this.player, "Counter Spell", 1000, HUSH, false, true);
             this.player.isCounterSpelling = true;
             this.player.flickerCaerenic(1000); 
             this.scene.time.delayedCall(1000, () => {
@@ -957,7 +957,7 @@ export default class PlayerMachine {
     onArcEnter = () => {
         this.player.isArcing = true;
         this.player.enemySound("combat-round", true);
-        this.player.specialCombatText = this.scene.showCombatText("Arcing", PLAYER.DURATIONS.ARCING / 2, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Arcing", PLAYER.DURATIONS.ARCING / 2, DAMAGE, false, true);
         this.player.castbar.setTotal(PLAYER.DURATIONS.ARCING);
         this.player.castbar.setTime(PLAYER.DURATIONS.ARCING, 0xFF0000);
         this.player.setStatic(true);
@@ -1082,7 +1082,7 @@ export default class PlayerMachine {
     };
 
     onDesperationEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Desperation", PLAYER.DURATIONS.HEALING / 2, HEAL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Desperation", PLAYER.DURATIONS.HEALING / 2, HEAL, false, true);
         this.player.flickerCaerenic(PLAYER.DURATIONS.HEALING); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes their body.`
@@ -1491,7 +1491,7 @@ export default class PlayerMachine {
 
     onHookEnter = () => {
         this.player.particleEffect = this.scene.particleManager.addEffect("hook", this.player, "hook", true);
-        this.player.specialCombatText = this.scene.showCombatText("Hook", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Hook", DURATION.TEXT, DAMAGE, false, true);
         this.player.enemySound("dungeon", true);
         this.player.flickerCaerenic(750);
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
@@ -1508,7 +1508,7 @@ export default class PlayerMachine {
     onMarkEnter = () => {
         this.player.setStatic(true);
         this.player.isPraying = true;
-        this.player.specialCombatText = this.scene.showCombatText("Marking", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Marking", DURATION.TEXT, EFFECT, false, true);
         this.player.flickerCaerenic(1000);
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
@@ -1535,7 +1535,7 @@ export default class PlayerMachine {
         this.player.isNetherswapping = false;
         this.player.setStatic(false);
         if (this.player.netherswapTarget === undefined) return; 
-        this.player.specialCombatText = this.scene.showCombatText("Netherswap", DURATION.TEXT / 2, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Netherswap", DURATION.TEXT / 2, EFFECT, false, true);
         const player = new Phaser.Math.Vector2(this.player.x, this.player.y);
         const enemy = new Phaser.Math.Vector2(this.player.netherswapTarget.x, this.player.netherswapTarget.y);
         this.player.setPosition(enemy.x, enemy.y);
@@ -1547,7 +1547,7 @@ export default class PlayerMachine {
     onRecallEnter = () => {
         this.player.setStatic(true);
         this.player.isPraying = true;
-        this.player.specialCombatText = this.scene.showCombatText("Recalling", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Recalling", DURATION.TEXT, EFFECT, false, true);
         this.player.flickerCaerenic(1000);
     };
     onRecallUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
@@ -1731,7 +1731,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSlowing = true;
-        this.player.specialCombatText = this.scene.showCombatText("Slow", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Slow", 750, CAST, false, true);
         this.player.enemySound("debuff", true);
         this.scene.combatManager.slow(this.player.spellTarget, 3000);
         this.player.flickerCaerenic(500); 
@@ -1747,7 +1747,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSacrificing = true;
-        this.player.specialCombatText = this.scene.showCombatText("Sacrifice", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Sacrifice", 750, EFFECT, false, true);
         this.player.enemySound("combat-round", true);
         this.sacrifice(this.player.spellTarget, 10);
         this.player.flickerCaerenic(500);  
@@ -1791,7 +1791,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
         this.player.isSuturing = true;
-        this.player.specialCombatText = this.scene.showCombatText("Suture", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Suture", 750, EFFECT, false, true);
         this.player.enemySound("debuff", true);
         this.suture(this.player.spellTarget, 10);
         this.player.flickerCaerenic(500); 
@@ -1814,7 +1814,7 @@ export default class PlayerMachine {
         this.player.isAbsorbing = true;
         this.player.negationName = States.ABSORB;
         this.player.enemySound("absorb", true);
-        this.player.specialCombatText = this.scene.showCombatText("Absorbing", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Absorbing", 750, EFFECT, false, true);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "aqua", PLAYER.DURATIONS.ABSORB);
         this.scene.time.delayedCall(PLAYER.DURATIONS.ABSORB, () => {
             this.player.isAbsorbing = false;    
@@ -1833,7 +1833,7 @@ export default class PlayerMachine {
     onChiomicEnter = () => {
         this.player.aoe = this.scene.aoePool.get("chiomic", 1, false, this.player);    
         this.player.enemySound("death", true);
-        this.player.specialCombatText = this.scene.showCombatText("Hah! Hah! Hah!", PLAYER.DURATIONS.CHIOMIC, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Hah! Hah! Hah!", PLAYER.DURATIONS.CHIOMIC, EFFECT, false, true);
         this.player.isChiomic = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
@@ -1848,7 +1848,7 @@ export default class PlayerMachine {
         this.player.isDiseasing = true;
         this.player.aoe = this.scene.aoePool.get(TENDRIL, 6, false, this.player);    
         this.player.enemySound("dungeon", true);
-        this.player.specialCombatText = this.scene.showCombatText("Tendrils Swirl", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Tendrils Swirl", 750, TENDRIL, false, true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.player.isDiseasing = false;
         }, undefined, this);
@@ -1862,7 +1862,7 @@ export default class PlayerMachine {
     onHowlEnter = () => {
         this.player.aoe = this.scene.aoePool.get("howl", 1, false, this.player);    
         this.player.enemySound("howl", true);
-        this.player.specialCombatText = this.scene.showCombatText("Howling", PLAYER.DURATIONS.HOWL, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Howling", PLAYER.DURATIONS.HOWL, DAMAGE, false, true);
         this.player.isHowling = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.player.isHowling = false;
@@ -1881,7 +1881,7 @@ export default class PlayerMachine {
         };
         this.player.isEnveloping = true;
         this.player.enemySound("caerenic", true);
-        this.player.specialCombatText = this.scene.showCombatText("Enveloping", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Enveloping", 750, CAST, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "blue", PLAYER.DURATIONS.ENVELOP);
         this.player.reactiveName = States.ENVELOP;
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENVELOP, () => {
@@ -1901,7 +1901,7 @@ export default class PlayerMachine {
     onFreezeEnter = () => {
         this.player.aoe = this.scene.aoePool.get("freeze", 1, false, this.player);
         this.player.enemySound("freeze", true);
-        this.player.specialCombatText = this.scene.showCombatText("Freezing", PLAYER.DURATIONS.FREEZE, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Freezing", PLAYER.DURATIONS.FREEZE, CAST, false, true);
         this.player.isFreezing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.player.isFreezing = false;
@@ -1920,7 +1920,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MALICE;
         this.player.enemySound("debuff", true);
         this.player.isMalicing = true;
-        this.player.specialCombatText = this.scene.showCombatText("Malicing", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Malicing", 750, HUSH, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "purple", PLAYER.DURATIONS.MALICE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MALICE, () => {
             this.player.isMalicing = false;    
@@ -1944,7 +1944,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MEND;
         this.player.enemySound("caerenic", true);
         this.player.isMending = true;
-        this.player.specialCombatText = this.scene.showCombatText("Mending", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Mending", 750, TENDRIL, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "purple", PLAYER.DURATIONS.MEND);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MEND, () => {
             this.player.isMending = false;    
@@ -1968,7 +1968,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MENACE;
         this.player.enemySound("scream", true);
         this.player.isMenacing = true;
-        this.player.specialCombatText = this.scene.showCombatText("Menacing", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Menacing", 750, TENDRIL, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "dread", PLAYER.DURATIONS.MENACE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MENACE, () => {
             this.player.isMenacing = false;    
@@ -1992,7 +1992,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MODERATE;
         this.player.enemySound("debuff", true);
         this.player.isModerating = true;
-        this.player.specialCombatText = this.scene.showCombatText("Moderating", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Moderating", 750, CAST, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "sapphire", PLAYER.DURATIONS.MODERATE);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MODERATE, () => {
             this.player.isModerating = false;    
@@ -2016,7 +2016,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MULTIFARIOUS;
         this.player.enemySound("combat-round", true);
         this.player.isMultifaring = true;
-        this.player.specialCombatText = this.scene.showCombatText("Multifaring", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Multifaring", 750, CAST, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "ultramarine", PLAYER.DURATIONS.MULTIFARIOUS);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MULTIFARIOUS, () => {
             this.player.isMultifaring = false;    
@@ -2040,7 +2040,7 @@ export default class PlayerMachine {
         this.player.reactiveName = States.MYSTIFY;
         this.player.enemySound("debuff", true);
         this.player.isMystifying = true;
-        this.player.specialCombatText = this.scene.showCombatText("Mystifying", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Mystifying", 750, EFFECT, false, true);
         this.player.reactiveBubble = new Bubble(this.scene, this.player.x, this.player.y, "chartreuse", PLAYER.DURATIONS.MYSTIFY);
         this.scene.time.delayedCall(PLAYER.DURATIONS.MYSTIFY, () => {
             this.player.isMystifying = false;    
@@ -2063,7 +2063,7 @@ export default class PlayerMachine {
         };
         this.player.isProtecting = true;
         this.player.enemySound("shield", true);
-        this.player.specialCombatText = this.scene.showCombatText("Protecting", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Protecting", 750, EFFECT, false, true);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "gold", PLAYER.DURATIONS.PROTECT);
         this.scene.time.delayedCall(PLAYER.DURATIONS.PROTECT, () => {
             this.player.isProtecting = false;    
@@ -2082,7 +2082,7 @@ export default class PlayerMachine {
         this.player.isRenewing = true;
         this.player.aoe = this.scene.aoePool.get("renewal", 6, true, this.player);    
         this.player.enemySound("shield", true);
-        this.player.specialCombatText = this.scene.showCombatText("Hush Tears", 750, BONE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Hush Tears", 750, BONE, false, true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.player.isRenewing = false;
         }, undefined, this);
@@ -2095,7 +2095,7 @@ export default class PlayerMachine {
     onScreamEnter = () => {
         this.player.aoe = this.scene.aoePool.get("scream", 1, false, this.player);    
         this.player.enemySound("scream", true);
-        this.player.specialCombatText = this.scene.showCombatText("Screaming", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Screaming", 750, HUSH, false, true);
         this.player.isScreaming = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.player.isScreaming = false;
@@ -2113,7 +2113,7 @@ export default class PlayerMachine {
         };
         this.player.enemySound("shield", true);
         this.player.isShielding = true;
-        this.player.specialCombatText = this.scene.showCombatText("Shielding", 750, BONE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Shielding", 750, BONE, false, true);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, BONE, PLAYER.DURATIONS.SHIELD);
         this.player.negationName = States.SHIELD;
         this.scene.time.delayedCall(PLAYER.DURATIONS.SHIELD, () => {
@@ -2214,7 +2214,7 @@ export default class PlayerMachine {
         };
         this.player.isWarding = true;
         this.player.enemySound("combat-round", true);
-        this.player.specialCombatText = this.scene.showCombatText("Warding", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Warding", 750, DAMAGE, false, true);
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "red", PLAYER.DURATIONS.WARD);
         this.player.negationName = States.WARD;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WARD, () => {
@@ -2234,7 +2234,7 @@ export default class PlayerMachine {
     onWritheEnter = () => {
         this.player.aoe = this.scene.aoePool.get("writhe", 1, false, this.player);    
         this.player.enemySound("spooky", true);
-        this.player.specialCombatText = this.scene.showCombatText("Writhing", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Writhing", 750, TENDRIL, false, true);
         this.player.isWrithing = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.player.isWrithing = false;
@@ -2252,7 +2252,7 @@ export default class PlayerMachine {
     onAstricationEnter = () => {
         if (this.player.isAstrifying === true) return;
         this.player.enemySound("lightning", true);
-        this.player.specialCombatText = this.scene.showCombatText("Astrication", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Astrication", 750, EFFECT, false, true);
         this.player.isAstrifying = true;
         this.player.flickerCaerenic(PLAYER.DURATIONS.ASTRICATION); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
@@ -2264,7 +2264,7 @@ export default class PlayerMachine {
     onBerserkEnter = () => {
         if (this.player.isBerserking === true) return;
         this.player.enemySound("howl", true);
-        this.player.specialCombatText = this.scene.showCombatText("Berserking", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Berserking", 750, DAMAGE, false, true);
         this.player.isBerserking = true;
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}"s caeren feeds off the pain, its hush shrieking forth.`
@@ -2275,7 +2275,7 @@ export default class PlayerMachine {
     onBlindEnter = () => {
         this.player.aoe = this.scene.aoePool.get("blind", 1, false, this.player);
         this.player.enemySound("righteous", true);
-        this.player.specialCombatText = this.scene.showCombatText("Brilliance", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Brilliance", 750, EFFECT, false, true);
         this.player.isBlinding = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BLIND, () => {
             this.player.isBlinding = false;
@@ -2290,7 +2290,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.aoe = this.scene.aoePool.get("caerenesis", 1, false, this.player, false, this.player.currentTarget);    
         this.player.enemySound("blink", true);
-        this.player.specialCombatText = this.scene.showCombatText("Caerenesis", 750, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Caerenesis", 750, CAST, false, true);
         this.player.isCaerenesis = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
             this.player.isCaerenesis = false;
@@ -2304,7 +2304,7 @@ export default class PlayerMachine {
     onConvictionEnter = () => {
         if (this.player.isConvicted === true) return;
         this.player.enemySound("spooky", true);
-        this.player.specialCombatText = this.scene.showCombatText("Conviction", 750, TENDRIL, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Conviction", 750, TENDRIL, false, true);
         this.player.isConvicted = true;
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren steels itself in admiration of their physical form.`
@@ -2315,7 +2315,7 @@ export default class PlayerMachine {
     onImpermanenceEnter = () => {
         if (this.player.isImpermanent === true) return;
         this.player.enemySound("spooky", true);
-        this.player.specialCombatText = this.scene.showCombatText("Impermanence", 750, HUSH, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Impermanence", 750, HUSH, false, true);
         this.player.isImpermanent = true;
         this.player.flickerCaerenic(1500); 
         this.scene.time.delayedCall(PLAYER.DURATIONS.IMPERMANENCE, () => {
@@ -2330,7 +2330,7 @@ export default class PlayerMachine {
     onSeerEnter = () => {
         if (this.player.isSeering === true) return;
         this.player.enemySound("fire", true);
-        this.player.specialCombatText = this.scene.showCombatText("Seer", 750, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Seer", 750, DAMAGE, false, true);
         this.player.isSeering = true;
         this.player.flickerCaerenic(1500); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
@@ -2342,7 +2342,7 @@ export default class PlayerMachine {
     onDispelEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
         this.player.enemySound("debuff", true);
-        this.player.specialCombatText = this.scene.showCombatText("Dispelling", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Dispelling", 750, EFFECT, false, true);
         this.player.flickerCaerenic(1000); 
         this.player.currentTarget.clearBubbles();
     };
@@ -2351,7 +2351,7 @@ export default class PlayerMachine {
     onShirkEnter = () => {
         this.player.isShirking = true;
         this.player.enemySound("blink", true);
-        this.player.specialCombatText = this.scene.showCombatText("Shirking", 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Shirking", 750, EFFECT, false, true);
         this.player.isConfused = false;
         this.player.isFeared = false;
         this.player.isParalyzed = false;
@@ -2378,7 +2378,7 @@ export default class PlayerMachine {
     onShadowEnter = () => {
         this.player.isShadowing = true;
         this.player.enemySound("wild", true);
-        this.player.specialCombatText = this.scene.showCombatText("Shadowing", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Shadowing", DURATION.TEXT, DAMAGE, false, true);
         this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isShadowing = false;
@@ -2389,7 +2389,7 @@ export default class PlayerMachine {
     onTetherEnter = () => {
         this.player.isTethering = true;
         this.player.enemySound("dungeon", true);
-        this.player.specialCombatText = this.scene.showCombatText("Tethering", DURATION.TEXT, DAMAGE, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Tethering", DURATION.TEXT, DAMAGE, false, true);
         this.player.flickerCaerenic(6000);
         this.scene.time.delayedCall(6000, () => {
             this.player.isTethering = false;
@@ -2399,7 +2399,7 @@ export default class PlayerMachine {
 
     // ================= NEGATIVE MACHINE STATES ================= \\
     onConfusedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("?c .on-f-u`SeD~", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "?c .on-f-u`SeD~", DURATION.TEXT, EFFECT, false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.confuseDirection = "down";
@@ -2436,7 +2436,7 @@ export default class PlayerMachine {
                     this.player.isConfused = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText(confusions[Math.floor(Math.random() * 5)], 750, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+                    this.scene.showCombatText(this.player, confusions[Math.floor(Math.random() * 5)], 750, EFFECT, false, true);
                 };
             },
             callbackScope: this,
@@ -2459,7 +2459,7 @@ export default class PlayerMachine {
     };
 
     onFearedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, false, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, false);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.fearVelocity = { x: 0, y: 0 };
@@ -2493,7 +2493,7 @@ export default class PlayerMachine {
                     this.player.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText(fears[Math.floor(Math.random() * 5)], 750, DAMAGE, false, false, () => this.player.specialCombatText = undefined);
+                    this.scene.showCombatText(this.player, fears[Math.floor(Math.random() * 5)], 750, DAMAGE, false, false);
                 };
             },
             callbackScope: this,
@@ -2517,7 +2517,7 @@ export default class PlayerMachine {
     };
 
     onFrozenEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Frozen", DURATION.TEXT, CAST, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Frozen", DURATION.TEXT, CAST, false, true);
         this.player.clearAnimations();
         this.player.anims.play("player_idle", true);
         this.player.setStatic(true);
@@ -2534,7 +2534,7 @@ export default class PlayerMachine {
     onFrozenExit = () => this.player.setStatic(false);
 
     onParalyzedEnter = () => {
-        this.player.specialCombatText = this.player.scene.showCombatText("Paralyzed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.player.specialCombatText = this.player.scene.showCombatText(this.player, "Paralyzed", DURATION.TEXT, EFFECT, false, true);
         this.player.paralyzeDuration = DURATION.PARALYZED;
         this.player.isAttacking = false;
         this.player.isParrying = false;
@@ -2561,7 +2561,7 @@ export default class PlayerMachine {
     };
     onPolymorphedEnter = () => {
         this.player.isPolymorphed = true;
-        this.player.specialCombatText = this.scene.showCombatText("Polymorphed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Polymorphed", DURATION.TEXT, EFFECT, false, true);
         this.player.clearAnimations();
         this.player.clearTint();
         this.player.anims.pause();
@@ -2604,7 +2604,7 @@ export default class PlayerMachine {
                     this.player.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.player.specialCombatText = this.scene.showCombatText("...thump", 1000, EFFECT, false, false, () => this.player.specialCombatText = undefined);        
+                    this.scene.showCombatText(this.player, "...thump", 1000, EFFECT, false, false);        
                     this.heal(0.2);
                 };
             },
@@ -2629,7 +2629,7 @@ export default class PlayerMachine {
     };
 
     onSlowedEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Slowed", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Slowed", DURATION.TEXT, EFFECT, false, true);
         this.player.setTint(0xFFC700);
         this.player.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
         this.scene.time.delayedCall(this.player.slowDuration, () =>{
@@ -2645,7 +2645,7 @@ export default class PlayerMachine {
     };
 
     onSnaredEnter = () => {
-        this.player.specialCombatText = this.scene.showCombatText("Snared", DURATION.TEXT, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.player.snareDuration = DURATION.SNARED;
         this.player.setTint(0x0000FF);
         this.player.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
@@ -2662,7 +2662,7 @@ export default class PlayerMachine {
 
     onStunnedEnter = () => {
         this.player.isStunned = true;
-        this.player.specialCombatText = this.scene.showCombatText("Stunned", PLAYER.DURATIONS.STUNNED, EFFECT, false, true, () => this.player.specialCombatText = undefined);
+        this.scene.showCombatText(this.player, "Stunned", PLAYER.DURATIONS.STUNNED, EFFECT, false, true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000);
         this.player.setStatic(true);

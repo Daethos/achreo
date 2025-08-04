@@ -17,7 +17,11 @@ import { Arena } from "./scenes/Arena";
 import { Tutorial } from "./scenes/Tutorial";
 import { ArenaCvC } from "./scenes/ArenaCvC";
 import { Gauntlet } from "./scenes/Gauntlet";
+import Player from "./entities/Player";
+import Enemy from "./entities/Enemy";
+import Party from "./entities/PartyComputer";
 export type Play = Arena | ArenaCvC | Game | Gauntlet | Tutorial | Underground;
+export type Entity = Player | Enemy | Party;
 const dimensions = useResizeListener();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,

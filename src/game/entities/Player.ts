@@ -452,7 +452,7 @@ export default class Player extends Entity {
     invalidTarget = (id: string) => {
         const enemy = this.scene.getEnemy(id);
         if (enemy) return enemy.health <= 0; // enemy.isDefeated;
-        this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, "damage", false, false, () => this.resistCombatText = undefined);
+        this.scene.showCombatText(this, `Combat Issue: NPC Targeted`, 1000, "damage", false, false);
         return true;
     };
 
@@ -519,7 +519,7 @@ export default class Player extends Entity {
 
     constantUpdate = (e: Combat) => this.checkGear(e.player?.shield as Equipment, e.weapons?.[0] as Equipment, e.playerDamageType.toLowerCase());
     
-    resist = () => this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.resistCombatText = undefined);
+    resist = () => this.scene.showCombatText(this, "Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
 
     checkTalentCost = (type: string, cost: number) => {
         const grace = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COST[cost as unknown as keyof typeof TALENT_COST] : cost;
@@ -684,7 +684,7 @@ export default class Player extends Entity {
         this.clearAnimations();
         this.frameCount = 0;
         this.isStorming = true;
-        this.specialCombatText = this.scene.showCombatText("Storming", 800, "damage", false, false, () => this.specialCombatText = undefined); 
+        this.scene.showCombatText(this, "Storming", 800, "damage", false, false); 
         this.isAttacking = true;
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
@@ -698,7 +698,7 @@ export default class Player extends Entity {
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
                 screenShake(this.scene);
-                this.specialCombatText = this.scene.showCombatText("Storming", 800, "damage", false, false, () => this.specialCombatText = undefined);
+                this.scene.showCombatText(this, "Storming", 800, "damage", false, false);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         const enemy = this.touching[i];
@@ -1493,9 +1493,9 @@ export default class Player extends Entity {
 
         if (this.scene.combat === true && !this.currentTarget) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
-        if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
-        if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
+        // if (this.scrollingCombatText !== undefined) this.scrollingCombatText.update(this);
+        // if (this.specialCombatText !== undefined) this.specialCombatText.update(this); 
+        // if (this.resistCombatText !== undefined) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.functionality("player", this.currentTarget as Enemy);

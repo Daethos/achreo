@@ -29,6 +29,7 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import WeatherManager from "../matter/Weather";
+import { Entity } from "../main";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 640000;
@@ -320,6 +321,26 @@ export class Game extends Scene {
         });
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
+
+        // Testing Scrolling Combat Text
+        // this.time.addEvent({
+        //     delay: 4500,
+        //     loop: true,
+        //     callback: () => this.player.healthbar.setVisible(!this.player.healthbar.visible),
+        //     callbackScope: this
+        // });
+        // this.time.addEvent({
+        //     delay: 750,
+        //     loop: true,
+        //     callback: () => {
+        //         const isText = Math.random() > 0.85;
+        //         const color = Math.random() > 0.5 ? "damage" : "heal";
+        //         const text = isText ? this.player.ascean.name : `${Math.floor(Math.random() * 100)}`;
+        //         const crit = Math.random() > 0.75;
+        //         this.showCombatText(this.player, text, 1500, color, crit && !isText, isText);
+        //     },
+        //     callbackScope: this
+        // });
     };
 
     private updateChunks() {
@@ -756,10 +777,14 @@ export class Game extends Scene {
         });
     };
 
-    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    /*
+        Add Entity to get x/y values, and determine whether the healthbar is visible
+        'constant' boolean will determine its X position i.e. whether it's in the middle, or offset/staggered
+    */
+    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean) {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
-        return combatText;
+        combatText.reset(entity, text, duration, context, critical, constant);
+        // return combatText;
     };
 
     cleanUp = (): void => {
@@ -1107,7 +1132,7 @@ export class Game extends Scene {
     despawnEnemyToParty = (id: string) => {
         const enemy = this.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
-        enemy.specialCombatText = this.showCombatText(`Excellent! I will not disappoint you, ${this.player.ascean.name}.`, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(enemy, `Excellent! I will not disappoint you, ${this.player.ascean.name}.`, 1500, "bone", false, true);
         const party = getEnemy(enemy.ascean.name, enemy.ascean.level);
         this.player.removeEnemy(enemy);
         this.player.disengage();
@@ -1124,7 +1149,7 @@ export class Game extends Scene {
         const party = this.party.find((e: Party) => e.playerID === remove._id);
         if (!party) return;
         const prevCoords = new Phaser.Math.Vector2(party.x,party.y);
-        party.specialCombatText = this.showCombatText(`I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, "bone", false, true, () => party.specialCombatText = undefined);
+        party.specialCombatText = this.showCombatText(party, `I understand. I'll be seeing you, ${this.player.ascean.name}.`, 1500, "bone", false, true);
         this.player.disengage();
         this.time.delayedCall(1500, () => {
             this.party = this.party.filter((par: Party) => par.playerID !== remove._id);

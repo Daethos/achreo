@@ -1,26 +1,68 @@
 // @ts-ignore
-import PseudoBase from './pseudo';
-import { Weapons } from './weaponry';
-import { Amulets, Rings, Trinkets } from './jewelry';
-import { Helmets, Chests, Legs, Shields } from './equipment';
-import Settings from '../../models/settings';
-import Ascean from '../../models/ascean';
-import { Asceans } from './ascean';
-import Equipment, { getOneRandom } from '../../models/equipment';
-import { Inventory, Party, Reputation } from '../../utility/player';
-import Statistics from '../../utility/statistics';
-import Talents, { createTalents } from '../../utility/talents';
-import Quest, { createQuests } from '../../utility/quests';
-var db = new PseudoBase('db');
-const EQUIPMENT = 'Equipment';
-const ASCEANS = 'Asceans';
-const SETTINGS = 'Settings';
-const QUESTS = 'Quests';
-const REPUTATION = 'Reputation';
-const INVENTORY = 'Inventory';
-const STATISTICS = 'Statistics';
-const TALENTS = 'Talents';
-const PARTY = 'Party';
+import PseudoBase from "./pseudo";
+import { Weapons } from "./weaponry";
+import { Amulets, Rings, Trinkets } from "./jewelry";
+import { Helmets, Chests, Legs, Shields } from "./equipment";
+import Settings from "../../models/settings";
+import Ascean from "../../models/ascean";
+import { Asceans } from "./ascean";
+import Equipment, { getOneRandom } from "../../models/equipment";
+import { Inventory, Party, Reputation } from "../../utility/player";
+import Statistics from "../../utility/statistics";
+import Talents, { createTalents } from "../../utility/talents";
+import Quest, { createQuests } from "../../utility/quests";
+var db = new PseudoBase("db");
+const EQUIPMENT = "Equipment";
+const ASCEANS = "Asceans";
+const SETTINGS = "Settings";
+const QUESTS = "Quests";
+const REPUTATION = "Reputation";
+const INVENTORY = "Inventory";
+const STATISTICS = "Statistics";
+const TALENTS = "Talents";
+const PARTY = "Party";
+
+export const deadEquipment = async (): Promise<void> => {
+    try {
+        const res = await getAsceans();
+        const safe = new Set<string>();
+
+        for await (const ascean of res) {
+            const equipment = [
+                ascean.weaponOne, ascean.weaponTwo, ascean.weaponThree,
+                ascean.shield, ascean.helmet, ascean.chest, ascean.legs,
+                ascean.ringOne, ascean.ringTwo, ascean.amulet, ascean.trinket
+            ];
+            const items = await getInventoryIds(ascean._id);
+
+            for (const id of equipment) {
+                if (id) safe.add(id); // Ensure valid ID
+            };
+            for (const id of items) {
+                if (id) safe.add(id); // Same
+            };
+        };
+
+        console.log(`Safe Equipment Count: ${safe.size}`);
+
+        const total = await db.collection(EQUIPMENT).get();
+        console.log(`Total Equipment in DB: ${total.length}`);
+
+        for await (const item of total) {
+            const id = item._id;
+            if (!safe.has(id)) {
+                console.log(`${id} → Marked for Deletion`);
+                await db.collection(EQUIPMENT).doc({ _id: id }).delete();
+            // } else {
+                // console.log(`${id} → Safe`);
+            };
+        };
+        console.log("Cleanup complete.");
+    } catch (err) {
+        console.error("Error burning dead equipment:", err);
+    };
+};
+
 
 export const getParty = async (id: string): Promise<Party<Ascean>> => {
     const party = await db.collection(PARTY).doc({ _id: id }).get();

@@ -349,7 +349,7 @@ export default class Party extends Entity {
 
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
-        this.specialCombatText = this.scene.showCombatText("!", 1000, EFFECT, true, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
         this.scene.hud.logger.log(`Console: ${this.ascean.name} is being called to arms against ${enemy.ascean.name}!`);
         const distance = this.currentTarget.position.subtract(this.position).length();
         const state = distance > 100 ? States.CHASE : States.COMPUTER_COMBAT;
@@ -443,7 +443,7 @@ export default class Party extends Entity {
             enemyID: target.enemyID,
         };
         if (this.healthbar.visible === false) this.healthbar.setVisible(true);
-        this.specialCombatText = this.scene.showCombatText(`New Target: ${target.ascean.name}`, 1500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, `New Target: ${target.ascean.name}`, 1500, EFFECT, false, true);
     };
 
     computerSoundEffects = (sfx: ComputerCombat) => {
@@ -500,12 +500,12 @@ export default class Party extends Entity {
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             // damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
-            this.scrollingCombatText = this.scene.showCombatText(`${damage}`, 1500, EFFECT, e.computerEnemyCriticalSuccess, false, () => this.scrollingCombatText = undefined);
+            this.scene.showCombatText(this, `${damage}`, 1500, EFFECT, e.computerEnemyCriticalSuccess, false);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
-                    this.specialCombatText = this.scene.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.specialCombatText = undefined);
+                    this.scene.showCombatText(this, "Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
                     this.isFeared = false;
                 } else {
                     this.fearCount += 0.1;
@@ -531,7 +531,7 @@ export default class Party extends Entity {
             this.computerSoundEffects(e);
         } else if (this.health < newComputerHealth) {
             let heal = Math.round(newComputerHealth - this.health);
-            this.scrollingCombatText = this.scene.showCombatText(`+${heal}`, 1500, HEAL, false, false, () => this.scrollingCombatText = undefined);
+            this.scene.showCombatText(this, `+${heal}`, 1500, HEAL, false, false);
         }; 
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
@@ -770,7 +770,7 @@ export default class Party extends Entity {
     mastery = () => this.ascean[this.ascean.mastery] || 20;
 
     resist = () => {
-        this.resistCombatText = this.scene.showCombatText("Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => this.resistCombatText = undefined);
+        this.scene.showCombatText(this, "Resisted", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
     };
 
     startCasting = (name: string, duration: number, style: string, channel = false) => {
@@ -778,7 +778,7 @@ export default class Party extends Entity {
         this.castbar.setVisible(true); // Added
         this.castbar.setup(this.x, this.y, name);
         this.isCasting = true;
-        this.specialCombatText = this.scene.showCombatText(name, duration / 2, style, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, name, duration / 2, style, false, true);
         this.castbar.setTotal(duration);
         if (name !== "Healing" && name !== "Reconstituting") this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel === true) this.castbar.setTime(duration);
@@ -887,7 +887,7 @@ export default class Party extends Entity {
         this.clearAnimations();
         this.frameCount = 0;
         this.isStorming = true;
-        this.specialCombatText = this.scene.showCombatText("Storming", 800, DAMAGE, false, false, () => this.specialCombatText = undefined); 
+        this.scene.showCombatText(this, "Storming", 800, DAMAGE, false, false); 
         this.isAttacking = true;
         this.adjustSpeed(0.5);
         this.scene.tweens.add({
@@ -900,7 +900,7 @@ export default class Party extends Entity {
                 this.clearAnimations();
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
-                this.specialCombatText = this.scene.showCombatText("Storming", 800, DAMAGE, false, false, () => this.specialCombatText = undefined);
+                this.scene.showCombatText(this, "Storming", 800, DAMAGE, false, false);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
                         const enemy = this.touching[i];
@@ -935,7 +935,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("absorb", true);
-        this.specialCombatText = this.scene.showCombatText("Absorbed", 500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Absorbed", 500, EFFECT, false, true);
         if (Math.random() < 0.2) {
             this.isAbsorbing = false;
         };
@@ -951,7 +951,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("caerenic", true);
-        this.specialCombatText = this.scene.showCombatText("Enveloped", 500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Enveloped", 500, EFFECT, false, true);
         if (Math.random() < 0.2) {
             this.isEnveloping = false;
         };
@@ -967,7 +967,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("debuff", true);
-        this.specialCombatText = this.scene.showCombatText("Maliced", 750, HUSH, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Maliced", 750, HUSH, false, true);
         this.playerMachine.chiomism(id, 10);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
@@ -987,7 +987,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.fear(id);
         this.enemySound("caerenic", true);
-        this.specialCombatText = this.scene.showCombatText("Menaced", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Menaced", 500, TENDRIL, false, true);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMenacing = false;
@@ -1004,7 +1004,7 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("caerenic", true);
-        this.specialCombatText = this.scene.showCombatText("Mended", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Mended", 500, TENDRIL, false, true);
         this.playerMachine.heal(0.15);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
@@ -1024,7 +1024,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.slow(id);
         this.enemySound("debuff", true);
-        this.specialCombatText = this.scene.showCombatText("Moderated", 500, TENDRIL, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Moderated", 500, TENDRIL, false, true);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) {
             this.isModerating = false;
@@ -1043,7 +1043,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.polymorph(id);
         this.enemySound("combat-round", true);
-        this.specialCombatText = this.scene.showCombatText("Multifarious`d", 500, CAST, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Multifarious`d", 500, CAST, false, true);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMultifaring = false;
@@ -1062,7 +1062,7 @@ export default class Party extends Entity {
         };
         this.scene.combatManager.confuse(id);
         this.enemySound("death", true);
-        this.specialCombatText = this.scene.showCombatText("Mystified", 500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Mystified", 500, EFFECT, false, true);
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 3) {
             this.isMystifying = false;
@@ -1090,10 +1090,10 @@ export default class Party extends Entity {
             return;
         };
         this.enemySound("shield", true);
-        this.specialCombatText = this.scene.showCombatText("Shielded", 500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Shielded", 500, EFFECT, false, true);
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
         if (this.negationBubble.charges <= 0) {
-            this.specialCombatText = this.scene.showCombatText("Shield Broken", 500, DAMAGE, false, true, () => this.specialCombatText = undefined);
+            this.scene.showCombatText(this, "Shield Broken", 500, DAMAGE, false, true);
             this.isShielding = false;
         };
     };
@@ -1102,7 +1102,7 @@ export default class Party extends Entity {
         const shimmers = ["It fades through them", "They simply weren't there", "Perhaps they never were", "They don't seem certain of them at all"];
         const shim = shimmers[Math.floor(Math.random() * shimmers.length)];
         this.enemySound("stealth", true);
-        this.specialCombatText = this.scene.showCombatText(shim, 1500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, shim, 1500, EFFECT, false, true);
     };
 
     tether = (id: string) => {
@@ -1124,9 +1124,9 @@ export default class Party extends Entity {
         this.enemySound("parry", true);
         this.scene.combatManager.stunned(id);
         this.negationBubble.setCharges(this.negationBubble.charges - 1);
-        this.specialCombatText = this.scene.showCombatText("Warded", 500, EFFECT, false, true, () => this.specialCombatText = undefined);
+        this.scene.showCombatText(this, "Warded", 500, EFFECT, false, true);
         if (this.negationBubble.charges <= 0) {
-            this.specialCombatText = this.scene.showCombatText("Ward Broken", 500, DAMAGE, false, true, () => this.specialCombatText = undefined);
+            this.scene.showCombatText(this, "Ward Broken", 500, DAMAGE, false, true);
             this.negationBubble.setCharges(0);
             this.isWarding = false;
         };
@@ -1227,14 +1227,14 @@ export default class Party extends Entity {
     invalidTarget = (id: string) => {
         const enemy = this.scene.getEnemy(id);
         if (enemy) return enemy.health === 0; // enemy.isDefeated;
-        this.resistCombatText = this.scene.showCombatText(`Combat Issue: NPC Targeted`, 1000, DAMAGE, false, false, () => this.resistCombatText = undefined);
+        this.scene.showCombatText(this, `Combat Issue: NPC Targeted`, 1000, DAMAGE, false, false);
         return true;
     };
 
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
-            this.resistCombatText = this.scene.showCombatText(`Out of Range: -${Math.round(distance - range)}`, 1000, DAMAGE, false, false, () => this.resistCombatText = undefined);
+            this.scene.showCombatText(this, `Out of Range: -${Math.round(distance - range)}`, 1000, DAMAGE, false, false);
             return true;    
         };
         return false;
@@ -1635,9 +1635,9 @@ export default class Party extends Entity {
             };
         };
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-        if (this.specialCombatText) this.specialCombatText.update(this);
-        if (this.resistCombatText) this.resistCombatText.update(this);
+        // if (this.scrollingCombatText) this.scrollingCombatText.update(this);
+        // if (this.specialCombatText) this.specialCombatText.update(this);
+        // if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.spriteWeapon.setPosition(this.x, this.y);

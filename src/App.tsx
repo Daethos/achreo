@@ -9,7 +9,7 @@ import Ascean, { createAscean } from "./models/ascean";
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from "./utility/ascean";
 import { usePhaserEvent } from "./utility/hooks";
 import { EventBus } from "./game/EventBus";
-import { deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
+import { deadEquipment, deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
 import { TIPS } from "./utility/tips";
 import { Inventory, Reputation, initInventory, initReputation } from "./utility/player";
 import { Puff } from "solid-spinner";
@@ -65,6 +65,7 @@ export default function App() {
                 const pop = await Promise.all(res.map(async (asc: Ascean) => await populate(asc)));
                 const hyd = pop.map((asc: Ascean) => asceanCompiler(asc)).map((asc: Compiler) => { return { ...asc.ascean, weaponOne: asc.combatWeaponOne, weaponTwo: asc.combatWeaponTwo, weaponThree: asc.combatWeaponThree }});
                 setMenu({ ...menu(), asceans: hyd, loading: false }); // choosingCharacter: true
+                await deadEquipment();
             } catch (err: any) {
                 console.warn("Error fetching Asceans:", err);
             };

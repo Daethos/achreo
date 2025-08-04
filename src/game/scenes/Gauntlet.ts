@@ -26,6 +26,7 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { ARENA_ENEMY, DEFEATED, fetchArena, VICTORIOUS } from "../../utility/enemy";
 import { LEVEL_SELECTOR } from "../../ui/Roster";
+import { Entity } from "../main";
 
 
 
@@ -257,9 +258,9 @@ export class Gauntlet extends Phaser.Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
-    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean): ScrollingCombatText {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
+        combatText.reset(entity, text, duration, context, critical, constant);
         return combatText;
     };
 
@@ -674,7 +675,7 @@ export class Gauntlet extends Phaser.Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? DEFEATED[Math.floor(Math.random() * DEFEATED.length)] : VICTORIOUS[Math.floor(Math.random() * VICTORIOUS.length)];
-        enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(enemy, saying, 1500, "bone", false, true);
         enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

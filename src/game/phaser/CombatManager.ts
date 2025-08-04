@@ -48,7 +48,7 @@ export class CombatManager {
         if (player.health > newPlayerHealth) {
             this.handlePlayerDamage(e);
         } else if (player.health < newPlayerHealth) {
-            player.scrollingCombatText = this.context.showCombatText(`${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => player.scrollingCombatText = undefined);
+            this.context.showCombatText(this.context.player, `${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
         };
         
         player.health = newPlayerHealth;
@@ -56,23 +56,23 @@ export class CombatManager {
         if (player.healthbar.getTotal() < e.playerHealth) player.healthbar.setTotal(e.playerHealth);
         
         if (e.parrySuccess) {
-            player.specialCombatText = this.context.showCombatText("Parry", PLAYER.DURATIONS.TEXT, HEAL, true, false, () => player.specialCombatText = undefined);
+            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, HEAL, true, false);
             this.stunned(e.enemyID);
             this.useStamina(-5);
         };
         
         if (e.rollSuccess) {
-            player.specialCombatText = this.context.showCombatText("Roll", PLAYER.DURATIONS.TEXT, HEAL, e.criticalSuccess, false, () => player.specialCombatText = undefined);
+            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, HEAL, e.criticalSuccess, false);
             this.useStamina(-5);
         };
         
         if (e.computerParrySuccess) {
             this.stunned(player.playerID);
-            player.resistCombatText = this.context.showCombatText("Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false, () => player.resistCombatText = undefined);    
+            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false);    
         };
 
         if (e.computerRollSuccess) {
-            player.resistCombatText = this.context.showCombatText("Roll", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false, () => player.resistCombatText = undefined);
+            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false);
         };
         
         if (e.newComputerHealth <= 0 && e.playerWin === true) player.defeatedEnemyCheck(e.enemyID);
@@ -100,7 +100,7 @@ export class CombatManager {
         
         if (enemy.health > newComputerHealth) {
             let damage: number | string = Math.round(enemy.health - newComputerHealth);
-            enemy.scrollingCombatText = this.context.showCombatText(`${damage}`, 1500, BONE, criticalSuccess, false, () => enemy.scrollingCombatText = undefined);
+            this.context.showCombatText(enemy, `${damage}`, 1500, BONE, criticalSuccess, false);
             enemy.checkHurt();
             if (enemy.isFeared) enemy.checkFear();
             if (enemy.isConfused) enemy.checkConfuse();
@@ -117,7 +117,7 @@ export class CombatManager {
             };
         } else if (enemy.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - enemy.health);
-            enemy.scrollingCombatText = this.context.showCombatText(`${heal}`, 1500, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
+            this.context.showCombatText(enemy, `${heal}`, 1500, HEAL, false, false);
         };
         
         enemy.health = newComputerHealth;
@@ -143,7 +143,7 @@ export class CombatManager {
         if (!player.isFeared) return;
         const chance = Math.random() < 0.1 + player.fearCount;
         if (chance) {
-            player.resistCombatText = this.context.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => player.resistCombatText = undefined);
+            this.context.showCombatText(player, "Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
             player.isFeared = false;
         } else {
             player.fearCount += 0.1;
@@ -153,7 +153,7 @@ export class CombatManager {
     private handlePlayerDamage(e: Combat) {
         const player = this.context.player;
         const damage = Math.round(player.health - e.newPlayerHealth);
-        player.scrollingCombatText = this.context.showCombatText(`${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false, () => player.scrollingCombatText = undefined);
+        this.context.showCombatText(this.context.player, `${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false);
 
         player.isHurt = !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
 
@@ -215,7 +215,7 @@ export class CombatManager {
         computer.health = Math.max(computer.health - damage, 0);
         computer.updateHealthBar(computer.health);
         if (computer.name === "enemy") {
-            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, BONE, false, false, () => computer.scrollingCombatText = undefined);
+            this.context.showCombatText(computer, `${Math.round(damage)}`, 1500, BONE, false, false);
             computer.checkHurt();
     
             if (computer.isFeared) computer.checkFear();
@@ -242,13 +242,13 @@ export class CombatManager {
     
             if (computer.health <= 0) computer.killingBlow = origin;
         } else {
-            computer.scrollingCombatText = this.context.showCombatText(`${Math.round(damage)}`, 1500, EFFECT, false, false, () => computer.scrollingCombatText = undefined);
+            this.context.showCombatText(computer, `${Math.round(damage)}`, 1500, EFFECT, false, false);
             computer.hurt = !computer.isSuffering() && !computer.isTrying() && !computer.isCasting && !computer.isContemplating;
 
             if (computer.isFeared) {
                 const chance = Math.random() < 0.1 + computer.fearCount;
                 if (chance) {
-                    computer.specialCombatText = this.context.showCombatText("Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false, () => computer.specialCombatText = undefined);
+                    this.context.showCombatText(computer, "Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
                     computer.isFeared = false;
                 } else {
                     computer.fearCount += 0.1;
@@ -669,7 +669,7 @@ export class CombatManager {
                 enemy.health = health;
                 enemy.updateHealthBar(health);
                 enemy.computerCombatSheet.newComputerHealth = health;
-                enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
+                this.context.showCombatText(enemy, `${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
                 this.checkPlayerFocus(id, health);
             };
             return; 
@@ -682,7 +682,7 @@ export class CombatManager {
             party.health = health;
             party.updateHealthBar(health);
             party.computerCombatSheet.newComputerHealth = health;
-            party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
+            this.context.showCombatText(party, `${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
             this.checkPlayerFocus(id, health);
             return;
         };
@@ -701,7 +701,7 @@ export class CombatManager {
             enemy.health = health;
             enemy.updateHealthBar(health);
             enemy.computerCombatSheet.newComputerHealth = health;
-            enemy.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => enemy.scrollingCombatText = undefined);
+            this.context.showCombatText(enemy, `${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
             this.checkPlayerFocus(id, health);
         };
     };
@@ -716,7 +716,7 @@ export class CombatManager {
             party.health = health;
             party.updateHealthBar(health);
             party.computerCombatSheet.newComputerHealth = health;
-            party.scrollingCombatText = this.context.showCombatText(`${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false, () => party.scrollingCombatText = undefined);
+            this.context.showCombatText(party, `${Math.round(heal)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
             this.checkPlayerFocus(id, health);
         };
     };

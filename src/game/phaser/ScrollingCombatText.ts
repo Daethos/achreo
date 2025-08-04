@@ -1,5 +1,7 @@
 import Enemy from "../entities/Enemy";
+// import Party from "../entities/PartyComputer";
 import Player from "../entities/Player";
+import { Entity } from "../main";
 import { ObjectPool } from "./ObjectPool";
 
 export const BONE = "bone";
@@ -9,8 +11,8 @@ export const EFFECT = "effect";
 export const HEAL = "heal";
 export const HUSH = "hush";
 export const TENDRIL = "tendril";
-const POSITION = 50;
-const HEALTH_POSITION = 70;
+const POSITION = 35
+const HEALTH_POSITION = 55; // 70
 
 export type CombatText = {
     x: number;
@@ -20,7 +22,7 @@ export type CombatText = {
     context: string;
     critical: boolean;
     constant: boolean;
-    onDestroyCallback: () => void;
+    // onDestroyCallback: () => void;
 };
 
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
@@ -30,7 +32,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private timerTime: number;
     private constant: boolean;
     private pool: ObjectPool<ScrollingCombatText>;
-    onDestroyCallback: () => void;
+    // onDestroyCallback: () => void;
 
     constructor(scene: Phaser.Scene, pool: ObjectPool<ScrollingCombatText>, x: number = 0, y: number = 0) {
         super(scene, x, y);
@@ -53,28 +55,57 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         this.constant = false;
     };
 
-    public reset(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): void {
+    public reset(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean): void {
         this.color = this.setColor(context);
         this.text.setText(text).setColor(this.color).setFontSize(critical ? "32px" : "20px");
         this.timerTime = 0;
         this.duration = duration;
         this.constant = constant;
-        this.onDestroyCallback = onDestroyCallback;
+        const isNonNumeric = isNaN(Number(text));
+        const pos = new Phaser.Math.Vector2(entity.x, entity.y);
+
+        const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 2;
+        const arcAmplitude = Phaser.Math.Between(12, 20);
+        const arcDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1; // Left or right
+        
+        const side = arcDirection * (arcDirection > 0 ? 16 : 32);
+
+        const startX = constant ? pos.x - (this.text.displayWidth / 2) : pos.x + side;
+        const startY = pos.y - (entity.healthbar.visible ? HEALTH_POSITION : POSITION);
+        const initialScale = this.text.scale;
+        const tweenObj = { t: 0 };
+
+        this.setPosition(startX, startY);
+        this.text.setActive(true).setVisible(true);
+
 
         this.scene.tweens.add({
-            targets: this.text,
+            targets: tweenObj,
+            t: 1,
             duration: this.duration,
             ease: critical ? Phaser.Math.Easing.Elastic.Out : Phaser.Math.Easing.Sine.Out,
-            alpha: { from: 0.65, to: 1 },
-            scale: { from: 0.65, to: 1 },
             onStart: () => {
                 this.active = true;
                 this.visible = true;
             },
-            onComplete: () => {
-                this.onDestroyCallback();
-                this.release();
+            onUpdate: () => {
+                const t = tweenObj.t;
+                
+                const curveX = startX + arcDirection * Math.sin(t * Math.PI) * arcAmplitude;
+                const curveY = startY - t * floatHeight;
+                
+                const newAlpha = isNonNumeric
+                    ? 0.8 + Math.sin(t * Math.PI * 4) * 0.2
+                    : Phaser.Math.Interpolation.Linear([0.9, 1.0, 0.75], t);
+                
+                const newScale = isNonNumeric
+                    ? 1 + Math.sin(t * Math.PI * 4) * 0.1
+                    : Phaser.Math.Interpolation.Linear([initialScale, 1.1, 1], t);
+                    
+                if (!constant) this.setPosition(curveX, curveY);
+                this.text.setAlpha(newAlpha).setScale(newScale);
             },
+            onComplete: () => this.release(),
             callbackScope: this,
         });
     };

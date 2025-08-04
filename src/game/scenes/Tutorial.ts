@@ -18,6 +18,7 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
+import { Entity } from "../main";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 interface ChunkData {
@@ -187,9 +188,9 @@ export class Tutorial extends Phaser.Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
-    showCombatText(text: string, duration: number, context: string, critical: boolean, constant: boolean, onDestroyCallback: () => void): ScrollingCombatText {
+    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean): ScrollingCombatText {
         const combatText = this.scrollingTextPool.acquire();
-        combatText.reset(text, duration, context, critical, constant, onDestroyCallback);
+        combatText.reset(entity, text, duration, context, critical, constant);
         return combatText;
     };
 
@@ -472,7 +473,7 @@ export class Tutorial extends Phaser.Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = this.showCombatText(saying, 1500, "bone", false, true, () => enemy.specialCombatText = undefined);
+        enemy.specialCombatText = this.showCombatText(enemy, saying, 1500, "bone", false, true);
         enemy.stateMachine.setState(States.DEATH);
         if (enemy.isCurrentTarget) {
             this.player.disengage();

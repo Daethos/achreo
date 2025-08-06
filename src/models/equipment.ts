@@ -1,14 +1,14 @@
-import { Weapons } from '../assets/db/weaponry';
-import { Legs, Chests, Shields, Helmets } from '../assets/db/equipment';
-import { Amulets, Rings, Trinkets } from '../assets/db/jewelry';
-import { v4 as uuidv4 } from 'uuid';
-import { addEquipment } from '../assets/db/db';
+import { Weapons } from "../assets/db/weaponry";
+import { Legs, Chests, Shields, Helmets } from "../assets/db/equipment";
+import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
+import { v4 as uuidv4 } from "uuid";
+import { addEquipment } from "../assets/db/db";
 const COLLECTION = [Weapons, Legs, Chests, Shields, Helmets, Amulets, Rings, Trinkets];
-const ATTRIBUTES = ['strength', 'constitution', 'agility', 'achre', 'caeren', 'kyosir'];
-const CHANCE = ['criticalChance', 'physicalPenetration', 'magicalPenetration', 'roll', 'dodge'];
-const DAMAGE = ['physicalDamage', 'magicalDamage'];
-const DEFENSE = ['physicalResistance', 'magicalResistance'];
-const CRITICAL = ['criticalDamage'];
+const ATTRIBUTES = ["strength", "constitution", "agility", "achre", "caeren", "kyosir"];
+const CHANCE = ["criticalChance", "physicalPenetration", "magicalPenetration", "roll", "dodge"];
+const DAMAGE = ["physicalDamage", "magicalDamage"];
+const DEFENSE = ["physicalResistance", "magicalResistance"];
+const CRITICAL = ["criticalDamage"];
 const ATTRIBUTE_MUTATION_RANGES = {
     1: [1, 1],
     2: [1, 2],
@@ -82,6 +82,19 @@ const CRITICAL_MUTATION_RANGES = [
     { threshold: 1.01, range: [0, 0.01] }
 ];
 
+COLLECTION.forEach(deepFreeze);
+
+function deepFreeze<T>(obj: T): T {
+    Object.freeze(obj);
+    Object.getOwnPropertyNames(obj).forEach(prop => {
+        const value = (obj as any)[prop];
+        if (value && typeof value === "object" && !Object.isFrozen(value)) {
+            deepFreeze(value);
+        };
+    });
+    return obj;
+};
+
 function findMutationRange(value: number, ranges: Array<{threshold: number, range: number[]}>) {
     return ranges.find(r => value >= r.threshold)?.range || [0, 0];
 };
@@ -92,6 +105,12 @@ export function getSpecificItem(name: string, rarity: string) {
         if (found) return Object.freeze(found);
     };
 };
+
+// export function getGeneralItem(...args: any) {
+//     console.log(args, "Arguments?");
+//     for (const collection of COLLECTION) {
+//     };
+// };
 
 export function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -133,7 +152,7 @@ export default class Equipment {
     public caeren: number;
     public kyosir: number;
     public influences?: string[];
-    public imgUrl: string = '../assets/images/gladius.png';
+    public imgUrl: string = "../assets/images/gladius.png";
 
     constructor(equipment: Equipment) {
         this._id = equipment._id;
@@ -178,7 +197,7 @@ async function defaultMutate(equipment: Equipment[]) {
         });
         return equipment;
     } catch (err) {
-        console.warn(err, 'Error Mutating Equipment');
+        console.warn(err, "Error Mutating Equipment");
     };
 };
 
@@ -243,13 +262,13 @@ function determineMutation(eqp: Equipment, sans: string[]): Equipment | undefine
     };
 };
 
-async function mutate(equipment: Equipment[], _rarity?: string | 'Common') { 
+async function mutate(equipment: Equipment[], _rarity?: string | "Common") { 
     try {
         // const range = ATTRIBUTE_RANGE[rarity as keyof typeof ATTRIBUTE_RANGE];
         for (const item of equipment) {
             item._id = uuidv4(); // uuidv4();
             item.influences = influence((item as any)?.influences);
-            // console.log(item.influences, 'Current Influence of Item!')
+            // console.log(item.influences, "Current Influence of Item!")
             // const attributeCount = ATTRIBUTES.filter(attribute => item[attribute] > 0).length;
             for (const attribute of ATTRIBUTES) {
                 const baseline: number = item[attribute];
@@ -296,7 +315,7 @@ async function mutate(equipment: Equipment[], _rarity?: string | 'Common') {
         };
         return equipment;
     } catch (err) {
-        console.warn(err, 'Error Mutating Equipment');
+        console.warn(err, "Error Mutating Equipment");
     };
 };
 
@@ -309,19 +328,19 @@ function getOneTemplate(level: number = 1) {
     let rarity = determineRarityByLevel(level);
     let type = determineEquipmentType();
     let eqpCheck = randomIntFromInterval(1, 100);
-    if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') rarity = 'Uncommon';
+    if ((type === "Amulet" || type === "Ring" || type === "Trinket") && rarity === "Common") rarity = "Uncommon";
     if (level < 4) {
-        rarity = 'Common';
+        rarity = "Common";
         if (eqpCheck > 70) {
-            type = 'Weapon';
+            type = "Weapon";
         } else if (eqpCheck > 60) {
-            type = 'Shield';
+            type = "Shield";
         } else if (eqpCheck > 40) {
-            type = 'Helmet';
+            type = "Helmet";
         } else if (eqpCheck > 20) {
-            type = 'Chest';
+            type = "Chest";
         } else {
-            type = 'Legs';
+            type = "Legs";
         };
     };
     (equipment as any) = fetcher((equipment as any), rarity, type, undefined);
@@ -342,7 +361,7 @@ async function getOneDetermined(level: number = 1, type: string) {
         equipment.forEach(item => new Equipment(deepClone(item)));
         return equipment;
     } catch (err) {
-        console.warn(err, 'Error Getting One Equipment');
+        console.warn(err, "Error Getting One Equipment");
     };
 };
 
@@ -363,26 +382,26 @@ async function getOneRandom(level: number = 1) {
         let type = determineEquipmentType();
         let equipment: Equipment[] = []; // Initialize equipment as an empty array
         let eqpCheck = randomIntFromInterval(1, 100);
-        if ((type === 'Amulet' || type === 'Ring' || type === 'Trinket') && rarity === 'Common') rarity = 'Uncommon';
+        if ((type === "Amulet" || type === "Ring" || type === "Trinket") && rarity === "Common") rarity = "Uncommon";
         if (level < 4) {
-            rarity = 'Common';
+            rarity = "Common";
             if (eqpCheck > 70) {
-                type = 'Weapon';
+                type = "Weapon";
             } else if (eqpCheck > 60) {
-                type = 'Shield';
+                type = "Shield";
             } else if (eqpCheck > 40) {
-                type = 'Helmet';
+                type = "Helmet";
             } else if (eqpCheck > 20) {
-                type = 'Chest';
+                type = "Chest";
             } else {
-                type = 'Legs';
+                type = "Legs";
             };
         };
         equipment = await aggregate(rarity, type, 1) as Equipment[];
         equipment.forEach(item => new Equipment(deepClone(item)));
         return equipment;
     } catch (err) {
-        console.warn(err, 'Error Getting One Equipment');
+        console.warn(err, "Error Getting One Equipment");
     };
 };
 
@@ -390,134 +409,69 @@ async function aggregate(rarity: string, type: string, size: number, name?: stri
     try {
         let equipment: Equipment = {} as Equipment;
         let total: Equipment[] = [];
-        // const fetcher = () => {
-        //     switch (type) {
-        //         case 'Weapon':
-        //             if (name) {
-        //                 equipment = Weapons.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Weapons.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment}; 
-        //         case 'Shield':
-        //             if (name) {
-        //                 equipment = Shields.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Shields.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Helmet':
-        //             if (name) {
-        //                 equipment = Helmets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Helmets.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Chest':
-        //             if (name) {
-        //                 equipment = Chests.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Chests.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Legs':
-        //             if (name) {
-        //                 equipment = Legs.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Legs.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Ring':
-        //             if (name) {
-        //                 equipment = Rings.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Rings.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Amulet':
-        //             if (name) {
-        //                 equipment = Amulets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Amulets.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         case 'Trinket':
-        //             if (name) {
-        //                 equipment = Trinkets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
-        //             } else {
-        //                 equipment = shuffleArray(Trinkets.filter((eq) => eq.rarity === rarity))[0];
-        //             };
-        //             return {...equipment};
-        //         default:
-        //             const allEquipmentOfType = [...Weapons, ...Shields, ...Helmets /* add other types here */];
-        //             const filteredEquipment = allEquipmentOfType.filter((eq) => eq.rarity === rarity);
-        //             const randomIndex = randomIntFromInterval(0, filteredEquipment.length - 1);
-        //             return equipment = {...filteredEquipment[randomIndex]};
-        //     };                       
-        // };
         for (let i = 0; i < size; i++) {
-            (equipment as any) = fetcher(equipment, rarity, type, name);
+            (equipment as any) = deepClone(fetcher(equipment, rarity, type, name));
             total.push(equipment);
         };
         total = await mutate(total, rarity) as Equipment[];
         return total;
     } catch (err: any) {
-        console.warn(err, 'Error Aggregating Equipment');
+        console.warn(err, "Error Aggregating Equipment");
     };
 };
 
 const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => {
     switch (type) {
-        case 'Weapon':
+        case "Weapon":
             if (name) {
                 equipment = Weapons.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Weapons.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Shield':
+        case "Shield":
             if (name) {
                 equipment = Shields.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Shields.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Helmet':
+        case "Helmet":
             if (name) {
                 equipment = Helmets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Helmets.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Chest':
+        case "Chest":
             if (name) {
                 equipment = Chests.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Chests.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Legs':
+        case "Legs":
             if (name) {
                 equipment = Legs.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Legs.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Ring':
+        case "Ring":
             if (name) {
                 equipment = Rings.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Rings.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Amulet':
+        case "Amulet":
             if (name) {
                 equipment = Amulets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
                 equipment = shuffleArray(Amulets.filter((eq) => eq.rarity === rarity))[0];
             };
             break;
-        case 'Trinket':
+        case "Trinket":
             if (name) {
                 equipment = Trinkets.find((eq) => eq.name === name && eq.rarity === rarity) as Equipment;
             } else {
@@ -534,50 +488,42 @@ const fetcher = (equipment: {}, rarity: string, type: string, name?: string) => 
     return equipment;
 };
 
-function shuffleArray<T>(array: T[]): T[] {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = randomIntFromInterval(0, i + 1);
-        [array[i], array[j]] = [array[j], array[i]];
-    };
-    return array;
-};
-
 function determineRarityByLevel(level: number): string {
     const chance = randomFloatFromInterval(0.0, 1.0);
-    let rarity = '';
+    let rarity = "";
     let uScale = level / 40;
     let rScale = level / 200;
     let eScale = level / 500;
     let lScale = level / 10000;
     if (level < 4) {
-        rarity = 'Common';
+        rarity = "Common";
     } else if (level >= 4 && level < 12) {
         if (rScale > chance) {
-            rarity = 'Rare';
+            rarity = "Rare";
         } else if (uScale > chance) {
-            rarity = 'Uncommon';
+            rarity = "Uncommon";
         } else {
-            rarity = 'Common';
+            rarity = "Common";
         };
     } else if (level >= 12 && level < 20) {
         if (eScale > chance) {
-            rarity = 'Epic';
+            rarity = "Epic";
         } else if (rScale > chance) {
-            rarity = 'Rare';
+            rarity = "Rare";
         } else if (uScale > chance) {
-            rarity = 'Uncommon';
+            rarity = "Uncommon";
         } else {
-            rarity = 'Common';
+            rarity = "Common";
         };
     } else if (level >= 20 && level < 30) {
         if (lScale > chance) {
-            rarity = 'Legendary';
+            rarity = "Legendary";
         } else if (eScale > chance) {
-            rarity = 'Epic';
+            rarity = "Epic";
         } else if (rScale > chance) {
-            rarity = 'Rare';
+            rarity = "Rare";
         } else {
-            rarity = 'Uncommon';
+            rarity = "Uncommon";
         };
     }; 
     return rarity;
@@ -586,34 +532,34 @@ function determineRarityByLevel(level: number): string {
 function determineEquipmentType(): string {
     const roll = randomIntFromInterval(1, 100);
     if (roll <= 32) {
-        return 'Weapon';
+        return "Weapon";
     } else if (roll <= 40) {
-        return 'Shield';
+        return "Shield";
     } else if (roll <= 50) {
-        return 'Helmet';
+        return "Helmet";
     } else if (roll <= 60) {
-        return 'Chest';
+        return "Chest";
     } else if (roll <= 70) {
-        return 'Legs';
+        return "Legs";
     } else if (roll <= 80) {
-        return 'Ring';
+        return "Ring";
     } else if (roll <= 90) {
-        return 'Amulet';
+        return "Amulet";
     } else {
-        return 'Trinket';
+        return "Trinket";
     };
 };
 
 async function getHigherRarity(name: string, type: string, rarity: string): Promise<Equipment[] | undefined> {
-    let nextRarity: string = '';
-    if (rarity === 'Common') {
-        nextRarity = 'Uncommon';
-    } else if (rarity === 'Uncommon') {
-        nextRarity = 'Rare';
-    } else if (rarity === 'Rare') {
-        nextRarity = 'Epic';
-    } else if (rarity === 'Epic') {
-        nextRarity = 'Legendary';
+    let nextRarity: string = "";
+    if (rarity === "Common") {
+        nextRarity = "Uncommon";
+    } else if (rarity === "Uncommon") {
+        nextRarity = "Rare";
+    } else if (rarity === "Rare") {
+        nextRarity = "Epic";
+    } else if (rarity === "Epic") {
+        nextRarity = "Legendary";
     };
     const nextItem = await aggregate(nextRarity, type, 1, name);
     return nextItem || undefined;
@@ -621,50 +567,50 @@ async function getHigherRarity(name: string, type: string, rarity: string): Prom
 
 async function upgradeEquipment(data: any) {
     try {
-        let realType: string = '';
+        let realType: string = "";
         switch (data.inventoryType) {
-            case 'weaponOne': 
-                realType = 'Weapon'; 
+            case "weaponOne": 
+                realType = "Weapon"; 
                 break;
-            case 'weaponTwo': 
-                realType = 'Weapon';
+            case "weaponTwo": 
+                realType = "Weapon";
                 break;
-            case 'weaponThree': 
-                realType = 'Weapon';
+            case "weaponThree": 
+                realType = "Weapon";
                 break;
-            case 'shield': 
-                realType = 'Shield';
+            case "shield": 
+                realType = "Shield";
                 break;
-            case 'helmet': 
-                realType = 'Helmet';
+            case "helmet": 
+                realType = "Helmet";
                 break;
-            case 'chest': 
-                realType = 'Chest';
+            case "chest": 
+                realType = "Chest";
                 break;
-            case 'legs': 
-                realType = 'Legs';
+            case "legs": 
+                realType = "Legs";
                 break;
-            case 'ringOne': 
-                realType = 'Ring';
+            case "ringOne": 
+                realType = "Ring";
                 break;
-            case 'ringTwo': 
-                realType = 'Ring';
+            case "ringTwo": 
+                realType = "Ring";
                 break;
-            case 'amulet': 
-                realType = 'Amulet';
+            case "amulet": 
+                realType = "Amulet";
                 break;
-            case 'trinket': 
-                realType = 'Trinket';
+            case "trinket": 
+                realType = "Trinket";
                 break;
             default: 
-                realType = 'Weapon';
+                realType = "Weapon";
                 break;
         };
         let item = await getHigherRarity(data.upgradeName, realType as string, data.currentRarity);
         const clone = deepClone(item?.[0]);
         return [clone];
     } catch (err: any) {
-        console.warn(err, 'err')
+        console.warn(err, "err")
     };
 };
 
@@ -673,7 +619,7 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
         let merchantEquipment = [];
         for (let i = 0; i < 12; i++) {
             const rarity = determineRarityByLevel(level);
-            let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Physical')))[0];
+            let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === "Physical")))[0];
             const cloneItem = deepClone(item);
             let equipment = await mutate([cloneItem], rarity) as Equipment[];
             equipment.forEach(it => new Equipment(it));
@@ -682,7 +628,7 @@ async function getPhysicalWeaponEquipment(level: number): Promise<Equipment[] | 
         };
         return merchantEquipment;
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -691,7 +637,7 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
         let merchantEquipment = [];
         for (let i = 0; i < 12; i++) {
             const rarity = determineRarityByLevel(level);
-            let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === 'Magic')))[0];
+            let item = shuffleArray(Weapons.filter((eq) => (eq.rarity === rarity && eq.attackType === "Magic")))[0];
             const cloneItem = deepClone(item);
             let equipment = await mutate([cloneItem], rarity) as Equipment[];
             equipment.forEach(it => new Equipment(it));
@@ -700,7 +646,7 @@ async function getMagicalWeaponEquipment(level: number): Promise<Equipment[] | u
         };
         return merchantEquipment;
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -710,7 +656,7 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
         for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
-            let types = ['Shield', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs', 'Helmet', 'Chest', 'Legs'];
+            let types = ["Shield", "Helmet", "Chest", "Legs", "Helmet", "Chest", "Legs", "Helmet", "Chest", "Legs"];
             const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
             type = types[rand];
@@ -718,22 +664,22 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
             let item;
             if (level < 4) {
                 if (eqpCheck > 90) {
-                    item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
+                    item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
                 } else if (eqpCheck > 60) {
-                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
+                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
                 } else if (eqpCheck > 30) {
-                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];  
+                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];  
                 } else {
-                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
+                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
                 };
-            } else if (type === 'Shield') {
-                item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
-            } else if (type === 'Helmet') {
-                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
-            } else if (type === 'Chest') {
-                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
-            } else if (type === 'Legs') {
-                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== 'Leather-Cloth')))[0];
+            } else if (type === "Shield") {
+                item = shuffleArray(Shields.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
+            } else if (type === "Helmet") {
+                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
+            } else if (type === "Chest") {
+                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
+            } else if (type === "Legs") {
+                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type !== "Leather-Cloth")))[0];
             };
             const cloneItem = deepClone(item);
             let equipment = await mutate([cloneItem as Equipment], rarity) as Equipment[];
@@ -743,7 +689,7 @@ async function getArmorEquipment(level: number): Promise<Equipment[] | undefined
         };
         return merchantEquipment;
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -753,19 +699,19 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
         for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
-            let types = ['Ring', 'Amulet', 'Trinket'];
+            let types = ["Ring", "Amulet", "Trinket"];
             const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
-            if (rarity === 'Common') {
-                rarity = 'Uncommon';
+            if (rarity === "Common") {
+                rarity = "Uncommon";
             };
             type = types[rand];
             let item;
-            if (type === 'Ring') {
+            if (type === "Ring") {
                 item = shuffleArray( Rings.filter((eq) => (eq.rarity === rarity)))[0];
-            } else if (type === 'Amulet') {
+            } else if (type === "Amulet") {
                 item = shuffleArray(Amulets.filter((eq) => (eq.rarity === rarity)))[0];
-            } else if (type === 'Trinket') {
+            } else if (type === "Trinket") {
                 item = shuffleArray(Trinkets.filter((eq) => (eq.rarity === rarity)))[0]; 
             };
             const cloneItem = deepClone(item);
@@ -776,7 +722,7 @@ async function getJewelryEquipment(level: number): Promise<Equipment[] | undefin
         };
         return merchantEquipment;
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -790,7 +736,7 @@ async function getMerchantEquipment(level: number): Promise<Equipment[] | undefi
         };
         return merchantEquipment as unknown as Equipment[];
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -800,17 +746,17 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
         for (let i = 0; i < 12; i++) {        
             let type;
             let rarity;
-            let types = ['Helmet', 'Chest', 'Legs'];
+            let types = ["Helmet", "Chest", "Legs"];
             const rand = randomIntFromInterval(0, types.length - 1);
             rarity = determineRarityByLevel(level);
             type = types[rand];
             let item;
-            if (type === 'Helmet') {
-                item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
-            } else if (type === 'Chest') {
-                item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0];
-            } else if (type === 'Legs') {
-                item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === 'Leather-Cloth' )))[0]; 
+            if (type === "Helmet") {
+                item = deepClone(shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === "Leather-Cloth" )))[0]);
+            } else if (type === "Chest") {
+                item = deepClone(shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === "Leather-Cloth" )))[0]);
+            } else if (type === "Legs") {
+                item = deepClone(shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === "Leather-Cloth" )))[0]); 
             };
             if (item) {
                 const clone = deepClone(item);
@@ -822,7 +768,7 @@ async function getClothEquipment(level: number): Promise<Equipment[] | undefined
         };
         return merchantEquipment;
     } catch (err) {
-        console.warn(err, 'Error in Merchant Function');
+        console.warn(err, "Error in Merchant Function");
     };
 };
 
@@ -831,16 +777,17 @@ async function getSpecificArmor(level: number, type: string) {
         let merchantEquipment = [];
         for (let i = 0; i < 12; i++) {
             let item: any = undefined,
-                armorType: string = '',
+                armorType: string = "",
                 armorTypes: string[] = ["Helmet", "Chest", "Legs"],
-                rarity: string = '';
+                rarity: string = "";
             
             const rand = randomIntFromInterval(0, 2);
             rarity = determineRarityByLevel(level);
             armorType = armorTypes[rand];
 
-            item = shuffleArray([armorType].filter((eq: any) => (eq.rarity === rarity && eq.type === type)))[0];
-            
+            item = deepClone(shuffleArray([armorType].filter((eq: any) => (eq.rarity === rarity && eq.type === type)))[0]);
+            // const baseItem = deepClone(getGeneralItem({rarity, type}));
+
             if (item) {
                 let mutatedItems = await mutate([item], rarity) as Equipment[];
                 mutatedItems.forEach(item => new Equipment(item));
@@ -848,11 +795,11 @@ async function getSpecificArmor(level: number, type: string) {
                 merchantEquipment.push(clonedItem);
             } else {
                 if (armorType === "Helmet") {
-                    item = shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                    item = deepClone(shuffleArray(Helmets.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0]);
                 } else if (armorType === "Chest") {
-                    item = shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                    item = deepClone(shuffleArray(Chests.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0]);
                 } else if (armorType === "Legs") {
-                    item = shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0];
+                    item = deepClone(shuffleArray(Legs.filter((eq) => (eq.rarity === rarity && eq.type === type)))[0]);
                 };
                 if (item) {
                     let mutatedItems = await mutate([item], rarity) as Equipment[];
@@ -868,8 +815,16 @@ async function getSpecificArmor(level: number, type: string) {
     };
 };
 
+function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = randomIntFromInterval(0, i + 1);
+        [array[i], array[j]] = [array[j], array[i]];
+    };
+    return array;
+};
+
 function deepClone<T>(obj: T): T {
-    if (obj === null || typeof obj !== 'object') {
+    if (obj === null || typeof obj !== "object") {
         return obj;
     };
     if (obj instanceof Date) {

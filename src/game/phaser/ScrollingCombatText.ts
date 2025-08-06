@@ -1,5 +1,4 @@
 import Enemy from "../entities/Enemy";
-// import Party from "../entities/PartyComputer";
 import Player from "../entities/Player";
 import { Entity } from "../main";
 import { ObjectPool } from "./ObjectPool";
@@ -22,7 +21,6 @@ export type CombatText = {
     context: string;
     critical: boolean;
     constant: boolean;
-    // onDestroyCallback: () => void;
 };
 
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
@@ -32,7 +30,6 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private timerTime: number;
     private constant: boolean;
     private pool: ObjectPool<ScrollingCombatText>;
-    // onDestroyCallback: () => void;
 
     constructor(scene: Phaser.Scene, pool: ObjectPool<ScrollingCombatText>, x: number = 0, y: number = 0) {
         super(scene, x, y);
@@ -55,29 +52,27 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         this.constant = false;
     };
 
-    public reset(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean): void {
+    public reset(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
         this.color = this.setColor(context);
         this.text.setText(text).setColor(this.color).setFontSize(critical ? "32px" : "20px");
         this.timerTime = 0;
         this.duration = duration;
         this.constant = constant;
+        
         const isNonNumeric = isNaN(Number(text));
         const pos = new Phaser.Math.Vector2(entity.x, entity.y);
-
-        const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 2;
+        const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 1.5;
         const arcAmplitude = Phaser.Math.Between(12, 20);
         const arcDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1; // Left or right
-        
-        const side = arcDirection * (arcDirection > 0 ? 16 : 32);
-
+        const side = arcDirection * (arcDirection > 0 ? 16 : 32);        
         const startX = constant ? pos.x - (this.text.displayWidth / 2) : pos.x + side;
         const startY = pos.y - (entity.healthbar.visible ? HEALTH_POSITION : POSITION);
         const initialScale = this.text.scale;
+
         const tweenObj = { t: 0 };
 
         this.setPosition(startX, startY);
         this.text.setActive(true).setVisible(true);
-
 
         this.scene.tweens.add({
             targets: tweenObj,

@@ -230,10 +230,9 @@ export class Underground extends Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
-    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean): ScrollingCombatText {
+    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
         const combatText = this.scrollingTextPool.acquire();
         combatText.reset(entity, text, duration, context, critical, constant);
-        return combatText;
     };
 
     cleanUp = (): void => {

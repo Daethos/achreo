@@ -2459,7 +2459,7 @@ export default class PlayerMachine {
     };
 
     onFearedEnter = () => {
-        this.scene.showCombatText(this.player, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, false);
+        this.scene.showCombatText(this.player, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.fearVelocity = { x: 0, y: 0 };
@@ -2493,7 +2493,7 @@ export default class PlayerMachine {
                     this.player.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.scene.showCombatText(this.player, fears[Math.floor(Math.random() * 5)], 750, DAMAGE, false, false);
+                    this.scene.showCombatText(this.player, fears[Math.floor(Math.random() * 5)], 750, DAMAGE);
                 };
             },
             callbackScope: this,
@@ -2604,7 +2604,7 @@ export default class PlayerMachine {
                     this.player.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.scene.showCombatText(this.player, "...thump", 1000, EFFECT, false, false);        
+                    this.scene.showCombatText(this.player, "...thump", 1000, EFFECT);        
                     this.heal(0.2);
                 };
             },

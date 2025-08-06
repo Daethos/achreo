@@ -12,7 +12,7 @@ export default function StaminaModal({ setShow, settings }: { setShow: Setter<bo
                 <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
             </svg>
             <div class="center">
-                <h2>Your body"s capacity to exert and continue. An amalgamation of your Constitution, Strength, and Agility. Governs the ability to perform a physical action.</h2>
+                <h2>Your body's capacity to exert and continue. An amalgamation of your Constitution, Strength, and Agility. Governs the ability to perform a physical action.</h2>
                 <p class="gold" style={{ "margin-bottom": "5%", "font-size": window.innerWidth > 1200 ? "" : "0.75em" }}>
                     Stamina recovery is paused, cumulatively, for every action. Increasing your stamina also increases the rate of recovery.
                 </p>

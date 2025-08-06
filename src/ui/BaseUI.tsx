@@ -425,6 +425,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 setAsceanState({ ...asceanState(), avarice: false });
                 setTimeout(() => {
                     EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
+                    (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "heal");
                 }, 500);
             } else {
                 EventBus.emit("record-loss", res);

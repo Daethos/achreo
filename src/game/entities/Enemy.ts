@@ -422,7 +422,7 @@ export default class Enemy extends Entity {
             const id = this.enemies.find((en: ENEMY) => en.id === this.scene.player.playerID);
             if (id && health > 0) this.updateThreat(this.scene.player.playerID, calculateThreat(Math.round(this.health - health), health, this.ascean.health.max));
         } else if (this.health < health) {
-            this.scene.showCombatText(this, `${Math.round(health - this.health)}`, 1500, HEAL, false, false);
+            this.scene.showCombatText(this, `${Math.round(health - this.health)}`, 1500, HEAL);
         };
         this.health = health;
         this.computerCombatSheet.newComputerHealth = this.health;
@@ -492,7 +492,7 @@ export default class Enemy extends Entity {
         } else {
             const chance = Math.random() < 0.1 + this.confuseCount;
             if (chance) {
-                this.scene.showCombatText(this, "Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
+                this.scene.showCombatText(this, "Confuse Broken", PLAYER.DURATIONS.TEXT, EFFECT);
                 this.isConfused = false;
             } else {
                 this.confuseCount += 0.1;
@@ -504,7 +504,7 @@ export default class Enemy extends Entity {
         const strength = this.specialFear ? 0.05 : 0.1;
         const chance = Math.random() < strength + this.fearCount;
         if (chance) {
-            this.scene.showCombatText(this, "Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT, false, false);
+            this.scene.showCombatText(this, "Fear Broken", PLAYER.DURATIONS.TEXT, EFFECT);
             this.isFeared = false;
         } else {
             this.fearCount += strength;
@@ -644,14 +644,14 @@ export default class Enemy extends Entity {
             this.computerSoundEffects(e);
         } else if (this.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - this.health);
-            this.scene.showCombatText(this, `${heal}`, 1500, HEAL, false, false);
+            this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
         };
         if (rollSuccess) {
-            this.scene.showCombatText(this, "Roll", PLAYER.DURATIONS.TEXT, "heal", false, false);
+            this.scene.showCombatText(this, "Roll", PLAYER.DURATIONS.TEXT, "heal");
         };
         if (computerEnemyParrySuccess) {
             this.isStunned = true;
-            this.scene.showCombatText(this, "Parried", PLAYER.DURATIONS.TEXT, "heal", false, false);
+            this.scene.showCombatText(this, "Parried", PLAYER.DURATIONS.TEXT, "heal");
         };
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
@@ -2332,7 +2332,7 @@ export default class Enemy extends Entity {
         this.enemySound("fire", this.castingSuccess);
         this.stopCasting("Countered Frost");
     };
-    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST, false, false);
+    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST);
     onHealingUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, CAST);
@@ -2355,7 +2355,7 @@ export default class Enemy extends Entity {
                 this.health = total;
                 this.updateHealthBar(total);
                 this.computerCombatSheet.newComputerHealth = total;
-                this.scene.showCombatText(this, `${heal}`, 1500, HEAL, false, false);
+                this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
                 this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
             };
             this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
@@ -2541,7 +2541,7 @@ export default class Enemy extends Entity {
                 if (this.health > 0) this.stateMachine.setState(States.COMBAT);
             },
         });
-        this.scene.showCombatText(this, "Leaping!", 900, DAMAGE, false, false);
+        this.scene.showCombatText(this, "Leaping!", 900, DAMAGE);
         if (this.inCombat) {
             EventBus.emit("enemy-combat-text", {
                 computerSpecialDescription: `${this.ascean.name} launches through the air!`
@@ -2754,7 +2754,7 @@ export default class Enemy extends Entity {
             this.health = total;
             this.updateHealthBar(total);
             this.computerCombatSheet.newComputerHealth = total;
-            this.scene.showCombatText(this, `${heal}`, 1500, HEAL, false, false);
+            this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
         this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
@@ -2816,7 +2816,7 @@ export default class Enemy extends Entity {
             ease: "Circ.easeOut",
             onComplete: () => this.rushComplete(),
         });         
-        this.scene.showCombatText(this, "Rush", 900, CAST, false, false);
+        this.scene.showCombatText(this, "Rush", 900, CAST);
     };
     onRushUpdate = (_dt: number) => {};
     onRushExit = () => {
@@ -3263,11 +3263,11 @@ export default class Enemy extends Entity {
         } else if (id === this.scene?.player?.playerID) { // Non Targerted Player Combat
             this.health = heal;
             this.updateHealthBar(heal);
-            this.scene.showCombatText(this, `${mend}`, 1500, HEAL, false, false);
+            this.scene.showCombatText(this, `${mend}`, 1500, HEAL);
         } else { // Computer Combat
             this.health = heal;
             this.updateHealthBar(heal);
-            this.scene.showCombatText(this, `${mend}`, 1500, HEAL, false, false);
+            this.scene.showCombatText(this, `${mend}`, 1500, HEAL);
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
 
@@ -3566,7 +3566,7 @@ export default class Enemy extends Entity {
 
     shimmer = () => {
         if (this.inCombat) this.scene.sound.play("stealth", { volume: this.scene.hud.settings.volume });
-        this.scene.showCombatText(this, `${this.ascean.name} simply wasn"t there`, 500, EFFECT, false, false);
+        this.scene.showCombatText(this, `${this.ascean.name} simply wasn"t there`, 500, EFFECT);
     };
 
     onShirkEnter = () => {
@@ -3785,7 +3785,7 @@ export default class Enemy extends Entity {
                     this.isConfused = false;
                 } else {
                     randomDirection();
-                    this.scene.showCombatText(this, confusions[Math.floor(Math.random() * confusions.length)], 1000, EFFECT, false, false);
+                    this.scene.showCombatText(this, confusions[Math.floor(Math.random() * confusions.length)], 1000, EFFECT);
                 };
             },
             callbackScope: this,
@@ -4073,7 +4073,7 @@ export default class Enemy extends Entity {
                     this.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.scene.showCombatText(this, "...thump", 1000, EFFECT, false, false);
+                    this.scene.showCombatText(this, "...thump", 1000, EFFECT);
                     if (!this.specialPolymorph) {
                         if (this.isCurrentTarget && this.health < this.ascean.health.max) {
                             this.health = (this.health + (this.ascean.health.max * 0.15)) > this.ascean.health.max ? this.ascean.health.max : (this.health + (this.ascean.health.max * 0.15));
@@ -4601,8 +4601,6 @@ export default class Enemy extends Entity {
             if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
             if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
             if (this.healthbar) this.healthbar.update(this);
-            // if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-            // if (this.specialCombatText) this.specialCombatText.update(this); 
             if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
             if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         };

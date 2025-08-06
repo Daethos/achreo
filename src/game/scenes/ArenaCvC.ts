@@ -161,10 +161,9 @@ export class ArenaCvC extends Phaser.Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
-    showCombatText(entity: Player | Enemy | Party, text: string, duration: number, context: string, critical: boolean, constant: boolean): ScrollingCombatText {
+    showCombatText(entity: Player | Enemy | Party, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
         const combatText = this.scrollingTextPool.acquire();
         combatText.reset(entity, text, duration, context, critical, constant);
-        return combatText;
     };
 
     cleanUp = (): void => {

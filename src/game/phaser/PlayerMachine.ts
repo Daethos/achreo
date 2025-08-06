@@ -222,7 +222,7 @@ export default class PlayerMachine {
         } else {
             const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
-            const playerActionDescription = `Your wreathing tendrils rip ${chiomic} health from ${enemy.ascean?.name}.`;
+            const playerActionDescription = `Your kyrnaicism rips ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: this.player.spellTarget } });
         };
@@ -239,9 +239,10 @@ export default class PlayerMachine {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
             const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
-            let playerSacrifice = this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart()) < 0 ? 0 : this.scene.state.newPlayerHealth - (sacrifice / 2 * this.scene.combatManager.playerStalwart());
+            const sacDam = sacrifice / 2 * this.scene.combatManager.playerStalwart();
+            let playerSacrifice = this.scene.state.newPlayerHealth - sacDam < 0 ? 0 : this.scene.state.newPlayerHealth - sacDam;
             let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
-            const playerActionDescription = `You sacrifice ${sacrifice / 2 * this.scene.combatManager.playerStalwart()} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
+            const playerActionDescription = `You sacrifice ${sacDam} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSacrifice, id } });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySacrifice, id } });
@@ -262,7 +263,7 @@ export default class PlayerMachine {
             const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2)) * (1 * power / 100) * 0.8;
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
-            const playerActionDescription = `Your suture ${enemy.ascean?.name}"s caeren into you, absorbing and healing for ${suture}.`;
+            const playerActionDescription = `You suture ${enemy.ascean?.name}s caeren into you, absorbing and healing for ${suture}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSuture, id } });
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: enemySuture, id } });
@@ -276,7 +277,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget?.name === "party") {
             const partyMember = this.scene.party.find((e: Party) => e.enemyID === this.player.currentTarget?.enemyID);
             if (partyMember) {
-                partyMember.playerMachine.heal(power/100);
+                partyMember.playerMachine.heal(power / 100);
                 return;
             };
         };
@@ -1160,7 +1161,7 @@ export default class PlayerMachine {
     };
 
     onAstraveEnter = () => {
-        this.player.startCasting("Astrave", PLAYER.DURATIONS.ASTRAVE, false, false, false);
+        this.player.startCasting("Astrave", PLAYER.DURATIONS.ASTRAVE, false);
     };
     onAstraveUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -1608,7 +1609,7 @@ export default class PlayerMachine {
     };
 
     onKynisosEnter = () => {
-        this.player.startCasting("Kynisos", PLAYER.DURATIONS.KYNISOS, false, false, false);
+        this.player.startCasting("Kynisos", PLAYER.DURATIONS.KYNISOS, false);
     };
     onKynisosUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -2000,7 +2001,7 @@ export default class PlayerMachine {
     };
 
     onQuorEnter = () => {
-        this.player.startCasting("Quor", PLAYER.DURATIONS.QUOR, false, false, false);
+        this.player.startCasting("Quor", PLAYER.DURATIONS.QUOR, false);
     };
     onQuorUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;
@@ -2031,7 +2032,7 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.RECONSTITUTE, PLAYER.STAMINA.RECONSTITUTE);
         const enhanced = this.player.checkTalentEnhanced(States.RECONSTITUTE);
         const duration = enhanced ? PLAYER.DURATIONS.RECONSTITUTE / 2 : PLAYER.DURATIONS.RECONSTITUTE;
-        this.player.startCasting("Reconstitute", duration, false, false, false);
+        this.player.startCasting("Reconstitute", duration, false, true, false);
         this.player.reconTimer = this.scene.time.addEvent({
             delay: duration / 5,
             callback: () => this.reconstitute(),
@@ -3359,7 +3360,7 @@ export default class PlayerMachine {
             };
             this.scene.hud.actionBar.setVisible(false);
         };
-        this.scene.showCombatText(this.player, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, false);
+        this.scene.showCombatText(this.player, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
         this.player.fearVelocity = { x: 0, y: 0 };
@@ -3393,7 +3394,7 @@ export default class PlayerMachine {
                     this.player.isFeared = false;
                 } else {   
                     randomDirection();
-                    this.scene.showCombatText(this.player, fears[Math.floor(Math.random() * 5)], 750, DAMAGE, false, false);
+                    this.scene.showCombatText(this.player, fears[Math.floor(Math.random() * 5)], 1250, DAMAGE);
                     screenShake(this.scene);
                 };
             },
@@ -3536,7 +3537,7 @@ export default class PlayerMachine {
                     this.player.isPolymorphed = false;
                 } else {   
                     randomDirection();
-                    this.scene.showCombatText(this.player, "...thump", 1000, EFFECT, false, false);
+                    this.scene.showCombatText(this.player, "...thump", 1000, EFFECT);
                     this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "player", value: 20, id: this.player.playerID } });
                     screenShake(this.scene);
                 };

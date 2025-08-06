@@ -777,14 +777,9 @@ export class Game extends Scene {
         });
     };
 
-    /*
-        Add Entity to get x/y values, and determine whether the healthbar is visible
-        'constant' boolean will determine its X position i.e. whether it's in the middle, or offset/staggered
-    */
-    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean, constant: boolean) {
+    showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false) {
         const combatText = this.scrollingTextPool.acquire();
         combatText.reset(entity, text, duration, context, critical, constant);
-        // return combatText;
     };
 
     cleanUp = (): void => {

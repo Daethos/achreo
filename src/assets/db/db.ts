@@ -48,6 +48,14 @@ export const deadEquipment = async (): Promise<void> => {
         const total = await db.collection(EQUIPMENT).get();
         console.log(`Total Equipment in DB: ${total.length}`);
 
+        // const jsonString = JSON.stringify(total);
+        // const byteLength = new TextEncoder().encode(jsonString).length;
+
+        // const kilobytes = (byteLength / 1024).toFixed(2);
+        // const megabytes = (byteLength / (1024 * 1024)).toFixed(2);
+
+        // console.log(`Approximate JSON size: ${byteLength} bytes (${kilobytes} KB / ${megabytes} MB)`);
+
         for await (const item of total) {
             const id = item._id;
             if (!safe.has(id)) {

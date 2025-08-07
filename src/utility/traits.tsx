@@ -450,7 +450,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
         <>
         <Show when={show()}>
         <div class="modal" style={{ "z-index": 2 }}>
-            <div class="border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", width: "65%", "z-index": 2 }}>
+            <div class="border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", "max-height" : "95%", width: "65%", "z-index": 2, top: "47.5%" }}>
             <div class="creature-heading wrap">
                 <h1 style={{ margin: "3%" }}>Quests</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
@@ -468,10 +468,10 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
                 [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                 </div>
             </div>
+            </div>
             <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setShow(!show())}>
                 <p style={font("0.5em")}>X</p>
             </button>
-            </div>
         </div>
         </Show>
         <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "--glow-color":"#fdf6d8" }} onClick={() => setShow(!show())}>Show Available Quests</button>

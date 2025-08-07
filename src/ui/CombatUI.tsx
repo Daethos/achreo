@@ -154,6 +154,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             case len < 10 && dimensions().WIDTH > 1200: return "1.5em"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "1.3em"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "1.1em"; // 0.85em
+            case len < 10 && dimensions().WIDTH < 850: return "1.25em"; // 1.15em
+            case len < 20 && dimensions().WIDTH < 850: return "1.15em"; // 1em
+            case len < 30 && dimensions().WIDTH < 850: return "1.05em"; // 0.85em
             case len < 10: return "1.35em"; // 1.15em
             case len < 20: return "1.25em"; // 1em
             case len < 30: return "1.1em"; // 0.85em
@@ -165,6 +168,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             case len < 10 && dimensions().WIDTH > 1200: return "3vh"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "3.5vh"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "4vh"; // 0.85em
+            case len < 10 && dimensions().WIDTH < 850: return "1vh"; // 1.15em
+            case len < 20 && dimensions().WIDTH < 850: return "1.25vh"; // 1em
+            case len < 30 && dimensions().WIDTH < 850: return "1.5vh"; // 0.85em
             case len < 10: return "1.25vh"; // -3%
             case len < 20: return "1.5vh"; // -2%
             case len < 30: return "2vh"; // -1%
@@ -204,7 +210,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
             }} onClick={changeDisplay} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
-            "--glow-color": "violet" }}>{healthDisplay()}</div>
+            "--glow-color": "violet", "font-size": dimensions().WIDTH > 850 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>

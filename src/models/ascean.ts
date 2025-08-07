@@ -1,6 +1,6 @@
 import { Shields, Helmets, Legs, Chests } from "../assets/db/equipment";
 import { Weapons } from "../assets/db/weaponry";
-import Equipment, { mutate } from "./equipment";
+import Equipment, { deepClone, mutate } from "./equipment";
 import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
 import { v4 as uuidv4 } from "uuid";
@@ -109,28 +109,28 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
     const faith = data.faith;
     switch (pref) {
         case "Plate-Mail":
-            data.helmet = Helmets.find(item => item.name === "Plate Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Plate Cuirass (Starter)");
-            data.legs = Legs.find(item => item.name === "Plate Greaves (Starter)");
-            data.shield = Shields.find(item => item.name === "Pavise" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Plate Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Plate Cuirass (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Plate Greaves (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Pavise" && item.rarity === "Common"));
             break;
         case "Chain-Mail":
-            data.helmet = Helmets.find(item => item.name === "Chain Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Chain Armor (Starter)");
-            data.legs = Legs.find(item => item.name === "Chain Greaves (Starter)");
-            data.shield = Shields.find(item => item.name === "Scutum" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Chain Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Chain Armor (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Chain Greaves (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Scutum" && item.rarity === "Common"));
             break;
         case "Leather-Mail":
-            data.helmet = Helmets.find(item => item.name === "Leather Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Leather Brigandine (Starter)");
-            data.legs = Legs.find(item => item.name === "Leather Sandals (Starter)");
-            data.shield = Shields.find(item => item.name === "Heater" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Leather Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Leather Brigandine (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Leather Sandals (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Heater" && item.rarity === "Common"));
             break;
         case "Leather-Cloth":
-            data.helmet = Helmets.find(item => item.name === "Cloth Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Cloth Robes (Starter)");
-            data.legs = Legs.find(item => item.name === "Cloth Skirt (Starter)");
-            data.shield = Shields.find(item => item.name === "Parma" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Cloth Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Cloth Robes (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Cloth Skirt (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Parma" && item.rarity === "Common"));
             break;
         default:
             break;
@@ -190,17 +190,17 @@ async function createAscean(data: any, template?: boolean): Promise<Ascean> {
             };
         };
     };
-    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common"));
-    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common"));
+    const weaponOne = deepClone(Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common")));
+    const weaponTwo = deepClone(Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common")));
     const helmet = data.helmet;
     const chest = data.chest;
     const legs = data.legs;
     const shield = data.shield;
-    const weaponThree = Weapons.find(item => item.rarity === "Default");
-    const ringOne = Rings.find(ring => ring.name === "Empty Ring Slot");
-    const ringTwo = Rings.find(ring => ring.name === "Empty Ring Slot Two");
-    const amulet = Amulets.find(amulet => amulet.rarity === "Default");
-    const trinket = Trinkets.find(trinket => trinket.rarity === "Default");
+    const weaponThree = deepClone(Weapons.find(item => item.rarity === "Default"));
+    const ringOne = deepClone(Rings.find(ring => ring.name === "Empty Ring Slot"));
+    const ringTwo = deepClone(Rings.find(ring => ring.name === "Empty Ring Slot Two"));
+    const amulet = deepClone(Amulets.find(amulet => amulet.rarity === "Default"));
+    const trinket = deepClone(Trinkets.find(trinket => trinket.rarity === "Default"));
     if (!template) {
         await mutate([weaponOne, weaponTwo, shield, weaponThree, helmet, chest, legs, ringOne, ringTwo, amulet, trinket] as any[], "Common");
     };
@@ -261,28 +261,28 @@ function createTemplate(data: any): Ascean {
     const faith = data.faith;
     switch (pref) {
         case "Plate-Mail":
-            data.helmet = Helmets.find(item => item.name === "Plate Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Plate Cuirass (Starter)");
-            data.legs = Legs.find(item => item.name === "Plate Greaves (Starter)");
-            data.shield = Shields.find(item => item.name === "Pavise" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Plate Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Plate Cuirass (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Plate Greaves (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Pavise" && item.rarity === "Common"));
             break;
         case "Chain-Mail":
-            data.helmet = Helmets.find(item => item.name === "Chain Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Chain Armor (Starter)");
-            data.legs = Legs.find(item => item.name === "Chain Greaves (Starter)");
-            data.shield = Shields.find(item => item.name === "Scutum" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Chain Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Chain Armor (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Chain Greaves (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Scutum" && item.rarity === "Common"));
             break;
         case "Leather-Mail":
-            data.helmet = Helmets.find(item => item.name === "Leather Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Leather Brigandine (Starter)");
-            data.legs = Legs.find(item => item.name === "Leather Sandals (Starter)");
-            data.shield = Shields.find(item => item.name === "Heater" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Leather Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Leather Brigandine (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Leather Sandals (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Heater" && item.rarity === "Common"));
             break;
         case "Leather-Cloth":
-            data.helmet = Helmets.find(item => item.name === "Cloth Helm (Starter)");
-            data.chest = Chests.find(item => item.name === "Cloth Robes (Starter)");
-            data.legs = Legs.find(item => item.name === "Cloth Skirt (Starter)");
-            data.shield = Shields.find(item => item.name === "Parma" && item.rarity === "Common");
+            data.helmet = deepClone(Helmets.find(item => item.name === "Cloth Helm (Starter)"));
+            data.chest = deepClone(Chests.find(item => item.name === "Cloth Robes (Starter)"));
+            data.legs = deepClone(Legs.find(item => item.name === "Cloth Skirt (Starter)"));
+            data.shield = deepClone(Shields.find(item => item.name === "Parma" && item.rarity === "Common"));
             break;
         default:
             break;
@@ -345,18 +345,18 @@ function createTemplate(data: any): Ascean {
         };
     };
 
-    const weaponOne = Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common"));
-    const weaponTwo = Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common"));
+    const weaponOne = deepClone(Weapons.find(item => (item.name === data.weaponOne && item.rarity === "Common")));
+    const weaponTwo = deepClone(Weapons.find(item => (item.name === data.weaponTwo && item.rarity === "Common")));
     const helmet = data.helmet;
     const chest = data.chest;
     const legs = data.legs;
     const shield = data.shield;
 
-    const weaponThree = Weapons.find(item => item.rarity === "Default");
-    const ringOne = Rings.find(ring => ring.rarity === "Default");
-    const ringTwo = Rings.find(ring => ring.rarity === "Default");
-    const amulet = Amulets.find(amulet => amulet.rarity === "Default");
-    const trinket = Trinkets.find(trinket => trinket.rarity === "Default");
+    const weaponThree = deepClone(Weapons.find(item => item.rarity === "Default"));
+    const ringOne = deepClone(Rings.find(ring => ring.rarity === "Default"));
+    const ringTwo = deepClone(Rings.find(ring => ring.rarity === "Default"));
+    const amulet = deepClone(Amulets.find(amulet => amulet.rarity === "Default"));
+    const trinket = deepClone(Trinkets.find(trinket => trinket.rarity === "Default"));
     
     const ascean = new Ascean({
         ...data,

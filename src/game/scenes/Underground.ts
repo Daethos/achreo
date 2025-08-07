@@ -153,7 +153,10 @@ export class Underground extends Scene {
         this.layer2 = layer2;
         this.layer3 = layer3;
         this.layer4 = layer4;
-        this.layer3.forEachTile((tile: any) => {
+        this.layer4.forEachTile((tile: any) => {
+            // if (tile?.properties?.key) {
+            //     console.log(tile, tile.properties, "Tile")
+            // }
             if (tile?.properties && tile.properties?.key === "north") {
                 this.north = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
@@ -167,6 +170,7 @@ export class Underground extends Scene {
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
         });
+        console.log(this.south)
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3, this.layer4]);
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);

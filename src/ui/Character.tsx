@@ -354,7 +354,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
@@ -372,7 +372,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <h1 style={{...bMargin}}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
                         const completed = quest.requirements.technical.id === "fetch" 
-                            ? quest.requirements.technical.current === quest.requirements.technical.total 
+                            ? quest.requirements.technical.current === quest.requirements.technical.total && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!
                             : quest.requirements.technical.solved && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
                         return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{
                                 "borderTalent": completed,
@@ -386,11 +386,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         }}>
                             <h2 classList={{
                                 "animate-flicker-infinite": completed,
-                            }} style={{ color: "gold" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
+                            }} style={{ color: "gold", "font-size": completed ? "1.15em" : "", padding: "5px" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
                             <p classList={{
                                 "animate-flicker-infinite": completed,
-                            }} style={{ color: "gold", "font-size": completed ? "1.25em" : "" }}>{quest.giver}</p>
+                            }} style={{ color: "gold", "font-size": completed ? "1.15em" : "" }}>{quest.giver}</p>
                         </div>
                     }}</For>
                 </div>;
@@ -510,7 +510,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
@@ -991,7 +991,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span></div>
@@ -1142,7 +1142,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </Show>
         <Show when={showQuest().show}>
             <div class="modal">
-                <div class="superCenter" style={{ width:"65%" }}>
+                <div class="superCenter" style={{ width:"65%", "max-height": "90%" }}>
                 <div class="border juice" style={{ margin: "1em auto", 
                     "border-color": masteryColor(showQuest()?.quest?.mastery),
                     animation: `borderTalent 1.5s infinite ease alternate`, 
@@ -1150,16 +1150,16 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(showQuest()?.quest?.mastery)} 0 0 0 0.3em`, 
                     "--glow-color": masteryColor(showQuest()?.quest.mastery) 
                 }}>
-                    <div class="creature-heading" style={{ padding: "1em" }}>
+                    <div class="creature-heading" style={{ padding: "0.5em" }}>
                     <h1 class="center" classList={{
                     "animate-flicker-infinite": showQuest()?.complete,
-                }} style={{ color: showQuest()?.complete ? "gold" : "#fdf6d8", margin: "3%" }}>
+                }} style={{ color: showQuest()?.complete ? "gold" : "#fdf6d8", margin: "2.5%" }}>
                         {showQuest()?.quest.title} {showQuest()?.complete ? "(Completed)" : ""}<br />
                     </h1>
                     <h2 class="center" style={{ color: "gold" }}>
                         Quest Giver: {showQuest()?.quest.giver}, Level {showQuest()?.quest.level} ({showQuest()?.quest?.mastery.charAt(0).toUpperCase() + showQuest()?.quest?.mastery.slice(1)}) <br />
                     </h2>
-                    <p class="wrap" style={{ "color":"#fdf6d8", "font-size":"1em", "margin": "3%" }}>
+                    <p class="wrap" style={{ "color":"#fdf6d8", "font-size":"1em", "margin": "2.5%" }}>
                         {showQuest()?.quest.description}
                     </p>
                     <div class="row" style={{ display: "block" }}>
@@ -1170,12 +1170,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         Rewards
                     </h4>
                     <br />
-                    <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
+                    <p style={{ display: "inline-block", width: "40%", "margin": "0 0 1.5% 7.5%" }}>
                         Level: <span class="gold">{showQuest()?.quest?.requirements.level}</span><br />
                         Reputation: <span class="gold">{showQuest()?.quest?.requirements.reputation}</span><br />
                         <span>{showQuest()?.quest?.requirements?.technical?.id === "fetch" ? <>Task: <span class="gold">{showQuest()?.quest?.requirements?.technical?.current} / {showQuest()?.quest?.requirements?.technical?.total}</span></> : showQuest()?.quest?.requirements?.technical?.solved ? <span class="gold">Solved</span> : "Unsolved"}</span><br />
                     </p>
-                    <p style={{ display: "inline-block", width: "40%", "margin-left": "7.5%" }}>
+                    <p style={{ display: "inline-block", width: "40%", "margin": "0 0 1.5% 7.5%" }}>
                         Currency: <span class="gold">{showQuest()?.quest?.rewards?.currency?.gold}g {showQuest()?.quest.rewards?.currency?.silver}s.</span><br />
                         Experience: <span class="gold">{showQuest()?.quest?.rewards?.experience}</span><br />
                         Items: <For each={showQuest()?.quest?.rewards?.items}>{(item, index) => {
@@ -1187,7 +1187,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""}
                     </p>
                     </div>
-                    <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "2.5% auto" }}>
+                    <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "1.5% auto", padding: "" }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>
                     </div>

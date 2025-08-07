@@ -643,7 +643,7 @@ export default function App() {
             <div class="superCenter cinzel full">
                 <div class="center">
                     <div class="title long-animate animate-flicker">The Ascean</div>
-                    <button class="center highlight animate cinzel enter" onClick={() => menuOption(menu().asceans.length > 0 ? "choosingCharacter" : "creatingCharacter")}>Enter Game</button>
+                    <button style={{ "font-size":"1.5em" }} class="center highlight animate cinzel enter" onClick={() => menuOption(menu().asceans.length > 0 ? "choosingCharacter" : "creatingCharacter")}>Enter Game</button>
                 </div>
             </div>
             </Show>

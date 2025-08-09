@@ -5,7 +5,7 @@ import { HitProfile, HitProfiles } from "./HitProfiles";
 import { screenShake } from "./ScreenShake";
 
 type HitFeedbackContext = {
-    // source: string;
+    source: string;
     damageType: string;
     pos: Phaser.Math.Vector2;
     weaponType: string | undefined;
@@ -20,7 +20,7 @@ type HitFeedbackContext = {
 export function getHitFeedbackContext(combat: Combat, pos: Phaser.Math.Vector2, player: boolean) {
     if (player) {
         return {
-            // source: "player",
+            source: "player",
             damageType: combat.playerDamageType,
             pos,
             weaponType: combat.weapons[0]?.type,
@@ -33,7 +33,7 @@ export function getHitFeedbackContext(combat: Combat, pos: Phaser.Math.Vector2, 
         };
     } else {
         return {
-            // source: "enemy",
+            source: "enemy",
             damageType: combat.computerDamageType,
             pos,
             weaponType: combat.computerWeapons[0]?.type,
@@ -61,6 +61,7 @@ export class HitFeedbackSystem {
     private wild: Phaser.GameObjects.Particles.ParticleEmitter;
     private wind: Phaser.GameObjects.Particles.ParticleEmitter;
     private heal: Phaser.GameObjects.Particles.ParticleEmitter;
+    private parry: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor(scene: Play) {
         this.scene = scene;
@@ -69,7 +70,7 @@ export class HitFeedbackSystem {
     };
 
     play(context: HitFeedbackContext): void {
-        const { damageType, weaponType, critical, glancing, miss, parry, prayer, roll, pos } = context;
+        const { damageType, weaponType, critical, glancing, miss, parry, prayer, roll, pos, source } = context;
         // console.log({damageType, critical, glancing, parry});
         const profile = this.profiles[damageType];
 
@@ -80,29 +81,36 @@ export class HitFeedbackSystem {
         let rate = profile.rate;
 
         if (roll) this.scene.sound.play("roll", { volume, rate });
-        if (parry) this.scene.sound.play("parry", { volume, rate });
         if (prayer) this.scene.sound.play("righteous", { volume, rate });
+        if (parry) {
+            this.scene.sound.play("parry", { volume, rate });
+            this.zoom(profile.zoom, 320, Phaser.Math.Easing.Quintic.Out);
+            this.scene.hud.hitStop(profile.hitStop * 4);
+            this.emitParry(source);
+            return;
+        };
 
         if (miss) {
-            if (profile.missKey) this.scene.sound.play(profile.missKey, { volume: volume * 0.6 });
+            // if (profile.missKey) this.scene.sound.play(profile.missKey, { volume: volume * 0.6 });
             return;
         };
 
         if (critical) {
             volume *= randomFloatFromInterval(1.35, 1.5);
-            rate *= randomFloatFromInterval(1, 1.2);
-            this.zoom(profile.zoom);
-            this.flashScreen(profile.flashColor, profile.hitStop * 10);
+            rate *= randomFloatFromInterval(1, 1.25);
+            this.zoom(profile.zoom, 320, Phaser.Math.Easing.Elastic.Out);
+            this.flashScreen(profile.flashColor, 320);
         };
 
         if (glancing) {
-            volume *= randomFloatFromInterval(0.6, 0.8);
-            rate *= randomFloatFromInterval(0.8, 1);
+            volume *= randomFloatFromInterval(0.5, 0.75);
+            rate *= randomFloatFromInterval(0.75, 1);
         };
-
-        this.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.5 : 1));
+        // this.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.5 : 1));
+        this.scene.hud.hitStop(profile.hitStop * (critical ? 3 : glancing ? 0.75 : 1.5));
         this.emitParticles(pos, damageType, critical, glancing, parry);
         screenShake(this.scene);
+
 
         this.scene.sound.play(key, { volume, rate });
     };
@@ -136,19 +144,20 @@ export class HitFeedbackSystem {
     };
 
     private hitStop(duration: number) {
-        this.scene.matter.world.engine.timing.timeScale = 0.01;
+        const timing = this.scene.matter.world.engine.timing;
+        timing.timeScale = 0.1;
         this.scene.time.delayedCall(duration, () => {
-            this.scene.matter.world.engine.timing.timeScale = 1;
+            timing.timeScale = 1;
         }, undefined, this);
     };
 
-    private zoom(zoom: number) {
+    private zoom(zoom: number, duration = 300, ease: any) {
         const cam = this.scene.cameras.main;
         this.scene.tweens.add({
             targets: cam,
             zoom: cam.zoom * zoom,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 300,
+            ease, // : Phaser.Math.Easing.Elastic.Out, // Phaser.Math.Easing.Elastic.InOut,
+            duration,
             yoyo: true
         });
     };
@@ -359,6 +368,23 @@ export class HitFeedbackSystem {
             // gravityY: -25,
             tint: [0x00FF00, 0x66FF66, 0xAAFFAA]
         }).setScrollFactor(1).setDepth(100).stop();
+
+        
+        this.scene.make.graphics({x:0,y:0}).fillStyle(0xFFFFFF, 1).fillRect(0, 0, 2, 6).generateTexture("parry", 2, 6).destroy();
+        this.parry = this.scene.add.particles(0, 0, "parry", {
+            x: 0, y: 0,
+            blendMode: "ADD",
+            color: [0xE0E5E5, 0xCED3D4, 0xC0C6C7, 0xA8B0B2, 0x99A3A3],
+            frequency: 100,
+            angle: { min: -135, max: -45 },
+            lifespan: { min: 150, max: 300 },
+            quantity: 40,
+            alpha: { start: 1, end: 0 },
+            scale: { start: 1.2, end: 0.4 },
+            speed: { min: 300, max: 600 },
+            visible: true,
+            gravityY: 0,
+        }).setScrollFactor(1).setDepth(100).stop();
     };
 
     public emitParticles(pos: Phaser.Math.Vector2, type: string, crit: boolean, glance: boolean, parry: boolean): void {
@@ -405,6 +431,14 @@ export class HitFeedbackSystem {
         if (!entity) return;
         const pos = new Phaser.Math.Vector2(entity.x, entity.y);
         this.emitParticles(pos, type, false, false, false);
+    };
+
+    public emitParry(source: string): void {
+        const id = source === "player" ? this.scene.player.playerID : this.scene.state.enemyID;
+        const entity = this.scene.combatManager.combatant(id);
+        if (!entity) return;
+        const pos = new Phaser.Math.Vector2(entity.spriteWeapon.x, entity.spriteWeapon.y);
+        this.parry.explode(25, pos.x, pos.y);
     };
 
     public bleed = (pos: Phaser.Math.Vector2): void => {

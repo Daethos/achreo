@@ -2332,7 +2332,7 @@ export default class Enemy extends Entity {
         this.enemySound("fire", this.castingSuccess);
         this.stopCasting("Countered Frost");
     };
-    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST);
+    onHealingEnter = () => this.startCasting("Healing", PLAYER.DURATIONS.HEALING, CAST, false, false);
     onHealingUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, CAST);

@@ -24,9 +24,9 @@ export const HitProfiles = {
         hitStop: 32,
 
         screenFlash: true,
-        flashColor: 0xFFFFFF,
+        flashColor: 0xFF0000,
 
-        zoom: 1.22
+        zoom: 1.2
     },
     Pierce: {
         key: "pierce",
@@ -38,9 +38,9 @@ export const HitProfiles = {
         hitStop: 32,
 
         screenFlash: true,
-        flashColor: 0xFFFFFF,
+        flashColor: 0xFF0000,
 
-        zoom: 1.22
+        zoom: 1.2
     },
     Slash: {
         key: "slash",
@@ -52,9 +52,9 @@ export const HitProfiles = {
         hitStop: 32,
 
         screenFlash: true,
-        flashColor: 0xFFFFFF,
+        flashColor: 0xFF0000,
 
-        zoom: 1.22
+        zoom: 1.2
     },
 
     Earth: {
@@ -69,7 +69,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0x000000,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Fire: {
         key: "fire",
@@ -83,7 +83,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0xFF0000,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Frost: {
         key: "frost",
@@ -97,7 +97,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0x0000FF,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Lightning: {
         key: "lightning",
@@ -111,7 +111,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0xFFFF00,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Righteous: {
         key: "righteous",
@@ -125,7 +125,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0xFFD700,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Sorcery: {
         key: "sorcery",
@@ -139,7 +139,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0xA700FF,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Spooky: {
         key: "spooky",
@@ -153,7 +153,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0x800080,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Wild: {
         key: "wild",
@@ -167,7 +167,7 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0x50C878,
 
-        zoom: 1.15
+        zoom: 1.25
     },
     Wind: {
         key: "wind",
@@ -181,6 +181,6 @@ export const HitProfiles = {
         screenFlash: true,
         flashColor: 0x00FFFF,
 
-        zoom: 1.15
+        zoom: 1.25
     },
 };

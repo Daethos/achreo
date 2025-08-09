@@ -391,8 +391,6 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             };
             if (playerWin === true) res.computerDeathDescription = `${res.computer?.name || "The Enemy"} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
-            EventBus.emit("add-combat-logs", res);
-            EventBus.emit("update-combat", res);
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {
@@ -400,6 +398,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             };
             if (affectsStealth && combat().isStealth) EventBus.emit("update-stealth");
             if (shake) screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
+            EventBus.emit("add-combat-logs", res);
+            EventBus.emit("update-combat", res);
         } catch (err: any) {
             console.warn(err, "Error Initiating Combat");
         };

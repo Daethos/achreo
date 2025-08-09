@@ -24,7 +24,7 @@ export default class Settings {
         smoothStep: boolean; 
     };
     public shake: { 
-        duration: number; intensity: number; 
+        enabled: boolean; duration: number; intensity: number; 
     };
     public selected: { 
         prayer: number; 
@@ -197,7 +197,7 @@ export default class Settings {
             panicMax: 120,
             smoothStep: true
         };
-        this.shake = { duration: 100, intensity: 0.05 };
+        this.shake = { enabled: true, duration: 100, intensity: 0.05 };
         this.selected = {
             prayer: 0,
             damageType: 0,

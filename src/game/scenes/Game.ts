@@ -1281,6 +1281,8 @@ export class Game extends Scene {
     checkChunk = (entity: Enemy | NPC): boolean => entity.chunkX === this.playerChunkX && entity.chunkY === this.playerChunkY;
     
     update(_time: number, delta: number): void {
+        // console.time("Update");
+        // console.log({delta});
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             let enemy = this.enemies[i], chunk = this.checkChunk(enemy), distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
@@ -1328,6 +1330,7 @@ export class Game extends Scene {
         };
         this.combatManager.combatMachine.process();
         this.frameCount++;
+        // console.timeEnd("Update");
     };
 
     pause(): void {

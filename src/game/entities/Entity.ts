@@ -525,14 +525,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     
     applyKnockback(target: Enemy | Player | Party, force = 10) {
         if (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting) return;
-        force *= 0.65;
+        force *= 0.55;
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
             targets: target,
             ease: Phaser.Math.Easing.Expo.Out,
             x: target.x + Math.cos(angle) * force,
             y: target.y + Math.sin(angle) * force,
-            duration: 300,
+            duration: 320,
         });
     };
 

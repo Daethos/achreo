@@ -54,6 +54,8 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
             return 1.1;
         } else if (width > 1200) { // Mid
             return 1;
+        } else if (width < 850) {
+            return 0.75;
         } else { // Mobile
             return 0.8;
         };
@@ -99,7 +101,14 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
                     <div class="" style={{ transform: "scale(0.875)", "margin-top": dimensions().WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dimensions().WIDTH > 1200 ? "7.5%" : "3%" }}>
                         <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "" : dimensions().HEIGHT > 420 ? "-5%" : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
+                    <div style={{ "margin-left": "0", 
+                        "margin-top": dimensions().WIDTH > 1200 
+                            ? "" 
+                            : dimensions().HEIGHT > 420 
+                            ? "-5%" 
+                            : dimensions().WIDTH < 850 
+                            ? "-10%" 
+                            : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
                         <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                     </div>
                     <Show when={itemShow()}>
@@ -140,6 +149,9 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
             case len < 10 && dimensions().WIDTH > 1200: return "1.5em"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "1.3em"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "1.1em"; // 0.85em
+            case len < 10 && dimensions().WIDTH < 850: return "1.25em"; // 1.15em
+            case len < 20 && dimensions().WIDTH < 850: return "1.15em"; // 1em
+            case len < 30 && dimensions().WIDTH < 850: return "1.05em"; // 0.85em
             case len < 10: return "1.25em"; // 1.15em
             case len < 20: return "1.15em"; // 1em
             case len < 30: return "1em"; // 0.85em
@@ -151,6 +163,9 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
             case len < 10 && dimensions().WIDTH > 1200: return "3%"; // 1.15em
             case len < 20 && dimensions().WIDTH > 1200: return "3.5%"; // 1em
             case len < 30 && dimensions().WIDTH > 1200: return "4%"; // 0.85em
+            case len < 10 && dimensions().WIDTH < 850: return "1vh"; // 1.15em
+            case len < 20 && dimensions().WIDTH < 850: return "1.25vh"; // 1em
+            case len < 30 && dimensions().WIDTH < 850: return "1.5vh"; // 0.85em
             case len < 10: return "1.5%"; // -3%
             case len < 20: return "2%"; // -2%
             case len < 30: return "2.5%"; // -1%
@@ -209,7 +224,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%" }}>{healthDisplay()}</div>
+            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%", "font-size": dimensions().WIDTH > 850 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `${healthPercentage()}%`, 
             "background": state().isEnemy ? "linear-gradient(purple, #191970)" : "linear-gradient(#00AA00, green)", 

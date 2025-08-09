@@ -351,7 +351,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 850 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
@@ -424,7 +424,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 let highestMastery = Object.entries(statistics().mastery).reduce((a, b) => a[1] > b[1] ? a : b);
                 if (highestMastery?.[1] === 0) highestMastery = [ascean()?.mastery, 0];
                 if (highestDeity?.[1] === 0) highestDeity[0] = combat().weapons?.[0]?.influences?.[0] as string; 
-                return <div class="creature-heading ">
+                return <div class="creature-heading" style={{ "padding-bottom": "5%" }}>
                     <h1 style={{...bMargin}}>Attacks</h1>
                         Magical: <span class="gold">{statistics().combat?.attacks?.magical}</span> <br />
                         Physical: <span class="gold">{statistics().combat?.attacks?.physical}</span><br />
@@ -507,7 +507,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "" }}>
+                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 850 ? "-3%" : "", "margin-bottom": dimensions().WIDTH < 850 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
@@ -988,7 +988,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
+                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 850 ? "-3%" : "", "margin-bottom": dimensions().WIDTH < 850 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 850 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>

@@ -49,6 +49,7 @@ export class Hud extends Phaser.Scene {
     talents: Talents;
     postFxPipeline: any;
     pipelines: any = {};
+    hitStopping: boolean = false;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -620,12 +621,16 @@ export class Hud extends Phaser.Scene {
     };
 
     hitStop = (duration: number) => {
+        if (this.hitStopping) return;
+        // console.log("Hit Stop");
+        this.hitStopping = true;
         const scene = this.scene.get(this.currScene) as Play;
         scene.pause();
 
         this.time.delayedCall(duration, () => {
             scene.resume();
-        });
+            this.hitStopping = false;
+        }, undefined, this);
     };
 
     updateCoordinates(x: number, y: number) {

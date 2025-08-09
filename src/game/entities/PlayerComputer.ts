@@ -43,7 +43,7 @@ export default class PlayerComputer extends Player {
         const potential = [traits.primary.name, traits.secondary.name, traits.tertiary.name];
         let mastery = SPECIAL[ascean.mastery as keyof typeof SPECIAL];
         mastery = mastery.filter((m) => {
-            return m !== 'Mark' && m !== 'Recall' && m !== 'Consume';
+            return m !== "Mark" && m !== "Recall" && m !== "Consume";
         })
         let extra: any[] = [];
         for (let i = 0; i < 3; i++) {
@@ -70,7 +70,7 @@ export default class PlayerComputer extends Player {
                 return;
             };
             const special = this.combatSpecials[Math.floor(Math.random() * this.combatSpecials.length)].toLowerCase();
-            // const test = ['achire', 'quor'];
+            // const test = ["achire", "quor"];
             // const special = test[Math.floor(Math.random() * test.length)];
             this.setVelocity(0);
             this.isMoving = false;
@@ -231,7 +231,7 @@ export default class PlayerComputer extends Player {
                 this.isPosted = true;
                 this.setVelocity(0);
                 if (this.computerAction) this.anims.play(FRAMES.IDLE, true);
-                // if (this.clearAttacks()) this.anims.play('player_idle', true);
+                // if (this.clearAttacks()) this.anims.play("player_idle", true);
             };
         };
     };
@@ -239,7 +239,7 @@ export default class PlayerComputer extends Player {
     evaluateCombat = () => {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
         let actionNumber = Math.floor(Math.random() * 101);
-        let action = '';
+        let action = "";
         const loadout = this.scene.hud.settings.computerLoadout || { attack: 20, parry: 10, roll: 10, thrust: 15, posture: 15, jump: 10 };
         if (actionNumber > 100 - loadout.attack) { // 81-100 (20%)
             action = States.COMPUTER_ATTACK;
@@ -260,7 +260,7 @@ export default class PlayerComputer extends Player {
         if (check.success === true && this.playerMachine.stateMachine.isState(action)) {
             this.playerMachine.stateMachine.setState(action);
         } else {
-            this.specialCombatText = this.scene.showCombatText('Catch Your Breath', 750, 'dread', false, true, () => this.specialCombatText = undefined);
+            this.scene.showCombatText(this, "Catch Your Breath", 750, "dread", false, true);
             this.scene.combatManager.useStamina(-5);    
         };
     };
@@ -275,10 +275,10 @@ export default class PlayerComputer extends Player {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play(FRAMES.PARRY, true).on('animationcomplete', () => this.isParrying = false);
+            this.anims.play(FRAMES.PARRY, true).on("animationcomplete", () => this.isParrying = false);
         } else if (this.isThrusting) {
             sprint(this.scene);
-            this.anims.play(FRAMES.THRUST, true).on('animationcomplete', () => this.isThrusting = false);
+            this.anims.play(FRAMES.THRUST, true).on("animationcomplete", () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play(FRAMES.DODGE, true);
             if (this.dodgeCooldown === 0) this.playerDodge();
@@ -288,10 +288,10 @@ export default class PlayerComputer extends Player {
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
             sprint(this.scene);
-            this.anims.play(FRAMES.POSTURE, true).on('animationcomplete', () => this.isPosturing = false);
+            this.anims.play(FRAMES.POSTURE, true).on("animationcomplete", () => this.isPosturing = false);
         } else if (this.isAttacking) {
             sprint(this.scene);
-            this.anims.play(FRAMES.ATTACK, true).on('animationcomplete', () => this.isAttacking = false);
+            this.anims.play(FRAMES.ATTACK, true).on("animationcomplete", () => this.isAttacking = false);
         } else if (this.isHurt) {
             this.anims.play(FRAMES.HURT, true);
         } else if (this.moving()) {
@@ -301,7 +301,7 @@ export default class PlayerComputer extends Player {
             walk(this.scene);
             this.anims.play(FRAMES.CAST, true);
         } else if (this.isPraying) {
-            this.anims.play(FRAMES.PRAY, true).on('animationcomplete', () => this.isPraying = false);
+            this.anims.play(FRAMES.PRAY, true).on("animationcomplete", () => this.isPraying = false);
         } else {
             this.isMoving = false;
             this.handleIdleAnimations();
@@ -332,18 +332,15 @@ export default class PlayerComputer extends Player {
 
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
-        if (this.scrollingCombatText) this.scrollingCombatText.update(this);
-        if (this.specialCombatText) this.specialCombatText.update(this);
-        if (this.resistCombatText) this.resistCombatText.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality('player', this.currentTarget as Enemy);
+        this.functionality("player", this.currentTarget as Enemy);
         
-        if (this.isConfused && !this.sansSuffering('isConfused') && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
+        if (this.isConfused && !this.sansSuffering("isConfused") && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
         };
-        if (this.isFeared && !this.sansSuffering('isFeared') && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
+        if (this.isFeared && !this.sansSuffering("isFeared") && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
             this.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
@@ -351,15 +348,15 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.HURT);
             return;
         };
-        if (this.isParalyzed && !this.sansSuffering('isParalyzed') && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
+        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
             this.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };
-        if (this.isPolymorphed && !this.sansSuffering('isPolymorphed') && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
+        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
             this.playerMachine.stateMachine.setState(States.POLYMORPHED);
             return;
         };
-        if (this.isStunned && !this.sansSuffering('isStunned') && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
+        if (this.isStunned && !this.sansSuffering("isStunned") && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };

@@ -61,7 +61,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         
         const isNonNumeric = isNaN(Number(text));
         const pos = new Phaser.Math.Vector2(entity.x, entity.y);
-        const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 1.5;
+        const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 1.25;
         const arcAmplitude = Phaser.Math.Between(12, 20);
         const arcDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1; // Left or right
         const side = arcDirection * (arcDirection > 0 ? 16 : 32);        

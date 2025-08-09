@@ -1214,7 +1214,7 @@ export default class PlayerMachine {
         this.player.setStatic(false);
     };
 
-    onHealingEnter = () => this.player.startCasting("Healing", PLAYER.DURATIONS.HEALING, HEAL);
+    onHealingEnter = () => this.player.startCasting("Healing", PLAYER.DURATIONS.HEALING, HEAL, false);
     
     onHealingUpdate = (dt: number) => {
         if (this.player.isMoving === true) this.player.isCasting = false;

@@ -12,6 +12,7 @@ import { PLAYER } from "../../utility/player";
 import { getHitFeedbackContext, HitFeedbackSystem } from "./HitFeedbackSystem";
 import { Combat } from "../../stores/combat";
 import { calculateThreat, ENEMY } from "../entities/Entity";
+import { fetchArena } from "../../utility/enemy";
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -47,7 +48,7 @@ export class CombatManager {
         
         if (player.health > newPlayerHealth) {
             this.handlePlayerDamage(e);
-        } else if (player.health < newPlayerHealth) {
+        } else if (player.health < newPlayerHealth) { // newPlayerHealth - player.health
             this.context.showCombatText(this.context.player, `${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
         };
         
@@ -99,7 +100,7 @@ export class CombatManager {
         const player = this.context.player;
         
         if (enemy.health > newComputerHealth) {
-            let damage: number | string = Math.round(enemy.health - newComputerHealth);
+            let damage: number | string = Math.round(e.realizedPlayerDamage); // enemy.health - newComputerHealth
             this.context.showCombatText(enemy, `${damage}`, 1500, BONE, criticalSuccess, false);
             enemy.checkHurt();
             if (enemy.isFeared) enemy.checkFear();
@@ -152,7 +153,7 @@ export class CombatManager {
 
     private handlePlayerDamage(e: Combat) {
         const player = this.context.player;
-        const damage = Math.round(player.health - e.newPlayerHealth);
+        const damage = Math.round(e.realizedComputerDamage); // player.health - e.newPlayerHealth
         this.context.showCombatText(this.context.player, `${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false);
 
         player.isHurt = !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
@@ -297,7 +298,42 @@ export class CombatManager {
     playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
     playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
+    computerCaerenicNeg = (entity: Enemy | Party) =>{
+        return entity.isCaerenic ? 1.25 : 1
+    };
+
+    computerCaerenicPro = (entity: Enemy | Party) => {
+        return entity.isCaerenic ? 1.15 : 1
+    };
+
+    computerStalwart = (entity: Enemy | Party) => {
+        return entity.isStalwart ? 0.85 : 1
+    }; 
+
+    computerCaerenicNegID = (id: string) =>{
+        const entity = this.combatant(id);
+        return entity.isCaerenic ? 1.25 : 1;
+    };
+
+    computerCaerenicProID = (id: string) => {
+        const entity = this.combatant(id);
+        return entity.isCaerenic ? 1.15 : 1;
+    };
+
+    computerStalwartID = (id: string) => {
+        const entity = this.combatant(id);
+        return entity.isStalwart ? 0.85 : 1;
+    }; 
+
     // ============================ Computer Combat ============================= \\
+
+    summon = (entity: Enemy) => {
+        const ally = fetchArena([{ level: entity.ascean.level, mastery: entity.ascean.mastery, id: "0" }]);
+        const newEnemy = new Enemy({scene:this.context, x:200, y:200, texture:"player_actions", frame:"player_idle_0", data: ally[0]});
+        this.context.enemies.push(newEnemy);
+        newEnemy.setPosition(Phaser.Math.Between(entity.x - 16, entity.x + 16), Phaser.Math.Between(entity.y - 24, entity.y + 24));
+        newEnemy.callToArms(entity.currentTarget);
+    };
 
     computer = (combat: { type: string; payload: { action: string; origin: string; enemyID: string; } }) => {
         const { payload } = combat;
@@ -420,20 +456,26 @@ export class CombatManager {
             enemy.count.stunned++;
             enemy.isStunned = true;
             if (enemyID === this.context.player.playerID) { // PvC Combat
-                const damage = Math.round(this.context.state?.player?.[this.context.state?.player.mastery as keyof typeof this.context.state.player]);
+                const damage = Math.round(this.context.state?.player?.[this.context.state?.player.mastery as keyof typeof this.context.state.player]) 
+                    * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
+                    * this.context.player.playerMachine.levelModifier();
                 const health = enemy.health - damage;
                 this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
                 return;
             };
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (comp) { // CvC Combat
-                const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean]);
+                const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean])
+                    * this.computerCaerenicPro(comp) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                    * (comp.ascean.level + 9) / 10;
                 this.updateComputerDamage(damage, id, enemyID);
                 return;
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
                 if (party) {  
-                    const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean]);
+                    const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean])
+                        * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                        * party.playerMachine.levelModifier();
                     this.updateComputerDamage(damage, id, enemyID);
                 };
             };
@@ -444,7 +486,9 @@ export class CombatManager {
             if (party.health <= 0) return;
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (comp) {
-                const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean]);
+                const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean])
+                    * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                    * party.playerMachine.levelModifier();
                 this.updateComputerDamage(damage, id, enemyID);
             };
         };
@@ -456,14 +500,18 @@ export class CombatManager {
             enemy.count.feared++;
             enemy.isFeared = true;
             if (origin === this.context.player.playerID) {
-                const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1);
+                const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1) 
+                    * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
+                    * this.context.player.playerMachine.levelModifier();
                 const health = enemy.health - damage;
                 this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
                 enemy.specialFear = this.context.player.checkTalentEnhanced(States.FEAR);
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
-                    const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
+                    const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean])
+                        * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                        * party.playerMachine.levelModifier();
                     this.updateComputerDamage(damage, id, origin);
                 };
             };
@@ -476,10 +524,12 @@ export class CombatManager {
             enemy.count.paralyzed++;
             enemy.isParalyzed = true;
             if (origin === this.context.player.playerID) {  
-                if (this.context.player.currentTarget && this.context.player.currentTarget.enemyID === this.context.player.getEnemyId()) {
+                if (enemy.enemyID === this.context.player.getEnemyId()) {
                     this.combatMachine.action({ type: "Tshaeral", data: 15 });
                 } else {
-                    const drained = Math.round(this.context.state.playerHealth * 0.15 * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10));
+                    const drained = Math.round(this.context.state.playerHealth * 0.15
+                        * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
+                        * this.context.player.playerMachine.levelModifier());
                     const newPlayerHealth = drained / this.context.state.playerHealth * 100;
                     const newHealth = enemy.health - drained < 0 ? 0 : enemy.health - drained;
                     const tshaeralDescription = `You tshaer and devour ${drained} health from ${enemy.ascean?.name}.`;
@@ -490,7 +540,9 @@ export class CombatManager {
             } else { // Party Combat
                 let party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
-                    const damage = Math.round(party.computerCombatSheet.computerHealth * 0.15);
+                    const damage = Math.round(party.computerCombatSheet.computerHealth * 0.15)
+                        * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                        * party.playerMachine.levelModifier();
                     const newComputerHealth = Math.min(party.health + damage, party.computerCombatSheet.computerHealth);
                     party.health = newComputerHealth;
                     party.computerCombatSheet.newComputerHealth = party.health;
@@ -585,13 +637,17 @@ export class CombatManager {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
             if (origin === this.context.player.playerID) { // Player Fyerus
-                const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 0.35) * (this.context.player.isCaerenic ? 1.15 : 1) * ((this.context.state.player?.level as number + 9) / 10);
+                const damage = this.context.player.playerMachine.mastery() * 0.35 
+                    * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
+                    * this.context.player.playerMachine.levelModifier();
                 const health = enemy.health - damage;
                 this.combatMachine.action({ data: { key: "enemy", value: health, id }, type: "Health" });
             } else { // Party
                 const party = this.context.party.find((e: Party) => e.enemyID === origin);
                 if (party) {
-                    const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean] * 0.35);
+                    const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean] * 0.35)
+                    * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                    * party.playerMachine.levelModifier();
                     this.updateComputerDamage(damage, id, origin);
                 };
             };
@@ -829,7 +885,7 @@ export class CombatManager {
             party.isStunned = true;
         };
     };
-    tendril = (combatID: string, enemySpecialID?: string): void => {
+    disease = (combatID: string, enemySpecialID?: string): void => {
         if (!combatID) return;
         if (combatID === this.context?.player?.playerID && enemySpecialID) { // Enemy Special is Damaging Player
             const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
@@ -841,26 +897,31 @@ export class CombatManager {
         const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
         if (enemy) { // Enemy Taking Damage
             if (enemySpecialID === this.context.player.playerID) {
-                if (this.context.player.spellTarget === this.context.player.getEnemyId()) {
+                if (enemy.enemyID === this.context.player.getEnemyId()) {
                     this.combatMachine.action({ type: "Chiomic", data: this.context.player.entropicMultiplier(20) }); 
                 } else {
-                    if (!enemy || enemy.health <= 0 || enemy.isDefeated) return;
-                    const tendril = Math.round(this.context.player.mastery() * (1 + (this.context.player.entropicMultiplier(20) / 100)) * this.context.player.caerenicDamage() * this.context.player.levelModifier());
+                    if (enemy.health <= 0) return;
+                    const tendril = Math.round(this.context.player.playerMachine.mastery() * (1 + (this.context.player.entropicMultiplier(20) / 100)) 
+                        * this.context.combatManager.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) * this.context.player.playerMachine.levelModifier());
                     const newComputerHealth = enemy.health - tendril < 0 ? 0 : enemy.health - tendril;
                     const playerActionDescription = `Your wreathing tendrils rip ${tendril} health from ${enemy.ascean?.name}.`;
                     EventBus.emit("add-combat-logs", { ...this.context, playerActionDescription });
-                    this.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: this.context.player.spellTarget } });
+                    this.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: enemy.enemyID } });
                 };
             } else {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
                 if (origin) { // CvC
                     // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
-                    const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
+                    const damage = Math.round(origin.mastery() / 2 * this.computerCaerenicPro(origin) 
+                        * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                        * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
                     this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 } else {
                     const party = this.context.party.find((e: Party) => e.enemyID === enemySpecialID);
                     if (!party) return;
-                    const damage = Math.round(party.mastery() / 2 * (1 + (party.entropicMultiplier(10))) * ((party.ascean.level + 9) / 10));
+                    const damage = Math.round(party.mastery() / 2 * this.computerCaerenicPro(party) 
+                        * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                        * (1 + (party.entropicMultiplier(10))) * ((party.ascean.level + 9) / 10));
                     // const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
                     this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 };  
@@ -870,7 +931,9 @@ export class CombatManager {
             if (party) {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
                 if (origin) { // CvC
-                    const damage = Math.round(origin.mastery() / 2 * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
+                    const damage = Math.round(origin.mastery() / 2 * this.computerCaerenicPro(origin) 
+                    * this.computerCaerenicNeg(party) * this.computerStalwart(party)
+                    * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
                     // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
                     this.updateComputerDamage(damage, combatID, enemySpecialID as string);
                 };
@@ -944,6 +1007,7 @@ export class CombatManager {
         EventBus.emit("update-grace", value);
         this.context.player.grace -= value;
     };
+
     useStamina = (value: number) => {
         if (this.context.state.isQuicken && value > 0) {
             const effect = this.context.state.playerEffects.find((prayer: StatusEffect) => prayer.prayer === PRAYERS.QUICKEN);

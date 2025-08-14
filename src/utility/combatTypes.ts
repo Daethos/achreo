@@ -130,3 +130,8 @@ export const FAITH_RARITY = {
     "Epic": 2,
     "Legendary": 3
 };
+
+export const CHIOMISM = 150;
+export const DEVOUR = 150;
+export const SACRIFICE = 75;
+export const SUTURE = 200;

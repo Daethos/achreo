@@ -92,11 +92,11 @@ export class Hud extends Phaser.Scene {
         this.logger = new Logger();
         this.logger.add("console", new ConsoleLogger());
         this.time.delayedCall(2000, () => {
-            this.logger.log("Console: Something potentially innocuous!");
-            this.logger.log("Warning: Some function did not work, but did not crash the game!");
-            this.logger.log("Error: Some portion if not all of the game has crashed!");
+            this.logger.log("Console: [This means something innocuous about the gameplay.]");
+            this.logger.log("Warning: [This means some function did not work, but did not crash the game]");
+            this.logger.log("Error: [This means some portion if not all of the game has crashed]");
             this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);
-            this.logger.log(`Console: Scene Renderer Type: ${this.renderer.type === Phaser.WEBGL ? "WebGL" : this.renderer.type === Phaser.CANVAS ? "Canvas" : "Not Categorized"}`);
+            // this.logger.log(`Console: Scene Renderer Type: ${this.renderer.type === Phaser.WEBGL ? "WebGL" : this.renderer.type === Phaser.CANVAS ? "Canvas" : "Not Categorized"}`);
         }, undefined, this);
         this.input.keyboard?.on("keydown-P", () => {
             EventBus.emit("action-button-sound");
@@ -399,10 +399,12 @@ export class Hud extends Phaser.Scene {
             health: enemy.health, 
             isAggressive: enemy.isAggressive, 
             startedAggressive: enemy.startedAggressive, 
+            isCaerenic: enemy.isCaerenic,
             isDefeated: enemy.defeatedByPlayer, 
             isTriumphant: enemy.isTriumphant,
             isLuckout: enemy.isLuckout, 
-            isPersuaded: enemy.isPersuaded, 
+            isPersuaded: enemy.isPersuaded,
+            isStalwart: enemy.isStalwart, 
             playerTrait: enemy.playerTrait,
             name: enemy.name
         };
@@ -625,9 +627,11 @@ export class Hud extends Phaser.Scene {
         // console.log("Hit Stop");
         this.hitStopping = true;
         const scene = this.scene.get(this.currScene) as Play;
+        scene.matter.pause();
         scene.pause();
 
         this.time.delayedCall(duration, () => {
+            scene.matter.resume();
             scene.resume();
             this.hitStopping = false;
         }, undefined, this);

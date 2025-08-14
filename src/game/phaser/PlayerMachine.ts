@@ -11,6 +11,7 @@ import { Play } from "../main";
 import PlayerComputer from "../entities/PlayerComputer";
 import Party from "../entities/PartyComputer";
 import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
+import { CHIOMISM, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -175,7 +176,7 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const chiomic = Math.round(this.mastery() * (1 + power / 100) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
+            const chiomic = Math.round(this.mastery() * (1 + power / CHIOMISM) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -220,7 +221,7 @@ export default class PlayerMachine {
         if (this.player.spellTarget === this.player.getEnemyId()) {
             this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power }); 
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
+            const chiomic = Math.round(this.mastery() * (1 + (power / CHIOMISM)) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your kyrnaicism rips ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -241,7 +242,7 @@ export default class PlayerMachine {
             const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
             const sacDam = sacrifice / 2 * this.scene.combatManager.playerStalwart();
             let playerSacrifice = this.scene.state.newPlayerHealth - sacDam < 0 ? 0 : this.scene.state.newPlayerHealth - sacDam;
-            let enemySacrifice = enemy.health - (sacrifice * (1 + power / 50)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
+            let enemySacrifice = enemy.health - (sacrifice * (1 + power / SACRIFICE)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
             const playerActionDescription = `You sacrifice ${sacDam} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSacrifice, id } });
@@ -260,7 +261,7 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2)) * (1 * power / 100) * 0.8;
+            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2)) * (1 * power / SUTURE);
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `You suture ${enemy.ascean?.name}s caeren into you, absorbing and healing for ${suture}.`;
@@ -271,6 +272,11 @@ export default class PlayerMachine {
         };
         this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
         this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Righteous");
+    };
+
+    getHeal = (power: number) => {
+        this.scene.combatManager.combatMachine.action({ data: { key: "player", value: power, id: this.player.playerID }, type: "Health" });
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
     };
 
     healCheck = (power: number) => {
@@ -2274,7 +2280,7 @@ export default class PlayerMachine {
 
     onDiseaseEnter = () => {
         this.player.isDiseasing = true;
-        this.player.aoe = this.scene.aoePool.get(TENDRIL, 6);    
+        this.player.aoe = this.scene.aoePool.get("disease", 6);    
         this.scene.sound.play("dungeon", { volume: this.scene.hud.settings.volume });
         this.scene.showCombatText(this.player, "Tendrils Swirl", 750, TENDRIL, false, true);
         this.player.checkTalentCost(States.DISEASE, PLAYER.STAMINA.DISEASE);
@@ -2302,7 +2308,7 @@ export default class PlayerMachine {
             this.player.isHowling = false;
         }, undefined, this);
         EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You howl, it"s otherworldly nature stunning nearby foes.`
+            playerSpecialDescription: `You howl, it's otherworldly nature stunning nearby foes.`
         });
     };
     onHowlUpdate = (_dt: number) => {if (this.player.isHowling === false) this.positiveMachine.setState(States.CLEAN);};
@@ -3096,7 +3102,7 @@ export default class PlayerMachine {
             this.player.isEnduring = false;
         }, undefined, this);
         EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren"s hush pours into other faculties, invigorating you.`
+            playerSpecialDescription: `Your caeren's hush pours into other faculties, invigorating you.`
         });
     };
     onEnduranceUpdate = (_dt: number) => {if (!this.player.isEnduring) this.positiveMachine.setState(States.CLEAN);};

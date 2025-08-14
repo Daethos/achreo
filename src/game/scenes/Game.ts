@@ -330,7 +330,7 @@ export class Game extends Scene {
         //     callbackScope: this
         // });
         // this.time.addEvent({
-        //     delay: 750,
+        //     delay: 500,
         //     loop: true,
         //     callback: () => {
         //         const isText = Math.random() > 0.85;

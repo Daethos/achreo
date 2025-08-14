@@ -1,12 +1,12 @@
 import Entity, { calculateThreat, ENEMY, FRAME_COUNT, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE } from "./Entity"; 
-import StateMachine, { States } from "../phaser/StateMachine";
+import StateMachine, { specialPositiveMachines, States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from "uuid";
 import { PLAYER, ENEMY_ENEMIES, FACTION } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import Bubble from "../phaser/Bubble";
-import { BROADCAST_DEATH, DISTANCE, DURATION, ENEMY_SPECIAL, GRIP_SCALE, INSTINCTS, RANGE } from "../../utility/enemy";
+import { BROADCAST_DEATH, DISTANCE, DURATION, ENEMY_AOE, ENEMY_SPECIAL, GRIP_SCALE, HELP, INSTINCTS, MIND_STATES, RANGE } from "../../utility/enemy";
 import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { Underground } from "../scenes/Underground";
 import Player from "./Player";
@@ -23,8 +23,10 @@ import Party from "./PartyComputer";
 import { BONE, CAST, DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { CHUNK_SIZE } from "../scenes/Game";
+import { CombatContext, MindState, MindStates } from "../phaser/MindState";
+import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 // @ts-ignore
-const { Body, Bodies } = Phaser.Physics.Matter.Matter;
+const { Body, Bodies, Query } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
 const NAME = "enemy";
 const COMPUTER_ACTION = "computerAction";
@@ -119,6 +121,8 @@ export default class Enemy extends Entity {
     cachedDirection: any;
     chunkX: number = 0;
     chunkY: number = 0;
+    mindState: MindState;
+    mindStateName: string;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -152,6 +156,9 @@ export default class Enemy extends Entity {
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
             .addState(States.LEASH, { onEnter: this.onLeashEnter, onUpdate: this.onLeashUpdate, onExit: this.onLeashExit })
+            .addState(States.HELP, { onEnter: this.onHelpEnter, onUpdate: this.onHelpUpdate, onExit: this.onHelpExit })
+            .addState(States.SUMMON, { onEnter: this.onSummonEnter, onUpdate: this.onSummonUpdate, onExit: this.onSummonExit })
+            .addState(States.KNOCKBACK, { onEnter: this.onPushbackEnter, onUpdate: this.onPushbackUpdate, onExit: this.onPushbackExit })
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
             .addState(States.THRUST, { onEnter: this.onThrustEnter, onUpdate: this.onThrustUpdate, onExit: this.onThrustExit })
@@ -272,7 +279,12 @@ export default class Enemy extends Entity {
         this.chunkX = this.scene.playerChunkX;
         this.chunkY = this.scene.playerChunkY;
 
-        // const colliderWidth = PLAYER.COLLIDER.WIDTH; 
+        const mindStates = MIND_STATES[this.ascean.mastery];
+        const mindStateName = mindStates[Math.floor(Math.random() * mindStates.length)];
+        this.mindState = MindStates[mindStateName];
+        this.mindStateName = mindStateName;
+        if (this.mindState.startup) this.mindState.startup(this, this.getCombatContext());
+        // const colliderWidth = PLAYER.COLLIDER.WIDTH;
         // const colliderHeight = PLAYER.COLLIDER.HEIGHT; 
         // const paddingWidth = 10;         
         // const paddingHeight = 10; 
@@ -315,7 +327,7 @@ export default class Enemy extends Entity {
         ), Phaser.Geom.Rectangle.Contains)
             .on("pointerdown", () => {
                 if ((!this.scene.hud.settings.difficulty.enemyCombatInteract && this.scene.combat) || this.isDeleting) return; //  && !this.inCombat
-                // this.scene.hud.logger.log(`Console: ${this.ascean.name}"s current State: ${this.stateMachine.getCurrentState()?.charAt(0).toUpperCase()}${this.stateMachine.getCurrentState()?.slice(1)}`);
+                // this.scene.hud.logger.log(`Console: ${this.ascean.name}'s current State: ${this.stateMachine.getCurrentState()?.charAt(0).toUpperCase()}${this.stateMachine.getCurrentState()?.slice(1)}`);
                 if (this.currentTarget) this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 this.ping();
                 vibrate();
@@ -351,7 +363,7 @@ export default class Enemy extends Entity {
         EventBus.off("enemy-luckout", this.luckoutUpdate);
         EventBus.off("update-enemy-health", this.healthUpdate);
         EventBus.off("remove-computer-enemy", this.removeComputerEnemy);
-        if (this.isGlowing) this.checkCaerenic(false);
+        if (this.isGlowing || this.isCaerenic) this.checkCaerenic(false, true);
         if (this.isShimmering) {
             this.isShimmering = false;
             this.stealthEffect(false);
@@ -429,20 +441,38 @@ export default class Enemy extends Entity {
         this.updateHealthBar(health);
     };
 
-    checkCaerenic = (caerenic: boolean) => {
+    caerenicUpdate = (caerenic: boolean) => {
+        this.isCaerenic = caerenic;
+        this.enemySound("blink", true);
+        const multiplier = caerenic ? 1 : -1;
+        this.adjustSpeed(PLAYER.SPEED.CAERENIC * multiplier);
+        if (this.isGlowing) return;
+        this.setGlow(this, caerenic);
+        this.setGlow(this.spriteWeapon, caerenic, "weapon")
+        this.setGlow(this.spriteShield, caerenic, "shield"); 
+    };
+
+    checkCaerenic = (caerenic: boolean, kill: boolean = false) => {
         this.isGlowing = caerenic;
+        if (this.isCaerenic && !kill) return;
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon");
         this.setGlow(this.spriteShield, caerenic, "shield");
     };
 
     flickerCaerenic = (duration: number) => {
-        if (this.isGlowing === false) {
+        if (!this.isGlowing && !this.isCaerenic) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {
                 this.checkCaerenic(false);
             }, undefined, this);
         };
+    };
+
+    stalwartUpdate = (stalwart: boolean) => {
+        this.isStalwart = stalwart;
+        this.spriteShield.setVisible(this.isStalwart);
+        this.enemySound("stalwart", this.isStalwart);
     };
 
     clearBubbles = () => {
@@ -466,6 +496,12 @@ export default class Enemy extends Entity {
             this.negationBubble.cleanUp();
             this.negationBubble = undefined;
         };
+    };
+
+    setMindState = (mind: string) => {
+        this.mindStateName = mind;
+        this.mindState = MindStates[mind];
+        if (this.mindState.startup) this.mindState.startup(this, this.getCombatContext());
     };
 
     createComputerCombatSheet = (e: Compiler): ComputerCombat => {
@@ -1022,6 +1058,8 @@ export default class Enemy extends Entity {
         this.clearStatuses();
         this.currentAction = "";
         this.defeatedByPlayer = true;
+        this.summons = 0;
+        if (this.isCaerenic) this.caerenicUpdate(false);
     };
     
     clearCombatWin = () => { 
@@ -1037,6 +1075,8 @@ export default class Enemy extends Entity {
             this.enemies = [];
             this.clearStatuses();
             this.currentAction = "";
+            this.summons = 0;
+            if (this.isCaerenic) this.caerenicUpdate(false);
         } else if (this.enemies[0].id === this.scene?.player?.playerID || this.currentTarget?.name === "player") {
             this.enemies = this.enemies.filter((e: ENEMY) => e.id !== this.scene.player.playerID);
             this.inCombat = false;
@@ -1051,6 +1091,8 @@ export default class Enemy extends Entity {
             this.inCombat = false;
             this.isTriumphant = true;
             this.currentAction = "";
+            this.summons = 0;
+            if (this.isCaerenic) this.caerenicUpdate(false);
         };
     };
 
@@ -1150,6 +1192,15 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
+    callToArms = (entity: Player | Enemy | Party) => {
+        if (!entity) return;
+        if (entity.name === "player") {
+            this.jumpIntoCombat();
+        } else {
+            this.checkComputerEnemyCombatEnter(entity as Enemy | Party);
+        };
+    };
+
     setSpecialCombat = (bool: boolean, mult = randomFloatFromInterval(0.75, 1.0)) => { // 0.75, 1.0
         if (this.isSpecial === false) return;
         if (bool === true) {
@@ -1198,14 +1249,14 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Chiomic", data: power });
             } else {
-                const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
+                const chiomic = Math.round(this.mastery() * (1 + (power / CHIOMISM)) * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 const ratio = chiomic / this.scene.state.computerHealth * 100;
                 const computerActionDescription = `${this.ascean?.name} flays ${chiomic} health from you with their hush.`;
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: "player", value: -ratio, id: this.enemyID } });
             };
         } else { // Computer Combat
-            const chiomic = Math.round(this.mastery() * (1 + (power / 100)) * (this.levelModifier() ** 2));
+            const chiomic = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.computerCaerenicNegID(id) * this.scene.combatManager.computerStalwartID(id) * (1 + (power / CHIOMISM)) * (this.levelModifier() ** 2));
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= chiomic;
             this.scene.combatManager.updateComputerDamage(chiomic, id, this.enemyID);
@@ -1219,7 +1270,7 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Tshaeral", data: 5 });
             } else {
-                const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
+                const dev = Math.round(this.combatStats.attributes.healthTotal * this.scene.combatManager.computerCaerenicPro(this) * (power / DEVOUR) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
                 const computerActionDescription = `${this.ascean?.name} tshaers and devours ${dev} health from you.`;
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
@@ -1227,7 +1278,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: NAME, value: newComputerHealth, id: this.enemyID } });
             };
         } else { // CvC
-            const dev = Math.round(this.combatStats.attributes.healthTotal * (power / 100) * (this.levelModifier() ** 2));
+            const dev = Math.round(this.combatStats.attributes.healthTotal * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.computerCaerenicNegID(id) * this.scene.combatManager.computerStalwartID(id) * (power / DEVOUR) * (this.levelModifier() ** 2));
             let newComputerHealth = Math.min(this.health + dev, this.combatStats.attributes.healthTotal);
             this.health = newComputerHealth;
             this.updateHealthBar(this.health);
@@ -1247,19 +1298,19 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Sacrifice", data: power });
             } else {
-                const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
+                const sacrifice = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2));
                 let newComputerHealth = this.health + (sacrifice / 2) > this.combatStats.attributes.healthTotal ? this.combatStats.attributes.healthTotal : this.health + (sacrifice / 2);
                 const computerActionDescription = `${this.ascean?.name} sacrifices ${sacrifice / 2} health to rip ${sacrifice} from you.`;
-                const ratio = (sacrifice * (1 + power / 50)) / this.scene.state.playerHealth * 100;
+                const ratio = (sacrifice * (1 + power / SACRIFICE)) / this.scene.state.playerHealth * 100;
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: "player", value: -ratio, id: this.enemyID } });
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: NAME, value: newComputerHealth, id: this.enemyID } });
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
             };
         } else { // CvC
-            const sacrifice = Math.round(this.mastery() * (this.levelModifier() ** 2));
+            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.computerCaerenicNegID(id) * this.scene.combatManager.computerStalwartID(id) * (this.levelModifier() ** 2));
             this.health -= (sacrifice / 2);
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
-            this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 + power / 50));
+            this.computerCombatSheet.newComputerEnemyHealth -= (sacrifice * (1 + power / SACRIFICE));
             this.computerCombatSheet.newComputerHealth = this.health;
             this.updateHealthBar(this.health);
             this.scene.combatManager.updateComputerDamage(sacrifice, id, this.enemyID);
@@ -1275,7 +1326,7 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget === true) {
                 this.scene.combatManager.combatMachine.action({ type: "Enemy Suture", data: power });
             } else {
-                const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2)) * (1 + power / 100);
+                const suture = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2)) * (1 + power / SUTURE);
                 let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
                 const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
                 const ratio = suture / this.scene.state.playerHealth * 100;
@@ -1284,7 +1335,7 @@ export default class Enemy extends Entity {
                 EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
             };
         } else { // CvC
-            const suture = Math.round(this.mastery() * (this.levelModifier() ** 2)) * (1 + power / 100);
+            const suture = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.computerCaerenicNegID(id) * this.scene.combatManager.computerStalwartID(id) * (this.levelModifier() ** 2)) * (1 + power / SUTURE);
             let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
             this.computerCombatSheet.newComputerEnemyHealth = this.scene.combatManager.combatant(this.computerCombatSheet.enemyID).health;
             this.computerCombatSheet.newComputerEnemyHealth -= suture;
@@ -1325,7 +1376,7 @@ export default class Enemy extends Entity {
         this.castbar.setTotal(duration);
         if (beam) this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel) this.castbar.setTime(duration);
-        if (this.isGlowing === false) this.checkCaerenic(true);
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
         this.setVelocity(0);
         this.anims.play(FRAMES.CAST, true);
     };
@@ -1336,7 +1387,7 @@ export default class Enemy extends Entity {
         this.targetID = "";
         this.castbar.reset();
         this.beam.reset();
-        if (this.isGlowing === true) this.checkCaerenic(false);
+        if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
         if (this.isCounterSpelled === true) this.scene.showCombatText(this, counter, 750, DAMAGE, false, true);
         this.evaluateCombatDistance();        
     };
@@ -1358,6 +1409,8 @@ export default class Enemy extends Entity {
     enemyAnimation = () => {
         if (this.isPolymorphed) {
             return;
+        } else if (this.isPraying) {
+            this.anims.play(FRAMES.PRAY, true).on("animationcomplete", () => this.isPraying = false);
         } else if (this.isClimbing) {
             if (this.moving()) {
                 this.anims.play(FRAMES.CLIMB, true);
@@ -1401,7 +1454,7 @@ export default class Enemy extends Entity {
             this.isShimmering = false;
             this.stealthEffect(false);
         };
-        if (this.isGlowing) this.checkCaerenic(false);
+        this.caerenicUpdate(false);
         EventBus.emit(BROADCAST_DEATH, this.enemyID);
         const party = this.scene.party.find((e: Party) => e.enemyID === this.killingBlow);
         if (party) { // A Party Member Got the Killing Blow
@@ -2061,6 +2114,127 @@ export default class Enemy extends Entity {
         // this.scene.navMesh.debugDrawClear();
     };
 
+    /*
+        This will be the help, which will mimic fear, except chirp every so often to pull in a nearby ally, against the enemy
+
+        Need to build one for summon as well, to maybe set it to the prayer animation, 
+        and an enemy will fade into the world at some nearby coordinates, 
+        set in combat against the currentTarget on behalf of the summoner
+    */
+    onHelpEnter = () => { 
+        this.spriteWeapon.setVisible(false);
+        this.spriteShield.setVisible(false);
+        this.fearDirection = "down";
+        this.fearMovement = "idle";
+        this.fearVelocity = { x: 0, y: 0 };
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ""; 
+        let iteration = 0;
+        // this.scene.showCombatText(this, `Help me! Get ${this.currentTarget?.ascean.name} away from me!`, DURATION.TEXT, BONE, false, true);
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ["up", "down", "left", "right"];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === "up") {
+                    this.fearVelocity = { x: 0, y: -1.5 };
+                } else if (direction === "down") {
+                    this.fearVelocity = { x: 0, y: 1.5 };
+                } else if (direction === "right") {
+                    this.fearVelocity = { x: -1.5, y: 0 };
+                } else if (direction === "left") {
+                    this.fearVelocity = { x: 1.5, y: 0 };
+                };
+                this.fearMovement = "move";
+            } else {
+                this.fearVelocity = { x: 0, y: 0 };
+                this.fearMovement = "idle";                
+            };
+            this.fearDirection = direction;
+        };
+        this.fearTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                this.scene.showCombatText(this, HELP[Math.floor(Math.random() * HELP.length)], 1500, EFFECT, false, true);
+                // chirp to get nearby enemy allies
+                if (iteration === 3) {
+                    iteration = 0;
+                    this.isFeared = false;
+                } else {   
+                    randomDirection();
+                };
+                this.callForHelp();
+            },
+            callbackScope: this,
+            repeat: 2,
+        });
+    };
+    onHelpUpdate = (_dt: number) => {
+        this.combatChecker(this.isFeared);
+        this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
+        if (Math.abs(this.velocity?.x as number) > 0 || Math.abs(this.velocity?.y as number) > 0) {
+            this.getDirection();
+            this.anims.play(FRAMES.RUNNING, true);
+        } else {
+            this.anims.play(FRAMES.IDLE, true);
+        };
+    };
+    onHelpExit = () => {
+        this.enemyAnimation();
+        this.spriteWeapon.setVisible(true);
+        if (this.isStalwart) this.spriteShield.setVisible(true);
+        if (this.fearTimer) {
+            this.fearTimer.destroy();
+            this.fearTimer = undefined;
+        };
+    };
+
+    onPushbackEnter = () => {
+        this.scene.showCombatText(this, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
+        this.isPraying = true;
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ""; 
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
+        this.enemyAnimation();
+    };
+    onPushbackUpdate = (_dt: number) => this.combatChecker(this.isPraying);
+    onPushbackExit = () => {
+        this.enemyAnimation();
+        if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
+        if (this.currentTarget) {
+            // this.scene.showCombatText(this, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
+            this.applyKnockback(this.currentTarget, 250, true);
+            this.scene.combatManager.hitFeedbackSystem.spotEmit(this.currentTarget.name === "player" ? this.currentTarget.playerID : this.currentTarget.enemyID, "Parry");
+        };
+    };
+
+    onSummonEnter = () => { 
+        this.scene.showCombatText(this, "Summoning Ally", DURATION.TEXT, DAMAGE, false, true);
+        this.isPraying = true;
+        // this.spriteShield.setVisible(false);
+        this.isAttacking = false;
+        this.isParrying = false;
+        this.isPosturing = false;
+        this.isRolling = false;
+        this.currentAction = ""; 
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
+        this.enemyAnimation();
+    };
+    onSummonUpdate = (_dt: number) => this.combatChecker(this.isPraying);
+    onSummonExit = () => {
+        this.enemyAnimation();
+        // EventBus.emit("summon-help", this);
+        this.scene.combatManager.summon(this);
+        if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
+    };
+
     combatChecker = (state: boolean) => {
         if (state === true) return;
         this.evaluateCombatDistance();
@@ -2093,11 +2267,109 @@ export default class Enemy extends Entity {
                 distance >= 200 && !this.isRanged ? 5 : // Melee at Distance
                 distance >= 200 && this.isRanged ? 6 : // Ranged at Distance
                 chance; // Range
-            let key = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].key, value = INSTINCTS[mastery as keyof typeof INSTINCTS][instinct].value;
+            let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
             if (this.inCombat) this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${value}.`);
             (this as any)[key].setState(value);
-            if (key === 'positiveMachine') this.stateMachine.setState(States.CHASE);
+            if (key === "positiveMachine") this.stateMachine.setState(States.CHASE);
         }, undefined, this);
+    };
+
+    callForHelp = () => {
+        const ctx = this.getCombatContext();
+        // let help = false;
+        if (ctx.allies) {
+            for (let i = 0; i < ctx.allies.length; i++) {
+                ctx.allies[i].callToArms(this.currentTarget);
+                // help = true;
+            };
+        };
+        // if (!help) { // Chirp
+
+        // };
+    };
+
+    castAoE = () => {
+        const aoes = ENEMY_AOE[this.ascean.mastery];
+        const aoe = aoes[Math.floor(Math.random() * aoes.length)];
+        // if (this.inCombat) this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${aoe}.`);
+        const positive = specialPositiveMachines.includes(aoe);
+        // console.log(`%c AoE: ${aoe} | Positive: ${positive}`, "color: #fdf6d8");
+        if (positive) {
+            this.positiveMachine.setState(aoe);
+            this.stateMachine.setState(States.CHASE);
+        } else {
+            this.stateMachine.setState(aoe);
+        };
+    };
+
+    // TargetHeal
+    castHeal = (power: number) => {
+        this.enemySound("phenomena", true);
+
+        if (this.mindState.healPriority > 0) {
+            const selfRatio = this.health / this.ascean.health.max;
+            let mostInjured: Enemy | Player | Party | undefined = undefined;
+            let lowestRatio = 1;
+            const allies = this.getCombatContext().allies;
+            for (const ally of allies) {
+                if (!ally.ascean) continue;
+                const ratio = ally.health / ally.ascean.health.max;
+                if (ratio < lowestRatio) {
+                    mostInjured = ally;
+                    lowestRatio = ratio;
+                };
+            };
+            if (mostInjured && lowestRatio < selfRatio) {
+                if (mostInjured.name === "party") (mostInjured as unknown as Party).playerMachine.heal(power);
+                if (mostInjured.name === "enemy") (mostInjured as Enemy).getHeal(power);
+                if (mostInjured.name === "player") (mostInjured as unknown as Player).playerMachine.getHeal(power * 100);
+                
+                // if (mostInjured.name !== "player") this.scene.combatManager.checkPlayerFocus((mostInjured as Enemy | Party).enemyID, this.health);
+                this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(mostInjured.x, mostInjured.y));
+                return;
+            };
+        };
+
+        this.getHeal(power);
+    };
+
+    getHeal = (power: number) => {
+        const heal = Math.round(this.ascean.health.max * power);
+        const total = Math.min(this.health + heal, this.ascean.health.max);
+
+        if (this.inCombat) {
+            if (this.isCurrentTarget) {
+                this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID }, type: HEALTH });
+            } else {
+                this.health = total;
+                this.updateHealthBar(total);
+            };
+        } else {
+            this.health = total;
+            this.updateHealthBar(total);
+        };
+        this.computerCombatSheet.newComputerHealth = total;
+        // this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
+        this.scene.combatManager.checkPlayerFocus(this.enemyID, total);
+        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
+        
+    };
+
+    enterStealthAndFlank = () => {
+
+    };
+
+    rangedBlast = () => {
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
+        if ((!this.currentTarget || !this.currentTarget.body) && this.health > 0) {
+            this.stateMachine.setState(States.COMBAT);
+            return;
+        };
+        const mastery = this.ascean.mastery;
+        const instinct = Math.random() > 0.5 ? 2 : 3;
+        let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
+        (this as any)[key].setState(value);
+        if (key === "positiveMachine") this.stateMachine.setState(States.CHASE);
     };
 
     // ========================== SPECIAL ENEMY STATES ========================== \\
@@ -2116,7 +2388,7 @@ export default class Enemy extends Entity {
         if (this.castingSuccess === true) { 
             this.particleEffect = this.scene.particleManager.addEffect("achire", this, "achire", true);
             if (this.inCombat) EventBus.emit("enemy-combat-text", {
-                text: `${this.ascean.name}"s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
+                text: `${this.ascean.name}'s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.castingSuccess = false;
             this.enemySound("wild", true);
@@ -2153,7 +2425,11 @@ export default class Enemy extends Entity {
     };
 
     onBlinkEnter = () => {
-        this.setVelocityX(this.flipX ? 35 : -35);
+        const ctx = this.getCombatContext();
+        const x = ctx.direction.lengthSq < this.mindState.minDistanceSq 
+            ? this.flipX ? -35 : 35
+            : this.flipX ? 35 : -35;
+        this.setVelocityX(x);
         this.flickerCaerenic(500);
         this.scene.time.delayedCall(500, () => {
             // Define the map boundaries (you can derive these dynamically from your tilemap or world bounds)
@@ -2252,23 +2528,13 @@ export default class Enemy extends Entity {
     onDesperationEnter = () => {
         this.isCasting = true;
         this.scene.showCombatText(this, "Desperation", PLAYER.DURATIONS.HEALING / 2, CAST, false, true);
-        if (this.isGlowing === false) this.checkCaerenic(true);
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
             if (this.health <= 0) return;
-            const heal = Math.round(this.ascean.health.max * 0.5);
-            const total = Math.min(this.health + heal, this.ascean.health.max);
-            this.enemySound("phenomena", true);
-            if (this.isCurrentTarget) {
-                this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID }, type: HEALTH });
-            } else {
-                this.health = total;
-                this.updateHealthBar(total);
-            };
-            this.computerCombatSheet.newComputerHealth = total;
-            this.checkCaerenic(false);
+            this.castHeal(0.5);
+            if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
             this.count.stunned += 1;
             this.isStunned = true;
-            this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
             this.stateMachine.setState(States.STUNNED);
         }, undefined, this);
     };
@@ -2342,25 +2608,8 @@ export default class Enemy extends Entity {
     };
     onHealingExit = () => {
         if (this.castingSuccess === true) {
-            const heal = Math.round(this.ascean.health.max * 0.25);
-            const total = Math.min(this.health + heal, this.ascean.health.max);
-            if (this.inCombat) {
-                if (this.isCurrentTarget) {
-                    this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID }, type: HEALTH });
-                } else {
-                    this.health = total;
-                    this.updateHealthBar(total);
-                };
-            } else {
-                this.health = total;
-                this.updateHealthBar(total);
-                this.computerCombatSheet.newComputerHealth = total;
-                this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
-                this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
-            };
-            this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
+            this.castHeal(0.25);
         };
-        this.enemySound("phenomena", this.castingSuccess);
         this.stopCasting("Countered Healing");
     };
     onHookEnter = () => {
@@ -2686,7 +2935,7 @@ export default class Enemy extends Entity {
             } else {
                 this.setPosition(this.currentTarget.x - 16, this.currentTarget.y);
             };
-            if (this.isGlowing === false) {
+            if (!this.isGlowing && !this.isCaerenic) {
                 this.checkCaerenic(true);
                 this.scene.time.delayedCall(500, () => {
                     this.checkCaerenic(false);
@@ -2697,7 +2946,7 @@ export default class Enemy extends Entity {
     };
     onPursuitUpdate = (_dt: number) => {};
     onPursuitExit = () => {};
-    onQuorEnter = () => this.startCasting("Quor", PLAYER.DURATIONS.QUOR, CAST);
+    onQuorEnter = () => this.startCasting("Quor", PLAYER.DURATIONS.QUOR, CAST, false, false);
     onQuorUpdate = (dt: number) => {
         this.counterCheck();
         if (this.isCasting === true) this.castbar.update(dt, CAST);
@@ -2746,24 +2995,12 @@ export default class Enemy extends Entity {
             this.reconTimer = undefined;
             return;
         };
-        const heal = Math.round(this.ascean.health.max * 0.15);
-        const total = Math.min(this.health + heal, this.ascean.health.max);
-        if (this.inCombat) {
-            this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID }, type: HEALTH });
-        } else { // inComputerCombat
-            this.health = total;
-            this.updateHealthBar(total);
-            this.computerCombatSheet.newComputerHealth = total;
-            this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
-            this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
-        };
-        this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.x, this.y));
-        this.enemySound("phenomena", true);
+        this.castHeal(0.15);
         this.channelCount++;
         if (this.channelCount >= 5) {
             this.isCasting = false;
             this.channelCount = 0;
-        };    
+        };
     };
 
     onRushEnter = () => {
@@ -2821,6 +3058,7 @@ export default class Enemy extends Entity {
     onRushUpdate = (_dt: number) => {};
     onRushExit = () => {
         this.rushedEnemies = [];
+        this.setAlpha(1);
         this.isCasting = false;
         this.evaluateCombatDistance();
     };
@@ -2831,7 +3069,7 @@ export default class Enemy extends Entity {
                 if (this.rushedEnemies[i].name === "player") {
                     this.scene.combatManager.useStamina(5);
                     this.scene.combatManager.writhe(this.rushedEnemies[i].playerID, this.enemyID, "rush");
-                } else if (this.rushedEnemies[i].name === NAME && this.inComputerCombat) { // CvC
+                } else if (this.inComputerCombat) { // CvC this.rushedEnemies[i].name === NAME && 
                     this.scene.combatManager.computer({ type: "Weapon", payload: { action: "rush", origin: this.enemyID, enemyID: this.rushedEnemies[i].enemyID } });
                 };
             };
@@ -3022,7 +3260,7 @@ export default class Enemy extends Entity {
 
     onDiseaseEnter = () => {
         this.isDiseasing = true;
-        this.aoe = this.scene.aoePool.get("tendril", 6, true, this);    
+        this.aoe = this.scene.aoePool.get("disease", 6, true, this);    
         this.scene.showCombatText(this, "Tendrils Swirl", 750, "tendril", false, true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.isDiseasing = false;
@@ -3108,7 +3346,7 @@ export default class Enemy extends Entity {
         }, undefined, this);
         if (this.inCombat) {
             EventBus.emit("enemy-combat-text", {
-                computerSpecialDescription: `${this.ascean.name} howls, it"s otherworldly nature stunning nearby foes.`
+                computerSpecialDescription: `${this.ascean.name} howls, it's otherworldly nature stunning nearby foes.`
             });
         };
         this.enemySound("howl", true);
@@ -3599,10 +3837,10 @@ export default class Enemy extends Entity {
     onSprintEnter = () => {
         this.isSprinting = true;
         this.adjustSpeed(PLAYER.SPEED.SPRINT);
-        if (this.isGlowing === false) this.checkCaerenic(true);
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.SPRINT, () => {
             this.isSprinting = false;
-            if (this.isGlowing === true) this.checkCaerenic(false);
+            if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
             this.adjustSpeed(-PLAYER.SPEED.SPRINT);
         });
         if (this.inCombat) {
@@ -3704,6 +3942,7 @@ export default class Enemy extends Entity {
 
     // ========================== STEALTH ========================== \\
 
+
     stealthEffect = (stealth: boolean) => {
         if (stealth) {
             const getStealth = (object: any) => {
@@ -3751,7 +3990,7 @@ export default class Enemy extends Entity {
         this.isPosturing = false;
         this.isRolling = false;
         this.currentAction = ""; 
-        if (this.isGlowing === false) this.checkCaerenic(true);
+        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
         let iteration = 0;
         const randomDirection = () => {  
             const move = Phaser.Math.Between(1, 100);
@@ -3811,7 +4050,7 @@ export default class Enemy extends Entity {
             this.confuseTimer.destroy();
             this.confuseTimer = undefined;
         };
-        if (this.isGlowing === true) this.checkCaerenic(false);
+        if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
     };
 
     onConsumedEnter = () => {
@@ -3876,7 +4115,7 @@ export default class Enemy extends Entity {
         this.isPosturing = false;
         this.isRolling = false;
         this.currentAction = ""; 
-        if (this.isGlowing === false) this.checkCaerenic(true);
+        if (!this.isGlowing  && !this.isCaerenic) this.checkCaerenic(true);
         let iteration = 0;
         const fears = ["Nooooooo!", "...ahhh!", "c̶o̷m̷e̷ ̴h̴e̵r̶e̶", "Stay Away!", "Somebody HELP ME", "g̴̠̊ͅu̷͝ͅṱ̶͐ṯ̶̆u̸̼̚̚r̶̰̔ȃ̴̫l̴͈͝ ̶̹̎͛s̸͎͋ḥ̶̛̙́r̵̡̤̋͠ì̶͈̓e̸̬͕̅̈́k̵͔͌ī̸̮̹̎n̷̰̟̂͒g̷̦̓"];
         const randomDirection = () => {  
@@ -3933,7 +4172,7 @@ export default class Enemy extends Entity {
             this.fearTimer.destroy();
             this.fearTimer = undefined;
         };
-        if (this.isGlowing === true) this.checkCaerenic(false);
+        if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
     };
 
     onFrozenEnter = () => {
@@ -4247,7 +4486,7 @@ export default class Enemy extends Entity {
                 if (this.isCurrentTarget) {
                     this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: COMPUTER_ACTION, value: this.particleEffect.action, id: this.enemyID } });
                 } else {
-                    this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
+                    this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, caerenic: this.isCaerenic, stalwart: this.isStalwart, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.particleEffect.action, parry: this.parryAction, id: this.enemyID }}});
                 };
                 action = this.particleEffect.action;
                 this.killParticle();
@@ -4260,7 +4499,7 @@ export default class Enemy extends Entity {
                     if (this.currentAction === "") return;
                     this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: COMPUTER_ACTION, value: this.currentAction, id: this.enemyID } });
                 } else {
-                    this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
+                    this.scene.combatManager.combatMachine.action({ type: "Enemy", data: { enemyID: this.enemyID, ascean: this.ascean, caerenic: this.isCaerenic, stalwart: this.isStalwart, damageType: this.currentDamageType, combatStats: this.combatStats, weapons: this.weapons, health: this.health, actionData: { action: this.currentAction, parry: this.parryAction, id: this.enemyID }}});
                 };
                 action = this.currentAction;
             }; 
@@ -4395,9 +4634,11 @@ export default class Enemy extends Entity {
         };
         return false;  // Clear line of sight
     };
+
     canEvaluateCombat = () => {
         return !this.isCasting && !this.isSuffering() && !this.isHurt && !this.isContemplating && !this.isDeleting && !this.isDefeated; // && this.currentTarget?.body?.position && this.scene?.children.exists(this.currentTarget)
     };
+
     cleanUpCombat() {
         if (this.inComputerCombat && this.currentTarget?.active && this.health > 0) {
             const enemy = this.computerEnemyAttacker();
@@ -4418,7 +4659,9 @@ export default class Enemy extends Entity {
         this.currentAction = "";
         this.enemies = [];
     };
+
     getCombatDirection() {
+        if (!this.currentTarget) return undefined;
         if (this.cachedDirection && (this.scene.frameCount - this.cachedDirectionFrame) < 60) return this.cachedDirection;
         const x = this.currentTarget.x - this.x;
         const y = this.currentTarget.y - this.y;
@@ -4428,6 +4671,7 @@ export default class Enemy extends Entity {
             y,
             lengthSq, // Pre-calculate this once
             normal: false,
+            ogLengthSq: lengthSq,
             normalize: () => {
                 const len = Math.sqrt(this.cachedDirection.lengthSq);
                 if (len > 0) {
@@ -4442,10 +4686,202 @@ export default class Enemy extends Entity {
         this.cachedDirectionFrame = this.scene.frameCount;  
         return this.cachedDirection;
     };
+
     isValidTarget(target: Enemy | Party | Player) {
         return target?.active && target?.body?.position && target.health > 0 && !target.isDeleting && !target.isDefeated; // && this.scene?.children.exists(target);
     };
+
     evaluateCombatDistance = () => {
+        if (!this.canEvaluateCombat()) return;
+        if (!this.isValidTarget(this.currentTarget)) {
+            this.cleanUpCombat();
+            return;
+        };
+
+        const ctx = this.getCombatContext(); // all info in one place
+        const mind = this.mindState; // current mind-state config
+
+        if (this.shouldCallForHelp(ctx, mind)) {
+            this.useHelpCall();
+            return;
+        };
+
+        if (this.shouldSummon(mind)) {
+            this.castSummon();
+            return;
+        };
+        
+        const distanceSq = ctx.direction.ogLengthSq;
+        const chaseThresholdSq = mind.chaseThresholdSq;
+        
+        if (distanceSq >= chaseThresholdSq) {
+            this.stateMachine.setState(States.CHASE);
+            return;
+        };
+
+        if (this.isRanged || mind.keepDistance) { // RANGED ENEMY LOGIC
+            if (!this.stateMachine.isCurrentState(States.COMBAT) && this.isRanged) {
+                this.stateMachine.setState(States.COMBAT);
+            };
+            const thresholdSq = mind.minDistanceSq * ctx.multiplier;
+            const thresholdMinSq = mind.minDistanceSq;
+            if (distanceSq > thresholdSq) { // Move towards target
+                this.moveCloser(ctx);
+            } else  if (distanceSq < thresholdMinSq && !ctx.isTargetRanged) { // Keep distance from melee target
+                this.moveAway(ctx);
+                if (Phaser.Math.Between(1, 250) === 1 && !this.stateMachine.isCurrentState(States.EVADE)) {
+                    this.stateMachine.setState(States.EVADE);
+                };    
+            } else if (ctx.lineOfSight && !this.stateMachine.isCurrentState(States.EVADE)) {
+                this.stateMachine.setState(States.EVADE);
+            } else if (ctx.distanceY < 15) { // Sweet spot for ranged enemies
+                this.setVelocity(0);
+                this.anims.play(FRAMES.IDLE, true);
+            } else { // Adjust Y Position
+                if (!ctx.direction.normal) ctx.direction.normalize();
+                this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier);
+            };
+        } else { // MELEE ENEMY LOGIC
+            if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
+            const attackThresholdSq = DISTANCE.ATTACK ** 2;
+            if (ctx.direction.ogLengthSq > attackThresholdSq) {
+                this.moveCloser(ctx);
+                this.isPosted = false;
+            } else {
+                this.setVelocity(0);
+                if (!this.currentAction) this.anims.play(FRAMES.IDLE, true);
+                this.isPosted = true;
+            };
+        };
+
+        if (mind.customEvaluate) mind.customEvaluate(this, ctx);        
+        if (mind.dynamicSwap) mind.dynamicSwap(this, ctx);
+    };
+
+    getCombatContext(): CombatContext {
+        const direction = this.getCombatDirection();
+        if (!direction) {
+            return {
+                direction,
+                multiplier: 1,
+                climbingModifier: 1,
+                allies: [],
+                isTargetRanged: false,
+                lineOfSight: true,
+                distanceY: 0,
+            } as CombatContext;
+        };
+        // const distanceSq = direction.lengthSq;
+        const distanceY = Math.abs(direction.y);
+        const climbingModifier = this.isClimbing ? 0.65 : 1;
+        const allies = this.getNearbyAllies();
+        const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
+        
+        return {
+            direction,
+            multiplier,
+            // distanceSq,
+            distanceY,
+            climbingModifier,
+            allies,
+            isTargetRanged: this.currentTarget.isRanged,
+            lineOfSight: this.checkLineOfSight()
+        } as CombatContext;
+    };
+
+    getNearbyAllies = () => {
+        if (!this.currentTarget) return;
+        if (this.currentTarget.name === "player") {
+            const allies = this.scene.enemies.filter(e => e.inCombat);
+            return allies;
+        };
+        const allies = this.currentTarget.enemies;
+        return allies;
+    };
+
+    moveAway = (ctx: CombatContext) => {
+        this.enemyAnimation();
+        if (!ctx.direction.normal) ctx.direction.normalize();
+        this.setVelocityX(ctx.direction.x * -this.speed * ctx.climbingModifier);
+        this.setVelocityY(ctx.direction.y * -this.speed * ctx.climbingModifier);    
+    };
+
+    moveCloser = (ctx: CombatContext) => {
+        this.enemyAnimation();
+        if (!ctx.direction.normal) ctx.direction.normalize();
+        this.setVelocityX(ctx.direction.x * this.speed * ctx.climbingModifier);
+        this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier);
+    };
+
+    performAttack = (ctx: CombatContext, mind: MindState) => {
+        if (this.isRanged) { // Ranged enemies
+            const thresholdSq = (DISTANCE.THRESHOLD * ctx.multiplier) ** 2;
+            const thresholdMinSq = DISTANCE.THRESHOLD ** 2;
+
+            if (ctx.distanceY > DISTANCE.RANGED_ALIGNMENT) {
+                this.enemyAnimation();
+                if (!ctx.direction.normal) ctx.direction.normalize();
+                this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier + 0.5);
+                return;
+            };
+            if (ctx.direction.lengthSq > thresholdSq) {
+                this.moveCloser(ctx);
+            } else if (ctx.direction.lengthSq < thresholdMinSq && !ctx.isTargetRanged) {
+                this.moveAway(ctx);
+                if (Phaser.Math.Between(1, 50) === 1 && !this.stateMachine.isCurrentState(States.EVADE)) {
+                    this.stateMachine.setState(States.EVADE);
+                }; // Random chance to evade
+            } else if (ctx.lineOfSight && !this.stateMachine.isCurrentState(States.EVADE)) {
+                this.stateMachine.setState(States.EVADE);
+            } else if (ctx.distanceY < 15) {
+                this.setVelocity(0);
+                this.anims.play(FRAMES.IDLE, true);
+            } else {
+                if (!ctx.direction.normal) ctx.direction.normalize();
+                this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier);
+            };
+        } else { // Melee enemies
+            const attackThresholdSq = DISTANCE.ATTACK ** 2;
+
+            if (ctx.direction.lengthSq > attackThresholdSq) {
+                this.moveCloser(ctx);
+                this.isPosted = false;
+            } else {
+                this.setVelocity(0);
+                if (!this.currentAction) this.anims.play(FRAMES.IDLE, true);
+                this.isPosted = true;
+            };
+        };
+    };
+
+    shouldAttack = (ctx: CombatContext, mind: MindState) => {
+        return ctx.lineOfSight && this.mindState.minDistanceSq > ctx.direction.lengthSq;
+    };
+
+    shouldCloseDistance = () => {};
+    shouldKeepDistance = () => {};
+
+    useHelpCall = () => {
+        ++this.summons;
+        this.scene.showCombatText(this, `${this.ascean.name} is calling for help!`, DURATION.TEXT, BONE, false, true);
+        this.stateMachine.setState(States.HELP);
+    };
+    shouldCallForHelp = (ctx: CombatContext, mind: MindState) => {
+        return this.summons <= 3 && ctx.allies.length > 1 && mind.callHelp && (this.health / this.ascean.health.max < 0.35) && !this.stateMachine.isCurrentState(States.HELP);
+    };
+
+    castSummon = () => {
+        ++this.summons;
+        this.scene.showCombatText(this, `${this.ascean.name} is summoning help!`, DURATION.TEXT, BONE, false, true);
+        this.stateMachine.setState(States.SUMMON);
+        // const ascean = { name: this.ascean.name, level: this.ascean.level };
+        // EventBus.emit("summon-help", ascean);
+    };
+    shouldSummon = (mind: MindState) => {
+        return mind.summon && this.summons === 0 && (this.health / this.ascean.health.max < 0.5) && !this.stateMachine.isCurrentState(States.SUMMON);
+    };
+        
+    evaluateCombatDistance1 = () => {
         if (!this.canEvaluateCombat()) return;
         if (!this.isValidTarget(this.currentTarget)) {
             this.cleanUpCombat();
@@ -4488,7 +4924,7 @@ export default class Enemy extends Entity {
                 this.setVelocityY(direction.y * -this.speed * climbingModifier);
                 if (Phaser.Math.Between(1, 250) === 1 && !this.stateMachine.isCurrentState(States.EVADE)) {
                     this.stateMachine.setState(States.EVADE);
-                };                
+                };
             } else if (this.checkLineOfSight() && !this.stateMachine.isCurrentState(States.EVADE)) {
                 this.stateMachine.setState(States.EVADE);
             } else if (distanceY < 15) { // Sweet spot for ranged enemies
@@ -4501,7 +4937,6 @@ export default class Enemy extends Entity {
         } else { // MELEE ENEMY LOGIC
             if (!this.stateMachine.isCurrentState(States.COMBAT)) this.stateMachine.setState(States.COMBAT);
             const attackThresholdSq = DISTANCE.ATTACK ** 2;
-            
             if (distanceSq > attackThresholdSq) {
                 this.enemyAnimation();
                 if (!direction.normal) direction.normalize();
@@ -4515,6 +4950,7 @@ export default class Enemy extends Entity {
             };
         };
     };
+
     checkEvasion = (particle: Particle) => {
         const particleVector = new Phaser.Math.Vector2(particle.effect.x, particle.effect.y);
         const enemyVector = new Phaser.Math.Vector2(this.x, this.y);
@@ -4693,7 +5129,7 @@ export default class Enemy extends Entity {
                     break; 
                 case "thrust":
                     this.stateMachine.setState(States.THRUST);
-                    break; 
+                    break;
                 case "contemplate":
                     this.stateMachine.setState(States.CONTEMPLATE);
                     break;

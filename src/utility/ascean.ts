@@ -451,6 +451,7 @@ export type Skills = {
     "Sorcery": number;
     "Wild": number;
     "Wind": number;
+    [key: string]: number;
 };
 
 export const initSkills: Skills = {

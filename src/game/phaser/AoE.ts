@@ -10,13 +10,14 @@ import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS, EntityFlag } from "./Collision";
 import { Gauntlet } from "../scenes/Gauntlet";
 // @ts-ignore
-const { Bodies } = Phaser.Physics.Matter.Matter;
+const { Bodies, Body } = Phaser.Physics.Matter.Matter;
 
 export const COLORS = {
     "astrave": 0xFFFF00,
     "blind": 0xCC5500,
     "caerenesis": 0x00FFFF,
     "chiomic": 0xFFC700,
+    "disease": 0x00FF00,
     "freeze": 0x0000FF,
     "fyerus": 0xE0115F,
     "howl": 0xFF0000,
@@ -26,6 +27,7 @@ export const COLORS = {
     "shock": 0x00FFFF,
     "tendril": 0x00FF00,
     "writhe": 0x080080,
+    "help": 0xFDF6D8,
 
     "arrow": 0xFFFFFF,
     "earth": 0x000000,
@@ -39,13 +41,13 @@ export const COLORS = {
     "wind": 0x00FFFF,
     // "": 0x000000
 };
-const TYPES = ["astrave", "blind", "caeresis", "chiomic", "freeze", "fyerus", "howl", "kynisos", "renewal", "scream", "shock", "tendril", "writhe", "earth", "fire", "frost", "lightning", "righteous", "sorcery", "spooky", "wild", "wind"];
+const TYPES = ["astrave", "blind", "caeresis", "chiomic", "disease", "freeze", "fyerus", "help", "howl", "kynisos", "renewal", "scream", "shock", "tendril", "writhe", "earth", "fire", "frost", "lightning", "righteous", "sorcery", "spooky", "wild", "wind"];
 const PARTICLES = ["earth", "fire", "frost", "lightning", "righteous", "sorcery", "spooky", "wild", "wind"];
 const PARTICLE_SCALE = 0.0075;
 const SCALE = 0.01875;
 const Y_OFFSET = 6;
-const PARTICLE_RADIUS = 24;
-const RADIUS = 60;
+const PARTICLE_RADIUS = 24; // / 1.5;
+const RADIUS = 60; // / 3;
 const REPEAT = 20;
 const ENEMY = "enemy";
 const PARTY = "party";
@@ -88,7 +90,7 @@ export class AoEPool {
     };
 
     pinch(type: string): AoE | undefined {
-        let aoe = this.pool.find((a: AoE) => a.type === type ? a : PARTICLES.includes(a.type) ? a : undefined);
+        let aoe = this.pool.find((a: AoE) => a.type === type);
         if (aoe) this.pool.splice(this.pool.indexOf(aoe), 1);
         return aoe;
     };
@@ -96,7 +98,9 @@ export class AoEPool {
     get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
         const typePool = this.typePools.get(type) || [];
         let aoe = typePool.pop() || this.pinch(type) || this.pool.pop();
-        if (!aoe) aoe = this.createNewAoE();
+        if (!aoe) {
+            aoe = this.createNewAoE();
+        };
         aoe.reset(type, count, positive, enemy, manual, target, particle);
         this.activeAoEs.push(aoe);
         return aoe;
@@ -120,6 +124,7 @@ export class AoEPool {
             aoe.setActive(false);
         };
         if (!this.typePools.has(aoe.type)) {
+            // console.log("Creating new type pool for:", aoe.type);
             this.typePools.set(aoe.type, []);
         };
         this.typePools.get(aoe.type)!.push(aoe);
@@ -162,7 +167,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setOrigin(0.5);
         this.type = TYPES[Math.floor(Math.random() * TYPES.length)];
         this.name = this.type;
-        this.sensor = this.setupSensor(0, 0, RADIUS, PARTICLES.includes(this.type) ? "particleAoeSensor" : "aoeSensor");
+        this.sensor = this.setupSensor(0, 0, PARTICLES.includes(this.type) ? PARTICLE_RADIUS: RADIUS, PARTICLES.includes(this.type) ? "particleAoeSensor" : "aoeSensor");
         this.hollowTimer();
     };
 
@@ -199,10 +204,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (returning) this.scene.aoePool.release(this);
     };
     
-    public reset(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }): AoE {
+    public reset(type: string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }): AoE {
         if (this.active) this.cleanup(false);
 
-        this.name = type;
+        // this.name = type;
         this.count = count;
         this.manual = manual;
 
@@ -290,7 +295,9 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         const manualPoint = this.scene.getWorldPointer();
         this.sensor = this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
         this.setupPlayerListener();
-        this.scalingTimer(target ? target : manual ? manualPoint : this.scene.player, SCALE * (this.enhanced ? 1.5 : 1), manual ? 0 : Y_OFFSET, REPEAT);
+        this.scalingTimer(target ? target : manual ? manualPoint : this.scene.player, 
+            SCALE * (this.enhanced ? 1.5 : 1), 
+            manual ? 0 : Y_OFFSET, REPEAT);
         this.baseCount(type, positive, this.scene.player, {
             concern: () => type === "fyerus" && (this.scene as Player_Scene).player.isMoving,
             bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID), 
@@ -332,6 +339,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             isSensor: true,
             label
         });
+        // Body.scale(sensor, this.scale);
         this.setExistingBody(sensor);
         this.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
         this.setStatic(true);
@@ -375,7 +383,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         //     ====================================
         //     Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}
         //     ====================================
-        //     `);
+        // `);
         this.timer = this.scene.time.addEvent({
             delay: 50,
             callback: () => {
@@ -383,7 +391,14 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 scale += scaleIncrement;
                 this.setScale(scale);
                 this.setPosition(target.x, target.y + yOffset);
-                // console.log(`Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}`);
+                // console.log(`
+                //     ====================================
+                //     Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}
+                //     ====================================
+                // `);
+                // if (this.sensor) {
+                    // Body.scale(this.sensor, 1 + scaleIncrement / scale);
+                // }
                 count++;
             },
             callbackScope: this,
@@ -444,10 +459,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 }, {
                     mask: ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.PARTY,
                     filter: (gameObject) => {
-                        // const isEnemy = gameObject.aoeMask & ENTITY_FLAGS.ENEMY;
-                        // if (isEnemy) {
-                        //     return !origin.enemies.some(e => e.id === gameObject.enemyID); // && !this.hit.some(h => h.enemyID === gameObject.enemyID && gameObject.enemyID !== origin.enemyID)
-                        // };
                         return !this.hit.some(h => h.enemyID === gameObject.enemyID) && gameObject.enemyID !== origin.enemyID;
                     }
                 }

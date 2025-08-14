@@ -10,8 +10,7 @@ export const EFFECT = "effect";
 export const HEAL = "heal";
 export const HUSH = "hush";
 export const TENDRIL = "tendril";
-const POSITION = 35
-const HEALTH_POSITION = 55; // 70
+const POSITION = 35, HEALTH_POSITION = 55; // 70
 
 export type CombatText = {
     x: number;
@@ -62,9 +61,9 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         const isNonNumeric = isNaN(Number(text));
         const pos = new Phaser.Math.Vector2(entity.x, entity.y);
         const floatHeight = Phaser.Math.Between(POSITION, HEALTH_POSITION) * 1.25;
-        const arcAmplitude = Phaser.Math.Between(12, 20);
+        const arcAmplitude = Phaser.Math.Between(10, 30);
         const arcDirection = Phaser.Math.Between(0, 1) === 0 ? -1 : 1; // Left or right
-        const side = arcDirection * (arcDirection > 0 ? 16 : 32);        
+        const side = arcDirection * (arcDirection > 0 ? Phaser.Math.Between(8, 48) : Phaser.Math.Between(24, 64));        
         const startX = constant ? pos.x - (this.text.displayWidth / 2) : pos.x + side;
         const startY = pos.y - (entity.healthbar.visible ? HEALTH_POSITION : POSITION);
         const initialScale = this.text.scale;
@@ -86,18 +85,22 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             onUpdate: () => {
                 const t = tweenObj.t;
                 
-                const curveX = startX + arcDirection * Math.sin(t * Math.PI) * arcAmplitude;
-                const curveY = startY - t * floatHeight;
+                const curveX = constant ? pos.x - (this.text.displayWidth / 2) : startX + arcDirection * Math.sin(t * Math.PI) * arcAmplitude;
+                const curveY = constant ? startY : startY - t * floatHeight;
                 
                 const newAlpha = isNonNumeric
-                    ? 0.8 + Math.sin(t * Math.PI * 4) * 0.2
-                    : Phaser.Math.Interpolation.Linear([0.9, 1.0, 0.75], t);
+                    ? Phaser.Math.Interpolation.Linear([0.65, 1], t)
+                    : critical 
+                        ? 0.8 + Math.sin(t * Math.PI * 4) * 0.2
+                        : Phaser.Math.Interpolation.Linear([0.9, 1.0, 0.75], t);
                 
                 const newScale = isNonNumeric
-                    ? 1 + Math.sin(t * Math.PI * 4) * 0.1
-                    : Phaser.Math.Interpolation.Linear([initialScale, 1.1, 1], t);
+                    ? Phaser.Math.Interpolation.Linear([0.75, 1], t) 
+                    : critical 
+                        ? 1 + Math.sin(t * Math.PI * 4) * 0.1
+                        : Phaser.Math.Interpolation.Linear([initialScale, 1.1, 1], t);
                     
-                if (!constant) this.setPosition(curveX, curveY);
+                this.setPosition(curveX, curveY);
                 this.text.setAlpha(newAlpha).setScale(newScale);
             },
             onComplete: () => this.release(),
@@ -136,10 +139,18 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     };
 
     private release(): void {
-        this.active = false;
-        this.visible = false;
-        this.setPosition(-1000, -1000);
-        this.text.setAlpha(1).setScale(1);
-        this.pool.release(this);
+        this.scene.tweens.add({
+            targets: this.text,
+            duration: Phaser.Math.Between(500, 750),
+            alpha: 0,
+            onComplete: () => {
+                this.active = false;
+                this.visible = false;
+                this.setPosition(-1000, -1000);
+                this.text.setAlpha(1).setScale(1);
+                this.pool.release(this);
+            },
+            callbackScope: this
+        });
     };
 };

@@ -43,7 +43,17 @@ export const VICTORIOUS = [
     "Very good! May we meet again."
 ];
 
-export const ENEMY_SPECIAL = {
+export const HELP = [
+    "Nooooooo! Somebody help me!!",
+    "...ahhh! Get away from me. Someone. Anyone. Help!",
+    "Come, I'm in need of aid against this plauging evil!",
+    "Stay Away!",
+    "Somebody HELP ME",
+    "Can anyone help me against this maniac?"
+];
+
+type MasteryAbility = { [key:string]: string[] };
+export const ENEMY_SPECIAL: MasteryAbility = {
     "constitution": [ // 17
         "Desperation",
         "Disease",
@@ -158,6 +168,40 @@ export const ENEMY_SPECIAL = {
         "Tshaeral"
     ], // 16
 };
+export const ENEMY_AOE: MasteryAbility = {
+    "constitution": [
+        "Disease",
+        "Renewal",
+        "Scream",
+    ],
+
+    "strength": [
+        "Howl",
+        "Leap",
+        "Writhe"
+    ],
+
+    "agility": [
+        "Howl",
+        "Rush",
+    ],
+
+    "achre": [
+        "Astrave",
+        "Freeze",
+    ],
+        
+    "caeren": [
+        "Astrave",
+        "Scream",
+    ],
+
+    "kyosir": [
+        "Chiomic",
+        "Disease",
+        "Scream",
+    ],
+};
 export const DISTANCE = {
     MIN: 0,
     ATTACK: 25,
@@ -193,8 +237,11 @@ export const RANGE = {
     Game: 1000,
     Arena: 2000,
     Gauntlet: 3000,
-}; 
-export const INSTINCTS = {
+};
+type Instinct = {
+    [key: string]: {key:string; value:string;}[]
+};
+export const INSTINCTS: Instinct = {
     "constitution": [
         { // 0 - Desperate Heal
             key: "stateMachine",
@@ -340,6 +387,17 @@ export const INSTINCTS = {
         }
     ]
 };
+type MIND_STATE = {
+    [key: string]: string[];
+};
+export const MIND_STATES: MIND_STATE = {
+    constitution: ["Controller", "Priest", "Sorcerer"], // "Controller", "Priest", "Sorcerer"
+    strength: ["Berserker", "Commander", "Stalwart"], // "Berserker", "Commander", "Stalwart"
+    agility: ["Rogue", "Ranger"], // "Jester", "Rogue", "Ranger"
+    achre: ["Battlemage", "Controller", "Sorcerer"], // "Battlemage", "Controller", "Sorcerer"
+    caeren: ["Battlemage", "Priest", "Sorcerer"], // "Battlemage", "Priest", "Sorcerer"
+    kyosir: ["Battlemage", "Controller", "Sorcerer"], // "Battlemage", "Jester", "Sorcerer"
+};
 export type ARENA_ENEMY = {
     level: number;
     mastery: string;
@@ -355,10 +413,12 @@ export type EnemySheet = {
     health: number;
     isAggressive: boolean;
     startedAggressive: boolean;
+    isCaerenic: boolean;
     isDefeated: boolean;
     isTriumphant: boolean;
     isLuckout: boolean;
     isPersuaded: boolean;
+    isStalwart: boolean;
     playerTrait: string;
 };
 const levelRanges = [
@@ -395,8 +455,8 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
         console.warn(err, "Error retrieving Enemies");
     };
 };
-export function fetchArena(enemies: ARENA_ENEMY[]) {
-    try {
+export function fetchArena(enemies: ARENA_ENEMY[]): Compiler[] {
+    // try {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {
             let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
@@ -405,9 +465,9 @@ export function fetchArena(enemies: ARENA_ENEMY[]) {
             complete.push(res);
         };
         return complete;
-    } catch (err) {
-        console.warn(err, "Error Retrieving Enemies");
-    };
+    // } catch (err) {
+    //     console.warn(err, "Error Retrieving Enemies");
+    // };
 };
 export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5, mastery: ["constitution", "strength", "agility", "achre", "caeren", "kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
     try {

@@ -1012,6 +1012,8 @@ export default function PhaserGame (props: IProps) {
                 computerAttributes: undefined,
                 computerDefense: undefined,
                 computerDamageType: "",
+                computerCaerenic: false,
+                computerStalwart: false,
                 isEnemy: false,
                 npcType: "",
                 enemyPersuaded: false,
@@ -1075,6 +1077,8 @@ export default function PhaserGame (props: IProps) {
                 computerDefense: e.enemy.defense,
                 computerDefenseDefault: e.enemy.defense,
                 computerDamageType: e.weapons[0].damageType?.[0] as string, //e.enemy.combatWeaponOne.damageType[0],
+                computerCaerenic: e.isCaerenic,
+                computerStalwart: e.isStalwart,
                 isEnemy: e.name === "enemy", // true
                 npcType: "",
                 isAggressive: e.isAggressive,
@@ -1115,6 +1119,8 @@ export default function PhaserGame (props: IProps) {
                 playerTrait: "",
                 playerWin: false,
                 computerWin: false,
+                computerCaerenic: false,
+                computerStalwart: false,
                 enemyID: e.id,
                 npcType: e.type,
             });

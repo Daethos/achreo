@@ -691,7 +691,7 @@ svg.defs {
     .stat-block.wide .section-left {margin: 0;}
     .stat-block.wide .section-right {margin: 0;}
 }
-@media screen and (max-width: 840px) {
+@media screen and (max-width: 875px) {
     .highlight {
         color: #fdf6d8; background: #000; border-radius: 0.25em; 
         font-family: "Cinzel-Regular", "Cinzel-Bold"; 

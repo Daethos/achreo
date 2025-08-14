@@ -72,6 +72,6 @@ export default class HealthBar extends Phaser.GameObjects.Container {
     };
 
     public update = (player: any): void => {
-        this.setPosition(player.x, player.y - 25);
+        this.setPosition(player.x, player.y - 24);
     };
 };

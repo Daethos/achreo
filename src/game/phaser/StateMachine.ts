@@ -37,6 +37,9 @@ export const States = {
     HEAL: "heal",
     HURT: "hurt",
     LULL: "lull",
+    HELP: "help",
+    SUMMON: "summon",
+    KNOCKBACK: "knockback",
 
     ARC: "arc",
     BLINK: "blink",

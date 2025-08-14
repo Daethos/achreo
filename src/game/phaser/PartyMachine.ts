@@ -1846,7 +1846,7 @@ export default class PlayerMachine {
 
     onDiseaseEnter = () => {
         this.player.isDiseasing = true;
-        this.player.aoe = this.scene.aoePool.get(TENDRIL, 6, false, this.player);    
+        this.player.aoe = this.scene.aoePool.get("disease", 6, false, this.player);    
         this.player.enemySound("dungeon", true);
         this.scene.showCombatText(this.player, "Tendrils Swirl", 750, TENDRIL, false, true);
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
@@ -2256,7 +2256,7 @@ export default class PlayerMachine {
         this.player.isAstrifying = true;
         this.player.flickerCaerenic(PLAYER.DURATIONS.ASTRICATION); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
-            text: `${this.player.ascean.name}"s caeren astrifies, wrapping round their attacks.`
+            text: `${this.player.ascean.name}'s caeren astrifies, wrapping round their attacks.`
         });
     };
     onAstricationUpdate = (_dt: number) => {if (!this.player.isAstrifying) this.positiveMachine.setState(States.CLEAN);};
@@ -2267,7 +2267,7 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Berserking", 750, DAMAGE, false, true);
         this.player.isBerserking = true;
         EventBus.emit(PARTY_COMBAT_TEXT, {
-            text: `${this.player.ascean.name}"s caeren feeds off the pain, its hush shrieking forth.`
+            text: `${this.player.ascean.name}'s caeren feeds off the pain, its hush shrieking forth.`
         });
     };
     onBerserkUpdate = (_dt: number) => {if (!this.player.isBerserking) this.positiveMachine.setState(States.CLEAN);};

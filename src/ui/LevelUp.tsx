@@ -110,6 +110,8 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
     return <div class="modal" style={{ "z-index": 5 }}>
         <div class="stat-block superCenter" style={{ width: "100%", background: "rgba(0, 0, 0, 0.9" }}>
             <div class="left center" style={{ height: "80%", width: "48%",  top: "10%",display: "inline-block", border: "0.15em solid #fdf6d8" }}>
+                <div style={{ width: "auto", "font-size": "0.9em" }}>
+
                 <h3 class="gold wrap" style={{ "margin": "5%" }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>
                 <p class="gold wrap" style={{ "margin-bottom": "3%" }}>You may change your faith at this time.</p>
                 <div>
@@ -127,9 +129,10 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                         )}
                     </For>
                 </div>      
+                </div>
             </div>
             <div class="right center" style={{ height: "80%", width: "48%", top: "10%", display: "inline-block", border: "0.15em solid #fdf6d8" }}>
-            <div class="" style={{ width: "auto" }}>
+            <div style={{ width: "auto", "font-size": "0.9em" }}>
                 <p class="gold">You will gain 2 attribute points <br />Would you like to allocate them now?</p>
                 <h3 class="gold" style={{ "margin-bottom" : "5%", animation: pool() === 2 ? "texty 1s infinite ease alternate" : "", "--glow-color": "gold" }}>Attribute Pool: {pool()} / 2</h3>
                 <For each={Attributes}>

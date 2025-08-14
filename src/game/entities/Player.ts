@@ -522,17 +522,17 @@ export default class Player extends Entity {
     resist = () => this.scene.showCombatText(this, "Resisted", PLAYER.DURATIONS.TEXT, EFFECT);
 
     checkTalentCost = (type: string, cost: number) => {
-        const grace = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COST[cost as unknown as keyof typeof TALENT_COST] : cost;
+        const grace = this.scene.hud.talents.talents[type].efficient ? TALENT_COST[cost] : cost;
         this.scene.combatManager.useGrace(grace);
     };
 
     checkTalentCooldown = (type: string, cooldown: number) => {
-        const limit = this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].efficient ? TALENT_COOLDOWN[cooldown as unknown as keyof typeof TALENT_COOLDOWN] : cooldown;
+        const limit = this.scene.hud.talents.talents[type].efficient ? TALENT_COOLDOWN[cooldown] : cooldown;
         this.setTimeEvent(`${type}Cooldown`, limit);
     };
 
     checkTalentEnhanced = (type: string): boolean => {
-        return this.scene.hud.talents.talents[type as keyof typeof this.scene.hud.talents.talents].enhanced;
+        return this.scene.hud.talents.talents[type].enhanced;
     };
 
     damageDistance = (enemy: Enemy) => {
@@ -607,7 +607,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);
                         if (special) this.scene.combatManager.stun(enemy.enemyID);
-                        this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE["leap" as keyof typeof SWING_FORCE]);
+                        this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as string] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as string]] * SWING_FORCE["leap"]);
                     };
                 };
             },
@@ -621,7 +621,7 @@ export default class Player extends Entity {
         this.frameCount = 0;
         this.isRushing = true;
         this.isThrusting = true;
-        this.scene.sound.play("stealth", { volume: this.scene.hud.settings.volume });        
+        this.scene.sound.play("1", { volume: this.scene.hud.settings.volume });        
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -712,7 +712,7 @@ export default class Player extends Entity {
                         if (enemy.isMultifaring) enemy.multifarious(this.playerID);
                         if (enemy.isMystifying) enemy.mystify(this.playerID);    
                         this.scene.combatManager.playerMelee(enemy.enemyID, "storm");
-                        this.applyKnockback(enemy, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE["storm" as keyof typeof SWING_FORCE]);
+                        this.applyKnockback(enemy, SWING_FORCE[this.scene.state.weapons[0]?.grip as string] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as string]] * SWING_FORCE["storm"]);
                     };
                 };
             },
@@ -983,7 +983,7 @@ export default class Player extends Entity {
         if (!target) return false;
         const skills = this.scene.state.player?.skills;
         const type = this.hasMagic ? this.scene.state.playerDamageType : this.scene.state.weapons[0]?.type;
-        const skill = skills?.[type as keyof typeof skills];
+        const skill = skills?.[type as string];
         const cap = this.scene.state.player?.level as number * 100;
         const skilled = skill as number / cap >= 0.5;
         if (skilled) {
@@ -1303,7 +1303,7 @@ export default class Player extends Entity {
             this.attackedTarget.jumpIntoCombat();
             this.stealthUpdate();
         } else {
-            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
+            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as string] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as string]] * SWING_FORCE[action]);
         };
     };
 

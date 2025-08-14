@@ -214,7 +214,7 @@ export default class Party extends Entity {
             32, this.height
         ), Phaser.Geom.Rectangle.Contains)
             .on("pointerdown", () => {
-                this.scene.hud.logger.log(`Console: ${this.ascean.name}"s current State: ${this.playerMachine.stateMachine.getCurrentState()?.charAt(0).toUpperCase()}${this.playerMachine.stateMachine.getCurrentState()?.slice(1)}`)
+                this.scene.hud.logger.log(`Console: ${this.ascean.name}'s current State: ${this.playerMachine.stateMachine.getCurrentState()?.charAt(0).toUpperCase()}${this.playerMachine.stateMachine.getCurrentState()?.slice(1)}`)
                 if (this.currentTarget) {
                     this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 };

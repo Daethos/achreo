@@ -82,6 +82,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
 
         "Absorb",
         "Desperation",
+        "Disease",
         "Dispel",
         "Healing",
         "Ilirech",

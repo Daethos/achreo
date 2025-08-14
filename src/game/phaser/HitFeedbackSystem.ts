@@ -143,13 +143,13 @@ export class HitFeedbackSystem {
         });
     };
 
-    private hitStop(duration: number) {
-        const timing = this.scene.matter.world.engine.timing;
-        timing.timeScale = 0.1;
-        this.scene.time.delayedCall(duration, () => {
-            timing.timeScale = 1;
-        }, undefined, this);
-    };
+    // private hitStop(duration: number) {
+    //     const timing = this.scene.matter.world.engine.timing;
+    //     timing.timeScale = 0.1;
+    //     this.scene.time.delayedCall(duration, () => {
+    //         timing.timeScale = 1;
+    //     }, undefined, this);
+    // };
 
     private zoom(zoom: number, duration = 300, ease: any) {
         const cam = this.scene.cameras.main;
@@ -407,6 +407,9 @@ export class HitFeedbackSystem {
                 break;
             case "Lightning":
                 this.lightning.explode(count, pos.x, pos.y); // Good
+                break;
+            case "Parry":
+                this.parry.explode(count, pos.x, pos.y); // Good
                 break;
             case "Righteous":
                 this.righteous.explode(count, pos.x, pos.y); // Close

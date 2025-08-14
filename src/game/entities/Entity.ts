@@ -71,7 +71,8 @@ export const FRAME_COUNT = {
 }; 
 export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
-export const SWING_FORCE = { 
+type Force = {[key:string]:number;};
+export const SWING_FORCE: Force = { 
     "One Hand": 1, 
     "Two Hand": 1.25,
     "storm": 1.1,
@@ -86,7 +87,8 @@ export const SWING_FORCE = {
     "parry": 0,
     "hook": 0,
 }; // 750, 1250 [old]
-export const SWING_FORCE_ATTRIBUTE = {
+type Attribute = {[key: string]: string;};
+export const SWING_FORCE_ATTRIBUTE: Attribute = {
     "Physical": "strength",
     "Magic": "caeren"
 };
@@ -116,6 +118,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     hasMagic: boolean = false;
     hasBow: boolean = false;
     inWater: boolean = false;
+    isCaerenic: boolean = false;
     isCasting: boolean = false;
     isClimbing: boolean = false;
     inCombat: boolean = false;
@@ -182,6 +185,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isSlowed: boolean = false;
     isSnared: boolean = false;
     isStunned: boolean = false;
+
+    isDetected: boolean = false;
     
     count = {
         confused: 0,
@@ -268,6 +273,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isDeleting: boolean = false;
     aoeMask: EntityFlag = ENTITY_FLAGS.NONE;
     evasionTimer: number = 0;
+    summons: number = 0;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -523,8 +529,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if ("vibrate" in navigator) navigator.vibrate(40);
     };
     
-    applyKnockback(target: Enemy | Player | Party, force = 10) {
-        if (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting) return;
+    applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
+        if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting)) return;
         force *= 0.55;
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
@@ -597,7 +603,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.isSnared) total++;
         return total;
     };
-    halesness = (): number => {
+    haleness = (): number => {
         let total = 0;
         if (this.reactiveBubble) total += 2;
         if (this.negationBubble) total += 2;
@@ -747,7 +753,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     outOfRange = (range: number) => {
         const distance = Phaser.Math.Distance.Between(this.x, this.y, this.currentTarget?.x as number, this.currentTarget?.y as number);
         if (distance > range) {
-            this.scene.showCombatText(this as any, `Out of Range: -${Math.round(distance - range)}`, 1000, "damage", false, false);
+            this.scene.showCombatText(this as any, `Out of Range: -${Math.round(distance - range)}`, 1000, "damage", false, true);
             return true;    
         };
         return false;
@@ -759,7 +765,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             x: { from: target.x, to: this.x, duration: time },
             y: { from: target.y, to: this.y, duration: time }, 
             ease: Phaser.Math.Easing.Circular.InOut,
-            // ease: "Circ.easeInOut",
             onStart: () => this.beam.startEmitter(target, time),
             onComplete: () => this.beam.reset(),
             yoyo: false

@@ -95,6 +95,9 @@ export interface Combat {
     computerRollSuccess: boolean;
     computerWin: boolean;
 
+    computerCaerenic: boolean;
+    computerStalwart: boolean;
+
     combatInitiated: boolean;
     actionStatus: boolean;
     gameIsLive: boolean;
@@ -230,6 +233,9 @@ export const initCombat: Combat = {
     computerReligiousSuccess: false,
     computerRollSuccess: false,
     computerWin: false,
+
+    computerCaerenic: false,
+    computerStalwart: false,
 
     combatInitiated: false,
     actionStatus: false,

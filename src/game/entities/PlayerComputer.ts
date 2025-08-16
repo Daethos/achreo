@@ -4,12 +4,10 @@ import { fetchTrait } from "../../utility/ascean";
 import { DURATION } from "../../utility/enemy";
 import { PLAYER, staminaCheck } from "../../utility/player";
 import { Particle } from "../matter/ParticleManager";
-import { sprint, walk } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
-import { FRAMES } from "./Entity";
 import Player from "./Player";
 
 export default class PlayerComputer extends Player {
@@ -156,27 +154,9 @@ export default class PlayerComputer extends Player {
     };
 
     evaluateCombatDistance = () => {
-        this.getDirection();
-        if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget); 
-            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
-                this.scene.hud.setupEnemy(this.currentTarget);
-            };
-        };
-        const state = this.playerMachine.stateMachine.getCurrentState();
-        if (this.isDefeated && state !== States.DEFEATED) {
-            this.isDefeated = false;
-            this.playerMachine.stateMachine.setState(States.DEFEATED);
-            return;
-        };
-        if (state === States.LEASH || state === States.DEFEATED) return;
-        if (!this.inCombat || this.isCasting || this.isPraying || this.isContemplating || this.scene.state.newPlayerHealth <= 0) {
-            this.isMoving = false;
-            this.setVelocity(0);
-            return;    
-        };
-        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
+        if (this.isSuffering() || this.scene.state.newPlayerHealth <= 0 || !this.inCombat || !this.currentTarget || !this.currentTarget.body) return;
         
+        const state = this.playerMachine.stateMachine.getCurrentState();
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
@@ -188,18 +168,16 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
-            if (state !== States.COMPUTER_COMBAT) { // !this.computerAction && 
-                this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-                // return;
-            };
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2 || 4
+                this.handleMovementAnimations();
             };
             if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 direction.normalize();
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25          
+                this.handleMovementAnimations();
             } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
                 if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
                     this.playerMachine.stateMachine.setState(States.EVADE);
@@ -207,31 +185,29 @@ export default class PlayerComputer extends Player {
                     direction.normalize();
                     this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
                     this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
+                    this.handleMovementAnimations();
                 };
             } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
                 this.playerMachine.stateMachine.setState(States.EVADE);
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
-                if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
+                this.handleIdleAnimations();
             } else { // Between 75 and 225 and outside y-distance
                 direction.normalize();
                 this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
+                this.handleMovementAnimations();
             };
         } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
-            if (state !== States.COMPUTER_COMBAT) {
-                this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-                // return;
-            };
             if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
                 direction.normalize();
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.5
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.5
                 this.isPosted = false;
+                this.handleMovementAnimations();
             } else { // Inside melee range
                 this.isPosted = true;
                 this.setVelocity(0);
-                if (this.computerAction) this.anims.play(FRAMES.IDLE, true);
-                // if (this.clearAttacks()) this.anims.play("player_idle", true);
+                this.handleIdleAnimations();
             };
         };
     };
@@ -264,53 +240,8 @@ export default class PlayerComputer extends Player {
             this.scene.combatManager.useStamina(-5);    
         };
     };
-    handleComputerAnimations = () => {
-        if (this.isDefeated) return;
-        if (this.isPolymorphed) {
-            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        } else if (this.isConfused || this.isFeared) {
-            if (this.moving()) {
-                this.handleMovementAnimations();
-            } else {
-                this.handleIdleAnimations();
-            };
-        } else if (this.isParrying) {
-            this.anims.play(FRAMES.PARRY, true).on("animationcomplete", () => this.isParrying = false);
-        } else if (this.isThrusting) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.THRUST, true).on("animationcomplete", () => this.isThrusting = false);
-        } else if (this.isDodging) { 
-            this.anims.play(FRAMES.DODGE, true);
-            if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isRolling) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.ROLL, true);
-            if (this.rollCooldown === 0) this.playerRoll();
-        } else if (this.isPosturing) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.POSTURE, true).on("animationcomplete", () => this.isPosturing = false);
-        } else if (this.isAttacking) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.ATTACK, true).on("animationcomplete", () => this.isAttacking = false);
-        } else if (this.isHurt) {
-            this.anims.play(FRAMES.HURT, true);
-        } else if (this.moving()) {
-            this.handleMovementAnimations();
-            this.isMoving = true;
-        } else if (this.isCasting) {
-            walk(this.scene);
-            this.anims.play(FRAMES.CAST, true);
-        } else if (this.isPraying) {
-            this.anims.play(FRAMES.PRAY, true).on("animationcomplete", () => this.isPraying = false);
-        } else {
-            this.isMoving = false;
-            this.handleIdleAnimations();
-        };
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
-    };
 
-    handleComputerConcerns = () => {
+    handleComputerConcerns = (dt: number) => {
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.playerActionSuccess();
@@ -329,13 +260,26 @@ export default class PlayerComputer extends Player {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
-
+        this.getDirection();
+        if (this.currentTarget) {
+            this.highlightTarget(this.currentTarget); 
+            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
+                this.scene.hud.setupEnemy(this.currentTarget);
+            };
+        };
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality("player", this.currentTarget as Enemy);
-        
+        this.functionality(dt, "player", this.currentTarget as Enemy);
+
+        this.spriteWeapon.setPosition(this.x, this.y);
+        this.spriteShield.setPosition(this.x, this.y);
+
+        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
+            this.playerMachine.stateMachine.setState(States.DEFEATED);
+            return;
+        };
         if (this.isConfused && !this.sansSuffering("isConfused") && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -376,13 +320,10 @@ export default class PlayerComputer extends Player {
             this.playerMachine.negativeMachine.setState(States.SNARED);
             return;
         };
-
     };
 
     update(dt: number) {
-        this.handleComputerConcerns();
-        this.evaluateCombatDistance();
-        this.handleComputerAnimations();
+        this.handleComputerConcerns(dt);
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

@@ -1,5 +1,5 @@
 import Entity, { assetSprite, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";  
-import { screenShake, sprint, vibrate } from "../phaser/ScreenShake";
+import { screenShake, vibrate } from "../phaser/ScreenShake";
 import { States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import PlayerMachine from "../phaser/PlayerMachine";
@@ -386,6 +386,8 @@ export default class Player extends Entity {
 
     setPlayer = (stats: Compiler) => {
         this.ascean = stats.ascean;
+        this.maxGrace = stats.attributes.grace;
+        this.maxStamina = stats.attributes.stamina;
     };
 
     startCombat = () => {
@@ -552,6 +554,7 @@ export default class Player extends Entity {
             this.spellName = this.currentTarget!.ascean.name;
         };
         if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true); 
+        this.anims.play(FRAMES.CAST, true);
     };
 
     stopCasting = () => {
@@ -996,9 +999,13 @@ export default class Player extends Entity {
     combatChecker = (state: boolean) => {
         if (state) return;
         if (this.inCombat) {
-            this.playerMachine.stateMachine.setState(States.COMBAT);
+            if (this.isComputer) {
+                this.playerMachine.stateMachine.setState(States.CHASE);
+            } else {
+                this.playerMachine.stateMachine.setState(States.IDLE);
+            };
         } else {
-            this.playerMachine.stateMachine.setState(States.NONCOMBAT);
+            this.playerMachine.stateMachine.setState(States.IDLE);
         };
     };
 
@@ -1424,54 +1431,7 @@ export default class Player extends Entity {
         };
     };
 
-    handleAnimations = () => {
-        if (this.isDefeated) return;
-        if (this.isPolymorphed) {
-            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        } else if (this.isConfused || this.isFeared) {
-            if (this.moving()) {
-                this.handleMovementAnimations();
-            } else {
-                this.handleIdleAnimations();
-            };
-        } else if (this.isParrying) {
-            this.anims.play(FRAMES.PARRY, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
-        } else if (this.isThrusting) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.THRUST, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isThrusting = false);
-        } else if (this.isDodging) { 
-            this.anims.play(FRAMES.DODGE, true);
-            if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isJumping) {
-            this.anims.play(FRAMES.JUMP, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isJumping = false); // () => this.anims.play(FRAMES.LAND).on(FRAMES.ANIMATION_COMPLETE,
-        } else if (this.isRolling) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.ROLL, true);
-            if (this.rollCooldown === 0) this.playerRoll();
-        } else if (this.isPosturing) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.POSTURE, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isPosturing = false);
-        } else if (this.isAttacking) {
-            sprint(this.scene);
-            this.anims.play(FRAMES.ATTACK, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
-        } else if (this.isHurt) {
-            this.anims.play(FRAMES.HURT, true);
-        } else if (this.moving()) {
-            this.handleMovementAnimations();
-            this.isMoving = true;
-        } else if (this.isCasting) {
-            this.anims.play(FRAMES.CAST, true);
-        } else if (this.isPraying) {
-            this.anims.play(FRAMES.PRAY, true).on(FRAMES.ANIMATION_COMPLETE, () => this.isPraying = false);
-        } else {
-            this.isMoving = false;
-            this.handleIdleAnimations();
-        };
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
-    };
-
-    handleConcerns = () => {
+    handleConcerns = (dt: number) => {
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.playerActionSuccess();
@@ -1495,7 +1455,7 @@ export default class Player extends Entity {
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality("player", this.currentTarget as Enemy);
+        this.functionality(dt, "player", this.currentTarget as Enemy);
 
         const state = this.playerMachine.stateMachine.getCurrentState();
 
@@ -1636,12 +1596,14 @@ export default class Player extends Entity {
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
+        this.spriteWeapon.setPosition(this.x, this.y);
+        this.spriteShield.setPosition(this.x, this.y);
     };
 
     update(dt: number) {
-        this.handleConcerns();
+        this.handleConcerns(dt);
         this.handleActions();
-        this.handleAnimations();
+        // this.handleAnimations();
         this.handleMovement();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);

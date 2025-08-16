@@ -82,7 +82,7 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                 if (!combat()?.weapons[newIndex]) return;
                 let one: any[] = [];
                 if (combat()?.weapons?.[2]?._id === combat()?.weapons?.[newIndex]?._id) { // Down
-                    one = [combat()?.weapons?.[newIndex], combat()?.weapons?.[0], combat()?.weapons?.[1]];
+                    one = [combat()?.weapons?.[newIndex], combat()?.weapons?.[1], combat()?.weapons?.[0]];
                 } else { // Up
                     one = [combat()?.weapons?.[newIndex], combat()?.weapons?.[2], combat()?.weapons?.[0]];
                 };

@@ -107,7 +107,7 @@ export function computerCaerenic(caerenic: boolean): { pos: number, neg: number 
     return { pos, neg };
 };
 
-export function computerstalwart(stalwart: boolean): number {
+export function computerStalwart(stalwart: boolean): number {
     return stalwart ? DAMAGE.STALWART : 1;
 };
 
@@ -494,7 +494,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
     const caer = caerenic(combat.caerenic);
     const stal = stalwart(combat.stalwart);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
-    const computerStal = computerstalwart(combat.computerStalwart);
+    const computerStal = computerStalwart(combat.computerStalwart);
     if (player) {
         const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.pos * computerCaer.neg * computerStal;
         combat.newComputerHealth -= playerDamage;
@@ -1321,7 +1321,7 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
     combat.realizedPlayerDamage *= caer.pos;
     
     const computerCaer = computerCaerenic(combat.computerCaerenic);
-    const computerStal = computerstalwart(combat.computerStalwart);
+    const computerStal = computerStalwart(combat.computerStalwart);
 
     combat.realizedPlayerDamage *= computerCaer.neg * computerStal;
 
@@ -1369,7 +1369,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     const mastery = combat.player?.mastery as string;
     const caer = caerenic(combat.caerenic);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
-    const computerStal = computerstalwart(combat.computerStalwart);
+    const computerStal = computerStalwart(combat.computerStalwart);
     let playerPhysicalDamage = mainWeapon.physicalDamage as number, playerMagicalDamage = mainWeapon.magicalDamage as number;
     let computerPhysicalDefense = combat.computerDefense?.physicalDefenseModifier as number, computerMagicalDefense = combat.computerDefense?.magicalDefenseModifier as number;
     let physPen = mainWeapon.physicalPenetration as number, magPen = mainWeapon.magicalPenetration as number;
@@ -2037,7 +2037,7 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     const caer = caerenic(combat.caerenic);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
-    const computerStal = computerstalwart(combat.computerStalwart);
+    const computerStal = computerStalwart(combat.computerStalwart);
     let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * caer.pos * computerCaer.neg * computerStal;
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
@@ -2154,7 +2154,7 @@ function consumePrayerSplitter(combat: Combat): any {
     combat.prayerData.push(combat.prayerSacrifice);
     const caer = caerenic(combat.caerenic);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
-    const computerStal = computerstalwart(combat.computerStalwart);
+    const computerStal = computerStalwart(combat.computerStalwart);
     combat.playerEffects = combat.playerEffects.filter(effect => {
         if (effect.id !== combat.prayerSacrificeId) return true; // || effect.enemyName !== combat.computer.name
         const matchingWeapon = combat.weapons.find(weapon => weapon?._id === effect.weapon.id);

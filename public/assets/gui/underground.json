@@ -311,6 +311,374 @@
         }, 
         {
          "draworder":"topdown",
+         "id":9,
+         "name":"pillars",
+         "objects":[
+                {
+                 "height":12,
+                 "id":142,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":184,
+                 "y":800
+                }, 
+                {
+                 "height":12,
+                 "id":144,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":312,
+                 "y":544
+                }, 
+                {
+                 "height":12,
+                 "id":145,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":152,
+                 "y":544
+                }, 
+                {
+                 "height":12,
+                 "id":146,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":632,
+                 "y":192
+                }, 
+                {
+                 "height":12,
+                 "id":147,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":856,
+                 "y":192
+                }, 
+                {
+                 "height":12,
+                 "id":148,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":856,
+                 "y":512
+                }, 
+                {
+                 "height":12,
+                 "id":149,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1208,
+                 "y":512
+                }, 
+                {
+                 "height":12,
+                 "id":150,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1336,
+                 "y":512
+                }, 
+                {
+                 "height":12,
+                 "id":151,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1240,
+                 "y":800
+                }, 
+                {
+                 "height":12,
+                 "id":152,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1816,
+                 "y":800
+                }, 
+                {
+                 "height":12,
+                 "id":153,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1816,
+                 "y":1248
+                }, 
+                {
+                 "height":12,
+                 "id":154,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1624,
+                 "y":1248
+                }, 
+                {
+                 "height":12,
+                 "id":155,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1944,
+                 "y":1536
+                }, 
+                {
+                 "height":12,
+                 "id":156,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1816,
+                 "y":1856
+                }, 
+                {
+                 "height":12,
+                 "id":157,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1304,
+                 "y":1856
+                }, 
+                {
+                 "height":12,
+                 "id":158,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":760,
+                 "y":1856
+                }, 
+                {
+                 "height":12,
+                 "id":159,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":184,
+                 "y":1856
+                }, 
+                {
+                 "height":12,
+                 "id":160,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":280,
+                 "y":1504
+                }, 
+                {
+                 "height":12,
+                 "id":161,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":408,
+                 "y":1504
+                }, 
+                {
+                 "height":12,
+                 "id":162,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":536,
+                 "y":800
+                }, 
+                {
+                 "height":12,
+                 "id":163,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"sortGroup",
+                         "type":"string",
+                         "value":"pillar"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1816,
+                 "y":320
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":5,
          "name":"summons",
          "objects":[
@@ -602,6 +970,12 @@
                  "height":0,
                  "id":138,
                  "name":"",
+                 "properties":[
+                        {
+                         "name":"name",
+                         "type":"string",
+                         "value":"Merchant-All"
+                        }],
                  "rotation":0,
                  "type":"",
                  "visible":true,
@@ -1176,8 +1550,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":139,
+ "nextlayerid":10,
+ "nextobjectid":164,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.1",
@@ -5893,12 +6267,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -5916,7 +6297,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -5924,12 +6305,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -5947,7 +6335,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -5955,12 +6343,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -5978,7 +6373,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -6573,12 +6968,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6604,12 +7006,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6635,12 +7044,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6666,12 +7082,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6697,12 +7120,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":2,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6728,12 +7158,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":2,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6751,7 +7188,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -6759,12 +7196,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6782,7 +7226,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -6790,12 +7234,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":2,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -6813,7 +7264,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -7037,12 +7488,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7068,12 +7526,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7099,12 +7564,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7130,12 +7602,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7161,12 +7640,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":2,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7192,12 +7678,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7215,7 +7708,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -7223,12 +7716,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7246,7 +7746,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {
@@ -7254,12 +7754,19 @@
                  "objectgroup":
                     {
                      "draworder":"index",
+                     "id":2,
                      "name":"",
                      "objects":[
                             {
                              "height":12,
                              "id":1,
                              "name":"",
+                             "properties":[
+                                    {
+                                     "name":"sortGroup",
+                                     "type":"string",
+                                     "value":"pillar"
+                                    }],
                              "rotation":0,
                              "type":"",
                              "visible":true,
@@ -7277,7 +7784,7 @@
                         {
                          "name":"collides",
                          "type":"bool",
-                         "value":true
+                         "value":false
                         }]
                 }, 
                 {

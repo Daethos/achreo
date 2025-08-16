@@ -27,6 +27,7 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
+import { FRAMES } from "../entities/Entity";
 interface ChunkData {
     key: string;
     x: number;
@@ -100,6 +101,7 @@ export class Underground extends Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    pillars: any[] = [];
 
     constructor () {
         super("Underground");
@@ -130,6 +132,8 @@ export class Underground extends Scene {
         let layer2 = map.createLayer("Back", castleInterior as Tilemaps.Tileset, 0, 0);
         let layer3 = map.createLayer("Stairs", castleInterior as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer("Decorations", castleDecorations as Tilemaps.Tileset, 0, 0);
+
+
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3, layer4].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
@@ -148,7 +152,7 @@ export class Underground extends Scene {
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
         });
         layer2?.setDepth(6);
-        layer3?.setDepth(6);
+        layer3?.setDepth(2); // 6
         this.groundLayer = layer1;
         this.layer2 = layer2;
         this.layer3 = layer3;
@@ -170,7 +174,7 @@ export class Underground extends Scene {
                 this.west = new Phaser.Math.Vector2(tile.pixelX, tile.pixelY);
             };
         });
-        console.log(this.south)
+        // console.log(this.south)
         this.fov = new Fov(this, this.map, [this.groundLayer, this.layer2, this.layer3, this.layer4]);
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -181,6 +185,7 @@ export class Underground extends Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(500, 64);
 
+        map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer("dms")?.objects.forEach((_dm: any) => {
             (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 }));
@@ -286,16 +291,16 @@ export class Underground extends Scene {
         EventBus.on("Port", (direction: string) => {
             switch (direction) {
                 case "North":
-                    this.player.setPosition(this.north.x, this.north.y + 32);
+                    this.player.teleport(this.north.x, this.north.y + 32);
                     break;
                 case "South":
-                    this.player.setPosition(this.south.x, this.south.y + 32);
+                    this.player.teleport(this.south.x, this.south.y + 32);
                     break;
                 case "East":
-                    this.player.setPosition(this.east.x, this.east.y + 32);
+                    this.player.teleport(this.east.x, this.east.y + 32);
                     break;
                 case "West":
-                    this.player.setPosition(this.west.x, this.west.y + 32);
+                    this.player.teleport(this.west.x, this.west.y + 32);
                     break;
                 default: break;
             };
@@ -549,7 +554,7 @@ export class Underground extends Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? DEFEATED[Math.floor(Math.random() * DEFEATED.length)] : VICTORIOUS[Math.floor(Math.random() * VICTORIOUS.length)];
-        enemy.specialCombatText = this.showCombatText(enemy, saying, 2000, BONE, false, true);
+        enemy.specialCombatText = this.showCombatText(enemy, saying, 2500, BONE, false, true);
         enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(3000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
@@ -667,6 +672,25 @@ export class Underground extends Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.hud.rightJoystick.update();
+        if (this.frameCount % 15 !== 0) return;
+        if (!this.pillars) return;
+        for (let i = 0; i < this.pillars.length; i++) {
+            const pillar = this.pillars[i];
+            if (
+                this.player.x > pillar.x &&
+                this.player.x < pillar.x + pillar.width &&
+                (this.player.y + 12) > pillar.y - pillar.height &&
+                (this.player.y - 12) < pillar.y + pillar.height
+            ) {
+                // Narrow check passed — player is near the pillar
+                if ((this.player.y + 12) < pillar.y) {
+                    this.player.setDepth(1); // Behind pillar
+                } else {
+                    this.player.setDepth(3); // In front of pillar
+                };
+                return;
+            };
+        };
     };
 
     setCameraOffset = () => {

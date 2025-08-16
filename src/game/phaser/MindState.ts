@@ -79,7 +79,7 @@ export const MindStates: {[key:string]: MindState;} = {
             };
         },
         customEvaluate: (self, ctx) => {
-            if (ctx.direction.ogLengthSq > self.mindState.minDistanceSq && Math.random() > 0.99) {
+            if (ctx.direction.ogLengthSq > self.mindState.minDistanceSq && Math.random() > 0.995) {
                 // console.log("%c Battlemage: Choosing a Ranged Blast", "color:#00f");
                 self.mindState.activations++;
                 self.rangedBlast();
@@ -188,23 +188,13 @@ export const MindStates: {[key:string]: MindState;} = {
         callHelp: false,
         summon: false,
         activations: 0,
-        startup: (self, ctx) => {
-            // const grip = self.computerCombatSheet.computerWeapons?.[0]?.grip;
-            // if (!self.isStalwart && grip === "One Hand") {
-            //     console.log("%c Commander: Becoming Stalwart", "color:#ff0");
-            //     self.stalwartUpdate(true);
-            // };
-            // if (!self.isCaerenic && grip === "Two Hand") {
-            //     console.log("%c Commander: Becoming Caerenic", "color:#ff0");
-            //     self.caerenicUpdate();
-            // };
-        },
+        // startup: (self, ctx) => {},
         customEvaluate: (self, ctx) => { // self.enemies.length > 1 && 
-            if (Math.random() > 0.99 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && !self.isRanged) { // Also check for distance from at least 1 is close
+            if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && !self.isRanged) { // Also check for distance from at least 1 is close
                 // console.log("%c Controller: Casting AoE", "color:#0ff");
                 self.mindState.activations++;
                 self.castAoE();
-            } else if (Math.random() > 0.99 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && self.isRanged && self.currentTarget) {
+            } else if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && self.isRanged && self.currentTarget) {
                 // console.log("%c Controller: Pushing Target Back", "color:#0ff");
                 self.mindState.activations++;
                 self.stateMachine.setState(States.KNOCKBACK);
@@ -226,10 +216,6 @@ export const MindStates: {[key:string]: MindState;} = {
                     self.setMindState("Battlemage");
                 };
             };
-            // if (!self.hasControlAbilities()) {
-            //     console.log("%c Controller: Out of control abilities, switching to Sorcerer", "color:#0ff");
-            //     self.setMindState("Sorcerer");
-            // };
         }
     },
 
@@ -272,6 +258,7 @@ export const MindStates: {[key:string]: MindState;} = {
         callHelp: true,
         summon: false,
         activations: 0,
+        // startup: (self, ctx) => {},
         customEvaluate: (self, ctx) => {
             const ratio = self.health / self.ascean.health.max;
             if (ctx.allies) {
@@ -279,7 +266,7 @@ export const MindStates: {[key:string]: MindState;} = {
                 if (heal) {
                     self.mindState.activations++;
                     // console.log("%c Priest: Someone needs healing", "color:#fdf6d8");
-                    self.stateMachine.setState(States.HEALING);
+                    self.randomHeal();
                 }; 
             };
             if (!self.isStalwart && ratio < 0.5) {
@@ -361,11 +348,11 @@ export const MindStates: {[key:string]: MindState;} = {
             //     console.log("%c Rogue: Engaging in Stealth", "color:#0f0");
             //     self.enterStealthAndFlank();
             // };
-            if (Math.random() > 0.99 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq) {
+            if (Math.random() > 0.995 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Charging Shadow", "color:#0f0");
                 self.stateMachine.setState(States.SHADOW);
-            } else if (Math.random() > 0.99 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq) {
+            } else if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Setting Rush", "color:#0f0");
                 self.stateMachine.setState(States.RUSH);
@@ -399,12 +386,12 @@ export const MindStates: {[key:string]: MindState;} = {
             };
         },
         customEvaluate: (self, ctx) => {
-            if (ctx.direction.ogLengthSq < self.mindState.minDistanceSq && Math.random() > 0.99) { //  / 2
+            if (ctx.direction.ogLengthSq < self.mindState.minDistanceSq && Math.random() > 0.995) { //  / 2
                 // console.log("%c Sorcerer: Blinking", "color:#0ff");
                 self.mindState.activations++;
                 self.stateMachine.setState(States.BLINK);
             };
-            if (ctx.direction.ogLengthSq > self.mindState.minDistanceSq && Math.random() > 0.99) {
+            if (ctx.direction.ogLengthSq > self.mindState.minDistanceSq && Math.random() > 0.995) {
                 // console.log("%c Battlemage: Choosing a Ranged Blast", "color:#00f");
                 self.mindState.activations++;
                 self.rangedBlast();
@@ -444,9 +431,7 @@ export const MindStates: {[key:string]: MindState;} = {
             const grip = self.computerCombatSheet.computerWeapons?.[0]?.grip;
             if (grip === "Two Hand") {
                 self.setMindState("Berserker");
-                return;    
-            };
-            if (!self.isStalwart) {
+            } else if (!self.isStalwart) {
                 // console.log("%c Stalwart: Becoming Stalwart", "color:#fdf6d8");
                 self.stalwartUpdate(true);
             };},

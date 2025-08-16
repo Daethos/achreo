@@ -32,6 +32,9 @@ export interface ComputerCombat {
     rollSuccess: boolean;
     computerWin: boolean;
 
+    computerCaerenic: boolean;
+    computerStalwart: boolean;
+
     computerEnemy: Ascean | undefined;
     computerEnemyAction: string;
     // computerEnemyBlessing: string;
@@ -59,6 +62,9 @@ export interface ComputerCombat {
     // computerEnemyReligiousSuccess: boolean;
     computerEnemyRollSuccess: boolean;
     computerEnemyWin: boolean;
+
+    computerEnemyCaerenic: boolean;
+    computerEnemyStalwart: boolean;
 
     // combatInitiated: boolean;
     // combatEngaged: boolean;
@@ -108,6 +114,9 @@ export const initComputerCombat: ComputerCombat = {
     rollSuccess: false,
     computerWin: false,
 
+    computerCaerenic: false,
+    computerStalwart: false,
+
     computerEnemy: undefined,
     computerEnemyAction: '',
     // computerEnemyBlessing: '',
@@ -135,6 +144,9 @@ export const initComputerCombat: ComputerCombat = {
     // computerEnemyReligiousSuccess: false,
     computerEnemyRollSuccess: false,
     computerEnemyWin: false,
+
+    computerEnemyCaerenic: false,
+    computerEnemyStalwart: false,
 
     // combatInitiated: false,
     // combatEngaged: false,

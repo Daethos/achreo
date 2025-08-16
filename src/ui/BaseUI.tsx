@@ -7,7 +7,7 @@ import { EventBus } from "../game/EventBus";
 import { GameState } from "../stores/game";
 import { Compiler, LevelSheet } from "../utility/ascean";
 import { usePhaserEvent } from "../utility/hooks";
-import { caerenic, computerCaerenic, computerstalwart, consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, stalwart, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from "../utility/combat";
+import { caerenic, computerCaerenic, computerStalwart, consumePrayer, instantActionCompiler, prayerEffectTick, prayerRemoveTick, stalwart, statusEffectCheck, talentPrayerCompiler, weaponActionCompiler } from "../utility/combat";
 import { screenShake } from "../game/phaser/ScreenShake";
 import { Reputation } from "../utility/player";
 import { Puff } from "solid-spinner";
@@ -111,7 +111,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 caerenicNeg: number = caerenic(combat().caerenic).neg,
                 stalwartDef: number = stalwart(combat().stalwart),
                 computerCaer = computerCaerenic(combat().computerCaerenic),
-                computerStal = computerstalwart(combat().computerStalwart);
+                computerStal = computerStalwart(combat().computerStalwart);
             switch (type) {
                 case "Weapon": // Targeted Weapon Action by Enemy or Player
                     if (combat().computer === undefined || newComputerHealth === 0) return;

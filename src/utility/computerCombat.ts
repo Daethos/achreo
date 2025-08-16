@@ -1,7 +1,7 @@
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { ComputerCombat } from "../stores/computer";
-import { criticalCompiler, damageTypeCompiler, penetrationCompiler } from "./combat";
+import { computerCaerenic, computerStalwart, criticalCompiler, damageTypeCompiler, penetrationCompiler } from "./combat";
 import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
 // import { PRAYERS } from "./prayer";
 
@@ -112,6 +112,9 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     let computerTotalDamage: number = 0;
     let playerPhysicalDefenseMultiplier = combat.computerEnemyDefense?.physicalDefenseModifier as number;
     let playerMagicalDefenseMultiplier = combat.computerEnemyDefense?.magicalDefenseModifier as number;
+    const computerCaer = computerCaerenic(combat.computerCaerenic);
+    const computerEnemyCaer = computerCaerenic(combat.computerEnemyCaerenic);
+    const computerEnemyStal = computerStalwart(combat.computerEnemyStalwart);
     const mastery = combat.computer?.mastery as string;
 
     if (combat.computerEnemyAction === ACTION_TYPES.POSTURE && combat.computerEnemyParrySuccess !== true && combat.computerEnemyRollSuccess !== true) {
@@ -272,6 +275,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     combat.realizedComputerDamage = computerTotalDamage;
     if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
     if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    combat.realizedComputerDamage *= (computerCaer.pos * computerEnemyCaer.neg * computerEnemyStal);
     // if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
     // if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;
     // if (combat.berserk.active === true) combat.berserk.charges += 1;
@@ -319,6 +323,8 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
             computerOne.computerEnemyAttributes = computerTwo.computerAttributes;
             computerOne.computerEnemyDamageType = computerTwo.computerDamageType;
             computerOne.computerEnemyDefense = computerTwo.computerDefense;
+            computerOne.computerEnemyCaerenic = computerTwo.computerCaerenic;
+            computerOne.computerEnemyStalwart = computerTwo.computerStalwart;
             computerOne.enemyID = computerTwo.personalID;
 
             attackCompiler(computerOne);
@@ -357,6 +363,8 @@ function checkCombatSheetData(computerOne: ComputerCombat, computerTwo: Computer
     computerOne.computerEnemyAttributes = computerTwo.computerAttributes;
     computerOne.computerEnemyDamageType = computerTwo.computerDamageType;
     computerOne.computerEnemyDefense = computerTwo.computerDefense;
+    computerOne.computerEnemyCaerenic = computerTwo.computerCaerenic;
+    computerOne.computerEnemyStalwart = computerTwo.computerStalwart;
     computerOne.enemyID = computerTwo.personalID;
 
     
@@ -370,6 +378,8 @@ function checkCombatSheetData(computerOne: ComputerCombat, computerTwo: Computer
     computerTwo.computerEnemyAttributes = computerOne.computerAttributes;
     computerTwo.computerEnemyDamageType = computerOne.computerDamageType;
     computerTwo.computerEnemyDefense = computerOne.computerDefense;
+    computerTwo.computerEnemyCaerenic = computerOne.computerCaerenic;
+    computerTwo.computerEnemyStalwart = computerOne.computerStalwart;
     computerTwo.enemyID = computerOne.personalID;
 
     return { computerOne, computerTwo };

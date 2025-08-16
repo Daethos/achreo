@@ -55,7 +55,6 @@ interface ChunkData {
         plants: Phaser.Tilemaps.TilemapLayer | null;
     };
     navMesh: any;
-    // overlay: Phaser.GameObjects.Graphics;
 };
 
 export class Game extends Scene {
@@ -118,9 +117,6 @@ export class Game extends Scene {
     playerChunkX: number = 0;
     playerChunkY: number = 0;
     weather: WeatherManager;
-    // fog: any;
-    // fogBrush: any;
-    // rainParticles: Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor () {
         super("Game");
@@ -148,113 +144,6 @@ export class Game extends Scene {
         this.loadChunk("ascean_test", this.playerChunkX, this.playerChunkY);
         
         // this.matter.world.createDebugGraphic();
-
-        // this.matter.world.setBounds(-CHUNK_SIZE * 5, -CHUNK_SIZE * 5, CHUNK_SIZE * 5, CHUNK_SIZE * 5);
-
-        // // ==================================================================
-        // const map = this.make.tilemap({ key: "ascean_test" });
-        // this.map = map;
-        // const camps = map.addTilesetImage("Camp_Graves", "Camp_Graves", TILE_SIZE, TILE_SIZE, 0, 0);
-        // const decorations = map.addTilesetImage("AncientForestDecorative", "AncientForestDecorative", TILE_SIZE, TILE_SIZE, 0, 0);
-        // const tileSet = map.addTilesetImage("AncientForestMain", "AncientForestMain", TILE_SIZE, TILE_SIZE, 1, 2);
-        // const campfire = map.addTilesetImage("CampFireB", "CampFireB", TILE_SIZE, TILE_SIZE, 0, 0);
-        // const light = map.addTilesetImage("light1A", "light1A", TILE_SIZE, TILE_SIZE, 0, 0);
-        // let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Tilemaps.Tileset, 0, 0);
-        // let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Tilemaps.Tileset, 0, 0);
-        // let layerC = map.createLayer("Tile Layer - Construction", tileSet as Tilemaps.Tileset, 0, 0);
-        // let layer4 = map.createLayer("Tile Layer 4 - Primes", decorations as Tilemaps.Tileset, 0, 0);
-        // let layer5 = map.createLayer("Tile Layer 5 - Snags", decorations as Tilemaps.Tileset, 0, 0);
-        // let layerT = map.createLayer("Tile Layer - Tree Trunks", decorations as Tilemaps.Tileset, 0, 0);
-        // let layerB = map.createLayer("Tile Layer - Camp Base", camps as Tilemaps.Tileset, 0, 0);
-        // let layer6 = map.createLayer("Tile Layer 6 - Camps", camps as Tilemaps.Tileset, 0, 0);
-        // this.baseLayer = layer0 as Tilemaps.TilemapLayer;
-        // this.climbingLayer = layer1 as Tilemaps.TilemapLayer;
-        // const layer2 =  map.createLayer("Tile Layer 2 - Flowers", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        // const layer3 =  map.createLayer("Tile Layer 3 - Plants", decorations as Tilemaps.Tileset, 0, 0)//?.setVisible(false);
-        // this.flowers = layer2 as Tilemaps.TilemapLayer;
-        // this.plants = layer3 as Tilemaps.TilemapLayer;
-        // map.createLayer("Tile Layer - Campfire", campfire as Tilemaps.Tileset, 0, 0);
-        // map.createLayer("Tile Layer - Lights", light as Tilemaps.Tileset, 0, 0);
-        // [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6].forEach((layer, index) => {
-        //     layer?.setCollisionByProperty({ collides: true });
-        //     this.matter.world.convertTilemapLayer(layer!);
-        //     layer?.forEachTile(tile => {
-        //         if ((tile.physics as any).matterBody) {
-        //             // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
-        //             (tile.physics as any).matterBody.body.collisionFilter = {
-        //                 category: ENTITY_FLAGS.WORLD,
-        //                 mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
-        //                 group: 0, // -1, // Negative group prevents self-collisions
-        //             };
-        //             // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
-        //         };
-        //     });
-        //     if (index < 5) return;
-        //     layer?.setDepth(5);
-        // });
-        // [layer2, layer3].forEach((layer) => { // Flowers, Plants
-        //     this.matter.world.convertTilemapLayer(layer!);
-        //     layer?.setDepth(2);
-        // });
-        // // this.matter.world.createDebugGraphic();
-        // const objectLayer = map.getObjectLayer('navmesh');
-        // const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, TILE_SIZE);
-        // this.navMesh = navMesh;
-
-        // // ========================================================================
-
-        // // if (this.game.renderer.type === Phaser.WEBGL) {
-        // //     var windPipeline = new WindPipeline(this.game);
-        // //     (this.game.renderer as any).pipelines.add('Wind', windPipeline);
-        // //     layer2?.setPipeline('Wind');
-        // //     layer3?.setPipeline('Wind');
-        // //     layer4?.setPipeline('Wind');
-        // //     this.time.addEvent({
-        // //         delay: 100,
-        // //         loop: true,
-        // //         callback: () => {
-        // //             windPipeline.updateTime(this.time.now / 1000);
-        // //         },
-        // //         callbackScope: this
-        // //     });
-        // // };
-
-        // // const debugGraphics = this.add.graphics().setAlpha(0.75);
-        // // this.navMesh.enableDebug(debugGraphics); 
-        // this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-        // (this.sys as any).animatedTiles.init(this.map);
-        // this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        // if (this.hud.prevScene === "Underground") {
-        //     this.player.setPosition(1410, 130);
-        // };
-        // if (this.hud.prevScene === "Tutorial") {
-        //     this.player.setPosition(38, 72);
-        // };
-        // map?.getObjectLayer("Treasure")?.objects.forEach((treasure:any) => {
-        //     const t = new Treasure({ scene:this, x:treasure.x, y:treasure.y });
-        //     this.treasures.push(t);
-        // });
-        // map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
-        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-        //     this.enemies.push(e);
-        //     e.setPosition(enemy.x, enemy.y);
-        // });
-        // if (this.hud.settings.desktop) {
-        //     for (let i = 0; i < 60; ++i) {
-        //         const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-        //         this.enemies.push(e);
-        //         e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
-        //     };
-        // } else { // Mobile pushed to 30 enemies
-        //     for (let i = 0; i < 10; ++i) {
-        //         const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-        //         this.enemies.push(e);
-        //         e.setPosition(Phaser.Math.Between(200, 3800), Phaser.Math.Between(200, 3800));
-        //     };
-        // };
-        // map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
-        //     this.npcs.push(new NPC({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0" })));
-
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions.camera.zoom || 0.8;
@@ -1282,7 +1171,6 @@ export class Game extends Scene {
     
     update(_time: number, delta: number): void {
         // console.time("Update");
-        // console.log({delta});
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
             let enemy = this.enemies[i], chunk = this.checkChunk(enemy), distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid

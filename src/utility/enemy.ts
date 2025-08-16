@@ -53,6 +53,7 @@ export const HELP = [
 ];
 
 type MasteryAbility = { [key:string]: string[] };
+export const HEALS = [States.HEALING, States.DESPERATION, States.RECONSTITUTE];
 export const ENEMY_SPECIAL: MasteryAbility = {
     "constitution": [ // 17
         "Desperation",
@@ -201,6 +202,69 @@ export const ENEMY_AOE: MasteryAbility = {
         "Disease",
         "Scream",
     ],
+};
+export const ENEMY_RANGED: MasteryAbility = {
+    "constitution": [ // 17
+        "Dispel",
+        "Ilirech",
+        "Kyrisian",
+        "Kyrnaicism",
+        "Likyr",
+        "Paralyze",
+        "Sacrifice",
+        "Suture",
+    ], // 17
+
+    "strength": [ // 12
+        "Hook",
+        "Leap",
+        "Pursuit",
+        "Rush",
+        "Suture",
+        "Tshaeral",
+    ], // 12
+
+    "agility": [ // 12
+        "Achire",
+        "Hook",
+        "Leap",
+        "Rush",
+        "Slowing",
+        "Snare",
+        "Suture",
+    ], // 12
+
+    "achre": [ // 16
+        "Achire",
+        "Astrave",
+        "Dispel",
+        "Frost",
+        "Ilirech",
+        "Quor",
+        "Sacrifice",
+        "Slowing",
+        "Snare",
+    ], // 16
+        
+    "caeren": [ // 15
+        "Astrave",
+        "Fear",
+        "Ilirech",
+        "Kyrnaicism",
+        "Maiereth",
+        "Sacrifice",
+        "Suture"
+    ], // 15
+
+    "kyosir": [ // 16
+        "Chiomism",
+        "Dispel",
+        "Hook",
+        "Kyrnaicism",
+        "Sacrifice",
+        "Suture",
+        "Tshaeral"
+    ], // 16
 };
 export const DISTANCE = {
     MIN: 0,

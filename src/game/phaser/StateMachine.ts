@@ -14,6 +14,7 @@ export const States = {
     CHASE: "chase",
     FOLLOW: "follow",
     IDLE: "idle",
+    MOVING: "moving",
     LEASH: "leash",
     PATROL: "patrol",
     

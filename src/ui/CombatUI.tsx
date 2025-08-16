@@ -210,7 +210,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
             }} onClick={changeDisplay} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
-            "--glow-color": "violet", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
+            "--glow-color": "violet", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em", "margin-top": dimensions().WIDTH > 875 ? "-1%" : "" }}>{healthDisplay()}</div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>

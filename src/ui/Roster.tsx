@@ -360,7 +360,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </Show>
                     </div>
                 </div>
-                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red" }}>X</button>
+                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red", "font-size":"0.65em" }}>X</button>
             </>}>
                 <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 1s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>

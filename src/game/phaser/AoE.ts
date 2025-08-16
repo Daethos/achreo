@@ -95,13 +95,13 @@ export class AoEPool {
         return aoe;
     };
 
-    get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}): AoE {
+    get(type:string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: {effect:Particle; entity: Target;}, constant?: boolean): AoE {
         const typePool = this.typePools.get(type) || [];
         let aoe = typePool.pop() || this.pinch(type) || this.pool.pop();
         if (!aoe) {
             aoe = this.createNewAoE();
         };
-        aoe.reset(type, count, positive, enemy, manual, target, particle);
+        aoe.reset(type, count, positive, enemy, manual, target, particle, constant);
         this.activeAoEs.push(aoe);
         return aoe;
     };
@@ -204,7 +204,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         if (returning) this.scene.aoePool.release(this);
     };
     
-    public reset(type: string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }): AoE {
+    public reset(type: string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }, constant?: boolean): AoE {
         if (this.active) this.cleanup(false);
 
         // this.name = type;
@@ -225,7 +225,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         
         if (enemy !== undefined) {
             if (enemy.name === ENEMY) {
-                this.enemyAoe(type, positive, enemy, target);
+                this.enemyAoe(type, positive, enemy, target, constant);
             } else if (enemy.name === PARTY) {
                 this.partyAoe(type, positive, enemy as Party, target);
             };
@@ -253,10 +253,10 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    private enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined) {
+    private enemyAoe(type: string, positive: boolean, enemy: Enemy | Party, target: Target | undefined, constant = false) {
         this.sensor = this.setupSensor(target ? target.x : enemy.x, target ? target.y : enemy.y, RADIUS, "aoeSensor");
         this.setupEnemyListener(enemy as Enemy);
-        this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT); // *NEW*
+        this.scalingTimer(target ? target : enemy, SCALE, Y_OFFSET, REPEAT, constant); // *NEW*
         this.baseCount(type, !positive, enemy, {
             concern: () => enemy.isDeleting,
             hit: (target, originId) => {
@@ -366,7 +366,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    protected scalingTimer(target: Phaser.Physics.Matter.Sprite, scaleIncrement: number, yOffset: number = 0, repeatCount: number = 20) {
+    protected scalingTimer(target: Phaser.Physics.Matter.Sprite, scaleIncrement: number, yOffset: number = 0, repeatCount: number = 20, constant = false) {
         let count = 0, scale = scaleIncrement;
         if (this.manual === true) {
             const centerX = this.scene.cameras.main.width / 2;
@@ -379,6 +379,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         };
         this.scene.rotateTween(this, 1, true); // this.count
         this.setScale(scale);
+        this.setPosition(target.x, target.y + yOffset);
         // console.log(`
         //     ====================================
         //     Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}
@@ -390,7 +391,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
                 if (count >= repeatCount || !this.timer || !target) return;
                 scale += scaleIncrement;
                 this.setScale(scale);
-                this.setPosition(target.x, target.y + yOffset);
+                if (!constant) this.setPosition(target.x, target.y + yOffset);
                 // console.log(`
                 //     ====================================
                 //     Aoe Scale ${scale} | Sensor Scale ${this.sensor?.scale.x}

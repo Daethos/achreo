@@ -56,20 +56,30 @@ export const FRAMES = {
 };
 export type ENEMY = {id:string; threat:number};
 export const FRAME_COUNT = {
+    ATTACK_DURATION: 700,
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
-    PARRY_LIVE: 12, 
+
+    PARRY_DURATION: 450,
+    PARRY_LIVE: 15, 
     PARRY_SUCCESS: 22,
-    PARRY_KILL: 35,
+    PARRY_KILL: 30, // 35,
+    
+    POSTURE_DURATION: 316,
     POSTURE_LIVE: 16, // 11 for frameRate: 12
     POSTURE_SUCCESS: 17, // 11 for frameRate: 12
+    
+    ROLL_DURATION: 300,
     ROLL_LIVE: 10,
     ROLL_SUCCESS: 18,
+    
+    THRUST_DURATION: 450,
     THRUST_LIVE: 5, 
     THRUST_SUCCESS: 10,
+    
     DISTANCE_CLEAR: 51,
 }; 
-export const ENEMY_SWING_TIME = { "One Hand": 1000, "Two Hand": 1250 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
 type Force = {[key:string]:number;};
 export const SWING_FORCE: Force = { 
@@ -222,6 +232,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     spriteShield: Phaser.GameObjects.Sprite;
     spriteWeapon: Phaser.GameObjects.Sprite;
     frameCount: number = 0;
+    timeElapsed: number = 0;
     currentWeaponSprite: string = "";
     particleEffect: Particle | undefined;
     stunDuration: number = 3000;
@@ -471,25 +482,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     checkIfAnimated = () => this.anims.currentAnim ? true : false;
 
     attack = () => { 
-        this.anims.play(FRAMES.ATTACK, true).on(FRAMES.ANIMATION_COMPLETE, () => {
+        this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isAttacking = false;
             this.currentAction = "";
         }); 
     };
     parry = () => { 
-        this.anims.play(FRAMES.PARRY, true).on(FRAMES.ANIMATION_COMPLETE, () => { 
+        this.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => { 
             this.isParrying = false; 
             this.currentAction = "";
         });
     };
     posture = () => { 
-        this.anims.play(FRAMES.POSTURE, true).on(FRAMES.ANIMATION_COMPLETE, () => {
+        this.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isPosturing = false;
             this.currentAction = "";
         }); 
     }; 
     thrustAttack = () => { 
-        this.anims.play(FRAMES.THRUST, true).on(FRAMES.ANIMATION_COMPLETE, () => { 
+        this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => { 
             this.isThrusting = false; 
             this.currentAction = "";
         });
@@ -497,7 +508,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     hurt = () => {
         this.clearAnimations();
         this.clearTint();
-        this.anims.play(FRAMES.HURT, true).on(FRAMES.ANIMATION_COMPLETE, () => {
+        this.anims.play(FRAMES.HURT, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isHurt = false;
             if (this.name === "enemy") this.setTint(0xFF0000);
             if (this.name === "party") this.setTint(0x00FF00);
@@ -527,6 +538,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let startTime: any = undefined;
         requestAnimationFrame(knockbackLoop);
         if ("vibrate" in navigator) navigator.vibrate(40);
+    };
+
+    teleport = (x: number, y: number) => {
+        console.log(x, y, "Praying to the statue");
+        this.isPraying = true;
+        this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
+            console.log(x, y, "Teleporting to these coordinates");
+            this.isPraying = false;
+            this.setPosition(x, y);
+        });
     };
     
     applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
@@ -559,6 +580,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleIdleAnimations = () => {
+        if (this.isCasting || this.isPraying) return;
+        // console.log("handleIdleAnimations");
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -570,6 +593,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleMovementAnimations = () => {
+        // console.log("handleMovementAnimations");
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
         } else if (this.inWater) {
@@ -775,7 +799,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
-    functionality = (entity: string, target: Player | Enemy | Party) => {
+    functionality = (dt: number, entity: string, target: Player | Enemy | Party) => {
         if (this.isPraying || this.isCasting) {
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.prayingCasting.flipX
@@ -784,7 +808,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
         } else if (this.isParrying) {
+            // if (this.name === "player") console.log(this.timeElapsed, "Parrying");
+            // this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.parrying[configKey].flipX
@@ -794,8 +821,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
             if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         } else if (this.isThrusting) {
+            // if (this.name === "player") console.log(this.timeElapsed, "Thrusting");
+            // this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.thrusting[configKey].flipX
@@ -828,7 +858,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === FRAME_COUNT.THRUST_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
         } else if (this.isRolling) {
+            // if (this.name === "player") console.log(this.timeElapsed, "Rolling");
+            // this.timeElapsed += dt;
             if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
                 if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
@@ -847,11 +880,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             if (this.frameCount === FRAME_COUNT.ROLL_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
         } else if (this.isAttacking) {
+            // if (this.name === "player") console.log(this.timeElapsed, "Attacking");
+            // this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.attacking[configKey].flipX
                 : WEAPON_FRAME_CONFIG.attacking[configKey].noFlipX;
+            // const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ATTACK_DURATION);
                 
             if (this.frameCount === FRAME_COUNT.ATTACK_LIVE) {
                 if (entity === "player" && this.isRanged) {
@@ -881,7 +918,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === FRAME_COUNT.ATTACK_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
         } else if (this.isPosturing) {
+            // if (this.name === "player") console.log(this.timeElapsed, "Posturing");
+            // this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.posturing[configKey].flipX
@@ -914,6 +954,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
             if (this.frameCount === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
+            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
         } else if (this.movingVertical()) {
             if (!this.flipX) {
                 if (this.hasBow) {

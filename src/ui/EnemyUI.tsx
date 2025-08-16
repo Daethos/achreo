@@ -224,7 +224,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
+            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em", "margin-top": dimensions().WIDTH > 875 ? "-1%" : "" }}>{healthDisplay()}</div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `${healthPercentage()}%`, 
             "background": state().isEnemy ? "linear-gradient(purple, #191970)" : "linear-gradient(#00AA00, green)", 

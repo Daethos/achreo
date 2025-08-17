@@ -162,6 +162,8 @@ export default class PlayerMachine {
         };
     };
 
+    health = () => this.scene.state.playerHealth / 20;
+
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
 
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
@@ -172,8 +174,10 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power }); 
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-            if (!enemy) return;
-            const chiomic = Math.round(this.mastery() * (1 + power / CHIOMISM) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
+            if (!enemy) return; // this.health()
+            const chiomic = Math.round(this.mastery() * (1 + power / CHIOMISM) * this.scene.combatManager.playerCaerenicPro() 
+                * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+                * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your hush flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -216,9 +220,12 @@ export default class PlayerMachine {
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
         power = this.player.entropicMultiplier(power);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power }); 
+            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power });
         } else {
-            const chiomic = Math.round(this.mastery() * (1 + (power / CHIOMISM)) * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
+            const chiomic = Math.round(this.mastery() * (1 + (power / CHIOMISM))
+                * this.scene.combatManager.playerCaerenicPro()
+                * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+                * (this.levelModifier() ** 2));
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your kyrnaicism rips ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
@@ -236,10 +243,12 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2));
+            const sacrifice = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() 
+                * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+                * (this.levelModifier() ** 2));
             const sacDam = sacrifice / 2 * this.scene.combatManager.playerStalwart();
             let playerSacrifice = this.scene.state.newPlayerHealth - sacDam < 0 ? 0 : this.scene.state.newPlayerHealth - sacDam;
-            let enemySacrifice = enemy.health - (sacrifice * (1 + power / SACRIFICE)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / 50));
+            let enemySacrifice = enemy.health - (sacrifice * (1 + power / SACRIFICE)) < 0 ? 0 : enemy.health - (sacrifice * (1 + power / SACRIFICE));
             const playerActionDescription = `You sacrifice ${sacDam} health to rip ${sacrifice} from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
             this.scene.combatManager.combatMachine.action({ type: "Set Health", data: { key: "player", value: playerSacrifice, id } });
@@ -258,7 +267,9 @@ export default class PlayerMachine {
         } else {
             const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
             if (!enemy) return;
-            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() * (this.levelModifier() ** 2)) * (1 * power / SUTURE);
+            const suture = Math.round(this.mastery() * this.scene.combatManager.playerCaerenicPro() 
+                * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+                * (this.levelModifier() ** 2)) * (1 * power / SUTURE);
             let playerSuture = this.scene.state.newPlayerHealth + suture > this.scene.state.playerHealth ? this.scene.state.playerHealth : this.scene.state.newPlayerHealth + suture;
             let enemySuture = enemy.health - suture < 0 ? 0 : enemy.health - suture;                    
             const playerActionDescription = `You suture ${enemy.ascean?.name}s caeren into you, absorbing and healing for ${suture}.`;
@@ -1519,7 +1530,7 @@ export default class PlayerMachine {
             EventBus.emit("special-combat-text", {
                 playerSpecialDescription: `You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
             });
-            this.chiomism(this.player.spellTarget, (50 + this.scene.state.player?.[this.scene.state.player?.mastery]));
+            this.chiomism(this.player.spellTarget, (50 + this.mastery()));
             if (this.player.checkTalentEnhanced(States.FROST)) {
                 this.scene.combatManager.snare(this.player.spellTarget);
             } else {
@@ -1615,7 +1626,7 @@ export default class PlayerMachine {
             EventBus.emit("special-combat-text", {
                 playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
             });
-            this.chiomism(this.player.spellTarget, (100 + this.scene.state.player?.[this.scene.state.player?.mastery]));
+            this.chiomism(this.player.spellTarget, (100 + this.mastery()));
             if (this.player.checkTalentEnhanced(States.ILIRECH)) {
                 const chance = Phaser.Math.Between(1, 100);
                 if (chance > 75) this.scene.combatManager.stun(this.player.spellTarget);
@@ -2457,7 +2468,7 @@ export default class PlayerMachine {
         };
         this.scene.sound.play("debuff", { volume: this.scene.hud.settings.volume });
         this.scene.showCombatText(this.player, "Malicing", 750, HUSH, false, true);
-        const power = (this.player.checkTalentEnhanced(States.MALICE) ? 100 : 10) + this.scene.state.player?.[this.scene.state.player?.mastery];
+        const power = (this.player.checkTalentEnhanced(States.MALICE) ? 100 : 10) + this.mastery();
         this.chiomism(id, power);
         this.player.reactiveBubble.setCharges(this.player.reactiveBubble.charges - 1);
         if (this.player.reactiveBubble.charges <= 0) {

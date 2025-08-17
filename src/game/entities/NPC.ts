@@ -87,7 +87,8 @@ export default class NPC extends Entity {
                 vibrate();
                 this.clearTint();
                 this.setTint(0x00FF00); 
-                this.scene.hud.setupNPC(this);
+                if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupNPC(this);
+                this.scene.hud.showDialog(this.checkTouching());
                 this.scene.player.setCurrentTarget(this);
                 this.scene.player.animateTarget();
             })
@@ -129,7 +130,7 @@ export default class NPC extends Entity {
                     this.stateMachine.setState(States.AWARE);
                     other.gameObjectB.currentTarget = this;
                     other.gameObjectB.targetID = this.enemyID;
-                    const isNewNPC = !other.gameObjectB.targets.some((obj: any) => obj.enemyID === this.enemyID);
+                    const isNewNPC = !other.gameObjectB.targets.some((obj: any) => obj.particleID === this.particleID);
                     if (isNewNPC) {
                         other.gameObjectB.targets.push(this);
                     };
@@ -143,14 +144,20 @@ export default class NPC extends Entity {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && this.isInteracting) {
                     this.isInteracting = false;
                     this.stateMachine.setState(States.IDLE); 
-                    other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.enemyID !== this.enemyID);
-                    this.scene.hud.clearNPC();
-                    other.gameObjectB.checkTargets();
+                    other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.particleID !== this.particleID);
+                    if (this.enemyID === this.scene.state.enemyID) {
+                        this.scene.hud.clearNPC();
+                        other.gameObjectB.checkTargets();
+                    };
                 };
             },
             context: this.scene,
         }); 
-    }; 
+    };
+
+    checkTouching = (): boolean => {
+        return this.scene.player.targets.some((t: any) => t.particleID === this.particleID);
+    };
 
     onIdleEnter = () => this.anims.play("player_idle", true);
     onAwarenessEnter = () => this.scene.hud.showDialog(true);
@@ -160,7 +167,7 @@ export default class NPC extends Entity {
             if (direction.x < 0) { this.flipX = true } else { this.flipX = false };
         };
     };
-    onAwarenessExit = () => this.scene.hud.showDialog(false);
+    onAwarenessExit = () => {}; // this.scene.hud.showDialog(false)
 
     update = () => this.stateMachine.update(this.scene.sys.game.loop.delta);
 };

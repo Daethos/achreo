@@ -14,13 +14,14 @@ import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
-import { applyWeaponFrameSettings, WEAPON_FRAME_CONFIG } from "../../utility/rotations";
+import { applyShieldFrameSettings, applyWeaponFrameSettings, SHIELD_FRAME_CONFIG, WEAPON_FRAME_CONFIG } from "../../utility/rotations";
 import { Play } from "../main";
 import { Tutorial } from "../scenes/Tutorial";
 import Party from "./PartyComputer";
 import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
 import { Gauntlet } from "../scenes/Gauntlet";
 import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abilities";
+import { PLAYER } from "../../utility/player";
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
 };
@@ -285,6 +286,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     aoeMask: EntityFlag = ENTITY_FLAGS.NONE;
     evasionTimer: number = 0;
     summons: number = 0;
+    lastX: number = 0;
+    lastY: number = 0;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -335,6 +338,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let speed = SPEED;
         if (this.name === "player") {
             speed += this.scene.hud.settings.difficulty.playerSpeed || 0;
+            speed += this.isCaerenic ? this.scene.hud.talents.talents.caerenic.enhanced ? PLAYER.SPEED.CAERENIC * 1.5 : PLAYER.SPEED.CAERENIC : 0;
         } else {
             speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
         };
@@ -607,7 +611,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     handleTerrain = (): number => (this.isClimbing || this.inWater) ? 0.65 : 1;
 
-    moving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
+    moving = (): boolean => {
+        if (!this.body) return false;
+        const moved = (Math.abs(this.x - this.lastX) > 0.1 || Math.abs(this.y - this.lastY) > 0.1);
+        const velocityMoving = this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
+        // console.log(moved, this.lastX, this.x, this.lastY, this.y);
+        this.lastX = this.x;
+        this.lastY = this.y;
+        return moved || velocityMoving;
+    };
+    // moving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
@@ -926,6 +939,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.posturing[configKey].flipX
                 : WEAPON_FRAME_CONFIG.posturing[configKey].noFlipX;
+
+            const shieldConfig = this.flipX
+                ? SHIELD_FRAME_CONFIG.posturing.flipX
+                : SHIELD_FRAME_CONFIG.posturing.noFlipX
+                
             
             if (this.frameCount === FRAME_COUNT.POSTURE_LIVE) {
                 if (entity === "player" && this.isRanged) { // && this.inCombat
@@ -952,6 +970,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
+            applyShieldFrameSettings(this.spriteShield, shieldConfig, this.frameCount);
             if (this.frameCount === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
             this.frameCount++;
             // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});

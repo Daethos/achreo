@@ -1,14 +1,15 @@
 import Party, { COLOR } from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAME_COUNT } from "../entities/Entity";
+import { FRAME_COUNT, FRAMES } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
-import { RANGE } from "../../utility/enemy";
+import { HELP, RANGE } from "../../utility/enemy";
 import { Play } from "../main";
 import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from "../../utility/party";
 import { PLAYER } from "../../utility/player";
 import { BONE, CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
+import { CHIOMISM, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -54,6 +55,9 @@ export default class PlayerMachine {
             .addState(States.DEFEATED, { onEnter: this.onDefeatedEnter, onUpdate: this.onDefeatedUpdate, onExit: this.onDefeatedExit })
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate, onExit: this.onEvasionExit })
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate, onExit: this.onContemplateExit })
+            .addState(States.HELP, { onEnter: this.onHelpEnter, onUpdate: this.onHelpUpdate, onExit: this.onHelpExit })
+            .addState(States.SUMMON, { onEnter: this.onSummonEnter, onUpdate: this.onSummonUpdate, onExit: this.onSummonExit })
+            .addState(States.KNOCKBACK, { onEnter: this.onPushbackEnter, onUpdate: this.onPushbackUpdate, onExit: this.onPushbackExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
             .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit })
             .addState(States.COMPUTER_ATTACK, { onEnter: this.onComputerAttackEnter, onUpdate: this.onComputerAttackUpdate, onExit: this.onComputerAttackExit })
@@ -545,6 +549,120 @@ export default class PlayerMachine {
         this.player.isContemplating = false;
         this.player.currentAction = "";
         this.instincts();
+    };
+
+    onHelpEnter = () => { 
+        this.player.spriteWeapon.setVisible(false);
+        this.player.spriteShield.setVisible(false);
+        // this.player.fearDirection = "down";
+        // this.player.fearMovement = "idle";
+        this.player.fearVelocity = { x: 0, y: 0 };
+        this.player.isAttacking = false;
+        this.player.isParrying = false;
+        this.player.isPosturing = false;
+        this.player.isRolling = false;
+        this.player.currentAction = ""; 
+        let iteration = 0;
+        // this.player.scene.showCombatText(this.player, `Help me! Get ${this.player.currentTarget?.ascean.name} away from me!`, DURATION.TEXT, BONE, false, true);
+        const randomDirection = () => {  
+            const move = Phaser.Math.Between(1, 100);
+            const directions = ["up", "down", "left", "right"];
+            const direction = directions[Phaser.Math.Between(0, 3)];
+            if (move > 50) {
+                if (direction === "up") {
+                    this.player.fearVelocity = { x: 0, y: -1.5 };
+                } else if (direction === "down") {
+                    this.player.fearVelocity = { x: 0, y: 1.5 };
+                } else if (direction === "right") {
+                    this.player.fearVelocity = { x: -1.5, y: 0 };
+                } else if (direction === "left") {
+                    this.player.fearVelocity = { x: 1.5, y: 0 };
+                };
+                // this.player.fearMovement = "move";
+            } else {
+                this.player.fearVelocity = { x: 0, y: 0 };
+                // this.player.fearMovement = "idle";                
+            };
+            // this.player.fearDirection = direction;
+        };
+        this.player.fearTimer = this.scene.time.addEvent({
+            delay: 1500,
+            callback: () => {
+                iteration++;
+                this.scene.showCombatText(this.player, HELP[Math.floor(Math.random() * HELP.length)], 1500, EFFECT, false, true);
+                // chirp to get nearby enemy allies
+                if (iteration === 3) {
+                    iteration = 0;
+                    this.player.isFeared = false;
+                } else {   
+                    randomDirection();
+                };
+                this.player.callForHelp();
+            },
+            callbackScope: this,
+            repeat: 2,
+        });
+    };
+    onHelpUpdate = (_dt: number) => {
+        this.player.combatChecker(this.player.isFeared);
+        this.player.setVelocity(this.player.fearVelocity.x, this.player.fearVelocity.y);
+        if (Math.abs(this.player.velocity?.x as number) > 0 || Math.abs(this.player.velocity?.y as number) > 0) {
+            this.player.getDirection();
+            this.player.anims.play(FRAMES.RUNNING, true);
+        } else {
+            this.player.anims.play(FRAMES.IDLE, true);
+        };
+    };
+    onHelpExit = () => {
+        // this.player.enemyAnimation();
+        this.player.spriteWeapon.setVisible(true);
+        if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
+        if (this.player.fearTimer) {
+            this.player.fearTimer.destroy();
+            this.player.fearTimer = undefined;
+        };
+    };
+
+    onPushbackEnter = () => {
+        this.scene.showCombatText(this.player, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
+        this.player.isPraying = true;
+        this.player.isAttacking = false;
+        this.player.isParrying = false;
+        this.player.isPosturing = false;
+        this.player.isRolling = false;
+        this.player.currentAction = ""; 
+        if (!this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(true);
+        // this.player.enemyAnimation();
+    };
+    onPushbackUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onPushbackExit = () => {
+        // this.player.enemyAnimation();
+        if (this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(false);
+        if (this.player.currentTarget) {
+            // this.player.scene.showCombatText(this.player, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
+            this.player.applyKnockback(this.player.currentTarget, 250, true);
+            this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.currentTarget.enemyID, "Parry");
+        };
+    };
+
+    onSummonEnter = () => { 
+        this.scene.showCombatText(this.player, "Summoning Ally", DURATION.TEXT, DAMAGE, false, true);
+        this.player.isPraying = true;
+        // this.player.spriteShield.setVisible(false);
+        this.player.isAttacking = false;
+        this.player.isParrying = false;
+        this.player.isPosturing = false;
+        this.player.isRolling = false;
+        this.player.currentAction = ""; 
+        if (!this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(true);
+        // this.player.enemyAnimation();
+    };
+    onSummonUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onSummonExit = () => {
+        // this.player.enemyAnimation();
+        // EventBus.emit("summon-help", this);
+        this.scene.combatManager.summon(this.player);
+        if (this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(false);
     };
 
     checkHeal = (power: number) => {
@@ -1353,14 +1471,29 @@ export default class PlayerMachine {
             this.player.chiomicTimer = undefined;
         }; 
     };
+
     caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
     levelModifier = () => (this.player?.ascean.level as number + 9) / 10;
     mastery = () => this.player?.computerCombatSheet.computer?.[this.player?.ascean.mastery as keyof typeof this.player.ascean];
+
+    /*
+        TODO: FIXME:
+        
+        Check for computerCombatSheet updates on PartyComputer concerning isCaerenic and isStalwart
+
+        either have them match the player at all times as is the case now,
+        or have them also built with 'MindStates' to allow for their own behaviors
+        i.e. Stalwart activating isStalwart, and Berserker activating Caerenic
+    
+    */
+
     chiomism = (id: string, power: number) => {
         const modifiedPower = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        const damage = Math.round(this.mastery() * (1 + modifiedPower / 100) * this.caerenicDamage() * (this.levelModifier() ** 2));
+        const damage = Math.round(this.mastery() * (1 + modifiedPower / CHIOMISM) * this.caerenicDamage() 
+            * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+            * (this.levelModifier() ** 2));
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
         this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Pierce");
 
@@ -1384,7 +1517,9 @@ export default class PlayerMachine {
             this.player.devourTimer = undefined;
             return;
         };
-        const damage = Math.round(this.player.computerCombatSheet.computerHealth * 0.04 * this.caerenicDamage() * (this.levelModifier() ** 2));
+        const damage = Math.round(this.player.computerCombatSheet.computerHealth * 0.04 * this.caerenicDamage() 
+            * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+            * (this.levelModifier() ** 2));
         let newComputerHealth = Math.min(this.player.health + damage, this.player.computerCombatSheet.computerHealth);        
         this.player.health = newComputerHealth;
         this.player.updateHealthBar(this.player.health);
@@ -1400,10 +1535,12 @@ export default class PlayerMachine {
         power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        let damage = Math.round(this.mastery() * this.caerenicDamage() * (this.levelModifier() ** 2));
-        this.player.health -= (damage / 2);
+        let damage = Math.round(this.mastery() * this.caerenicDamage() 
+            * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+            * (this.levelModifier() ** 2));
+        this.player.health -= (damage / 2 * this.scene.combatManager.computerStalwart(this.player));
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
-        damage *= (1 + power / 100);
+        damage *= (1 + power / SACRIFICE);
         this.scene.combatManager.updateComputerDamage(damage, id, this.player.enemyID);
         this.scene.combatManager.hitFeedbackSystem.bleed(new Phaser.Math.Vector2(this.player.x, this.player.y));
         this.scene.combatManager.hitFeedbackSystem.spotEmit(id, "Spooky");
@@ -1416,7 +1553,9 @@ export default class PlayerMachine {
         power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
         if (!enemy) return;
-        const damage = Math.round(this.mastery() * this.caerenicDamage() * (this.levelModifier() ** 2)) * (1 * power / 100);
+        const damage = Math.round(this.mastery() * this.caerenicDamage() 
+            * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
+            * (this.levelModifier() ** 2)) * (1 * power / SUTURE);
         
         let newComputerHealth = Math.min(this.player.health + damage, this.player.computerCombatSheet.computerHealth);
         this.player.computerCombatSheet.newComputerHealth = newComputerHealth;

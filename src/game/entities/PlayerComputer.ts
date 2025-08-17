@@ -154,17 +154,14 @@ export default class PlayerComputer extends Player {
     };
 
     evaluateCombatDistance = () => {
-        if (this.isSuffering() || this.scene.state.newPlayerHealth <= 0 || !this.inCombat || !this.currentTarget || !this.currentTarget.body) return;
+        if (this.isSuffering() || this.health <= 0 || !this.inCombat || !this.currentTarget || !this.currentTarget.body) return;
         
         const state = this.playerMachine.stateMachine.getCurrentState();
         let direction = this.currentTarget.position.subtract(this.position);
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
-        if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
-            this.playerMachine.stateMachine.setState(States.EVADE);
-            return;
-        } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
+        if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
@@ -246,6 +243,7 @@ export default class PlayerComputer extends Player {
             this.actionSuccess = false;
             this.playerActionSuccess();
         };
+
         if (this.particleEffect !== undefined) {
             if (this.particleEffect.success) {
                 this.particleEffect.success = false;
@@ -260,19 +258,22 @@ export default class PlayerComputer extends Player {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
+
         this.getDirection();
+
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
         };
+
         if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
+
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.functionality(dt, "player", this.currentTarget as Enemy);
-
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
 
@@ -318,6 +319,11 @@ export default class PlayerComputer extends Player {
         };
         if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
             this.playerMachine.negativeMachine.setState(States.SNARED);
+            return;
+        };
+
+        if (this.isUnderRangedAttack()) {
+            this.playerMachine.stateMachine.setState(States.EVADE);
             return;
         };
     };

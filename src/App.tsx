@@ -469,7 +469,7 @@ export default function App() {
     usePhaserEvent("add-party", addParty);
     usePhaserEvent("remove-party", removeParty);
     
-    usePhaserEvent("alert", (payload: Toast) => makeToast(payload.header, payload.body, payload.delay, payload.key, payload.extra, payload.arg));
+    usePhaserEvent("alert", (payload: Toast) => makeToast(payload.header, payload.body, payload?.delay, payload?.key, payload?.extra, payload?.arg));
     usePhaserEvent("set-tips", setTips);
     usePhaserEvent("scene-switch", (data:{current:string,next:string}) => switchScene(data.current,data.next));
     usePhaserEvent("enter-menu", enterMenu);

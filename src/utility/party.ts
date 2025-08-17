@@ -20,11 +20,13 @@ export const PARTY_OFFSET: {[key:number]: COORDINATES} = {
     6: { x: 0, y: 36 },
     7: { x: 60, y: 36 },
 };
-export const PARTY_SPECIAL = {
+type MasteryAbility = { [key:string]: string[] };
+export const PARTY_SPECIAL: MasteryAbility = {
     "constitution": [ // 14
         "Absorb",
         // "Blind",
         "Desperation",
+        "Disease",
         "Dispel",
         "Healing",
         "Ilirech",
@@ -136,6 +138,100 @@ export const PARTY_SPECIAL = {
         "Netherswap",
         "Protect",
         "Reconstitute",
+        "Sacrifice",
+        "Suture"
+    ], // 14
+};
+export const PARTY_AOE: MasteryAbility = {
+    "constitution": [ // 14
+        "Disease",
+        "Kynisos",
+        "Renewal",
+    ], // 14 
+    "strength": [ // 14
+        "Howl",
+        "Leap",
+        "Rush",
+        "Scream",
+        "Storm",
+        "Writhe"
+    ], // 14
+    "agility": [ // 14
+        "Leap",
+        "Rush",
+        "Storm",
+    ], // 14
+    "achre": [ // 14
+        "Astrave",
+        "Caerenesis",
+        "Freeze",
+        "Fyerus",
+    ], // 14 
+    "caeren": [ // 14
+        "Astrave",
+        "Fyerus",
+        "Scream",
+    ], // 14
+    "kyosir": [ // 14
+        "Chiomic",
+        "Disease",
+        "Kynisos",
+    ], // 14
+};
+export const PARTY_RANGED: MasteryAbility = {
+    "constitution": [ // 14
+        "Dispel",
+        "Ilirech",
+        "Kynisos",
+        "Kyrisian",
+        "Kyrnaicism", 
+        "Likyr",
+        "Paralyze",
+    ], // 14 
+    "strength": [ // 14
+        "Devour",
+        "Hook",
+        "Leap",
+        "Quor",
+        "Rush",
+        "Storm",
+    ], // 14
+    "agility": [ // 14
+        "Achire",
+        "Hook",
+        "Kynisos",
+        "Leap",
+        "Rush",
+        "Snare",
+        "Storm",
+    ], // 14
+    "achre": [ // 14
+        "Achire",
+        "Astrave",
+        "Devour",
+        "Frost",
+        "Fyerus",
+        "Quor",
+        "Sacrifice",
+        "Slow"
+    ], // 14 
+    "caeren": [ // 14
+        "Achire",
+        "Astrave",
+        "Fear",
+        "Fyerus",
+        "Ilirech",
+        "Kyrnaicism",
+        "Maiereth",
+        "Sacrifice", 
+    ], // 14
+    "kyosir": [ // 14
+        "Chiomism",
+        "Confuse",
+        "Devour",
+        "Dispel",
+        "Hook",
+        "Kynisos",
         "Sacrifice",
         "Suture"
     ], // 14

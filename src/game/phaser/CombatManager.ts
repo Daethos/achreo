@@ -324,7 +324,7 @@ export class CombatManager {
 
     // ============================ Computer Combat ============================= \\
 
-    summon = (entity: Enemy) => {
+    summon = (entity: Enemy | Party) => {
         const ally = fetchArena([{ level: entity.ascean.level, mastery: entity.ascean.mastery, id: "0" }]);
         const newEnemy = new Enemy({scene:this.context, x:200, y:200, texture:"player_actions", frame:"player_idle_0", data: ally[0]});
         this.context.enemies.push(newEnemy);

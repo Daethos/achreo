@@ -325,7 +325,7 @@ export default class Enemy extends Entity {
                 this.clearTint();
                 this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
-                this.scene.hud.showDialog(this.checkTouching()); 
+                this.scene.hud.showDialog(this.checkTouching());
                 if (this.scene.player) {
                     const newEnemy = this.isNewEnemy(this.scene.player);
                     if (newEnemy) this.scene.player.addEnemy(this);
@@ -437,11 +437,11 @@ export default class Enemy extends Entity {
         this.enemySound("blink", true);
         const multiplier = caerenic ? 1 : -1;
         this.adjustSpeed(PLAYER.SPEED.CAERENIC * multiplier);
+        this.computerCombatSheet.computerCaerenic = caerenic;
         if (this.isGlowing) return;
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon")
         this.setGlow(this.spriteShield, caerenic, "shield");
-        this.computerCombatSheet.computerCaerenic = caerenic;
     };
 
     checkCaerenic = (caerenic: boolean, kill: boolean = false) => {
@@ -1218,10 +1218,10 @@ export default class Enemy extends Entity {
                     const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
-                    const specific = [States.ASTRAVE];
-                    const test = specific[Math.floor(Math.random() * specific.length)];
-                    if (this.stateMachine.isState(test)) {
-                        this.stateMachine.setState(test);
+                    // const specific = [States.ASTRAVE];
+                    // const test = specific[Math.floor(Math.random() * specific.length)];
+                    if (this.stateMachine.isState(special)) {
+                        this.stateMachine.setState(special);
                     } else if (this.positiveMachine.isState(special)) {
                         this.positiveMachine.setState(special);
                     };
@@ -1856,7 +1856,8 @@ export default class Enemy extends Entity {
         this.isParrying = true;
         this.frameCount = 0;
         this.currentAction = "";
-        this.anims.play("player_attack_1", true);
+        // this.anims.play("player_attack_1", true);
+        this.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
     };
     onParryUpdate = (_dt: number) => {
         if (this.frameCount === FRAME_COUNT.PARRY_LIVE && !this.isRanged) {
@@ -1864,7 +1865,10 @@ export default class Enemy extends Entity {
             if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, PHYSICAL_ACTIONS.PARRY, this.enemyID);
             this.currentAction = PHYSICAL_ACTIONS.PARRY;    
         };
-        if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
+        if (this.frameCount >= FRAME_COUNT.PARRY_KILL) {
+            this.currentAction = "";
+            this.isParrying = false;
+        } 
         if (!this.isRanged) this.swingMomentum(this.currentTarget);
         this.combatChecker(this.isParrying);
     };
@@ -2376,10 +2380,6 @@ export default class Enemy extends Entity {
         } else {
             this.stateMachine.setState(blast);
         };
-        // const instinct = Math.random() > 0.5 ? 2 : 3;
-        // let key = INSTINCTS[mastery][instinct].key, value = INSTINCTS[mastery][instinct].value;
-        // (this as any)[key].setState(value);
-        // if (key === "positiveMachine") this.stateMachine.setState(States.CHASE);
     };
 
     // ========================== SPECIAL ENEMY STATES ========================== \\
@@ -4793,13 +4793,13 @@ export default class Enemy extends Entity {
             distanceY,
             climbingModifier,
             allies,
-            isTargetRanged: this.currentTarget.isRanged,
+            isTargetRanged: this.currentTarget.isRanged || false,
             lineOfSight: this.checkLineOfSight()
         } as CombatContext;
     };
 
     getNearbyAllies = () => {
-        if (!this.currentTarget) return;
+        if (!this.currentTarget) return [];
         if (this.currentTarget.name === "player") {
             const allies = this.scene.enemies.filter(e => e.inCombat);
             return allies;

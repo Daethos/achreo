@@ -3,8 +3,8 @@ import Equipment from "../../models/equipment";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { Compiler } from "../../utility/ascean";
 import { ENEMY_ATTACKS } from "../../utility/combatTypes";
-import { BROADCAST_DEATH, DISTANCE } from "../../utility/enemy";
-import { PARTY_SPECIAL } from "../../utility/party";
+import { BROADCAST_DEATH, DISTANCE, HEALS, MIND_STATES } from "../../utility/enemy";
+import { PARTY_AOE, PARTY_RANGED, PARTY_SPECIAL } from "../../utility/party";
 import { ENEMY_ENEMIES, PLAYER } from "../../utility/player";
 import { EventBus } from "../EventBus";
 import { Play } from "../main";
@@ -13,10 +13,11 @@ import { Particle } from "../matter/ParticleManager";
 import CastingBar from "../phaser/CastingBar";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import HealthBar from "../phaser/HealthBar";
+import { CombatContext, MindState, MindStates } from "../phaser/MindState";
 import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
 import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
-import { States } from "../phaser/StateMachine";
+import { specialPositiveMachines, States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
 import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
@@ -121,6 +122,8 @@ export default class Party extends Entity {
     weaponTypeCacheFrame: number = 0;
     weaponTypeCache: { thisIsRanged: boolean; targetIsRanged: boolean; } = { thisIsRanged: false, targetIsRanged: false };
     cachedDirection: any;
+    mindState: MindState;
+    mindStateName: string;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
@@ -238,11 +241,19 @@ export default class Party extends Entity {
         this.beam = new Beam(this);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
+
+        const mindStates = MIND_STATES[this.ascean.mastery];
+        const mindStateName = mindStates[Math.floor(Math.random() * mindStates.length)];
+
+        this.mindState = MindStates[mindStateName];
+        this.mindStateName = mindStateName;
+        if (this.mindState.startup) this.mindState.startup(this, this.getCombatContext());
+
         this.checkSpecials(ascean);
-        scene.time.delayedCall(3000, () => {
-            if (this.scene.state.caerenic.active) this.caerenicUpdate();
-            if (this.scene.state.stalwart.active) this.stalwartUpdate(this.scene.state.stalwart.active);
-        }, undefined, this);
+        // scene.time.delayedCall(3000, () => {
+        //     if (this.scene.state.caerenic.active) this.caerenicUpdate();
+        //     if (this.scene.state.stalwart.active) this.stalwartUpdate(this.scene.state.stalwart.active);
+        // }, undefined, this);
     };
 
     ping = () => {
@@ -265,8 +276,8 @@ export default class Party extends Entity {
         EventBus.off("engage", this.engage);
         EventBus.off("speed", this.speedUpdate);
         EventBus.off("update-stealth", this.stealthUpdate);
-        EventBus.off("update-caerenic", this.caerenicUpdate);
-        EventBus.off("update-stalwart", this.stalwartUpdate);
+        // EventBus.off("update-caerenic", this.caerenicUpdate);
+        // EventBus.off("update-stalwart", this.stalwartUpdate);
         if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) {
             this.isShimmering = false;
@@ -289,8 +300,8 @@ export default class Party extends Entity {
         EventBus.on("engage", this.engage);
         EventBus.on("speed", this.speedUpdate);
         EventBus.on("update-stealth", this.stealthUpdate);
-        EventBus.on("update-caerenic", this.caerenicUpdate);
-        EventBus.on("update-stalwart", this.stalwartUpdate);
+        // EventBus.on("update-caerenic", this.caerenicUpdate);
+        // EventBus.on("update-stalwart", this.stalwartUpdate);
     }; 
 
     createComputerCombatSheet = (e: Compiler): ComputerCombat => {
@@ -657,40 +668,47 @@ export default class Party extends Entity {
         };
     };
 
-    caerenicUpdate = () => {
-        this.isCaerenic = this.isCaerenic ? false : true;
-        if (this.isCaerenic) {
-            this.setGlow(this, true);
-            this.setGlow(this.spriteWeapon, true, "weapon");
-            this.setGlow(this.spriteShield, true, "shield"); 
-            this.adjustSpeed(PLAYER.SPEED.CAERENIC);
-        } else {
-            this.setGlow(this, false);
-            this.setGlow(this.spriteWeapon, false, "weapon")
-            this.setGlow(this.spriteShield, false, "shield"); 
-            this.adjustSpeed(-PLAYER.SPEED.CAERENIC);
-        };
+    caerenicUpdate = (caerenic: boolean) => {
+        this.isCaerenic = caerenic;
+        this.enemySound("blink", true);
+        const multiplier = caerenic ? 1 : -1;
+        this.adjustSpeed(PLAYER.SPEED.CAERENIC * multiplier);
+        this.computerCombatSheet.computerCaerenic = caerenic;
+        if (this.isGlowing) return;
+        this.setGlow(this, caerenic);
+        this.setGlow(this.spriteWeapon, caerenic);
+        this.setGlow(this.spriteShield, caerenic);
     };
 
     stalwartUpdate = (stalwart: boolean) => {
         this.isStalwart = stalwart;
         this.spriteShield.setVisible(this.isStalwart);
+        this.enemySound("stalwart", this.isStalwart);
+        this.computerCombatSheet.computerStalwart = stalwart;
     };
 
-    checkCaerenic = (caerenic: boolean) => {
+    checkCaerenic = (caerenic: boolean, kill: boolean = false) => {
         this.isGlowing = caerenic;
+        if (this.isCaerenic && !kill) return;
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon");
         this.setGlow(this.spriteShield, caerenic, "shield");
     };
 
     flickerCaerenic = (duration: number) => {
-        if (this.isCaerenic === false && this.isGlowing === false) {
+        if (!this.isCaerenic && !this.isGlowing) {
             this.checkCaerenic(true);
             this.scene.time.delayedCall(duration, () => {
                 this.checkCaerenic(false);
             }, undefined, this);
         };
+    };
+
+
+    setMindState = (mind: string) => {
+        this.mindStateName = mind;
+        this.mindState = MindStates[mind];
+        if (this.mindState.startup) this.mindState.startup(this, this.getCombatContext());
     };
 
     createSprite = (imgUrl: string, x: number, y: number, scale: number, originX: number, originY: number) => {
@@ -1080,6 +1098,54 @@ export default class Party extends Entity {
         };
     };
 
+    callForHelp = () => {
+        const ctx = this.getCombatContext();
+        // let help = false;
+        if (ctx.allies) {
+            for (let i = 0; i < ctx.allies.length; i++) {
+                if (!ctx.allies[i]) continue;
+                if (this.currentTarget) ctx.allies[i].callToArms(this.currentTarget);
+                // help = true;
+            };
+        };
+        // if (!help) {}; // Chirp
+    };
+
+    castAoE = () => {
+        const aoes = PARTY_AOE[this.ascean.mastery];
+        const aoe = aoes[Math.floor(Math.random() * aoes.length)].toLowerCase();
+        // if (this.inCombat) this.scene.hud.logger.log(`${this.ascean.name}'s instinct leads them to ${aoe}.`);
+        const positive = specialPositiveMachines.includes(aoe);
+        // console.log(`%c AoE: ${aoe} | Positive: ${positive}`, "color: #fdf6d8");
+        if (positive) {
+            this.playerMachine.positiveMachine.setState(aoe);
+            this.playerMachine.stateMachine.setState(States.CHASE);
+        } else {
+            this.playerMachine.stateMachine.setState(aoe);
+        };
+    };
+
+    rangedBlast = () => {
+        if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
+        if ((!this.currentTarget || !this.currentTarget.body) && this.health > 0) {
+            this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+            return;
+        };
+        const mastery = this.ascean.mastery;
+        const ranged = PARTY_RANGED[mastery];
+        const blast = ranged[Math.floor(Math.random() * ranged.length)];
+        const positive = specialPositiveMachines.includes(blast);
+        // console.log(`%c AoE: ${blast} | Positive: ${positive}`, "color: #fdf6d8");
+        if (positive) {
+            this.playerMachine.positiveMachine.setState(blast);
+            this.playerMachine.stateMachine.setState(States.CHASE);
+        } else {
+            this.playerMachine.stateMachine.setState(blast);
+        };
+    };
+
+    randomHeal = () => this.playerMachine.stateMachine.setState(HEALS[Math.floor(Math.random() * HEALS.length)]);
+
     shield = () => {
         if (this.negationBubble === undefined || this.isShielding === false) {
             if (this.negationBubble) {
@@ -1306,6 +1372,35 @@ export default class Party extends Entity {
         );
     };
 
+    getCombatContext(): CombatContext {
+        const direction = this.getCombatDirection();
+        if (!direction) {
+            return {
+                direction,
+                multiplier: 1,
+                climbingModifier: 1,
+                allies: [],
+                isTargetRanged: false,
+                lineOfSight: true,
+                distanceY: 0,
+            } as CombatContext;
+        };
+        const distanceY = Math.abs(direction.y);
+        const climbingModifier = this.isClimbing ? 0.65 : 1;
+        const allies = this.getNearbyAllies();
+        const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
+        
+        return {
+            direction,
+            multiplier,
+            distanceY,
+            climbingModifier,
+            allies,
+            isTargetRanged: this.currentTarget?.isRanged || false,
+            lineOfSight: this.checkLineOfSight()
+        } as CombatContext;
+    };
+
     getCombatDirection() {
         try {
             // Use cached distance if available and recent
@@ -1345,26 +1440,36 @@ export default class Party extends Entity {
         };
     };
 
+    getNearbyAllies = () => {
+        if (!this.currentTarget) return [];
+        const allies = this.currentTarget.enemies;
+        return allies;
+    };
+    
     evaluateCombatDistance = () => {
         this.getDirection();
-        if (this.currentTarget) this.highlightTarget(this.currentTarget);
         const state = this.playerMachine.stateMachine.getCurrentState();
+
         if (this.health <= 0 && state !== States.DEFEATED) { // this.isDefeated ||
             this.playerMachine.stateMachine.setState(States.DEFEATED);
             return;
         };
-        if (state === States.DEFEATED) return;
+
         if (!this.inComputerCombat) {
             if (state !== States.DEFEATED && state !== States.IDLE && state !== States.FOLLOW) {
                 this.playerMachine.stateMachine.setState(States.FOLLOW);
             };
             return;
         };
+        
+        if (this.currentTarget) this.highlightTarget(this.currentTarget);
+                
         if (this.isCasting || this.isPraying || this.isContemplating) {
             this.isMoving = false;
             this.setVelocity(0);
-            return;    
+            return;
         };
+
         if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
         
         const direction = this.getCombatDirection();
@@ -1420,6 +1525,7 @@ export default class Party extends Entity {
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed * climbingModifier);
             };
+            
         } else { // MELEE ENEMY LOGIC
             if (state !== States.COMPUTER_COMBAT) {
                 this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
@@ -1438,69 +1544,6 @@ export default class Party extends Entity {
                 if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
             };
         };
-
-
-        // if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
-        //     // this.evasionTimer = 1000;
-        //     this.playerMachine.stateMachine.setState(States.EVADE);
-        //     return;
-        // } else if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
-        //     this.playerMachine.stateMachine.setState(States.CHASE);
-        //     return;
-        // } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
-        //     if (state !== States.COMPUTER_COMBAT) { // !this.computerAction && 
-        //         this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-        //         return;    
-        //     };
-        //     if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
-        //         direction.normalize();
-        //         this.setVelocityY(direction.y * this.speed * climbingModifier + 0.5);
-        //     };
-        //     // if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
-        //     //     direction.normalize();
-        //     //     this.setVelocityY(direction.y * (this.speed + 0.5)); // 2 || 4
-        //     // };
-        //     if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
-        //         direction.normalize();
-        //         this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
-        //         this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25
-        //     } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-        //         if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
-        //             // this.evasionTimer = 1000;
-        //             this.playerMachine.stateMachine.setState(States.EVADE);
-        //             return;
-        //         } else {
-        //             direction.normalize();
-        //             this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
-        //             this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
-        //         };
-        //     } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
-        //         // this.evasionTimer = 1000;
-        //         this.playerMachine.stateMachine.setState(States.EVADE);
-        //         return;
-        //     } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
-        //         this.setVelocity(0);
-        //         if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
-        //     } else { // Between 75 and 225 and outside y-distance
-        //         direction.normalize();
-        //         this.setVelocityY(direction.y * (this.speed + 0.5)); // 2.25
-        //     };
-        // } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
-        //     if (state !== States.COMPUTER_COMBAT) {
-        //         this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-        //         return;
-        //     };
-        //     if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
-        //         direction.normalize();
-        //         this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.5
-        //         this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.5
-        //         this.isPosted = false;
-        //     } else { // Inside melee range
-        //         this.isPosted = true;
-        //         this.setVelocity(0);
-        //         if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
-        //     };
-        // };
     };
     
     evaluateCombat = () => {
@@ -1589,9 +1632,9 @@ export default class Party extends Entity {
                 this.handleIdleAnimations();
             };
         } else if (this.isParrying) {
-            this.anims.play(FRAMES.ATTACK, true).on("animationcomplete", () => this.isParrying = false);
+            this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
         } else if (this.isThrusting) {
-            this.anims.play(FRAMES.THRUST, true).on("animationcomplete", () => this.isThrusting = false);
+            this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isThrusting = false);
         } else if (this.isDodging) { 
             this.anims.play(FRAMES.DODGE, true);
             if (this.dodgeCooldown === 0) this.playerDodge();
@@ -1599,23 +1642,23 @@ export default class Party extends Entity {
             this.anims.play(FRAMES.ROLL, true);
             if (this.rollCooldown === 0) this.playerRoll();
         } else if (this.isPosturing) {
-            this.anims.play(FRAMES.POSTURE, true).on("animationcomplete", () => this.isPosturing = false);
+            this.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isPosturing = false);
         } else if (this.isAttacking) {
-            this.anims.play(FRAMES.THRUST, true).on("animationcomplete", () => this.isAttacking = false);
+            this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
         } else if (this.moving()) { // && this.computerActionsClear()
             this.handleMovementAnimations();
             this.isMoving = true;
         } else if (this.isCasting) {
             this.anims.play(FRAMES.CAST, true);
         } else if (this.isPraying) {
-            this.anims.play(FRAMES.PRAY, true).on("animationcomplete", () => this.isPraying = false);
+            this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isPraying = false);
         } else { //  if (this.computerActionsClear())
             this.isMoving = false;
             this.handleIdleAnimations();
         };
     };
 
-    handleComputerConcerns = () => {
+    handleComputerConcerns = (dt: number) => {
         if (this.actionSuccess === true) {
             this.actionSuccess = false;
             this.partyActionSuccess();
@@ -1634,12 +1677,16 @@ export default class Party extends Entity {
                 this.scene.particleManager.updateParticle(this.particleEffect);
             };
         };
+
+        this.functionality(dt, "party", this.currentTarget as Enemy);
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
+        
         if (this.scene.combat === true && (!this.currentTarget || !this.inComputerCombat)) this.findEnemy();
+
         if (this.isConfused && !this.sansSuffering("isConfused") && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
             this.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
@@ -1668,8 +1715,6 @@ export default class Party extends Entity {
             this.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
         };
-
-        this.functionality("party", this.currentTarget as Enemy);
 
         if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
             this.playerMachine.negativeMachine.setState(States.ROOTED);
@@ -1751,7 +1796,7 @@ export default class Party extends Entity {
     };
 
     update(dt: number) {
-        this.handleComputerConcerns();
+        this.handleComputerConcerns(dt);
         this.evaluateCombatDistance();
         this.handlePartyAnimations();
         this.playerMachine.stateMachine.update(dt);

@@ -1,5 +1,6 @@
 import { DISTANCE } from "../../utility/enemy";
 import Enemy from "../entities/Enemy";
+import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
 
 export type CacheDirection = {
@@ -16,7 +17,7 @@ export type CombatContext = {
     multiplier: number;
     distanceY: number;
     climbingModifier: number;
-    allies: Enemy[];
+    allies: (Enemy | Party)[];
     isTargetRanged: boolean;
     lineOfSight: boolean;
     // closestAllyDistanceSq: number;
@@ -33,22 +34,12 @@ export type MindState = {
     callHelp: boolean;
     summon: boolean;
     activations: number;
-    startup?: (self: Enemy, ctx: CombatContext) => void;
-    customEvaluate?: (self: Enemy, ctx: CombatContext) => void;
-    dynamicSwap?: (self: Enemy, ctx: CombatContext) => void;
+    startup?: (self: Enemy | Party, ctx: CombatContext) => void;
+    customEvaluate?: (self: Enemy | Party, ctx: CombatContext) => void;
+    dynamicSwap?: (self: Enemy | Party, ctx: CombatContext) => void;
     // preferredTargets?: string[];
     // riskTolerance?: number;
 };
-
-/*
-    TODO: FIXME:
-
-    add more mind states, add different things to think about ✓✓
-    add different positioning concerns
-    add variables to MindState/CombatContext if necessary
-
-    TODO: FIXME:
-*/
 
 export const MindStates: {[key:string]: MindState;} = {
     Duelist: {
@@ -118,10 +109,18 @@ export const MindStates: {[key:string]: MindState;} = {
         customEvaluate: (self, ctx) => {
             if (Math.random() > 0.9 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq ** 2) {
                 // console.log("%c Berserker: Charging Tether", "color:#f00");
-                self.stateMachine.setState(States.TETHER);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.TETHER);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.TETHER);
+                };
             } else if (Math.random() > 0.9 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq ** 2) {
                 // console.log("%c Berserker: Setting Leap", "color:#f00");
-                self.stateMachine.setState(States.LEAP);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.LEAP);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.LEAP);
+                };
             };
         },
         dynamicSwap: (self, ctx) => {
@@ -197,7 +196,11 @@ export const MindStates: {[key:string]: MindState;} = {
             } else if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && self.isRanged && self.currentTarget) {
                 // console.log("%c Controller: Pushing Target Back", "color:#0ff");
                 self.mindState.activations++;
-                self.stateMachine.setState(States.KNOCKBACK);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.KNOCKBACK);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.KNOCKBACK);
+                };
             };
         },
         dynamicSwap: (self, ctx) => {
@@ -309,11 +312,19 @@ export const MindStates: {[key:string]: MindState;} = {
             if (Math.random() > 0.98 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Charging Achire", "color:#0f0");
-                self.stateMachine.setState(States.ACHIRE);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.ACHIRE);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.ACHIRE);
+                };
             } else if (Math.random() > 0.98 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Setting Astrave", "color:#0f0");
-                self.stateMachine.setState(States.ASTRAVE);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.ASTRAVE);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.ASTRAVE);
+                };
             };
             if (!self.isCaerenic && self.health / self.ascean.health.max < 0.5) {
                 // console.log("%c Ranger: Becoming Caerenic", "color:#0f0");
@@ -351,11 +362,19 @@ export const MindStates: {[key:string]: MindState;} = {
             if (Math.random() > 0.995 && ctx.direction.ogLengthSq > self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Charging Shadow", "color:#0f0");
-                self.stateMachine.setState(States.SHADOW);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.SHADOW);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.SHADOW);
+                };
             } else if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq) {
                 self.mindState.activations++;
                 // console.log("%c Ranger: Setting Rush", "color:#0f0");
-                self.stateMachine.setState(States.RUSH);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.RUSH);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.RUSH);
+                };
             };
             if (!self.isCaerenic && self.health / self.ascean.health.max < 0.5) {
                 // console.log("%c Rogue: Becoming Caerenic", "color:#0f0");
@@ -389,7 +408,11 @@ export const MindStates: {[key:string]: MindState;} = {
             if (ctx.direction.ogLengthSq < self.mindState.minDistanceSq && Math.random() > 0.995) { //  / 2
                 // console.log("%c Sorcerer: Blinking", "color:#0ff");
                 self.mindState.activations++;
-                self.stateMachine.setState(States.BLINK);
+                if (self.name === "enemy") {
+                    (self as Enemy).stateMachine.setState(States.BLINK);
+                } else {
+                    (self as Party).playerMachine.stateMachine.setState(States.BLINK);
+                };
             };
             if (ctx.direction.ogLengthSq > self.mindState.minDistanceSq && Math.random() > 0.995) {
                 // console.log("%c Battlemage: Choosing a Ranged Blast", "color:#00f");
@@ -438,8 +461,8 @@ export const MindStates: {[key:string]: MindState;} = {
         customEvaluate: (self, ctx) => {            
             const ratio = self.health / self.ascean.health.max;
             if (ratio < 0.35) {
+                self.randomHeal();
                 // console.log("%c Stalwart: Self Healing", "color:#fdf6d8");
-                self.stateMachine.setState(States.HEALING);
             }; 
         },
         dynamicSwap: (self, ctx) => {

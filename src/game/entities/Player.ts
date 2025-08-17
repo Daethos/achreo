@@ -350,7 +350,8 @@ export default class Player extends Entity {
             targets: this.highlight,
             scale: 0.45,
             duration: 250,
-            yoyo: true
+            yoyo: true,
+            onComplete: () => this.highlight.setScale(0.2)
         });
     };
 
@@ -893,16 +894,15 @@ export default class Player extends Entity {
             context: this.scene,
         });
     };
-
+    /* Check if this ought to get shoved into the proper scene instead */
     checkWorldCollision(playerSensor: any) {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "duel") {
-                    EventBus.emit("alert", { 
-                        header: "Ancient Eulex", 
+                    EventBus.emit("alert", {
+                        header: "Ancient Eulex",
                         body: `You have the option of summoning enemies to the dueling grounds. \n\n Would you like to see the roster?`, 
-                        delay: 3000, 
                         key: "Roster",
                         arg: other.gameObjectB?.properties?.key
                     });
@@ -911,41 +911,36 @@ export default class Player extends Entity {
                     EventBus.emit("alert", { 
                         header: "Underground", 
                         body: `You have encountered a cave! \n\n Would you like to enter?`, 
-                        delay: 3000, 
                         key: "Enter Underground"
                     });
                 };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "teleport") {
                     switch (other.gameObjectB?.properties?.key) {
                         case "north":
-                            EventBus.emit("alert", { 
-                                header: "North Port", 
+                            EventBus.emit("alert", {
+                                header: "North Port",
                                 body: `This is the Northren Port \n\n Would you like to enter?`, 
-                                delay: 3000,
                                 key: "Enter North Port"
                             });
                             break;
                         case "south":
-                            EventBus.emit("alert", { 
-                                header: "South Port", 
+                            EventBus.emit("alert", {
+                                header: "South Port",
                                 body: `This is the Southron Port \n\n Would you like to enter?`, 
-                                delay: 3000,
                                 key: "Enter South Port"
                             });
                             break;
                         case "east":
-                            EventBus.emit("alert", { 
-                                header: "East Port", 
+                            EventBus.emit("alert", {
+                                header: "East Port",
                                 body: `This is the Eastern Port \n\n Would you like to enter?`, 
-                                delay: 3000,
                                 key: "Enter East Port"
                             });
                             break;
                         case "west":
-                            EventBus.emit("alert", { 
-                                header: "West Port", 
+                            EventBus.emit("alert", {
+                                header: "West Port",
                                 body: `This is the Western Port \n\n Would you like to enter?`, 
-                                delay: 3000,
                                 key: "Enter West Port"
                             });
                             break;
@@ -953,26 +948,16 @@ export default class Player extends Entity {
                     };
                 };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "stairs") {
-                    EventBus.emit("alert", { 
-                        header: "Exit", 
+                    EventBus.emit("alert", {
+                        header: "Exit",
                         body: `You are at the stairs that lead back to the surface. \n\n Would you like to exit the cave and head up to the world?`, 
-                        delay: 3000, 
                         key: "Exit Underground"
                     });
                 };
-                // if (other.gameObjectB && other.gameObjectB?.properties?.name === "worldExit") {
-                //     EventBus.emit("alert", { 
-                //         header: "Exit", 
-                //         body: `You are near the exit. \n\n Would you like to head back to the world?`, 
-                //         delay: 3000, 
-                //         key: "Exit World"
-                //     });
-                // };
                 if (other.gameObjectB && other.gameObjectB?.properties?.name === "Enter Tutorial") {
-                    EventBus.emit("alert", { 
-                        header: "Tutorial", 
+                    EventBus.emit("alert", {
+                        header: "Tutorial",
                         body: `You are near the entrance to the tutorial. \n\n Would you like to head back to area?`, 
-                        delay: 3000, 
                         key: "Enter Tutorial"
                     });
                 };
@@ -1182,6 +1167,7 @@ export default class Player extends Entity {
     };
 
     inputClear = (input: string) => {
+        // if (!input) return;
         const action = PHYSICAL_ACTIONS.includes(input);
         const evasions = PHYSICAL_EVASIONS.includes(input);
         if (action) {
@@ -1376,57 +1362,59 @@ export default class Player extends Entity {
             this.removeHighlight();
         };
         if (this.isDefeated) return;
-        if (this.scene.hud.settings.desktop === true && !this.isSuffering()) {
+        if (this.scene.hud.settings.desktop) {
+            if (this.isSuffering()) return;
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) {
                 this.tabEnemyNext();
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.escape.ESC) && !this.inCombat) {
                 this.disengage();
             };
+            const { actions, specials } = this.scene.hud.settings;
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[0].toLowerCase());
-                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
+                const button = this.scene.hud.actionBar.getButton(specials[0].toLowerCase());
+                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[1].toLowerCase());
-                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
+                const button = this.scene.hud.actionBar.getButton(specials[1].toLowerCase());
+                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[2].toLowerCase());
-                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
+                const button = this.scene.hud.actionBar.getButton(specials[2].toLowerCase());
+                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[3].toLowerCase());
-                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
+                const button = this.scene.hud.actionBar.getButton(specials[3].toLowerCase());
+                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
             };
             if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) { 
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.specials[4].toLowerCase());
-                if (button?.isReady === true) this.scene.hud.actionBar.pressButton(button);
+                const button = this.scene.hud.actionBar.getButton(specials[4].toLowerCase());
+                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[0].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(actions[0].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
+                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[1].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(actions[1].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
+                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[2].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(actions[2].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
+                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[3].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(actions[3].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
+                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
             };
             if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) {
-                const button = this.scene.hud.actionBar.getButton(this.scene.hud.settings.actions[4].toLowerCase());
+                const button = this.scene.hud.actionBar.getButton(actions[4].toLowerCase());
                 const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady === true && clear === true) this.scene.hud.actionBar.pressButton(button);
+                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
             };
         };
     };
@@ -1603,7 +1591,6 @@ export default class Player extends Entity {
     update(dt: number) {
         this.handleConcerns(dt);
         this.handleActions();
-        // this.handleAnimations();
         this.handleMovement();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);

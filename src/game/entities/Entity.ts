@@ -545,10 +545,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     teleport = (x: number, y: number) => {
-        console.log(x, y, "Praying to the statue");
         this.isPraying = true;
         this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
-            console.log(x, y, "Teleporting to these coordinates");
             this.isPraying = false;
             this.setPosition(x, y);
         });
@@ -585,7 +583,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     handleIdleAnimations = () => {
         if (this.isCasting || this.isPraying) return;
-        // console.log("handleIdleAnimations");
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -597,7 +594,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleMovementAnimations = () => {
-        // console.log("handleMovementAnimations");
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
         } else if (this.inWater) {
@@ -615,7 +611,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (!this.body) return false;
         const moved = (Math.abs(this.x - this.lastX) > 0.1 || Math.abs(this.y - this.lastY) > 0.1);
         const velocityMoving = this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
-        // console.log(moved, this.lastX, this.x, this.lastY, this.y);
         this.lastX = this.x;
         this.lastY = this.y;
         return moved || velocityMoving;

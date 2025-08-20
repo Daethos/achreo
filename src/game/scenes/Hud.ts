@@ -50,6 +50,7 @@ export class Hud extends Phaser.Scene {
     postFxPipeline: any;
     pipelines: any = {};
     hitStopping: boolean = false;
+    switchingScene: boolean = false;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -600,6 +601,11 @@ export class Hud extends Phaser.Scene {
     };
 
     switchScene = (data: {current: string; next: string;}) => {
+        if (this.switchingScene) {
+            EventBus.emit("alert", { header: "Error Switching Scene", body: `Scene is already switching from ${this.prevScene} to ${this.currScene}` });
+            return;
+        };
+        this.switchingScene = true;
         const { current, next } = data;
         this.prevScene = current;
         this.currScene = next;
@@ -619,6 +625,7 @@ export class Hud extends Phaser.Scene {
             };
             this.scene.bringToTop(this);
             EventBus.emit("update-enemies", []);
+            this.switchingScene = false;
         });
     };
 

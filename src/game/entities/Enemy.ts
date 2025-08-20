@@ -181,7 +181,7 @@ export default class Enemy extends Entity {
             .addState(States.BLINK, { onEnter: this.onBlinkEnter, onUpdate: this.onBlinkUpdate, onExit: this.onBlinkExit })
             .addState(States.CHIOMISM, { onEnter: this.onChiomismEnter, onUpdate: this.onChiomismUpdate, onExit: this.onChiomismExit })
             .addState(States.CONFUSE, { onEnter: this.onConfuseEnter, onUpdate: this.onConfuseUpdate, onExit: this.onConfuseExit })
-            .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onExit: this.onDesperationExit })
+            .addState(States.DESPERATION, { onEnter: this.onDesperationEnter, onUpdate: this.onDesperationUpdate, onExit: this.onDesperationExit })
             .addState(States.FEAR, { onEnter: this.onFearingEnter, onUpdate: this.onFearingUpdate, onExit: this.onFearingExit })
             .addState(States.FROST, { onEnter: this.onFrostEnter, onUpdate: this.onFrostUpdate, onExit: this.onFrostExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
@@ -1391,6 +1391,15 @@ export default class Enemy extends Entity {
         this.evaluateCombatDistance();        
     };
 
+    startPraying = () => {
+        this.isPraying = true;
+        this.setStatic(true);
+        this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
+            this.isPraying = false;
+            this.setStatic(false);
+        });
+    };
+
     setStun = () => {
         this.scene.showCombatText(this, "Stunned", 2500, EFFECT, true, true);
         this.isStunned = true;
@@ -2535,20 +2544,21 @@ export default class Enemy extends Entity {
         this.instincts();
     };
 
-    onDesperationEnter = () => {
-        this.isCasting = true;
+    onDesperationEnter = () => this.startPraying();
+    onDesperationUpdate = () => this.combatChecker(this.isPraying);
+    onDesperationExit = () => {
+        if (this.health <= 0) return;
         this.scene.showCombatText(this, "Desperation", PLAYER.DURATIONS.HEALING / 2, CAST, false, true);
-        if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
-        this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
-            if (this.health <= 0) return;
-            this.castHeal(0.5);
-            if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
-            this.count.stunned += 1;
-            this.isStunned = true;
-            this.stateMachine.setState(States.STUNNED);
-        }, undefined, this);
+        this.castHeal(0.5);
+        // if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
+        // this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
+            // if (this.health <= 0) return;
+            // if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
+            // this.count.stunned += 1;
+            // this.isStunned = true;
+            // this.stateMachine.setState(States.STUNNED);
+        // }, undefined, this);
     };
-    onDesperationExit = () => this.isCasting = false;
 
     onFearingEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
@@ -3090,38 +3100,44 @@ export default class Enemy extends Entity {
     
     onSacrificeEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        this.scene.showCombatText(this, "Sacrifice", 750, EFFECT, false, true);
-        if (this.currentTarget?.name === "player") {
-            if (this.checkPlayerResist() === false) return;
-            this.scene.combatManager.useGrace(10);
-        };
-        const id = this.getTargetId(); 
-        this.sacrifice(30, id);
-        this.enemySound("combat-round", true);
-        this.flickerCaerenic(750);
+        this.startPraying();
     };
-    onSacrificeUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
-    onSacrificeExit = () => this.evaluateCombatDistance();
+    onSacrificeUpdate = (_dt: number) => this.combatChecker(this.isPraying); // this.stateMachine.setState(States.CLEAN);
+    onSacrificeExit = () => {
+        const id = this.getTargetId();
+        if (id) {
+            this.scene.showCombatText(this, "Sacrifice", 750, EFFECT, false, true);
+            if (this.currentTarget?.name === "player") {
+                if (this.checkPlayerResist() === false) return;
+                this.scene.combatManager.useGrace(10);
+            };
+            this.sacrifice(30, id);
+            this.enemySound("combat-round", true);
+        };
+    }; // this.evaluateCombatDistance();
         
     onSlowingEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
-        this.scene.showCombatText(this, "Slow", 750, CAST, false, true);
-        const id = this.getTargetId();
-        if (this.currentTarget?.name === "player") {
-            if (this.checkPlayerResist() === false) return;
-            this.scene.combatManager.slow(id, 3000);
-            this.scene.combatManager.useGrace(10);
-            EventBus.emit("enemy-combat-text", {
-                computerSpecialDescription: `${this.ascean.name} ensorcels your caeren, slowing you!`
-            });
-        } else { // CvC
-            this.scene.combatManager.slow(id, 3000);
-        };
-        this.enemySound("debuff", true);
-        this.flickerCaerenic(500);
+        this.startPraying();
     };
-    onSlowingUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
-    onSlowingExit = () => this.evaluateCombatDistance();
+    onSlowingUpdate = (_dt: number) => this.combatChecker(this.isPraying); // this.stateMachine.setState(States.CLEAN);
+    onSlowingExit = () => {
+        const id = this.getTargetId();
+        if (id) {
+            this.scene.showCombatText(this, "Slow", 750, CAST, false, true);
+            if (this.currentTarget?.name === "player") {
+                if (this.checkPlayerResist() === false) return;
+                this.scene.combatManager.slow(id, 3000);
+                this.scene.combatManager.useGrace(10);
+                EventBus.emit("enemy-combat-text", {
+                    computerSpecialDescription: `${this.ascean.name} ensorcels your caeren, slowing you!`
+                });
+            } else { // CvC
+                this.scene.combatManager.slow(id, 3000);
+            };
+            this.enemySound("debuff", true);
+        };
+    }; // this.evaluateCombatDistance();
     
     onSnaringEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.LONG)) return;
@@ -3155,18 +3171,21 @@ export default class Enemy extends Entity {
 
     onSutureEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
-        this.scene.showCombatText(this, "Suture", 750, EFFECT, false, true);
-        if (this.currentTarget?.name === "player") {
-            if (this.checkPlayerResist() === false) return;    
-            this.scene.combatManager.useGrace(10);
-        };
-        const id = this.getTargetId();
-        this.suture(30, id);
-        this.enemySound("debuff", true);
-        this.flickerCaerenic(750);
+        this.startPraying();
     };
-    onSutureUpdate = (_dt: number) => this.stateMachine.setState(States.CLEAN);
-    onSutureExit = () => this.evaluateCombatDistance();
+    onSutureUpdate = (_dt: number) => this.combatChecker(this.isPraying); // this.stateMachine.setState(States.CLEAN);
+    onSutureExit = () => {
+        const id = this.getTargetId();
+        if (id) {
+            this.scene.showCombatText(this, "Suture", 750, EFFECT, false, true);
+            if (this.currentTarget?.name === "player") {
+                if (this.checkPlayerResist() === false) return;    
+                this.scene.combatManager.useGrace(10);
+            };
+            this.suture(30, id);
+            this.enemySound("debuff", true);
+        };
+    }; // this.evaluateCombatDistance();
 
     onDevourEnter = () => {
         if (!this.currentTarget || !this.currentTarget.body || this.outOfRange(PLAYER.RANGE.MODERATE)) return;
@@ -4828,7 +4847,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.HELP);
     };
     shouldCallForHelp = (ctx: CombatContext, mind: MindState) => {
-        return this.summons <= 3 && this.ascean.level >= 4 && ctx.allies.length > 1 && mind.callHelp && (this.health / this.ascean.health.max < 0.35) && !this.stateMachine.isCurrentState(States.HELP);
+        return this.summons <= 3 && this.ascean.level >= 4 && ctx.allies.length > 1 && mind.callHelp && (this.health / this.ascean.health.max < 0.35) && !this.stateMachine.isCurrentState(States.HELP) && this.scene.scene.key === "Game";
     };
 
     castSummon = () => {
@@ -4837,7 +4856,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.SUMMON);
     };
     shouldSummon = (mind: MindState) => {
-        return mind.summon && this.summons === 0 && this.ascean.level >= 4 && (this.health / this.ascean.health.max < 0.5) && !this.stateMachine.isCurrentState(States.SUMMON);
+        return mind.summon && this.summons === 0 && this.ascean.level >= 4 && (this.health / this.ascean.health.max < 0.5) && !this.stateMachine.isCurrentState(States.SUMMON) && this.scene.scene.key === "Game";
     };
 
     checkEvasion = (particle: Particle) => {
@@ -4929,10 +4948,12 @@ export default class Enemy extends Entity {
             if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
             if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         };
+
         if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
             this.stateMachine.setState(States.DEFEATED);
             return;
         };
+        
         if ((!this.inCombat && !this.inComputerCombat) || this.health <= 0) return;
 
         const currentState = this.stateMachine.getCurrentState();
@@ -4987,6 +5008,7 @@ export default class Enemy extends Entity {
             this.negativeMachine.setState(States.SNARED); 
             return;    
         };
+
         if (this.actionSuccess) {
             this.actionSuccess = false;
             this.enemyActionSuccess();

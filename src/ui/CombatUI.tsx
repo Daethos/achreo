@@ -1,4 +1,4 @@
-import { Accessor, JSX, Setter, createEffect, createSignal } from "solid-js"
+import { Accessor, JSX, Match, Setter, Switch, createEffect, createSignal } from "solid-js"
 import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
 import { border, borderColor, itemStyle, masteryColor } from "../utility/styling";
@@ -128,6 +128,27 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         setShowPickpocketItems(true);
     };
     const disengage = () => EventBus.emit("disengage");
+    const engage = () => EventBus.emit("engage");
+    const exit = () => EventBus.emit("switch-scene", {current:instance.scene?.scene.key, next:"Underground"});
+    const arenas = () => {
+        return <Switch>
+            <Match when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer && !state().combatEngaged}>
+                <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>
+                    Engage {state().computer?.name}
+                </button>    
+            </Match>
+            <Match when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && !state().computer && !state().combatEngaged && state().newPlayerHealth > 0}>
+                <button class="disengage highlight" onClick={exit} style={{ top: "15vh", left: "25vw" }}>
+                    Exit {instance.scene?.scene.key}
+                </button>    
+            </Match>
+        </Switch>
+        // return <Show when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer}>
+        //     <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>
+        //         Engage
+        //     </button>
+        // </Show>;
+    };
     const showPlayer = () => {
         EventBus.emit("action-button-sound");
         EventBus.emit("update-small-hud");
@@ -210,7 +231,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
             }} onClick={changeDisplay} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
-            "--glow-color": "violet", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em", "margin-top": dimensions().WIDTH > 875 ? "-1%" : "" }}>{healthDisplay()}</div>
+            "--glow-color": "violet", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>
@@ -239,7 +260,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
-        <Show when={state().playerEffects.length > 0 && state().combatEngaged === true}>
+        {/* && state().combatEngaged === true */}
+        <Show when={state().playerEffects.length > 0}>
         <div class="combatEffects" style={{ left: "-3vw", top: "15vh", "height": "14vh", width: "auto", transform: "scale(0.75)" }}>
             <For each={state().playerEffects}>{(effect) => ( 
                 <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
@@ -261,6 +283,12 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
             </button>
         </Show>
+        {/* <Show when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer}>
+            <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>
+                Engage
+            </button>
+        </Show> */}
+        {arenas()}
         <Portal>
             <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show())}>
@@ -278,12 +306,12 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <Show when={staminaShow()}>
             <div class="modal" onClick={() => setStaminaShow(!staminaShow())}>
                 <StaminaModal setShow={setStaminaShow} settings={settings} />
-            </div> 
+            </div>
             </Show>
             <Show when={graceShow()}>
             <div class="modal" onClick={() => setGraceShow(!graceShow())}>
                 <GraceModal setShow={setGraceShow} settings={settings} />
-            </div> 
+            </div>
             </Show>
             <Show when={lockpicking()}>
                 <Lockpicking ascean={ascean} lockpick={lockpick} settings={settings} setLockpicking={setLockpicking} instance={instance} />

@@ -136,7 +136,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             };
             if (item.texture.key === "loot") {
                 const loot = this.scene.gameState?.lootTag as boolean;
-                const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 1;
+                const num = this.closed ? this.scene.gameState?.dialogTag as boolean 
+                    ? bar.length - 4 
+                    : bar.length - 3 
+                        : this.scene.gameState?.dialogTag as boolean 
+                            ? 1
+                            : 2;
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
@@ -217,7 +222,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             };
             if (item.texture.key === "loot") {
                 const loot = this.scene.gameState?.lootTag as boolean;
-                const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 : 0;
+                const num = this.closed ? this.scene.gameState?.dialogTag as boolean ? bar.length - 4 : bar.length - 3 
+                    : this.scene.gameState?.dialogTag as boolean ? 0 : 1;
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };

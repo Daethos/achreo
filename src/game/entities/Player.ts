@@ -455,7 +455,7 @@ export default class Player extends Entity {
     invalidTarget = (id: string) => {
         const enemy = this.scene.getEnemy(id);
         if (enemy) return enemy.health <= 0; // enemy.isDefeated;
-        this.scene.showCombatText(this, `Combat Issue: NPC Targeted`, 1000, "damage");
+        this.scene.showCombatText(this, `Combat Issue: NPC Targeted`, 1000, "damage", false, true);
         return true;
     };
 
@@ -568,6 +568,18 @@ export default class Player extends Entity {
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false); 
     };
 
+    startPraying = () => {
+        // this.spellTarget = target.enemyID;
+        this.isPraying = true;
+        this.setStatic(true);
+        // if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
+        this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
+            this.isPraying = false;
+            this.setStatic(false);
+            // if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
+        });
+    };
+
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;
@@ -593,6 +605,7 @@ export default class Player extends Entity {
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.scene.sound.play("leap", { volume: this.scene.hud.settings.volume });
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
             },
             onComplete: () => { 
                 screenShake(this.scene);
@@ -625,7 +638,7 @@ export default class Player extends Entity {
         this.frameCount = 0;
         this.isRushing = true;
         this.isThrusting = true;
-        this.scene.sound.play("1", { volume: this.scene.hud.settings.volume });        
+        this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume });
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -634,17 +647,19 @@ export default class Player extends Entity {
             targets: this,
             alpha: 0.25,
             ease: Phaser.Math.Easing.Quintic.InOut,
-            duration: 300,
+            duration: 550,
             yoyo: true
         });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
-            duration: 600,
-            ease: "Circ.easeOut",
+            // alpha: 0.25,
+            duration: 550,
+            ease: Phaser.Math.Easing.Circular.Out, // "Circ.easeOut",
             onStart: () => {
                 screenShake(this.scene);
+                this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isThrusting = false);
             },
             onComplete: () => {
                 const special = this.checkTalentEnhanced(States.RUSH);
@@ -680,16 +695,18 @@ export default class Player extends Entity {
                     };
                 };
                 this.isRushing = false;
+                // this.isThrusting = true;
             },
-        });         
+        });
     };
 
     storm = () => {
         this.clearAnimations();
         this.frameCount = 0;
         this.isStorming = true;
-        this.scene.showCombatText(this, "Storming", 800, "damage"); 
+        this.scene.showCombatText(this, "Storming", 800, "damage");
         this.isAttacking = true;
+        this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
         this.scene.combatManager.useGrace(PLAYER.STAMINA.STORM);
         this.scene.tweens.add({
             targets: this,
@@ -701,6 +718,7 @@ export default class Player extends Entity {
                 this.clearAnimations();
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
                 screenShake(this.scene);
                 this.scene.showCombatText(this, "Storming", 800, "damage");
                 if (this.touching.length > 0) {
@@ -1208,6 +1226,7 @@ export default class Player extends Entity {
                 if (this.checkTalentEnhanced(States.HOOK)) {
                     this.damageDistance(this.attackedTarget);
                 };
+                return;
             };
             if (action === States.QUOR) {
                 if (this.checkTalentEnhanced(States.QUOR)) {

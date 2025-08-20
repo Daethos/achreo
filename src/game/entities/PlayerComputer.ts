@@ -305,26 +305,22 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
-        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-            return;
-        };
-        if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
-            this.playerMachine.negativeMachine.setState(States.ROOTED);
-            return;
-        };
-        if (this.isSlowed && !this.playerMachine.negativeMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
-            this.playerMachine.negativeMachine.setState(States.SLOWED);
-            return;
-        };
-        if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
-            this.playerMachine.negativeMachine.setState(States.SNARED);
-            return;
-        };
 
         if (this.isUnderRangedAttack()) {
             this.playerMachine.stateMachine.setState(States.EVADE);
-            return;
+        };
+
+        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
+            this.playerMachine.negativeMachine.setState(States.FROZEN);
+        };
+        if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
+            this.playerMachine.negativeMachine.setState(States.ROOTED);
+        };
+        if (this.isSlowed && !this.playerMachine.negativeMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
+            this.playerMachine.negativeMachine.setState(States.SLOWED);
+        };
+        if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
+            this.playerMachine.negativeMachine.setState(States.SNARED);
         };
     };
 

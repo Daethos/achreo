@@ -294,8 +294,8 @@ export const PLAYER = {
 // [12]: Melee > 225 Distance
 // [13]: Ranged > 225 Distance
 
-const STATE = "stateMachine";
-const POSITIVE = "positiveMachine";
+export const STATE = "stateMachine";
+export const POSITIVE = "positiveMachine";
 
 export const PLAYER_INSTINCTS = {
     "constitution": [

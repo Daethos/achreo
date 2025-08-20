@@ -85,7 +85,7 @@ export class HitFeedbackSystem {
         if (parry) {
             this.scene.sound.play("parry", { volume, rate });
             this.zoom(profile.zoom, 320, Phaser.Math.Easing.Quintic.Out);
-            this.scene.hud.hitStop(profile.hitStop * 4);
+            this.scene.hud.hitStop(profile.hitStop * 3);
             this.emitParry(source);
             return;
         };
@@ -107,7 +107,7 @@ export class HitFeedbackSystem {
             rate *= randomFloatFromInterval(0.75, 1);
         };
         // this.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.5 : 1));
-        this.scene.hud.hitStop(profile.hitStop * (critical ? 3 : glancing ? 0.75 : 1.5));
+        this.scene.hud.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.75 : 1));
         this.emitParticles(pos, damageType, critical, glancing, parry);
         screenShake(this.scene);
 

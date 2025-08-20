@@ -154,7 +154,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     EventBus.emit("blend-combat", insta);
                     break;
                 case "Tick": // Prayer Tick
-                    if (newComputerHealth === 0) break;
+                    // if (newComputerHealth === 0) break;
                     const { effect, effectTimer } = data;
                     const tick = prayerEffectTick({ combat: combat(), effect, effectTimer });
                     res = { ...combat(), ...tick };
@@ -280,10 +280,13 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     switch (key) {
                         case "player":
                             const healed = Math.floor(combat().playerHealth * (value / 100));
+                            if (healed < 0) {
+                                realizedComputerDamage = healed;
+                            };
                             newPlayerHealth = newPlayerHealth + healed > combat().playerHealth ? combat().playerHealth : newPlayerHealth + healed;
                             computerWin = newPlayerHealth <= 0;
-                            playerActionDescription =  
-                                healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.` 
+                            playerActionDescription =
+                                healed > 0 ? `You heal for ${healed}, back to ${Math.round(newPlayerHealth)}.`
                                 : `You are damaged for ${Math.abs(healed)}, down to ${Math.round(newPlayerHealth)}`;
                             res = { ...combat(), newPlayerHealth, playerActionDescription, damagedID: id };
                             EventBus.emit("blend-combat", { newPlayerHealth, computerWin, damagedID: id });
@@ -355,15 +358,17 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     if (combat().computer === undefined || newComputerHealth === 0) return;
                     const sacrifice = Math.round(playerMastery * caerenicPos * computerCaer.neg * computerStal * (playerLevel * playerLevel));
                     const sacDam = sacrifice * (1 + data / SACRIFICE);
-                    newPlayerHealth = newPlayerHealth - (sacrifice / 2 * stalwartDef) < 0 ? 0 : newPlayerHealth - (sacrifice / 2 * stalwartDef);
+                    const sacDamLoss = sacrifice / 2 * stalwartDef;
+                    newPlayerHealth = newPlayerHealth - sacDamLoss < 0 ? 0 : newPlayerHealth - sacDamLoss;
                     newComputerHealth = newComputerHealth - sacDam < 0 ? 0 : newComputerHealth - sacDam;
                     playerWin = newComputerHealth === 0;
                     computerWin = newPlayerHealth === 0;
-                    playerActionDescription = `You sacrifice ${Math.round(sacrifice / 2 * stalwartDef)} health to rip ${Math.round(sacDam)} from ${combat().computer?.name}.`;
+                    playerActionDescription = `You sacrifice ${Math.round(sacDamLoss)} health to rip ${Math.round(sacDam)} from ${combat().computer?.name}.`;
                     realizedPlayerDamage = sacDam;
-                    res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin, realizedPlayerDamage };
+                    realizedComputerDamage = sacDamLoss;
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, computerWin, realizedPlayerDamage, realizedComputerDamage };
                     shake = true;
-                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin });
+                    EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, playerWin, computerWin });
                     break;
                 case "Suture":
                     if (combat().computer === undefined || newComputerHealth === 0) return;
@@ -381,13 +386,15 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     if (combat().computer === undefined) return;
                     const enemySac = Math.round(computerMastery * (computerLevel * computerLevel) * caerenicNeg * stalwartDef * computerCaer.pos);
                     const enemySacDam = enemySac * (1 + data / SACRIFICE);
+                    const enemySacDamLoss = enemySac / 2 * computerStal;
                     newPlayerHealth = newPlayerHealth - enemySacDam < 0 ? 0 : newPlayerHealth - enemySacDam;
-                    newComputerHealth = newComputerHealth - (enemySac / 2) < 0 ? 0 : newComputerHealth - (enemySac / 2);
-                    computerActionDescription = `${combat().computer?.name} sacrifices ${enemySac / 2} health to rip ${enemySacDam} from you.`;
+                    newComputerHealth = newComputerHealth - enemySacDamLoss < 0 ? 0 : newComputerHealth - enemySacDamLoss;
+                    computerActionDescription = `${combat().computer?.name} sacrifices ${enemySacDamLoss} health to rip ${enemySacDam} from you.`;
                     computerWin = newPlayerHealth === 0;
                     playerWin = newComputerHealth === 0;
                     realizedComputerDamage = enemySacDam;
-                    res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, playerWin, realizedComputerDamage, damagedID: combat().enemyID };
+                    realizedPlayerDamage = enemySacDamLoss;
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, computerWin, computerActionDescription, playerWin, realizedComputerDamage, realizedPlayerDamage, damagedID: combat().enemyID };
                     shake = true;
                     EventBus.emit("blend-combat", { newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
                     break;
@@ -398,11 +405,11 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     newComputerHealth = newComputerHealth + enemySut > computerHealth ? computerHealth : newComputerHealth + enemySut;
                     computerActionDescription = `${combat().computer?.name} sutured ${enemySut} health from you, absorbing ${enemySut}.`;
                     computerWin = newPlayerHealth === 0;
-                    playerWin = newComputerHealth === 0;
+                    // playerWin = newComputerHealth === 0;
                     realizedComputerDamage = enemySut;
-                    res = { ...combat(), newPlayerHealth, newComputerHealth, computerActionDescription, computerWin, playerWin, realizedComputerDamage, damagedID: combat().enemyID };
+                    res = { ...combat(), newPlayerHealth, newComputerHealth, computerActionDescription, computerWin, realizedComputerDamage, damagedID: combat().enemyID };
                     shake = true;
-                    EventBus.emit("blend-combat", { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, playerWin, damagedID: combat().enemyID });
+                    EventBus.emit("blend-combat", { newPlayerHealth: newPlayerHealth, newComputerHealth, computerWin, damagedID: combat().enemyID });
                     break;
                 case "Remove Enemy":
                     if (combat().computer === undefined) return;
@@ -534,16 +541,18 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         setArena({ ...arena(), wager, result: true, show: true, win });
     });
     return <div id="base-ui">
-        <Show when={game().showPlayer} fallback={<div style={{ position: "absolute", "z-index": 1 }}>
-            <Suspense fallback={<Puff color="gold" />}>
-                <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} touching={touching} instance={instance} />
-            </Suspense>
-            <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
-            <Suspense fallback={<Puff color="gold" />}>
-                <EnemyUI state={combat} game={game} enemies={enemies} instance={instance} />
-            </Suspense>
-            </Show>
-        </div>}>
+        <Show when={game().showPlayer} fallback={
+            <div style={{ position: "absolute", "z-index": 1 }}>
+                <Suspense fallback={<Puff color="gold" />}>
+                    <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} touching={touching} instance={instance} />
+                </Suspense>
+                <Show when={combat().computer} fallback={<EnemyPreview enemies={enemies} />}>
+                <Suspense fallback={<Puff color="gold" />}>
+                    <EnemyUI state={combat} game={game} enemies={enemies} instance={instance} />
+                </Suspense>
+                </Show>
+            </div>
+        }>
             <Suspense fallback={<Puff color="gold" />}>
                 <Character quests={quests} reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} talents={talents} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
             </Suspense>

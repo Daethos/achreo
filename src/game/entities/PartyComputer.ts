@@ -815,6 +815,15 @@ export default class Party extends Entity {
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
     };
 
+    startPraying = () => {
+        this.isPraying = true;
+        this.setStatic(true);
+        this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
+            this.isPraying = false;
+            this.setStatic(false);
+        });
+    };
+
     leap = () => {
         this.frameCount = 0;
         this.isLeaping = true;

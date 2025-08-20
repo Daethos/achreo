@@ -22,8 +22,10 @@ export const LEVEL_SELECTOR = {
     4: { prev: 2, next: 6 },
     6: { prev: 4, next: 8 },
     8: { prev: 6, next: 10 },
-    10: { prev: 8, next: 12 },
-    12: { prev: 10, next: 12 },
+    10: { prev: 8, next: 10 },
+    12: { prev: 10, next: 10 },
+    14: { prev: 10, next: 10 },
+    16: { prev: 10, next: 10 },
 };
 
 const ARENA = "ARENA";

@@ -7,19 +7,16 @@ import { EventBus } from "../game/EventBus";
 
 export default function PrayerEffects({ combat, effect, enemy, game, setEffect, show, setShow }: { combat: Accessor<Combat>; effect: StatusEffect; enemy: boolean; game: Accessor<GameState>, setEffect: Setter<StatusEffect>; show: Accessor<boolean>; setShow: Setter<boolean>; }) {
     const [effectTimer, setEffectTimer] = createSignal(effect.endTime - effect.startTime);
-    const isExpired = createMemo(() => (
-        !combat().combatEngaged ||
+    const isExpired = createMemo(() => ( // !combat().combatEngaged ||
         (effect.enemyID === combat().enemyID && combat().newComputerHealth <= 0) ||
         (enemy && effect.enemyID !== combat().enemyID) ||
         (enemy && combat().playerWin) ||
         (enemy && combat().newComputerHealth <= 0)
     ));
     const shouldTick = createMemo(() => (
-        effectTimer() % 3 === 0 &&
-        combat().combatEngaged &&
+        effectTimer() % 3 === 0 && // combat().combatEngaged &&
         effect.startTime !== combat().combatTimer - 1 &&
-        combat().newComputerHealth !== 0 &&
-        (effect.prayer === PRAYERS.HEAL || effect.prayer === PRAYERS.DAMAGE)
+        (effect.prayer === PRAYERS.HEAL || damageTick())
     ));
     const tick = () => {
         setEffectTimer(prev => prev - 1);
@@ -42,7 +39,13 @@ export default function PrayerEffects({ combat, effect, enemy, game, setEffect, 
         }, 1000);
         onCleanup(() => clearInterval(intervalId));
     });
-
+    function damageTick(): boolean {
+        if (effect.enemyName === combat().player?.name) {
+            return effect.prayer === PRAYERS.DAMAGE;
+        } else {
+            return effect.prayer === PRAYERS.DAMAGE && combat().newComputerHealth !== 0;
+        };
+    };
     function showEffect(): void {
         setEffect(effect);
         setShow(!show());

@@ -672,7 +672,7 @@ export class Underground extends Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.hud.rightJoystick.update();
-        if (this.frameCount % 15 !== 0) return;
+        if (this.frameCount % 10 !== 0) return;
         if (!this.pillars) return;
         for (let i = 0; i < this.pillars.length; i++) {
             const pillar = this.pillars[i];

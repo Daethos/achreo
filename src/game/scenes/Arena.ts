@@ -99,6 +99,7 @@ export class Arena extends Phaser.Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    pillars: any[] = [];
 
     constructor (view?: string) {
         const key = view || "Arena";
@@ -159,6 +160,7 @@ export class Arena extends Phaser.Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
+        map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
         const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
         if (this.hud.settings.difficulty.arena) {
@@ -657,6 +659,25 @@ export class Arena extends Phaser.Scene {
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.hud.rightJoystick.update();
+        if (this.frameCount % 10 !== 0) return;
+        if (!this.pillars) return;
+        for (let i = 0; i < this.pillars.length; i++) {
+            const pillar = this.pillars[i];
+            if (
+                this.player.x > pillar.x &&
+                this.player.x < pillar.x + pillar.width &&
+                (this.player.y + 12) > pillar.y - pillar.height &&
+                (this.player.y - 12) < pillar.y + pillar.height
+            ) {
+                // Narrow check passed — player is near the pillar
+                if ((this.player.y + 12) < pillar.y) {
+                    this.player.setDepth(1); // Behind pillar
+                } else {
+                    this.player.setDepth(3); // In front of pillar
+                };
+                return;
+            };
+        };
     };
 
     setCameraOffset = () => {

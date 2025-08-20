@@ -407,11 +407,6 @@ export default class PlayerMachine {
             this.player.isRolling = true;    
         };
         if (this.player.isCasting || this.player.isPraying || this.player.isContemplating) this.player.evasionTime = 0;
-        // if (this.player.evasionTimer === 1000) {
-        //     this.scene.time.delayedCall(this.player.evasionTimer, () => {
-        //         this.player.evasionTimer = 0;
-        //     }, undefined, this.player);
-        // };
     };
     onEvasionUpdate = (dt: number) => {
         this.player.evasionTime -= dt;
@@ -1199,17 +1194,17 @@ export default class PlayerMachine {
         this.player.stopCasting();
     };
 
-    onDesperationEnter = () => {
+    onDesperationEnter = () => this.player.startPraying();
+    onDesperationUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onDesperationExit = () => {
+        if (this.player.health <= 0) return;
+        this.checkHeal(0.5);
+        this.player.enemySound("phenomena", true);
         this.scene.showCombatText(this.player, "Desperation", PLAYER.DURATIONS.HEALING / 2, HEAL, false, true);
         this.player.flickerCaerenic(PLAYER.DURATIONS.HEALING); 
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name}'s caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes their body.`
-        });
-    };
-    onDesperationUpdate = (_dt: number) => this.player.combatChecker(false);
-    onDesperationExit = () => {
-        this.checkHeal(0.5);
-        this.player.enemySound("phenomena", true);
+        });    
     };
 
     onDevourEnter = () => {
@@ -1869,31 +1864,36 @@ export default class PlayerMachine {
     onSlowEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.isSlowing = true;
-        this.scene.showCombatText(this.player, "Slow", 750, CAST, false, true);
-        this.player.enemySound("debuff", true);
-        this.scene.combatManager.slow(this.player.spellTarget, 3000);
-        this.player.flickerCaerenic(500); 
-        this.scene.time.delayedCall(500, () => this.player.isSlowing = false, undefined, this);
-        EventBus.emit(PARTY_COMBAT_TEXT, {
-            text: `${this.player.ascean.name} ensorcels ${this.player.currentTarget.ascean?.name}, slowing them!`
-        });
+        this.player.startPraying();
     };
-    onSlowUpdate = (_dt: number) => this.player.combatChecker(this.player.isSlowing);
-    onSlowExit = () => this.player.spellTarget = "";
+    onSlowUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onSlowExit = () => {
+        if (this.player.spellTarget) {
+            this.scene.showCombatText(this.player, "Slow", 750, CAST, false, true);
+            this.player.enemySound("debuff", true);
+            this.scene.combatManager.slow(this.player.spellTarget, 3000);
+            const name = this.scene.combatManager.combatant(this.player.spellTarget)?.ascean.name;
+            EventBus.emit(PARTY_COMBAT_TEXT, {
+                text: `${this.player.ascean.name} ensorcels ${name}, slowing them!`
+            });
+            this.player.spellTarget = "";
+        };
+    };
 
     onSacrificeEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.isSacrificing = true;
-        this.scene.showCombatText(this.player, "Sacrifice", 750, EFFECT, false, true);
-        this.player.enemySound("combat-round", true);
-        this.sacrifice(this.player.spellTarget, 10);
-        this.player.flickerCaerenic(500);  
-        this.scene.time.delayedCall(500, () => this.player.isSacrificing = false, undefined, this);
+        this.player.startPraying();
     };
-    onSacrificeUpdate = (_dt: number) => this.player.combatChecker(this.player.isSacrificing);
-    onSacrificeExit = () => this.player.spellTarget = "";
+    onSacrificeUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onSacrificeExit = () => {
+        if (this.player.spellTarget) {
+            this.scene.showCombatText(this.player, "Sacrifice", 750, EFFECT, false, true);
+            this.player.enemySound("combat-round", true);
+            this.sacrifice(this.player.spellTarget, 10);
+            this.player.spellTarget = "";
+        };
+    };
 
     onSnaringEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.LONG) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
@@ -1929,17 +1929,17 @@ export default class PlayerMachine {
     onSutureEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.spellTarget = this.player.currentTarget.enemyID;
-        this.player.isSuturing = true;
-        this.scene.showCombatText(this.player, "Suture", 750, EFFECT, false, true);
-        this.player.enemySound("debuff", true);
-        this.suture(this.player.spellTarget, 10);
-        this.player.flickerCaerenic(500); 
-        this.scene.time.delayedCall(500, () => {
-            this.player.isSuturing = false;
-        }, undefined, this);
+        this.player.startPraying();
     };
-    onSutureUpdate = (_dt: number) => this.player.combatChecker(this.player.isSuturing);
-    onSutureExit = () => this.player.spellTarget = "";
+    onSutureUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
+    onSutureExit = () => {
+        if (this.player.spellTarget) {
+            this.scene.showCombatText(this.player, "Suture", 750, EFFECT, false, true);
+            this.player.enemySound("debuff", true);
+            this.suture(this.player.spellTarget, 10);
+            this.player.spellTarget = "";
+        };
+    };
 
     // ================= META MACHINE STATES ================= \\
     onCleanEnter = () => {};

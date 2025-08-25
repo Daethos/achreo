@@ -22,16 +22,20 @@ import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
 import { Gauntlet } from "../scenes/Gauntlet";
 import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abilities";
 import { PLAYER } from "../../utility/player";
+
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
 };
+
 export function calculateThreat(damage: number, currentHealth: number, totalHealth: number): number {
     const damageRatio = damage / currentHealth;
     const healthRatio = (totalHealth - currentHealth) / totalHealth;
     const relative = damageRatio + healthRatio;
     return relative;
 };
+
 export type Player_Scene = Game | Underground | Tutorial | Arena | Gauntlet;
+type check = {[key: string]: number;};
 export const FRAMES = {
     ANIMATION_COMPLETE: "animationcomplete",
     CLIMB: "player_climb",
@@ -56,29 +60,37 @@ export const FRAMES = {
     THRUST: "player_attack_2",
 };
 export type ENEMY = {id:string; threat:number};
-export const FRAME_COUNT = {
+
+export const FRAME_COUNT: check = {
     ATTACK_DURATION: 700,
     ATTACK_LIVE: 16,
     ATTACK_SUCCESS: 39,
+    ATTACK_FRAMES: 43,
 
     PARRY_DURATION: 450,
     PARRY_LIVE: 15, 
     PARRY_SUCCESS: 22,
     PARRY_KILL: 30, // 35,
+    PARRY_FRAMES: 30,
     
-    POSTURE_DURATION: 316,
+    POSTURE_DURATION: 616,
     POSTURE_LIVE: 16, // 11 for frameRate: 12
     POSTURE_SUCCESS: 17, // 11 for frameRate: 12
-    
-    ROLL_DURATION: 300,
+    POSTURE_FRAMES: 36,
+
+    ROLL_DURATION: 333,
     ROLL_LIVE: 10,
     ROLL_SUCCESS: 18,
+    ROLL_FRAMES: 19,
     
-    THRUST_DURATION: 450,
+    THRUST_DURATION: 316,
     THRUST_LIVE: 5, 
     THRUST_SUCCESS: 10,
+    THRUST_FRAMES: 18,
     
     DISTANCE_CLEAR: 51,
+    PRAY_DURATION: 983,
+    PRAY_FRAMES: 58,
 }; 
 export const ENEMY_SWING_TIME = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
@@ -807,39 +819,42 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
     };
 
+    liveAction = (duration: string, frames: string) => {
+        return Math.floor(this.timeElapsed / FRAME_COUNT[duration] * FRAME_COUNT[frames]);
+    };
+
     functionality = (dt: number, entity: string, target: Player | Enemy | Party) => {
         if (this.isPraying || this.isCasting) {
+            this.timeElapsed += dt;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.prayingCasting.flipX
                 : WEAPON_FRAME_CONFIG.prayingCasting.noFlipX;
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.PRAY_DURATION * FRAME_COUNT.PRAY_FRAMES);
           
             if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         } else if (this.isParrying) {
-            // if (this.name === "player") console.log(this.timeElapsed, "Parrying");
-            // this.timeElapsed += dt;
+            this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.parrying[configKey].flipX
                 : WEAPON_FRAME_CONFIG.parrying[configKey].noFlipX;
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.PARRY_DURATION * FRAME_COUNT.PARRY_FRAMES);
           
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
-            if (this.frameCount >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            if (frameIndex === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
+            if (frameIndex >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
         } else if (this.isThrusting) {
-            // if (this.name === "player") console.log(this.timeElapsed, "Thrusting");
-            // this.timeElapsed += dt;
+            this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.thrusting[configKey].flipX
                 : WEAPON_FRAME_CONFIG.thrusting[configKey].noFlipX;
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.THRUST_DURATION * FRAME_COUNT.THRUST_FRAMES);
+            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Thrusting");
 
-            if (this.frameCount === FRAME_COUNT.THRUST_LIVE) {
+            if (frameIndex === FRAME_COUNT.THRUST_LIVE) {
                 if (entity === "player" && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
@@ -863,14 +878,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             }; 
             
-            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === FRAME_COUNT.THRUST_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            if (frameIndex === FRAME_COUNT.THRUST_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
         } else if (this.isRolling) {
-            // if (this.name === "player") console.log(this.timeElapsed, "Rolling");
-            // this.timeElapsed += dt;
-            if (this.frameCount === FRAME_COUNT.ROLL_LIVE) {
+            this.timeElapsed += dt;
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ROLL_DURATION * FRAME_COUNT.ROLL_FRAMES);
+            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Rolling");
+            if (frameIndex === FRAME_COUNT.ROLL_LIVE) {
                 if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
@@ -886,19 +900,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                 };
             };
-            if (this.frameCount === FRAME_COUNT.ROLL_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
+            if (frameIndex === FRAME_COUNT.ROLL_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
         } else if (this.isAttacking) {
-            // if (this.name === "player") console.log(this.timeElapsed, "Attacking");
-            // this.timeElapsed += dt;
+            this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
                 ? WEAPON_FRAME_CONFIG.attacking[configKey].flipX
                 : WEAPON_FRAME_CONFIG.attacking[configKey].noFlipX;
-            // const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ATTACK_DURATION);
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ATTACK_DURATION * FRAME_COUNT.ATTACK_FRAMES);
+            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Attacking");
                 
-            if (this.frameCount === FRAME_COUNT.ATTACK_LIVE) {
+            if (frameIndex === FRAME_COUNT.ATTACK_LIVE) {
                 if (entity === "player" && this.isRanged) {
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
@@ -923,24 +935,23 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            if (this.frameCount === FRAME_COUNT.ATTACK_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            if (frameIndex === FRAME_COUNT.ATTACK_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
         } else if (this.isPosturing) {
-            // if (this.name === "player") console.log(this.timeElapsed, "Posturing");
-            // this.timeElapsed += dt;
+            this.timeElapsed += dt;
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
-                ? WEAPON_FRAME_CONFIG.posturing[configKey].flipX
-                : WEAPON_FRAME_CONFIG.posturing[configKey].noFlipX;
+            ? WEAPON_FRAME_CONFIG.posturing[configKey].flipX
+            : WEAPON_FRAME_CONFIG.posturing[configKey].noFlipX;
+            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.POSTURE_DURATION * FRAME_COUNT.POSTURE_FRAMES);
+            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Posturing");
 
             const shieldConfig = this.flipX
                 ? SHIELD_FRAME_CONFIG.posturing.flipX
                 : SHIELD_FRAME_CONFIG.posturing.noFlipX
                 
             
-            if (this.frameCount === FRAME_COUNT.POSTURE_LIVE) {
+            if (frameIndex === FRAME_COUNT.POSTURE_LIVE) {
                 if (entity === "player" && this.isRanged) { // && this.inCombat
                     if (this.hasMagic) {
                         this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
@@ -964,11 +975,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             }; 
             if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, this.frameCount);
-            applyShieldFrameSettings(this.spriteShield, shieldConfig, this.frameCount);
-            if (this.frameCount === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            this.frameCount++;
-            // if (this.name === "player") console.log({action: this.scene.state.action, frame:this.frameCount});
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
+            if (frameIndex === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
         } else if (this.movingVertical()) {
             if (!this.flipX) {
                 if (this.hasBow) {

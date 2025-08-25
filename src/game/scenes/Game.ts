@@ -32,9 +32,13 @@ import WeatherManager from "../matter/Weather";
 import { Entity } from "../main";
 
 export const CHUNK_SIZE = 4096;
-const DISTANCE_CLOSE = 640000;
-const DISTANCE_MID = 1440000;
-const DISTANCE_FAR = 2560000;
+const DISTANCE_CLOSE = 562500; // 640000; 750 / 800
+const DISTANCE_MID = 1000000; // 1440000; 1100 / 1200
+const DISTANCE_FAR = 1562500; // 2560000; 1400 / 1600
+const UPDATE_CLOSE = 60;
+const UPDATE_MID = 24;
+const UPDATE_FAR = 5;
+const UPDATE_OFF = 1;
 const TILE_SIZE = 32;
 export const OVERLAY_BUFFER = 64;
 
@@ -136,7 +140,7 @@ export class Game extends Scene {
         if (this.hud.prevScene === "Underground") {
             this.player.setPosition(1410, 130);
         } else if (this.hud.prevScene === "Tutorial") {
-            this.player.setPosition(38, 72);
+            this.player.setPosition(96, 72);
         } else {
             this.player.setPosition(this.hud.settings?.coordinates?.x || 200, this.hud.settings?.coordinates?.y || 200);
         };
@@ -184,7 +188,7 @@ export class Game extends Scene {
                 const p = new Party({scene:this,x:200,y:200,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
                 this.party.push(p);
                 if (this.hud.prevScene === "Underground") p.setPosition(1410, 130);
-                if (this.hud.prevScene === "Tutorial") p.setPosition(38, 72);
+                if (this.hud.prevScene === "Tutorial") p.setPosition(96, 72);
                 if (this.hud.prevScene === "") p.setPosition(this.player.x + (PARTY_OFFSET[i].x / 2), this.player.y + (PARTY_OFFSET[i].y / 2));
             };
         };
@@ -208,6 +212,18 @@ export class Game extends Scene {
             callback: () => this.hud.updateCoordinates(this.player.x, this.player.y),
             callbackScope: this           
         });
+
+        // this.time.addEvent({
+        //     delay: 2000, loop: true, callback: () => {
+        //         const engine = this.matter.world.engine;
+        //         // console.log(engine, "Engine");
+        //         const bodies = (engine.world as any).bodies.length ?? -1;
+        //         const pairs  = engine.pairs?.list?.length ?? -1;
+        //         const tweens = this.tweens.getTweens().length;
+        //         console.log(`[Stats] bodies=${bodies} pairs=${pairs} tweens=${tweens} enemies=${this.enemies.length}`);
+        //     }
+        // });
+
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
 
@@ -1061,8 +1077,6 @@ export class Game extends Scene {
         if (!cached) {
             const climb = chunkData.layers?.climbing?.getTileAt(x, y);
             const water = chunkData.layers?.base?.getTileAt(x, y);
-            // const climb = this.climbingLayer?.getTileAt(x, y);
-            // const water = this.baseLayer?.getTileAt(x, y);
             cached = {
                 climb: !!(climb?.properties?.climb),
                 water: !!(water?.properties?.water)
@@ -1170,38 +1184,41 @@ export class Game extends Scene {
     checkChunk = (entity: Enemy | NPC): boolean => entity.chunkX === this.playerChunkX && entity.chunkY === this.playerChunkY;
     
     update(_time: number, delta: number): void {
-        // console.time("Update");
         this.playerUpdate(delta);
+
         for (let i = 0; i < this.enemies.length; i++) {
-            let enemy = this.enemies[i], chunk = this.checkChunk(enemy), distance = this.distanceToPlayer(enemy), shouldUpdate = false; // 4096 grid
+            let enemy = this.enemies[i], chunk = this.checkChunk(enemy), dist = this.distanceToPlayer(enemy), target = UPDATE_OFF;
             if (!chunk) {
                 enemy.visible = false;
                 enemy.active = false;
                 continue;
             };
-            if (distance < DISTANCE_CLOSE) { // < 800px
-                shouldUpdate = true;
-            } else if (distance < DISTANCE_MID) { // < 1200px 30fps
-                shouldUpdate = (this.frameCount & 1) === 0;
-            } else if (distance < DISTANCE_FAR) { // < 1600px 5fps
-                shouldUpdate = this.frameCount % 12 === 0;
-            } else { // > 1600px 1fps
-                shouldUpdate = this.frameCount % 60 === 0;
+            if (dist < DISTANCE_CLOSE) { // < 750px
+                target = UPDATE_CLOSE;
+            } else if (dist < DISTANCE_MID) { // < 1000px 24fps
+                target = UPDATE_MID;
+            } else if (dist < DISTANCE_FAR) { // < 12500px 5fps
+                target = UPDATE_FAR;
             };
-            if (shouldUpdate) {
+            enemy.acc += delta;
+            const stepMs = 1000 / target;
+            if (enemy.acc >= stepMs) { // update
+                enemy.acc -= stepMs;
                 enemy.visible = true;
                 enemy.active = true;
-                enemy.update(delta);
+                enemy.update(delta); // delta
                 if (enemy.isDeleting) continue;
                 this.checkEnvironment(enemy);
             };
         };
+
         for (let i = 0; i < this.party.length; i++) {
             const party = this.party[i];
             if (party.isDeleting) continue;
             party.update(delta);
             this.checkEnvironment(party);
         };
+
         for (let i = 0; i < this.npcs.length; i++) {
             let npc = this.npcs[i], chunk = this.checkChunk(npc), distance = this.distanceToPlayer(npc), shouldUpdate = false;
             if (!chunk) {
@@ -1216,9 +1233,9 @@ export class Game extends Scene {
                 npc.update();
             };
         };
+
         this.combatManager.combatMachine.process();
         this.frameCount++;
-        // console.timeEnd("Update");
     };
 
     pause(): void {

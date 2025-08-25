@@ -811,21 +811,23 @@ export default class Party extends Entity {
         this.beam.reset();
         this.spellTarget = "";
         this.spellName = "";
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         if (this.isCaerenic === false && this.isGlowing === true) this.checkCaerenic(false);
     };
 
     startPraying = () => {
         this.isPraying = true;
+        this.timeElapsed = 0;
         this.setStatic(true);
         this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isPraying = false;
+            this.timeElapsed = 0;
             this.setStatic(false);
         });
     };
 
     leap = () => {
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isLeaping = true;
         const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
@@ -858,7 +860,7 @@ export default class Party extends Entity {
     };
 
     rush = () => {
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isRushing = true;
         this.isThrusting = true;
         this.enemySound("stealth", true);
@@ -912,7 +914,7 @@ export default class Party extends Entity {
 
     storm = () => {
         this.clearAnimations();
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isStorming = true;
         this.scene.showCombatText(this, "Storming", 800, DAMAGE); 
         this.isAttacking = true;
@@ -923,7 +925,7 @@ export default class Party extends Entity {
             duration: 800,
             onStart: () => this.flickerCaerenic(3200),
             onLoop: () => {
-                this.frameCount = 0;
+                this.timeElapsed = 0;
                 this.clearAnimations();
                 if (this.isSuffering()) return;
                 this.isAttacking = true;

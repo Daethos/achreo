@@ -207,7 +207,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     public reset(type: string, count = 1, positive = false, enemy?: Enemy | Party, manual = false, target?: Target, particle?: { effect: Particle; entity: Target }, constant?: boolean): AoE {
         if (this.active) this.cleanup(false);
 
-        // this.name = type;
+        this.name = type;
         this.count = count;
         this.manual = manual;
 
@@ -291,7 +291,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
     };
 
     private playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
-        this.enhanced = this.scene.hud.talents.talents[this.name as keyof typeof this.scene.hud.talents.talents].enhanced;
+        this.enhanced = this.scene.hud.talents.talents[this.name as keyof typeof this.scene.hud.talents.talents]?.enhanced;
         const manualPoint = this.scene.getWorldPointer();
         this.sensor = this.setupSensor(target ? target.x : manual ? manualPoint.x : this.scene.player.x, target ? target.y : manual ? manualPoint.y : this.scene.player.y + Y_OFFSET, RADIUS, "aoeSensor");
         this.setupPlayerListener();

@@ -143,11 +143,12 @@ export default class NPC extends Entity {
             callback: (other: any) => {
                 if (other.gameObjectB && other.gameObjectB.name === "player" && this.isInteracting) {
                     this.isInteracting = false;
-                    this.stateMachine.setState(States.IDLE); 
+                    this.stateMachine.setState(States.IDLE);
                     other.gameObjectB.targets = other.gameObjectB.targets.filter((obj: any) => obj.particleID !== this.particleID);
                     if (this.enemyID === this.scene.state.enemyID) {
                         this.scene.hud.clearNPC();
                         other.gameObjectB.checkTargets();
+                        this.scene.hud.showDialog(false);
                     };
                 };
             },

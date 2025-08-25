@@ -604,9 +604,9 @@ export default function App() {
         ) : loading() ? ( 
             <LoadAscean ascean={ascean} />
         ) : menu()?.choosingCharacter ? ( // menu().asceans.length > 0
-            <div id="overlay" class="superCenter menu-3d-container">
+            <div id="overlay" class="superCenter menu-3d-container carousel">
                 <Suspense fallback={<Puff color="gold"/>}>
-                    <MenuAscean menu={menu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
+                    <MenuAscean menu={menu} setMenu={setMenu} viewAscean={viewAscean} loadAscean={setLoadAscean} />
                 </Suspense>
                 <Show when={menu()?.asceans?.length < 3}>
                     <button class="highlight cornerTR" onClick={() => {click.play(); setMenu({ ...menu(), creatingCharacter: true });}}>Create Character</button>

@@ -413,7 +413,7 @@ export class Hud extends Phaser.Scene {
     };
 
     setupNPC = (npc: any): void => {
-        const data = { id: npc.id, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
+        const data = { id: npc.enemyID, game: npc.ascean, enemy: npc.combatStats, health: npc.health, type: npc.npcType, interactCount: npc.interactCount };
         EventBus.emit("setup-npc", data);    
     };
 

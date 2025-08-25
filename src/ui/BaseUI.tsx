@@ -112,6 +112,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 stalwartDef: number = stalwart(combat().stalwart),
                 computerCaer = computerCaerenic(combat().computerCaerenic),
                 computerStal = computerStalwart(combat().computerStalwart);
+
             switch (type) {
                 case "Weapon": // Targeted Weapon Action by Enemy or Player
                     if (combat().computer === undefined || newComputerHealth === 0) return;
@@ -154,7 +155,6 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     EventBus.emit("blend-combat", insta);
                     break;
                 case "Tick": // Prayer Tick
-                    // if (newComputerHealth === 0) break;
                     const { effect, effectTimer } = data;
                     const tick = prayerEffectTick({ combat: combat(), effect, effectTimer });
                     res = { ...combat(), ...tick };
@@ -229,7 +229,6 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Chiomic": // Mindflay
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    // const chiomic = Math.round(this.mastery() * (1 + (this.player.entropicMultiplier(power) / 100)) * this.scene.combatManager.playerCaerenicPro() * this.levelModifier());
                     const chiomic = Math.round(playerMastery * (1 + data / CHIOMISM) * caerenicPos * computerCaer.neg * computerStal * (playerLevel * playerLevel));
                     newComputerHealth = newComputerHealth - chiomic < 0 ? 0 : newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
@@ -419,15 +418,19 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 default:
                     break;
             };
+
             if (playerWin === true) res.computerDeathDescription = `${res.computer?.name || "The Enemy"} has been defeated.`;
             if (computerWin === true) res.playerDeathDescription = `You have been defeated.`;
+            
             if (playerWin === true || computerWin === true) {
                 resolveCombat(res);
             } else if (affectsHealth === true) {
                 timer.adjustTime(1000, res.combatEngaged, res.newPlayerHealth);
             };
+            
             if (affectsStealth && combat().isStealth) EventBus.emit("update-stealth");
             if (shake) screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
+            
             EventBus.emit("add-combat-logs", res);
             EventBus.emit("update-combat", res);
         } catch (err: any) {

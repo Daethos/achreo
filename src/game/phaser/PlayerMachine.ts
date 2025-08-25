@@ -450,7 +450,6 @@ export default class PlayerMachine {
 
     onChaseEnter = () => {
         if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.setVelocity(0);
         this.player.handleIdleAnimations();
@@ -667,7 +666,6 @@ export default class PlayerMachine {
         const x = Phaser.Math.Between(1, 2);
         const y = Phaser.Math.Between(1, 2);
         const evade = Phaser.Math.Between(1, 3);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.evadeRight = x === 1;
         this.player.evadeUp = y === 1;
@@ -711,7 +709,6 @@ export default class PlayerMachine {
         };
         this.player.isContemplating = true;
         this.player.isMoving = false;
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.setVelocity(0);
         this.player.contemplationTime = Phaser.Math.Between(250, 500);
@@ -762,11 +759,9 @@ export default class PlayerMachine {
         if (this.player.isSuffering() || this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {
             return;
         };
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.computerAction = true;
         this.scene.time.delayedCall(this.player.swingTimer, () => { // * (1 + (10 / this.ascean.level)) / 100;
-            this.player.frameCount = 0;
             this.player.timeElapsed = 0;
             this.player.computerAction = false;
             (this.player as PlayerComputer).evaluateCombat();
@@ -776,26 +771,23 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
     };
     onComputerAttackUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "attack");
+        if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "attack");
         if (!this.player.isAttacking) this.stateMachine.setState(States.CHASE);
         sprint(this.scene);
     };
     onComputerAttackExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.computerAction = false;
     };
 
     onComputerParryEnter = () => {
         this.player.isParrying = true;
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_PARRY);
         if (this.player.hasMagic === true) {
@@ -809,15 +801,14 @@ export default class PlayerMachine {
         this.player.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isParrying = false);
     };
     onComputerParryUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
-        if (this.player.frameCount >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
+        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
+        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
         if (!this.player.isParrying) this.stateMachine.setState(States.CHASE);
     };
     onComputerParryExit = () => {
         this.player.isParrying = false;
         this.player.currentAction = "";
         this.scene.combatManager.combatMachine.input("action", "");
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.computerAction = false;
     };
@@ -825,20 +816,18 @@ export default class PlayerMachine {
     onComputerPostureEnter = () => {
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_POSTURE);
         this.player.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPosturing = false);
     };
     onComputerPostureUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "posture");
+        if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "posture");
         if (!this.player.isPosturing) this.stateMachine.setState(States.CHASE);
         sprint(this.scene);
     };
     onComputerPostureExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.spriteShield.setVisible(this.player.isStalwart);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.computerAction = false;    
     };
@@ -846,18 +835,16 @@ export default class PlayerMachine {
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
     };
     onComputerThrustUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "thrust");
+        if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "thrust");
         if (!this.player.isThrusting) this.stateMachine.setState(States.CHASE);
         sprint(this.scene);
     };
     onComputerThrustExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.computerAction = false;
     };
@@ -874,12 +861,11 @@ export default class PlayerMachine {
         this.player.isAttacking = true;
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
     }; 
     onAttackUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
+        if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
             this.scene.combatManager.combatMachine.input("action", "attack");
         };
         this.player.combatChecker(this.player.isAttacking);
@@ -891,7 +877,6 @@ export default class PlayerMachine {
         screenShake(this.scene);
         this.player.swingReset(States.JUMP, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.JUMP);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.isJumping = true;
         const force = 0.5;
@@ -957,7 +942,6 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isJumping);
     };
     onJumpExit = () => {
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.jumpTime = 0;
         this.player.isJumping = false;
@@ -975,13 +959,12 @@ export default class PlayerMachine {
                 this.player.isCounterSpelling = false;
             }, undefined, this);
         };
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isParrying = false);
     };
     onParryUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
-        if (this.player.frameCount >= FRAME_COUNT.PARRY_KILL) {
+        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
+        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") >= FRAME_COUNT.PARRY_KILL) {
             this.scene.combatManager.combatMachine.input("action", "");
             this.player.isParrying = false;
         };
@@ -1009,12 +992,11 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(true);
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPosturing = false);
     };
     onPostureUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
+        if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
             this.scene.combatManager.combatMachine.input("action", "posture");
         };
         this.player.combatChecker(this.player.isPosturing);
@@ -1051,7 +1033,6 @@ export default class PlayerMachine {
         legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.DODGE, true);
         this.player.playerDodge();
@@ -1109,13 +1090,12 @@ export default class PlayerMachine {
         (this.player.body as any).parts[2].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2; 
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.ROLL, true);
         this.player.playerRoll();    
     };
     onRollUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
+        if (this.player.liveAction("ROLL_DURATION", "ROLL_FRAMES") === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
             this.scene.combatManager.combatMachine.input("action", "roll");
         };
         this.player.combatChecker(this.player.isRolling);
@@ -1158,7 +1138,6 @@ export default class PlayerMachine {
         this.player.isThrusting = true;
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
         // this.scene.time.delayedCall(FRAME_COUNT.THRUST_DURATION, () => {
@@ -1166,7 +1145,7 @@ export default class PlayerMachine {
         // });
     };
     onThrustUpdate = (_dt: number) => {
-        if (this.player.frameCount === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
+        if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
             this.scene.combatManager.combatMachine.input("action", "thrust");
         };
         this.player.combatChecker(this.player.isThrusting);
@@ -1288,7 +1267,6 @@ export default class PlayerMachine {
             };
         };
         this.player.castbar.reset();
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.setStatic(false);
     };
@@ -1543,8 +1521,6 @@ export default class PlayerMachine {
 
     onFyerusEnter = () => {
         this.player.isCasting = true;
-        // if (this.player.moving()) this.player.isCasting = false;
-        // if (this.player.isCasting === false) return;
         this.player.castbar.setCastName("Fyerus");
         this.player.castbar.setTotal(PLAYER.DURATIONS.FYERUS);
         this.player.castbar.setTime(PLAYER.DURATIONS.FYERUS);
@@ -1575,7 +1551,6 @@ export default class PlayerMachine {
     onFyerusExit = () => {
         if (this.player.aoe) this.player.aoe.cleanAnimation(this.scene);
         this.player.castbar.reset();
-        this.player.frameCount = 0;
         this.player.timeElapsed = 0;
         this.player.isCasting = false;
         if (this.player.isCaerenic === false && this.player.isGlowing === true) this.player.checkCaerenic(false);
@@ -1834,13 +1809,13 @@ export default class PlayerMachine {
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
         screenShake(this.scene);
-        this.scene.tweens.add({
-            targets: this.scene.cameras.main,
-            zoom: this.scene.cameras.main.zoom * 1.25,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            duration: 750,
-            yoyo: true
-        });
+        // this.scene.tweens.add({
+        //     targets: this.scene.cameras.main,
+        //     zoom: this.scene.cameras.main.zoom * 1.25,
+        //     ease: Phaser.Math.Easing.Elastic.InOut,
+        //     duration: 750,
+        //     yoyo: true
+        // });
     };
     onHookUpdate = (dt: number) => {
         this.player.hookTime += dt;
@@ -1860,11 +1835,9 @@ export default class PlayerMachine {
             };
             this.scene.hud.actionBar.setVisible(false);
         };
-        this.player.setStatic(true);
-        this.player.isPraying = true;
         this.scene.showCombatText(this.player, "Marking", DURATION.TEXT, EFFECT, false, true);
+        this.player.startPraying();
         this.player.flickerCaerenic(1000);
-        this.player.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPraying = false);
     };
     onMarkUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onMarkExit = () => {
@@ -1878,7 +1851,6 @@ export default class PlayerMachine {
         };
         this.player.mark.setPosition(this.player.x, this.player.y + 24);
         this.player.mark.setVisible(true);
-        this.player.animateMark();
         this.player.animateMark();
         this.scene.sound.play("phenomena", { volume: this.scene.hud.settings.volume });
         this.player.checkTalentCost(States.MARK, PLAYER.STAMINA.MARK);
@@ -3102,12 +3074,12 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.checkTalentCost(States.CAERENESIS, PLAYER.STAMINA.CAERENESIS);
         const count = this.player.checkTalentEnhanced(States.CAERENESIS) ? 3 : 1;
-        this.player.aoe = this.scene.aoePool.get("caerenesis", count, false, undefined, false, this.player.currentTarget);    
+        this.player.aoe = this.scene.aoePool.get(States.CAERENESIS, count, false, undefined, false, this.player.currentTarget);
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume });
         this.scene.showCombatText(this.player, "Caerenesis", 750, CAST, false, true);
         this.player.isCaerenesis = true;
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.CAERENESIS, PLAYER.COOLDOWNS.SHORT);  
-        this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS, () => {
+        this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS * count, () => {
             this.player.isCaerenesis = false;
         }, undefined, this);
         EventBus.emit("special-combat-text", {

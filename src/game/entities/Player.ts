@@ -187,9 +187,10 @@ export default class Player extends Entity {
 
         this.mark = this.scene.add.graphics()
             .lineStyle(4, 0xfdf6d8)
-            .setScale(0.5)
-            .strokeCircle(0, 0, 12);
-        this.mark.setVisible(false);
+            .setScale(0.4)
+            .strokeCircle(0, 0, 12)
+            .setDepth(3)
+            .setVisible(false);
         this.markAnimation = false;
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health, "player");
         this.castbar = new CastingBar(this.scene.hud, this.x, this.y, 0, this);
@@ -337,10 +338,12 @@ export default class Player extends Entity {
     };
 
     animateMark = () => {
+        console.log(this.mark, "Adding Tween?");
         this.scene.tweens.add({
             targets: this.mark,
-            scale: 0.75,
-            duration: 250,
+            tint: 0x00FF00,
+            scale: 0.65,
+            duration: 500,
             yoyo: true
         });
     };
@@ -562,7 +565,7 @@ export default class Player extends Entity {
         this.isCasting = false;
         this.spellTarget = "";
         this.spellName = "";
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.beam.reset();
         this.castbar.reset();
         if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false); 
@@ -570,18 +573,20 @@ export default class Player extends Entity {
 
     startPraying = () => {
         // this.spellTarget = target.enemyID;
+        this.timeElapsed = 0;
         this.isPraying = true;
         this.setStatic(true);
         // if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isPraying = false;
+            this.timeElapsed = 0;
             this.setStatic(false);
             // if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         });
     };
 
     leap = () => {
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isLeaping = true;
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
@@ -635,7 +640,7 @@ export default class Player extends Entity {
     };
 
     rush = () => {
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isRushing = true;
         this.isThrusting = true;
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume });
@@ -702,7 +707,7 @@ export default class Player extends Entity {
 
     storm = () => {
         this.clearAnimations();
-        this.frameCount = 0;
+        this.timeElapsed = 0;
         this.isStorming = true;
         this.scene.showCombatText(this, "Storming", 800, "damage");
         this.isAttacking = true;
@@ -714,7 +719,7 @@ export default class Player extends Entity {
             duration: 800,
             onStart: () => this.flickerCaerenic(3200),
             onLoop: () => {
-                this.frameCount = 0;
+                this.timeElapsed = 0;
                 this.clearAnimations();
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
@@ -1231,7 +1236,7 @@ export default class Player extends Entity {
             if (action === States.QUOR) {
                 if (this.checkTalentEnhanced(States.QUOR)) {
                     if (this.isComputer) {
-                        this.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, false, this.attackedTarget);    
+                        this.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, false, this.attackedTarget);
                     } else {
                         this.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, true);
                     };

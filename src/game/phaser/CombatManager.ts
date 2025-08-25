@@ -295,17 +295,11 @@ export class CombatManager {
     playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
     playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
-    computerCaerenicNeg = (entity: Enemy | Party) =>{
-        return entity.isCaerenic ? 1.25 : 1
-    };
+    computerCaerenicNeg = (entity: Enemy | Party) => entity.isCaerenic ? 1.25 : 1;
 
-    computerCaerenicPro = (entity: Enemy | Party) => {
-        return entity.isCaerenic ? 1.15 : 1
-    };
+    computerCaerenicPro = (entity: Enemy | Party) => entity.isCaerenic ? 1.15 : 1;
 
-    computerStalwart = (entity: Enemy | Party) => {
-        return entity.isStalwart ? 0.85 : 1
-    }; 
+    computerStalwart = (entity: Enemy | Party) => entity.isStalwart ? 0.85 : 1;
 
     computerCaerenicNegID = (id: string) =>{
         const entity = this.combatant(id);
@@ -379,27 +373,6 @@ export class CombatManager {
         };
     };
 
-    // ============================ Magic Impact ============================= \\
-    magic = (target: Player | Enemy | Party, entity: Player | Enemy | Party): void => {
-        if (target.health <= 0) return;
-        const ascean = entity.ascean;
-        if (target.name === "player") {
-            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.2);
-            const health = target.health - damage;
-            this.combatMachine.action({ data: { key: "player", value: health, id: (entity as Enemy).enemyID }, type: "Set Health" });
-        } else if (entity.name === "player") {
-            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.2);
-            const health = target.health - damage;
-            this.combatMachine.action({ data: { key: "enemy", value: health, id: (target as Enemy).enemyID }, type: "Health" });
-        } else { // Computer Entity + Computer Target
-            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.2);
-            const health = target.health - damage;
-            (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
-            (target as Enemy).computerCombatSheet.newComputerHealth = health;
-            this.updateComputerDamage(damage, (target as Enemy | Party).enemyID, (entity as Enemy | Party).enemyID);
-        };
-    };
-
     partyAction = (payload: { action: string; origin: string; enemyID: string; }) => {
         const { action, origin, enemyID } = payload;
         let computerOneEntity = this.context.party.find((e: Party) => e.enemyID === origin)!;
@@ -414,10 +387,32 @@ export class CombatManager {
         const result = computerCombatCompiler({computerOne, computerTwo});
         computerOneEntity.computerCombatUpdate(result.computerOne);
         computerTwoEntity.computerCombatUpdate(result.computerTwo);
-        // EventBus.emit("party-combat-text", { text: `${result?.computerOne?.computer?.name} ${ENEMY_ATTACKS[result?.computerOne?.computerAction as keyof typeof ENEMY_ATTACKS]} ${result?.computerOne?.computerEnemy?.name} with their ${result?.computerOne?.computerWeapons[0]?.name} for ${Math.round(result?.computerOne?.realizedComputerDamage as number)} ${result?.computerOne?.computerDamageType} damage.` });
+    };
+
+    // ============================ Magic Impact ============================= \\
+
+    magic = (target: Player | Enemy | Party, entity: Player | Enemy | Party): void => {
+        if (target.health <= 0) return;
+        const ascean = entity.ascean;
+        if (target.name === "player") {
+            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.35);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: "player", value: health, id: (entity as Enemy).enemyID }, type: "Set Health" });
+        } else if (entity.name === "player") {
+            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.35);
+            const health = target.health - damage;
+            this.combatMachine.action({ data: { key: "enemy", value: health, id: (target as Enemy).enemyID }, type: "Health" });
+        } else { // Computer Entity + Computer Target
+            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.35);
+            const health = target.health - damage;
+            (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
+            (target as Enemy).computerCombatSheet.newComputerHealth = health;
+            this.updateComputerDamage(damage, (target as Enemy | Party).enemyID, (entity as Enemy | Party).enemyID);
+        };
     };
 
     // ============================ Combat Specials ============================ \\ 
+
     playerMelee = (id: string, type: string): void => {
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
@@ -588,6 +583,44 @@ export class CombatManager {
         if (party) {
             party.count.confused++;
             party.isConfused = true;
+        };
+    };
+    disease = (combatID: string, enemySpecialID?: string): void => {
+        if (!combatID) return;
+        if (combatID === this.context?.player?.playerID && enemySpecialID) { // Enemy Special is Damaging Player
+            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+            if (origin.checkPlayerResist()) {
+                origin.chiomic(10, combatID);
+            };
+            return;
+        };
+        const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
+        if (enemy) { // Enemy Taking Damage
+            if (enemySpecialID === this.context.player.playerID) {
+                if (enemy.enemyID === this.context.player.getEnemyId()) {
+                    this.combatMachine.action({ type: "Chiomic", data: this.context.player.entropicMultiplier(20) }); 
+                } else {
+                    if (enemy.health <= 0) return;
+                    this.context.player.playerMachine.chiomism(enemy.enemyID, 10)
+                };
+            } else {
+                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+                if (origin) { // CvC
+                    origin.chiomic(10, enemy.enemyID);
+                } else {
+                    const party = this.context.party.find((e: Party) => e.enemyID === enemySpecialID);
+                    if (!party) return;
+                    party.playerMachine.chiomism(enemy.enemyID, 10);
+                };  
+            };
+        } else { // Party Taking Damage
+            const party = this.context.party.find((e: Party) => e.enemyID === combatID);
+            if (party) {
+                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+                if (origin) { // CvC
+                    origin.chiomic(10, party.enemyID);
+                };
+            };
         };
     };
     fear = (id: string, special: boolean = false): void => {
@@ -880,65 +913,6 @@ export class CombatManager {
         if (party) {
             party.count.stunned += 1;
             party.isStunned = true;
-        };
-    };
-    disease = (combatID: string, enemySpecialID?: string): void => {
-        if (!combatID) return;
-        if (combatID === this.context?.player?.playerID && enemySpecialID) { // Enemy Special is Damaging Player
-            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
-            if (origin.checkPlayerResist()) {
-                origin.chiomic(10, combatID);
-            };
-            return;
-        };
-        const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
-        if (enemy) { // Enemy Taking Damage
-            if (enemySpecialID === this.context.player.playerID) {
-                if (enemy.enemyID === this.context.player.getEnemyId()) {
-                    this.combatMachine.action({ type: "Chiomic", data: this.context.player.entropicMultiplier(20) }); 
-                } else {
-                    if (enemy.health <= 0) return;
-                    this.context.player.playerMachine.chiomism(enemy.enemyID, 10)
-                    // const tendril = Math.round(this.context.player.playerMachine.mastery() * (1 + (this.context.player.entropicMultiplier(10) / CHIOMISM)) 
-                    //     * this.context.combatManager.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) * this.context.player.playerMachine.levelModifier());
-                    // const newComputerHealth = enemy.health - tendril < 0 ? 0 : enemy.health - tendril;
-                    // const playerActionDescription = `Your wreathing tendrils rip ${tendril} health from ${enemy.ascean?.name}.`;
-                    // EventBus.emit("add-combat-logs", { ...this.context, playerActionDescription });
-                    // this.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id: enemy.enemyID } });
-                };
-            } else {
-                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
-                if (origin) { // CvC
-                    origin.chiomic(10, enemy.enemyID);
-                    // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
-                    // const damage = Math.round(origin.mastery() / 2 * this.computerCaerenicPro(origin) 
-                    //     * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
-                    //     * (1 + (origin.entropicMultiplier(10) / CHIOMISM)) * ((origin.ascean.level + 9) / 10));
-                    // this.updateComputerDamage(damage, combatID, enemySpecialID as string);
-                } else {
-                    const party = this.context.party.find((e: Party) => e.enemyID === enemySpecialID);
-                    if (!party) return;
-                    party.playerMachine.chiomism(enemy.enemyID, 10);
-                    // const damage = Math.round(party.mastery() / 2 * this.computerCaerenicPro(party) 
-                    //     * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
-                    //     * (1 + (party.entropicMultiplier(10))) * ((party.ascean.level + 9) / 10));
-                    // // const damage = Math.round(party.ascean[party?.ascean.mastery as keyof typeof party.ascean]);
-                    // this.updateComputerDamage(damage, combatID, enemySpecialID as string);
-                };  
-            };
-        } else { // Party Taking Damage
-            const party = this.context.party.find((e: Party) => e.enemyID === combatID);
-            if (party) {
-                const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
-                if (origin) { // CvC
-                    origin.chiomic(10, party.enemyID);
-                    // const damage = Math.round(origin.mastery() / 2 * this.computerCaerenicPro(origin) 
-                    // * this.computerCaerenicNeg(party) * this.computerStalwart(party)
-                    // * (1 + (origin.entropicMultiplier(10))) * ((origin.ascean.level + 9) / 10));
-                    // // const damage = Math.round(origin.ascean[origin.ascean.mastery as keyof typeof origin.ascean]);
-                    // this.updateComputerDamage(damage, combatID, enemySpecialID as string);
-                };
-            };
         };
     };
     writhe = (id: string, enemyID: string, type = "writhe"): void => {

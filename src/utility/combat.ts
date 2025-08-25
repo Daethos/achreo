@@ -499,6 +499,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.pos * computerCaer.neg * computerStal;
         combat.newComputerHealth -= playerDamage;
         combat.realizedPlayerDamage = playerDamage;
+        combat.computerDamaged = true;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
             combat.computerWin = false;
@@ -509,6 +510,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
         const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.neg * computerCaer.pos * stal;
         combat.newPlayerHealth -= computerDamage;
         combat.realizedComputerDamage = computerDamage;
+        combat.playerDamaged = true;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
                 combat.newPlayerHealth = 1;
@@ -2030,7 +2032,7 @@ function computerDispel(combat: Combat): Combat {
 function prayerSplitter(combat: Combat, prayer: string): Combat {
     let originalPrayer = combat.playerBlessing;
     combat.playerBlessing = prayer; 
-    faithSuccess(combat, "player", combat.weapons[0] as Equipment, 0);
+    combat = faithSuccess(combat, "player", combat.weapons[0] as Equipment, 0);
     combat.playerBlessing = originalPrayer;
     return combat;
 };
@@ -2048,7 +2050,7 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
 };
 
 function talentPrayer(combat: Combat, prayer: string) {
-    prayerSplitter(combat, prayer);
+    combat = prayerSplitter(combat, prayer);
     if (combat.playerWin) statusEffectCheck(combat);
     const changes = {
         "actionData": combat.actionData,
@@ -2081,28 +2083,28 @@ function talentPrayer(combat: Combat, prayer: string) {
 function instantActionSplitter(combat: Combat): any {
     switch (combat.player?.mastery) {
         case MASTERY.CONSTITUTION:
-            prayerSplitter(combat, PRAYERS.HEAL);
-            prayerSplitter(combat, PRAYERS.BUFF);
+            combat = prayerSplitter(combat, PRAYERS.HEAL);
+            combat = prayerSplitter(combat, PRAYERS.BUFF);
             break;
         case MASTERY.STRENGTH:
-            prayerSplitter(combat, combat.playerBlessing);
-            instantDamageSplitter(combat, MASTERY.STRENGTH);
+            combat = prayerSplitter(combat, combat.playerBlessing);
+            combat = instantDamageSplitter(combat, MASTERY.STRENGTH);
             break;
         case MASTERY.AGILITY:
-            prayerSplitter(combat, combat.playerBlessing);
-            instantDamageSplitter(combat, MASTERY.AGILITY);
+            combat = prayerSplitter(combat, combat.playerBlessing);
+            combat = instantDamageSplitter(combat, MASTERY.AGILITY);
             break;
         case MASTERY.ACHRE:
-            prayerSplitter(combat, combat.playerBlessing);
-            instantDamageSplitter(combat, MASTERY.ACHRE);
+            combat = prayerSplitter(combat, combat.playerBlessing);
+            combat = instantDamageSplitter(combat, MASTERY.ACHRE);
             break;
         case MASTERY.CAEREN:
-            prayerSplitter(combat, combat.playerBlessing);
-            instantDamageSplitter(combat, MASTERY.CAEREN);
+            combat = prayerSplitter(combat, combat.playerBlessing);
+            combat = instantDamageSplitter(combat, MASTERY.CAEREN);
             break;
         case MASTERY.KYOSIR:
-            prayerSplitter(combat, PRAYERS.DAMAGE);
-            prayerSplitter(combat, PRAYERS.DEBUFF);
+            combat = prayerSplitter(combat, PRAYERS.DAMAGE);
+            combat = prayerSplitter(combat, PRAYERS.DEBUFF);
             break;
         default:
             break;
@@ -2168,7 +2170,10 @@ function consumePrayerSplitter(combat: Combat): any {
                 if (combat.newPlayerHealth > 0) combat.computerWin = false;
                 break;
             case PRAYERS.BUFF:
-                combat.newComputerHealth -= (combat.realizedPlayerDamage * DAMAGE.HALF * caer.pos * computerCaer.neg * computerStal);
+                const damage = combat.realizedPlayerDamage * DAMAGE.HALF * caer.pos * computerCaer.neg * computerStal;
+                combat.newComputerHealth -= damage;
+                combat.realizedPlayerDamage = damage;
+                combat.computerDamaged = true;
                 combat.playerActionDescription = `${combat.weapons[0]?.influences?.[0]}'s Tendrils serenade ${combat.computer?.name}, echoing ${Math.round(combat.realizedPlayerDamage * DAMAGE.HALF)} more damage.`    
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
@@ -2179,14 +2184,18 @@ function consumePrayerSplitter(combat: Combat): any {
                 combat.playerDefense = deBuff.defense;
                 break;
             case PRAYERS.DAMAGE:
-                combat.newComputerHealth -= effect.effect?.damage as number * DAMAGE.TICK_HALF * caer.pos * computerCaer.neg * computerStal;
+                combat.realizedPlayerDamage = effect.effect?.damage as number * DAMAGE.TICK_HALF * caer.pos * computerCaer.neg * computerStal;
+                combat.newComputerHealth -= combat.realizedPlayerDamage;
+                combat.computerDamaged = true;
                 if (combat.newComputerHealth <= 0) {
                     combat.newComputerHealth = 0;
                     combat.playerWin = true;
                 }; 
                 break;
             case PRAYERS.DEBUFF:
-                combat.newComputerHealth -= (combat.realizedComputerDamage * DAMAGE.HALF * caer.pos * computerCaer.neg * computerStal);
+                combat.realizedPlayerDamage = combat.realizedComputerDamage * DAMAGE.HALF * caer.pos * computerCaer.neg * computerStal;
+                combat.newComputerHealth -= combat.realizedPlayerDamage;
+                combat.computerDamaged = true;
                 combat.playerActionDescription = `The Hush of ${combat.weapons[0]?.influences?.[0]} wracks ${combat.computer?.name}, wearing for ${Math.round(combat.realizedComputerDamage * DAMAGE.HALF)} more damage.`;   
             
                 if (combat.newComputerHealth <= 0) {
@@ -2208,7 +2217,6 @@ function consumePrayerSplitter(combat: Combat): any {
     combat.prayerSacrificeName = "";
     combat.action = "";
 
-    if (combat.prayerSacrifice !== PRAYERS.HEAL && combat.realizedPlayerDamage > 0) combat.computerDamaged = true;
     if (combat.playerWin === true) statusEffectCheck(combat);
 
     const changes = {
@@ -2244,14 +2252,14 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     let { combat, effect, effectTimer } = data;
     if (effect.playerName === combat.player?.name) { 
         if (effect.prayer === PRAYERS.DAMAGE) { 
-            damageTick(combat, effect, true);
+            combat = damageTick(combat, effect, true);
         };
         if (effect.prayer === PRAYERS.HEAL) { 
             healTick(combat, effect, true);
         };  
     } else if (effect.playerName === combat.computer?.name) {
         if (effect.prayer === PRAYERS.DAMAGE) {
-            damageTick(combat, effect, false);
+            combat = damageTick(combat, effect, false);
         };
         if (effect.prayer === PRAYERS.HEAL) { 
             healTick(combat, effect, false);
@@ -2267,6 +2275,12 @@ function prayerEffectTickSplitter(data: { combat: Combat, effect: StatusEffect, 
     const changes = {
         "actionData": combat.actionData,
         "prayerData": combat.prayerData,
+
+        "realizedPlayerDamage": combat.realizedPlayerDamage,
+        "realizedComputerDamage": combat.realizedComputerDamage,
+
+        "playerDamaged": combat.playerDamaged,
+        "computerDamaged": combat.computerDamaged,
 
         "playerEffects": combat.playerEffects,
         "computerEffects": combat.computerEffects,

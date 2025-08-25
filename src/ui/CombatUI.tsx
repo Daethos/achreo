@@ -143,11 +143,6 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 </button>    
             </Match>
         </Switch>
-        // return <Show when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer}>
-        //     <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>
-        //         Engage
-        //     </button>
-        // </Show>;
     };
     const showPlayer = () => {
         EventBus.emit("action-button-sound");

@@ -528,9 +528,9 @@ export default class WeatherManager {
         obj.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
     };
 
-    private fadeIn(emitter: Phaser.GameObjects.Particles.ParticleEmitter) {
-        emitter.setAlpha(0).setVisible(true).start();
-        this.scene.tweens.add({ targets: emitter, alpha: 1, duration: FADE_IN });
+    private fadeIn(targets: Phaser.GameObjects.Particles.ParticleEmitter) {
+        targets.setAlpha(0).setActive(true).setVisible(true).start();
+        this.scene.tweens.add({ targets, alpha: 1, duration: FADE_IN });
     };
 
     private fadeOut(obj: Phaser.GameObjects.Particles.ParticleEmitter | Phaser.GameObjects.Rectangle) {
@@ -540,7 +540,8 @@ export default class WeatherManager {
             duration: FADE_OUT,
             ease: "Sine.easeInOut",
             onComplete: () => {
-                obj.setVisible(false); 
+                obj.setVisible(false);
+                obj.setActive(false);
                 if (obj instanceof Phaser.GameObjects.Particles.ParticleEmitter) obj.stop();
             }
         });

@@ -113,7 +113,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <div class="menu-3d">
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row juice glowJuice flickerJuiceInsert menu-item-3d backgroundFocus" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`, "--background-color": backgroundGradient(ascean.mastery, false) }}>
+                                <div class="border row card juice glowJuice flickerJuiceInsert menu-item-3d backgroundFocus" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`, "--background-color": backgroundGradient(ascean.mastery, false) }}>
                                     <img style={{...photo, "border-color": masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
                                     <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%" }}>{ascean.name}</h4>
                                 </div>
@@ -132,33 +132,33 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                             <p style={{margin:"2%"}}>Faith: <span class="gold" onClick={() => setShowFaith(!showFaith())}>{newAscean().faith}</span> | Mastery: <span class="gold" onClick={() => toggle(newAscean().mastery)}>{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
                             <div style={{ display: "inline-flex", "justify-content":"center" }}>
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("constitution")} style={font}>Con</div>
+                                    <div onClick={() => toggle("constitution")} style={font}>Con</div>
                                     <p class="gold" style={font}>{newAscean()?.constitution}</p>
                                 </div>
                                 <div>{"\n"}</div>
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("strength")} style={font}>Str</div>
+                                    <div onClick={() => toggle("strength")} style={font}>Str</div>
                                     <p class="gold" style={font}>{newAscean()?.strength}</p>
                                 </div>
                                 <div>{"\n"}</div>
 
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("agility")} style={font}>Agi</div>
+                                    <div onClick={() => toggle("agility")} style={font}>Agi</div>
                                     <p class="gold" style={font}> {newAscean()?.agility}</p>
                                 </div>
                                 <div>{"\n"}</div>
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("achre")} style={font}>Ach</div>
+                                    <div onClick={() => toggle("achre")} style={font}>Ach</div>
                                     <p class="gold" style={font}>{newAscean()?.achre}</p>
                                 </div>
                                 <div>{"\n"}</div>
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("caeren")} style={font}>Caer</div>
+                                    <div onClick={() => toggle("caeren")} style={font}>Caer</div>
                                     <p class="gold" style={font}>{newAscean()?.caeren}</p>
                                 </div>
                                 <div>{"\n"}</div>
                                 <div style={inline}>
-                                    <div class="" onClick={() => toggle("kyosir")} style={font}>Kyo</div>
+                                    <div onClick={() => toggle("kyosir")} style={font}>Kyo</div>
                                     <p class="gold" style={font}>{newAscean()?.kyosir}</p>
                                 </div>
                             </div>

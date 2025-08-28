@@ -34,7 +34,7 @@ export function getHitFeedbackContext(combat: Combat, pos: Phaser.Math.Vector2, 
     } else {
         return {
             source: "enemy",
-            damageType: combat.computerDamageType,
+            damageType: combat.computerDamagedType,
             pos,
             weaponType: combat.computerWeapons[0]?.type,
             critical: combat.computerCriticalSuccess,

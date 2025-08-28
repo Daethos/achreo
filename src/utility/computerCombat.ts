@@ -5,7 +5,7 @@ import { computerCaerenic, computerStalwart, criticalCompiler, damageTypeCompile
 import { ACTION_TYPES, ARMOR_WEIGHT, ATTACK_TYPES, DAMAGE, HOLD_TYPES, MASTERY, STRONG_TYPES, THRESHOLD, WEAPON_TYPES } from "./combatTypes";
 // import { PRAYERS } from "./prayer";
 
-function computerWeaponMaker(combat: ComputerCombat): ComputerCombat {
+function computerCombatWeaponMaker(combat: ComputerCombat): ComputerCombat {
     // let prayers = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
     // let newPrayer = Math.floor(Math.random() * prayers.length);
     // combat.computerBlessing = prayers[newPrayer];
@@ -345,6 +345,9 @@ function computerCombatSplitter(data: { computerOne: ComputerCombat, computerTwo
         computerTwo.computerEnemyParrySuccess = computerOne.parrySuccess;
         computerTwo.computerDamaged = computerOne.computerEnemyDamaged;
 
+        computerOne = computerCombatWeaponMaker(computerOne);
+        computerTwo = computerCombatWeaponMaker(computerTwo);
+
         return {computerOne, computerTwo};
     } catch (err) {
         console.warn(err, "Error in the Computer Combat Splitter of Game Services");
@@ -391,8 +394,8 @@ function dualComputerActionSplitter(combat: ComputerCombat, combatTwo: ComputerC
     const computerOneAction = combat.computerAction;
     const computerTwoAction = combatTwo.computerAction;
 
-    computerWeaponMaker(combat);
-    computerWeaponMaker(combatTwo);
+    // computerCombatWeaponMaker(combat);
+    // computerCombatWeaponMaker(combatTwo);
 
     // ==================== PARRY ==================== \\
     if (computerOneAction === ACTION_TYPES.PARRY && computerTwoAction === ACTION_TYPES.PARRY) {
@@ -461,4 +464,4 @@ function computerCombatCompiler(combat: { computerOne: ComputerCombat, computerT
     };
 };
 
-export { computerCombatCompiler };
+export { computerCombatCompiler, computerCombatWeaponMaker };

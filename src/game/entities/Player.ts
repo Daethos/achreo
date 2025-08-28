@@ -1467,7 +1467,7 @@ export default class Player extends Entity {
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality(dt, "player", this.currentTarget as Enemy);
+        // this.functionality(dt, "player", this.currentTarget as Enemy);
 
         const state = this.playerMachine.stateMachine.getCurrentState();
 

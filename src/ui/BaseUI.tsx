@@ -19,6 +19,7 @@ import { IRefPhaserGame } from "../game/PhaserGame";
 import Talents from "../utility/talents";
 import QuestManager from "../utility/quests";
 import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../utility/combatTypes";
+import { Play } from "../game/main";
 const Roster = lazy(async () => await import("./Roster"));
 const Character = lazy(async () => await import("./Character"));
 const CombatUI = lazy(async () => await import("./CombatUI"));
@@ -223,7 +224,8 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         dualWielding: res.dualWielding,
                         playerEffects: res.playerEffects,
                     });
-                    EventBus.emit("update-enemy-health", { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
+                    (instance.scene as Play).combatManager.enemyHealthUpdate(res.enemyID, res.newComputerHealth, res.criticalSuccess);
+                    // EventBus.emit("update-enemy-health", { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;

@@ -4,7 +4,7 @@ import Ascean from "../models/ascean";
 import Equipment, { getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
 import Settings from "../models/settings";
 import Statistics from "../utility/statistics";
-import StartGame from "./main";
+import StartGame, { Play } from "./main";
 import { EventBus } from "./EventBus";
 import { Menu } from "../utility/screens";
 import { Combat, initCombat } from "../stores/combat";
@@ -1269,7 +1269,8 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("pocket-item", pocketItem);
         EventBus.on("luckout", (e: { luck: string, luckout: boolean }) => {
             const { luck, luckout } = e;
-            EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });
+            (instance.scene as Play).combatManager.luckout({id:combat().enemyID,luckout,luck});
+            // EventBus.emit("enemy-luckout", { enemy: combat().enemyID, luckout, luck });
             setCombat({ ...combat(), playerLuckout: luckout, playerTrait: luck, luckoutScenario: true });
             if (combat().computer) {
                 const rep = recordDialogReputation(3);
@@ -1279,7 +1280,8 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on("persuasion", (e: { persuasion: string, persuaded: boolean }) => {
             const { persuasion, persuaded } = e;
-            EventBus.emit("enemy-persuasion", { enemy: combat().enemyID, persuaded, persuasion });
+            // EventBus.emit("enemy-persuasion", { enemy: combat().enemyID, persuaded, persuasion });
+            (instance.scene as Play).combatManager.persuasion({id:combat().enemyID,persuaded,persuasion});
             setCombat({ ...combat(), playerTrait: persuasion, enemyPersuaded: persuaded, persuasionScenario: true });
             const rep = recordDialogReputation(1);
             EventBus.emit("update-reputation", rep);

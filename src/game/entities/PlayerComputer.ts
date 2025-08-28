@@ -273,7 +273,7 @@ export default class PlayerComputer extends Player {
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.functionality(dt, "player", this.currentTarget as Enemy);
+        // this.functionality(dt, "player", this.currentTarget as Enemy);
         this.spriteWeapon.setPosition(this.x, this.y);
         this.spriteShield.setPosition(this.x, this.y);
 

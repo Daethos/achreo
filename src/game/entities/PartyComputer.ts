@@ -241,6 +241,8 @@ export default class Party extends Entity {
         this.beam = new Beam(this);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
         this.originPoint = {}; // For Leashing
+        this.isCaerenic = false;
+        this.isStalwart = false;
 
         const mindStates = MIND_STATES[this.ascean.mastery];
         const mindStateName = mindStates[Math.floor(Math.random() * mindStates.length)];
@@ -1689,7 +1691,7 @@ export default class Party extends Entity {
             };
         };
 
-        this.functionality(dt, "party", this.currentTarget as Enemy);
+        // this.functionality(dt, "party", this.currentTarget as Enemy);
         if (this.healthbar) this.healthbar.update(this);
         if (this.negationBubble) this.negationBubble.update(this.x, this.y);
         if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);

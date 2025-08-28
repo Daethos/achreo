@@ -1008,7 +1008,7 @@ export class Game extends Scene {
 
     killEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        EventBus.emit("remove-computer-enemy", enemy.enemyID);
+        this.combatManager.removeComputerEnemy(enemy.enemyID);
         if (enemy.isCurrentTarget) {
             this.player.disengage();
         };

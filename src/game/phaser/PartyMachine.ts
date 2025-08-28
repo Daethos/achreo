@@ -46,6 +46,7 @@ export default class PlayerMachine {
         this.stateMachine = new StateMachine(this, "party");
         this.stateMachine
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate })
+            .addState(States.MOVING, { onEnter: this.onMovingEnter, onUpdate: this.onMovingUpdate, onExit: this.onMovingExit })
             .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
             .addState(States.LULL, { onEnter: this.onLullEnter }) // onUpdate: this.onLullUpdate
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
@@ -180,8 +181,6 @@ export default class PlayerMachine {
 
     onChaseEnter = () => {
         if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         // this.scene.navMesh.enableDebug();
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
@@ -396,8 +395,6 @@ export default class PlayerMachine {
         const x = Phaser.Math.Between(1, 2);
         const y = Phaser.Math.Between(1, 2);
         const evade = Phaser.Math.Between(1, 3);
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.evadeRight = x === 1;
         this.player.evadeUp = y === 1;
         this.player.evadeType = evade;
@@ -433,8 +430,6 @@ export default class PlayerMachine {
 
     onFollowEnter = () => {
         if (!this.scene.player || !this.scene.player.body || !this.scene.player.position) return;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         // this.scene.navMesh.enableDebug();
         if (this.player.followTimer) {
             this.player.followTimer?.remove(false);
@@ -532,8 +527,6 @@ export default class PlayerMachine {
         };
         this.player.isContemplating = true;
         this.player.isMoving = false;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.setVelocity(0);
         this.player.contemplationTime = Phaser.Math.Between(250, 750);
     };
@@ -800,6 +793,22 @@ export default class PlayerMachine {
             this.stateMachine.setState(States.FOLLOW);
         };
     };
+
+    onMovingEnter = () => {
+        this.player.isMoving = true;
+        if (this.player.isComputer && this.player.inCombat && !this.player.computerAction) {
+            this.stateMachine.setState(States.COMPUTER_COMBAT);
+            // return;
+        };
+    };
+    onMovingUpdate = (_dt: number) => {
+        if (!this.player.moving()) {
+            this.stateMachine.setState(States.IDLE);
+            return;
+        };
+        this.player.handleMovementAnimations();
+    };
+    onMovingExit = () => this.player.isMoving = false;
     
     onLullEnter = () => {
         this.player.isMoving = false;
@@ -826,12 +835,8 @@ export default class PlayerMachine {
             this.player.isMoving = false;
             return;
         };
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.computerAction = true; // Phaser.Math.Between(750, 1250)
         this.scene.time.delayedCall(this.player.swingTimer, () => {
-            this.player.frameCount = 0;
-            this.player.timeElapsed = 0;
             this.player.computerAction = false;
             this.player.evaluateCombat();
         }, undefined, this);
@@ -839,16 +844,12 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
     };
     onComputerAttackUpdate = (_dt: number) => {
         if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.player.currentAction = States.ATTACK;
         if (!this.player.isAttacking) this.player.evaluateCombatDistance(); 
     };
     onComputerAttackExit = () => {
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.currentAction = "";
         this.player.computerAction = false;    
         if (!this.player.isRanged) this.player.anims.play("player_idle", true);
@@ -856,8 +857,6 @@ export default class PlayerMachine {
 
     onComputerParryEnter = () => {
         this.player.isParrying = true;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         if (this.player.hasMagic === true) {
             this.scene.showCombatText(this.player, "Counter Spell", 1000, HUSH, false, true);
             this.player.isCounterSpelling = true;
@@ -868,14 +867,13 @@ export default class PlayerMachine {
         };
     };
     onComputerParryUpdate = (_dt: number) => {
-        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.player.currentAction = States.PARRY;
-        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
+        const frame = this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES");
+        if (frame === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.player.currentAction = States.PARRY;
+        if (frame >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
         if (!this.player.isParrying) this.player.evaluateCombatDistance();
     };
     onComputerParryExit = () => {
         this.player.isParrying = false;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.currentAction = "";
         this.player.computerAction = false;    
         if (!this.player.isRanged) this.player.anims.play("player_idle", true);
@@ -884,8 +882,6 @@ export default class PlayerMachine {
     onComputerPostureEnter = () => {
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
     };
     onComputerPostureUpdate = (_dt: number) => {
         if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.player.currentAction = States.POSTURE
@@ -893,8 +889,6 @@ export default class PlayerMachine {
     };
     onComputerPostureExit = () => {
         this.player.spriteShield.setVisible(this.player.isStalwart);
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.currentAction = "";
         this.player.computerAction = false;
         if (!this.player.isRanged) this.player.anims.play("player_idle", true);
@@ -902,16 +896,12 @@ export default class PlayerMachine {
 
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
     };
     onComputerThrustUpdate = (_dt: number) => {
         if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.player.currentAction = States.THRUST;
         if (!this.player.isThrusting) this.player.evaluateCombatDistance();
     };
     onComputerThrustExit = () => {
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.computerAction = false;
         this.player.currentAction = "";
         if (!this.player.isRanged) this.player.anims.play("player_idle", true);
@@ -945,8 +935,6 @@ export default class PlayerMachine {
         legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
     };
     onDodgeUpdate = (_dt: number) => this.player.combatChecker(this.player.isDodging);
     onDodgeExit = () => {
@@ -999,8 +987,6 @@ export default class PlayerMachine {
         (this.player.body as any).parts[2].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
     };
     onRollUpdate = (_dt: number) => {
         if (this.player.liveAction("ROLL_DURATION", "ROLL_FRAMES") === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) this.player.currentAction = States.ROLL;
@@ -1124,8 +1110,6 @@ export default class PlayerMachine {
             };
         };
         this.player.castbar.reset();
-        this.player.frameCount = 0;
-        this.player.timeElapsed = 0;
         this.player.setStatic(false);
     };
 
@@ -1520,6 +1504,7 @@ export default class PlayerMachine {
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
         this.scene.combatManager.checkPlayerFocus(this.player.enemyID, this.player.health);
         this.scene.combatManager.hitFeedbackSystem.healing(new Phaser.Math.Vector2(this.player.x, this.player.y));
+        this.scene.showCombatText(this.player, `${heal}`, DURATION.TEXT, HEAL);
     };
     devour = (id: string) => {
         const enemy = this.scene.enemies.find(enemy => enemy.enemyID === this.player.spellTarget);

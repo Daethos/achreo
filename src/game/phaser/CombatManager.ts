@@ -23,9 +23,9 @@ export class CombatManager {
         this.context = scene;
         this.combatMachine = new CombatMachine(this);
         this.hitFeedbackSystem = new HitFeedbackSystem(scene);
-        EventBus.on("update-combat", this.updateCombat.bind(this));
-        EventBus.on("use-stamina", this.useStamina.bind(this));
-        EventBus.on("use-grace", this.useGrace.bind(this));
+        EventBus.on("update-combat", this.updateCombat);
+        EventBus.on("use-stamina", this.useStamina);
+        EventBus.on("use-grace", this.useGrace);
     };
 
     public combatant(id: string) {
@@ -75,8 +75,8 @@ export class CombatManager {
     
         if (player.inCombat === false && this.context.combat === true) this.context.combatEngaged(false);
 
-        this.handleEnemyUpdate(e);
         this.handleHitFeedback(e);
+        this.handleEnemyUpdate(e);
         this.resetCombatFlags();
     };
 
@@ -179,17 +179,10 @@ export class CombatManager {
         const isPlayerHit = e.playerDamaged || e.computerParrySuccess;
         const isEnemyHit = e.computerDamaged || e.parrySuccess;
         const player = this.context.player;
-        const comp = player.currentTarget?.enemyID === e.enemyID
-            ? player.currentTarget
-            : this.context.getEnemy(e.enemyID);
+        const comp = player.currentTarget?.enemyID === e.enemyID ? player.currentTarget : this.context.getEnemy(e.enemyID);
 
-        if (isEnemyHit && comp?.body) {
-            this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(comp.x, comp.y), true));
-        };
-
-        if (isPlayerHit) {
-            this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(player.x, player.y), false));
-        };
+        if (isEnemyHit && comp?.body) this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(comp.x, comp.y), true));
+        if (isPlayerHit) this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(player.x, player.y), false));
     };
 
     public resetCombatFlags() {
@@ -208,6 +201,71 @@ export class CombatManager {
         });
     };
 
+    public enemyHealthUpdate = (id: string, health: number, critical: boolean) => {
+        const enemy = this.combatant(id);
+        if (enemy.health > health) {
+            let damage: number | string = Math.round(enemy.health - health);
+            enemy.scene.showCombatText(enemy, `${damage}`, 1500, "bone", critical, false);
+            if (enemy.isMalicing) enemy.malice(enemy.scene.player.playerID);
+            if (enemy.isMending) enemy.mend(enemy.scene.player.playerID);
+            if (!enemy.inCombat && health > 0) enemy.jumpIntoCombat();
+            if (!enemy.isSuffering() && !enemy.isTrying() && !enemy.isCasting && !enemy.isContemplating) enemy.isHurt = true;
+            const id = enemy.enemies.find((en: ENEMY) => en.id === enemy.scene.player.playerID);
+            if (id && health > 0) enemy.updateThreat(enemy.scene.player.playerID, calculateThreat(Math.round(enemy.health - health), health, enemy.ascean.health.max));
+        } else if (enemy.health < health) {
+            enemy.scene.showCombatText(enemy, `${Math.round(health - enemy.health)}`, 1500, HEAL);
+        };
+        enemy.health = health;
+        enemy.computerCombatSheet.newComputerHealth = enemy.health;
+        enemy.updateHealthBar(health);
+    };
+
+    public convert = (id: string, faith: string) => {
+        const enemy = this.combatant(id);
+        enemy.ascean = {
+            ...enemy.ascean,
+            faith,
+            name: `${enemy.ascean.name} (Converted)`,
+        };
+        enemy.combatStats = {
+            ...enemy.combatStats,
+            ascean: enemy.ascean
+        };
+        enemy.computerCombatSheet = {
+            ...enemy.computerCombatSheet,
+            computer: enemy.ascean
+        };
+        if (this.context.state.computer !== undefined) {
+            this.context.hud.setupEnemy(enemy);
+        };
+    };
+
+    public luckout = (e: {id: string, luck: string, luckout: boolean}) => {
+        const enemy = this.combatant(e.id);
+        if (e.luckout) {
+            enemy.isLuckout = e.luckout;
+            enemy.playerTrait = e.luck;
+            EventBus.emit("killing-blow", {e:enemy.ascean, enemyID:enemy.enemyID});
+            enemy.stateMachine.setState(States.DEFEATED);
+        };
+    };
+
+    public persuasion = (e: {id: string, persuasion: string, persuaded: boolean}) => {
+        const enemy = this.combatant(e.id);
+        enemy.isPersuaded = e.persuaded;
+        enemy.playerTrait = e.persuasion;
+    };
+
+    public removeComputerEnemy = (id: string) => {
+        for (let i = 0; i < this.context.enemies.length; i++) {
+            const enemy = this.context.enemies[i];
+            if (enemy.currentTarget && enemy.currentTarget.enemyID === id) {
+                enemy.clearComputerCombatWin(id);
+            };
+            enemy.enemies = enemy.enemies.filter((e: ENEMY) => e.id !== id);
+        };
+    };
+
     public updateComputerDamage = (damage: number, id: string, origin: string) => {
         const computer = this.combatant(id);
         computer.health = Math.max(computer.health - damage, 0);
@@ -218,9 +276,9 @@ export class CombatManager {
     
             if (computer.isFeared) computer.checkFear();
             if (computer.isConfused) computer.checkConfuse();
-            computer.isPolymorphed = false;
             if (computer.isMalicing) computer.malice(origin);
             if (computer.isMending) computer.mend(origin);
+            computer.isPolymorphed = false;
     
             if ((!computer.inComputerCombat || !computer.currentTarget) && computer.health > 0) {
                 const enemy = this.context.enemies.find((en: Enemy) => en.enemyID === origin && origin !== computer.enemyID) || this.context.party.find((p: Party) => p.enemyID === origin);
@@ -280,38 +338,38 @@ export class CombatManager {
         this.checkPlayerFocus(computer.enemyID, computer.health);
     };
 
-    checkPlayerFocus = (id: string, value: number) => {
+    public checkPlayerFocus = (id: string, value: number) => {
         if (this.context.state.enemyID !== id) return;
         EventBus.emit("update-combat-state", { key: "newComputerHealth", value });
     };
         
-    checkPlayerSuccess = (): void => {
+    public checkPlayerSuccess = (): void => {
         if (!this.context.player.actionSuccess && (this.context.state.action !== "parry" && this.context.state.action !== "roll" && this.context.state.action !== "")) this.combatMachine.input("action", "");
     };
 
-    ifPlayer = (concern: string): boolean => this.context.player[concern];
+    public ifPlayer = (concern: string): boolean => this.context.player[concern];
 
-    playerCaerenicNeg = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.efficient ? 1.15 : 1.25) : 1;
-    playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
-    playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
+    public playerCaerenicNeg = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.efficient ? 1.15 : 1.25) : 1;
+    public playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
+    public playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
-    computerCaerenicNeg = (entity: Enemy | Party) => entity.isCaerenic ? 1.25 : 1;
+    public computerCaerenicNeg = (entity: Enemy | Party) => entity.isCaerenic ? 1.25 : 1;
 
-    computerCaerenicPro = (entity: Enemy | Party) => entity.isCaerenic ? 1.15 : 1;
+    public computerCaerenicPro = (entity: Enemy | Party) => entity.isCaerenic ? 1.15 : 1;
 
-    computerStalwart = (entity: Enemy | Party) => entity.isStalwart ? 0.85 : 1;
+    public computerStalwart = (entity: Enemy | Party) => entity.isStalwart ? 0.85 : 1;
 
-    computerCaerenicNegID = (id: string) =>{
+    public computerCaerenicNegID = (id: string) =>{
         const entity = this.combatant(id);
         return entity.isCaerenic ? 1.25 : 1;
     };
 
-    computerCaerenicProID = (id: string) => {
+    public computerCaerenicProID = (id: string) => {
         const entity = this.combatant(id);
         return entity.isCaerenic ? 1.15 : 1;
     };
 
-    computerStalwartID = (id: string) => {
+    public computerStalwartID = (id: string) => {
         const entity = this.combatant(id);
         return entity.isStalwart ? 0.85 : 1;
     }; 

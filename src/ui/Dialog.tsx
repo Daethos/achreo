@@ -28,6 +28,7 @@ import { Amulets, Trinkets } from "../assets/db/jewelry";
 import { roundToTwoDecimals } from "../utility/combat";
 import MerchantLoot from "./MerchantLoot";
 import Registry from "./Registry";
+import { Play } from "../game/main";
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
 const GET_ETCH_COST = {
@@ -1229,7 +1230,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
         EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted ${enemyArticle()} ${combat().computer?.name} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
         EventBus.emit("update-quests", newQuestManager);
-        EventBus.emit("convert-enemy", { _id: combat().enemyID, faith: quest.requirements.action.value });
+        (instance.scene as Play).combatManager.convert(combat().enemyID, quest.requirements.action.value);
     };
     function convertPlayer(quest: Quest) {
         const newQuests = quests().quests.map((q: Quest) => {

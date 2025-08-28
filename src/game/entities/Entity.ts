@@ -14,14 +14,14 @@ import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
 import { States } from "../phaser/StateMachine";
 import { Arena } from "../scenes/Arena";
-import { applyShieldFrameSettings, applyWeaponFrameSettings, SHIELD_FRAME_CONFIG, WEAPON_FRAME_CONFIG } from "../../utility/rotations";
+import { applyShieldFrameSettings, applyWeaponFrameSettings, SHIELD_ANIMATION_FRAME_CONFIG, WEAPON_ANIMATION_FRAME_CONFIG } from "../../utility/rotations";
 import { Play } from "../main";
 import { Tutorial } from "../scenes/Tutorial";
 import Party from "./PartyComputer";
 import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
 import { Gauntlet } from "../scenes/Gauntlet";
 import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abilities";
-import { PLAYER } from "../../utility/player";
+import { PHYSICAL_ACTIONS, PLAYER } from "../../utility/player";
 
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
@@ -335,6 +335,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.scene.add.existing(this);
         this.setVisible(false);
         this.glowColor = this.setColor(this.ascean?.mastery);
+        this.animationUpdate();
     };
 
     get position() {
@@ -627,7 +628,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.lastY = this.y;
         return moved || velocityMoving;
     };
-    // moving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
@@ -675,12 +675,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    bowDamageType = () => {
-        return this.currentDamageType === "pierce" || this.currentDamageType === "blunt" ? "arrow" : this.currentDamageType;
-    };
+    bowDamageType = () => this.currentDamageType === "pierce" || this.currentDamageType === "blunt" ? "arrow" : this.currentDamageType;
 
-    checkActionSuccess = (entity: string, target: Player | Enemy | Party) => {
-        if (entity === "player" && !this.isStorming) {
+    checkActionSuccess = () => {
+        if (this.name === "player" && !this.isStorming) {
             if (this.flipX) {
                 this.weaponHitbox.setAngle(270);
             } else {
@@ -710,15 +708,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 };
             };
         };
-        if ((entity === "enemy" || entity === "party") && target && target.body) {
-            const direction = target.position.subtract(this.position);
+        if ((this.name === "enemy" || this.name === "party") && this.currentTarget && this.currentTarget.body) {
+            const direction = this.currentTarget.position.subtract(this.position);
             const distance = direction.length();
-            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !target.isProtecting && target.health > 0) {
-                this.attackedTarget = target;
+            if (distance < FRAME_COUNT.DISTANCE_CLEAR && !this.currentTarget.isProtecting && this.currentTarget.health > 0) {
+                this.attackedTarget = this.currentTarget;
                 this.actionSuccess = true;
+            } else {
+                this.currentAction = "";
             };
         };
     };
+
     checkBow = (type: string) => type === "Bow" || type === "Greatbow";
 
     checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);
@@ -761,9 +762,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     rangedDistanceMultiplier = (num: number) => this.isRanged ? num : 1;
 
-    entropicMultiplier = (power: number): number => {
-        return Phaser.Math.Between(power * (this.ascean.level + 9) / 20, power * (this.ascean.level + 9) / 10);
-    };
+    entropicMultiplier = (power: number): number => Phaser.Math.Between(power * (this.ascean.level + 9) / 20, power * (this.ascean.level + 9) / 10);
 
     currentNegativeState = (type: string) => {
         switch (type) {
@@ -779,9 +778,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    imgSprite = (item: Equipment) => {
-        return item.imgUrl.split("/")[3].split(".")[0];
-    };
+    imgSprite = (item: Equipment) => item.imgUrl.split("/")[3].split(".")[0];
 
     hitBoxCheck = (enemy: Enemy) => {
         if (!enemy || !enemy.body || !enemy.body.position || enemy.health <= 0) return; // enemy.isDefeated === true
@@ -815,254 +812,290 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     };
 
-    particleAoe = (effect: Particle) => {
-        this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect,entity:this as any});
+    particleAoe = (effect: Particle) => this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect, entity:this as any});
+
+    liveAction = (duration: string, frames: string) => Math.floor(this.timeElapsed / FRAME_COUNT[duration] * FRAME_COUNT[frames]);
+
+    getState = (): string => {
+        if (this.isPraying || this.isCasting) return "prayingCasting";
+        if (this.isParrying) return "parrying"; // 1*
+        if (this.isThrusting) return "thrusting"; // 2
+        if (this.isRolling) return "rolling";
+        if (this.isPosturing) return "posturing"; // 4
+        if (this.isAttacking) return "attacking"; // 1
+        if (this.movingVertical()) return "movingVertical";
+        if (this.moving()) return "moving";
+        return "idle";
     };
 
-    liveAction = (duration: string, frames: string) => {
-        return Math.floor(this.timeElapsed / FRAME_COUNT[duration] * FRAME_COUNT[frames]);
-    };
+    startHandlers: Record<string, (frame: any) => void> = {
+        prayingCasting: (frame) => {
+            const frameIndex = frame.index;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.prayingCasting.flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.prayingCasting.noFlipX;
+        
+            this.spriteWeapon.setDepth(this.depth + 1);
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+        parrying: (frame) => {
+            const frameIndex = frame.index;
+            // if (this.name === "player") console.log({frameIndex});
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
+        
+            this.spriteWeapon.setDepth(1);
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+        thrusting: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.thrusting[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.thrusting[configKey].noFlipX;
 
-    functionality = (dt: number, entity: string, target: Player | Enemy | Party) => {
-        if (this.isPraying || this.isCasting) {
-            this.timeElapsed += dt;
-            const config = this.flipX
-                ? WEAPON_FRAME_CONFIG.prayingCasting.flipX
-                : WEAPON_FRAME_CONFIG.prayingCasting.noFlipX;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.PRAY_DURATION * FRAME_COUNT.PRAY_FRAMES);
-          
-            if (this.spriteWeapon.depth < this.depth) this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-        } else if (this.isParrying) {
-            this.timeElapsed += dt;
+        },
+        posturing: (frame) => {
+            const frameIndex = frame.index;
+            // if (this.name === "player") console.log({frameIndex});
             const configKey = this.hasBow ? BOW : NOBOW;
             const config = this.flipX
-                ? WEAPON_FRAME_CONFIG.parrying[configKey].flipX
-                : WEAPON_FRAME_CONFIG.parrying[configKey].noFlipX;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.PARRY_DURATION * FRAME_COUNT.PARRY_FRAMES);
-          
-            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            if (frameIndex === FRAME_COUNT.PARRY_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-            if (frameIndex >= FRAME_COUNT.PARRY_KILL) this.isParrying = false;
-        } else if (this.isThrusting) {
-            this.timeElapsed += dt;
-            const configKey = this.hasBow ? BOW : NOBOW;
-            const config = this.flipX
-                ? WEAPON_FRAME_CONFIG.thrusting[configKey].flipX
-                : WEAPON_FRAME_CONFIG.thrusting[configKey].noFlipX;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.THRUST_DURATION * FRAME_COUNT.THRUST_FRAMES);
-            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Thrusting");
-
-            if (frameIndex === FRAME_COUNT.THRUST_LIVE) {
-                if (entity === "player" && this.isRanged) { // && this.inCombat
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
-                    };
-                };
-            }; 
-            
-            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            if (frameIndex === FRAME_COUNT.THRUST_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-        } else if (this.isRolling) {
-            this.timeElapsed += dt;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ROLL_DURATION * FRAME_COUNT.ROLL_FRAMES);
-            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Rolling");
-            if (frameIndex === FRAME_COUNT.ROLL_LIVE) {
-                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.bowDamageType());
-                    };
-                };
-            };
-            if (frameIndex === FRAME_COUNT.ROLL_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-        } else if (this.isAttacking) {
-            this.timeElapsed += dt;
-            const configKey = this.hasBow ? BOW : NOBOW;
-            const config = this.flipX
-                ? WEAPON_FRAME_CONFIG.attacking[configKey].flipX
-                : WEAPON_FRAME_CONFIG.attacking[configKey].noFlipX;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.ATTACK_DURATION * FRAME_COUNT.ATTACK_FRAMES);
-            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Attacking");
-                
-            if (frameIndex === FRAME_COUNT.ATTACK_LIVE) {
-                if (entity === "player" && this.isRanged) {
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
-                    };
-                };
-            };
-            
-            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
-            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            if (frameIndex === FRAME_COUNT.ATTACK_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-        } else if (this.isPosturing) {
-            this.timeElapsed += dt;
-            const configKey = this.hasBow ? BOW : NOBOW;
-            const config = this.flipX
-            ? WEAPON_FRAME_CONFIG.posturing[configKey].flipX
-            : WEAPON_FRAME_CONFIG.posturing[configKey].noFlipX;
-            const frameIndex = Math.floor(this.timeElapsed / FRAME_COUNT.POSTURE_DURATION * FRAME_COUNT.POSTURE_FRAMES);
-            // if (this.name === "player") console.log(this.timeElapsed, frameIndex, this.frameCount, "Posturing");
+                ? WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].noFlipX;
 
             const shieldConfig = this.flipX
-                ? SHIELD_FRAME_CONFIG.posturing.flipX
-                : SHIELD_FRAME_CONFIG.posturing.noFlipX
+                ? SHIELD_ANIMATION_FRAME_CONFIG.posturing.flipX
+                : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX
                 
-            
-            if (frameIndex === FRAME_COUNT.POSTURE_LIVE) {
-                if (entity === "player" && this.isRanged) { // && this.inCombat
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "enemy" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
-                    };
-                };
-                if (entity === "party" && this.currentTarget && this.isRanged) { // && (this.inCombat || this.inComputerCombat)
-                    if (this.hasMagic) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
-                    } else if (this.hasBow) {
-                        this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
-                    };
-                };
-            }; 
-            if (this.spriteWeapon.depth !== 1) this.spriteWeapon.setDepth(1);
+            this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
-            if (frameIndex === FRAME_COUNT.POSTURE_SUCCESS && !this.isRanged) this.checkActionSuccess(entity, target);
-        } else if (this.movingVertical()) {
+        },
+        attacking: (frame) => {
+            const frameIndex = frame.index;
+            // if (this.name === "player") console.log({frameIndex});
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].noFlipX;
+            
+            this.spriteWeapon.setDepth(1);
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+
+        movingVertical: () => {
             if (!this.flipX) {
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(0.25, 0.25);
-                    this.spriteWeapon.setAngle(107.5);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(0.25, 0.25);
+                    this.spriteWeapon?.setAngle(107.5);
                 } else {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0, 0.75);
-                    this.spriteWeapon.setAngle(107.5);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0, 0.75);
+                    this.spriteWeapon?.setAngle(107.5);
                 };
                 if (this.isStalwart) {
-                    this.spriteShield.setOrigin(-0.2, 0.25);
+                    this.spriteShield?.setOrigin(-0.2, 0.25);
                 };    
             } else {
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(0, 0.5);
-                    this.spriteWeapon.setAngle(-7.5);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(0, 0.5);
+                    this.spriteWeapon?.setAngle(-7.5);
                 } else {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0.25, 1.2);
-                    this.spriteWeapon.setAngle(-194.5);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.25, 1.2);
+                    this.spriteWeapon?.setAngle(-194.5);
                 };
                 if (this.isStalwart) {
-                    this.spriteShield.setOrigin(1.2, 0.25);
+                    this.spriteShield?.setOrigin(1.2, 0.25);
                 };
             };
             if (this.movingDown()) {
-                this.spriteShield.setDepth(this.depth + 1);
-                this.spriteWeapon.setDepth(this.depth + 1);
+                this.spriteShield?.setDepth(this.depth + 1);
+                this.spriteWeapon?.setDepth(this.depth + 1);
             } else {
-                this.spriteShield.setDepth(this.depth - 1);
-                this.spriteWeapon.setDepth(this.depth - 1);
+                this.spriteShield?.setDepth(this.depth - 1);
+                this.spriteWeapon?.setDepth(this.depth - 1);
             };
-        } else if (this.moving()) {
+        },
+
+        moving: () => {
             if (this.flipX) {
                 if (this.isStalwart) {
-                    this.spriteShield.setOrigin(1.2, 0.25);
+                    this.spriteShield?.setOrigin(1.2, 0.25);
                 };
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(0.25, 0.5);
-                    this.spriteWeapon.setAngle(-7.5);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(0.25, 0.5);
+                    this.spriteWeapon?.setAngle(-7.5);
                 } else {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0.5, 1.2);
-                    this.spriteWeapon.setAngle(-194.5);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.5, 1.2);
+                    this.spriteWeapon?.setAngle(-194.5);
                 };
             } else {  
                 if (this.isStalwart) {
-                    this.spriteShield.setOrigin(-0.2, 0.25);
+                    this.spriteShield?.setOrigin(-0.2, 0.25);
                 };
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(0.5, 0.25);
-                    this.spriteWeapon.setAngle(107.5);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(0.5, 0.25);
+                    this.spriteWeapon?.setAngle(107.5);
                 } else {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(-0.25, 0.5);
-                    this.spriteWeapon.setAngle(107.5);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(-0.25, 0.5);
+                    this.spriteWeapon?.setAngle(107.5);
                 };
             };
-        } else {
+        },
+
+        idle: () => {
             if (this.flipX) {
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0.15, 0.85);
-                    this.spriteWeapon.setAngle(90);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.15, 0.85);
+                    this.spriteWeapon?.setAngle(90);
                 } else {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(-0.25, 1.2);
-                    this.spriteWeapon.setAngle(-250);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(-0.25, 1.2);
+                    this.spriteWeapon?.setAngle(-250);
                 };
             } else {
                 if (this.hasBow) {
-                    this.spriteWeapon.setDepth(this.depth + 1);
-                    this.spriteWeapon.setOrigin(0.85, 0.1);
-                    this.spriteWeapon.setAngle(0);
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.85, 0.1);
+                    this.spriteWeapon?.setAngle(0);
                 } else {
-                    this.spriteWeapon.setDepth(1);
-                    this.spriteWeapon.setOrigin(-0.15, 1.3);
-                    this.spriteWeapon.setAngle(-195);
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(-0.15, 1.3);
+                    this.spriteWeapon?.setAngle(-195);
                 };
             };
-        };
+        }
+    };
+
+    updateHandlers: Record<string, (frame: any) => void> = {
+        prayingCasting: (frame) => {
+            const frameIndex = frame.index;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.prayingCasting.flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.prayingCasting.noFlipX;
+
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+
+        parrying: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
+
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            if (frameIndex === 4 && !this.isRanged) {
+                this.currentAction = States.PARRY;
+                this.checkActionSuccess();
+            };
+            if (frameIndex >= 6) {
+                this.currentAction = "";
+                this.isParrying = false;
+            };
+        },
+
+        thrusting: (frame) => {
+            const frameIndex = frame.index;
+            if (frameIndex === 2 && this.isRanged) {
+                if (this.hasMagic) {
+                    this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
+                } else if (this.hasBow) {
+                    this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
+                };
+            };
+            if (frameIndex === 3 && !this.isRanged) {
+                this.currentAction = States.THRUST;
+                this.checkActionSuccess();
+            };
+        },
+
+        rolling: (frame) => {
+            const frameIndex = frame.index;
+            // if (this.name === "player") console.log({frame, frameIndex});
+            if (frameIndex === 4 && this.isRanged && this.name !== "player") {
+                if (this.hasMagic) {
+                    this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
+                } else if (this.hasBow) {
+                    this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.bowDamageType());
+                };
+            };
+            if (frameIndex === 1 && !this.isRanged) {
+                this.currentAction = States.ROLL;
+                this.checkActionSuccess();
+            };
+        },
+
+        posturing: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].noFlipX;
+
+            const shieldConfig = this.flipX
+                ? SHIELD_ANIMATION_FRAME_CONFIG.posturing.flipX
+                : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX;
+
+            if (frameIndex === 4 && this.isRanged) {
+                if (this.hasMagic) {
+                    this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
+                } else if (this.hasBow) {
+                    this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
+                };
+            };
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
+            if (frameIndex === 5 && !this.isRanged) {
+                this.currentAction = States.POSTURE;
+                this.checkActionSuccess();
+            };
+        },
+
+        attacking: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].noFlipX;
+
+            if (frameIndex === 5 && this.isRanged) {
+                if (this.hasMagic) {
+                    this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
+                } else if (this.hasBow) {
+                    this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
+                };
+            };
+
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            if (frameIndex === 8 && !this.isRanged) {
+                this.currentAction = States.ATTACK;
+                this.checkActionSuccess();
+            };
+        },
+    };
+
+    animationUpdate = () => {
+        this.on(Phaser.Animations.Events.ANIMATION_START, (_anim: any, frame: any, _frameKey: any) => {
+            const state = this.getState();
+            const handler = this.startHandlers[state];
+            if (handler) handler(frame);
+        }, this);
+        this.on(Phaser.Animations.Events.ANIMATION_UPDATE, (_anim: any, frame: any, _frameKey: any) => {
+            const state = this.getState();
+            const handler = this.updateHandlers[state];
+            if (handler) handler(frame);
+        }, this);
     };
 };

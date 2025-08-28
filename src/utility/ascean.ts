@@ -122,7 +122,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         preference: 'Leather-Cloth',
     },{
         name: "Maegaretha Raiq",
-        description: 'Daughter of the Eclipse',
+        description: 'Rogue of the Eclipse',
         sex: 'Woman',
         origin: "Notheo",
         constitution: 12,
@@ -262,7 +262,7 @@ export const STARTING_CHARACTERS: CharacterSheet[] = [
         preference: 'Chain-Mail',
     },{
         name: "Syera Ashfyre",
-        description: 'Lady of the Firelands',
+        description: 'Sworn of the Firelands',
         sex: 'Woman',
         origin: "Fyers",
         constitution: 12,

@@ -22,6 +22,7 @@ export interface Combat {
 
     playerAttributes: CombatAttributes | undefined;
     playerDamageType: string;
+    playerDamagedType: string;
     playerDefense: Defense | undefined;
     playerDefenseDefault: Defense | undefined;
     playerEffects: StatusEffect[];
@@ -60,6 +61,7 @@ export interface Combat {
     
     computerAttributes: CombatAttributes | undefined;
     computerDamageType: string;
+    computerDamagedType: string;
     computerDefense: Defense | undefined;
     computerDefenseDefault: Defense | undefined;
     computerEffects: StatusEffect[];
@@ -143,13 +145,13 @@ export interface Combat {
 
 export const initCombat: Combat = {
     player: undefined,
-    action: '',
-    playerAction: '',
-    parryGuess: '',
-    playerBlessing: 'Buff',
-    prayerSacrifice: '',
-    prayerSacrificeId: '',
-    prayerSacrificeName: '',
+    action: "",
+    playerAction: "",
+    parryGuess: "",
+    playerBlessing: "Buff",
+    prayerSacrifice: "",
+    prayerSacrificeId: "",
+    prayerSacrificeName: "",
     playerHealth: 0,
     newPlayerHealth: 0,
     
@@ -160,7 +162,8 @@ export const initCombat: Combat = {
     weaponThree: undefined,
 
     playerEffects: [],
-    playerDamageType: '',
+    playerDamageType: "",
+    playerDamagedType: "",
     playerDefense: undefined,
     playerAttributes: undefined,
     playerDefenseDefault: undefined,
@@ -169,12 +172,12 @@ export const initCombat: Combat = {
     playerDamaged: false,
     enemyPrayerConsumed: false,
 
-    playerStartDescription: '',
-    playerSpecialDescription: '',
-    playerActionDescription: '',
-    playerInfluenceDescription: '',
-    playerInfluenceDescriptionTwo: '',
-    playerDeathDescription: '',
+    playerStartDescription: "",
+    playerSpecialDescription: "",
+    playerActionDescription: "",
+    playerInfluenceDescription: "",
+    playerInfluenceDescriptionTwo: "",
+    playerDeathDescription: "",
 
     criticalSuccess: false,
     parrySuccess: false,
@@ -185,9 +188,9 @@ export const initCombat: Combat = {
     playerWin: false,
 
     computer: undefined,
-    computerAction: '',
-    computerParryGuess: '',
-    computerBlessing: '',
+    computerAction: "",
+    computerParryGuess: "",
+    computerBlessing: "",
     computerHealth: 0,
     newComputerHealth: 0,
 
@@ -198,7 +201,8 @@ export const initCombat: Combat = {
     computerWeaponThree: undefined,
     
     computerEffects: [],
-    computerDamageType: '',
+    computerDamageType: "",
+    computerDamagedType: "",
     computerDefense: undefined,
     computerAttributes: undefined,
     computerDefenseDefault: undefined,
@@ -219,12 +223,12 @@ export const initCombat: Combat = {
     // parryRollWeight: 0,
     // parryThrustWeight: 0,
 
-    computerStartDescription: '',
-    computerSpecialDescription: '',
-    computerActionDescription: '',
-    computerInfluenceDescription: '',
-    computerInfluenceDescriptionTwo: '',
-    computerDeathDescription: '',
+    computerStartDescription: "",
+    computerSpecialDescription: "",
+    computerActionDescription: "",
+    computerInfluenceDescription: "",
+    computerInfluenceDescriptionTwo: "",
+    computerDeathDescription: "",
 
     computerCriticalSuccess: false,
     computerParrySuccess: false,
@@ -255,7 +259,7 @@ export const initCombat: Combat = {
     deityData: [],
     skillData: [],
 
-    weather: '',
+    weather: "",
     astrication: { active: false, charges: 0 },
     berserk: { active: false, charges: 0, talent: false },
     conviction: { active: false, charges: 0, talent: false },
@@ -265,17 +269,17 @@ export const initCombat: Combat = {
     isSeering: false,
     isInsight: false,
     isQuicken: false,
-    enemyID: '',
-    damagedID: '',
+    enemyID: "",
+    damagedID: "",
     combatTimer: 0,
 
     isEnemy: false,
-    npcType: '',
+    npcType: "",
     isAggressive: false,
     startedAggressive: false,
     enemyPersuaded: false,
     playerLuckout: false,
     persuasionScenario: false,
     luckoutScenario: false,
-    playerTrait: '',
+    playerTrait: "",
 };

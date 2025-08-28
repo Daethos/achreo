@@ -27,7 +27,7 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
-import { FRAMES } from "../entities/Entity";
+
 interface ChunkData {
     key: string;
     x: number;
@@ -41,6 +41,7 @@ interface ChunkData {
     navMesh: any;
     overlay: Phaser.GameObjects.Graphics;
 };
+
 export class Underground extends Scene {
     animatedTiles: any[];
     offsetX: number;

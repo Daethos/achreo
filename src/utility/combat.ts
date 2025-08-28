@@ -1637,6 +1637,9 @@ function computerWeaponMaker(combat: Combat): Combat {
     let prayers = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
     let newPrayer = Math.floor(Math.random() * prayers.length);
     combat.computerBlessing = prayers[newPrayer];
+
+    combat.computerDamagedType = combat.computerDamageType;
+    
     const change = Math.floor(Math.random() * 101);
     if (change < 50) {
         combat.computerWeapons = [combat.computerWeapons[1], combat.computerWeapons[2], combat.computerWeapons[0]];
@@ -1695,7 +1698,7 @@ function dualActionSplitter(combat: Combat): Combat {
     const playerParry = newCombat.parryGuess;
     const computerAction = newCombat.computerAction;
     const computerParry = newCombat.computerParryGuess; 
-    computerWeaponMaker(newCombat);
+    // computerWeaponMaker(newCombat);
     // computerActionCompiler(newCombat, playerAction);
 
     newCombat.computerStartDescription = 
@@ -1805,7 +1808,6 @@ function weaponActionSplitter(combat: Combat): Combat {
         };
     } else if (!playerActionLive && computerActionLive) {
         if (cleanData.computerAction === ACTION_TYPES.PARRY) return cleanData;
-        computerWeaponMaker(cleanData);
         computerAttackCompiler(cleanData, cleanData.computerAction);
         changes = {
             ...changes,
@@ -1826,6 +1828,7 @@ function weaponActionSplitter(combat: Combat): Combat {
         };
     };
     faithCompiler(cleanData);
+    computerWeaponMaker(cleanData);
     if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated.`;
     if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated.`;
     cleanData.action = "";
@@ -1839,8 +1842,13 @@ function weaponActionSplitter(combat: Combat): Combat {
         "computerAction": cleanData.computerAction,
         "combatRound": cleanData.combatRound,
         "sessionRound": cleanData.sessionRound,
+        
         "playerDamaged": cleanData.realizedComputerDamage > 0,
         "computerDamaged": cleanData.realizedPlayerDamage > 0,
+        "playerDamagedType": cleanData.playerDamagedType,
+        "computerDamagedType": cleanData.computerDamagedType,
+        "playerDamageType": cleanData.playerDamageType,
+        "computerDamageType": cleanData.computerDamageType,
         
         "newPlayerHealth": cleanData.newPlayerHealth,
         "playerDefense": cleanData.playerDefense,
@@ -1902,6 +1910,7 @@ function newDataCompiler(combat: Combat): any {
         weaponThree: combat.weaponThree, // Clean Slate of Weapon Three
         weapons: combat.weapons, // Array of 3 Weapons in current affect and order
         playerDamageType: combat.playerDamageType,
+        playerDamagedType: combat.playerDamagedType,
         playerDefense: combat.playerDefense, // Posseses Base + Postured Defenses
         playerAttributes: combat.playerAttributes, // Possesses compiled CombatAttributes, Initiative
         playerDefenseDefault: combat.playerDefenseDefault, // Possesses Base Defenses
@@ -1917,6 +1926,7 @@ function newDataCompiler(combat: Combat): any {
         computerWeaponTwo: combat.computerWeaponTwo, // Clean Slate of Weapon Two
         computerWeaponThree: combat.computerWeaponThree, // Clean Slate of Weapon Three
         computerDamageType: combat.computerDamageType,
+        computerDamagedType: combat.computerDamagedType,
         potentialPlayerDamage: 0, // All the Damage that is possible on hit for a player
         potentialComputerDamage: 0, // All the Damage that is possible on hit for a computer
         realizedPlayerDamage: 0, // Player Damage - Computer Defenses

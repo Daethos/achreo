@@ -17,6 +17,7 @@ export interface ComputerCombat {
 
     computerAttributes: CombatAttributes | undefined;
     computerDamageType: string;
+    computerDamagedType: string;
     computerDefense: Defense | undefined;
     // computerDefenseDefault: Defense | undefined;
     computerEffects: StatusEffect[];
@@ -48,6 +49,7 @@ export interface ComputerCombat {
     
     computerEnemyAttributes: CombatAttributes | undefined;
     computerEnemyDamageType: string;
+    computerEnemyDamagedType: string;
     computerEnemyDefense: Defense | undefined;
     // computerEnemyDefenseDefault: Defense | undefined;
     // computerEnemyEffects: StatusEffect[];
@@ -74,8 +76,6 @@ export interface ComputerCombat {
     // astrication: { active: boolean; charges: number; };
     // berserk: { active: boolean; charges: number; };
     // conviction: { active: boolean; charges: number; };
-    // isStalwart: boolean;
-    // isCaerenic: boolean;
     // isStealth: boolean;
     // isSeering: boolean;
     // isInsight: boolean;
@@ -87,8 +87,8 @@ export interface ComputerCombat {
 
 export const initComputerCombat: ComputerCombat = {
     computer: undefined,
-    computerAction: '',
-    // computerBlessing: 'Buff',
+    computerAction: "",
+    // computerBlessing: "Buff",
     computerHealth: 0,
     newComputerHealth: 0,
     
@@ -98,7 +98,8 @@ export const initComputerCombat: ComputerCombat = {
     computerWeaponThree: undefined,
 
     computerEffects: [],
-    computerDamageType: '',
+    computerDamageType: "",
+    computerDamagedType: "",
     computerDefense: undefined,
     computerAttributes: undefined,
     // computerDefenseDefault: undefined,
@@ -118,8 +119,8 @@ export const initComputerCombat: ComputerCombat = {
     computerStalwart: false,
 
     computerEnemy: undefined,
-    computerEnemyAction: '',
-    // computerEnemyBlessing: '',
+    computerEnemyAction: "",
+    // computerEnemyBlessing: "",
     computerEnemyHealth: 0,
     newComputerEnemyHealth: 0,
 
@@ -129,7 +130,8 @@ export const initComputerCombat: ComputerCombat = {
     computerEnemyWeaponThree: undefined,
     
     // computerEnemyEffects: [],
-    computerEnemyDamageType: '',
+    computerEnemyDamageType: "",
+    computerEnemyDamagedType: "",
     computerEnemyDefense: undefined,
     computerEnemyAttributes: undefined,
     // computerEnemyDefenseDefault: undefined,
@@ -152,17 +154,15 @@ export const initComputerCombat: ComputerCombat = {
     // combatEngaged: false,
     combatRound: 0,
 
-    weather: '',
+    weather: "",
     // astrication: { active: false, charges: 0 },
     // berserk: { active: false, charges: 0 },
     // conviction: { active: false, charges: 0 },
-    // isStalwart: false,
-    // isCaerenic: false,
     // isStealth: false,
     // isSeering: false,
     // isInsight: false,
-    enemyID: '',
-    damagedID: '',
-    personalID: '',
+    enemyID: "",
+    damagedID: "",
+    personalID: "",
     // combatTimer: 0,
 };

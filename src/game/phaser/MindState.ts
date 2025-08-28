@@ -135,7 +135,7 @@ export const MindStates: {[key:string]: MindState;} = {
 
     Commander: {
         healPriority: 0.3,
-        keepDistance: true,
+        keepDistance: false,
         chaseThresholdSq: (DISTANCE.CHASE * 1.1) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.3) ** 2,
         callHelp: true,

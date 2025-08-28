@@ -211,7 +211,6 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         setArena({...arena(), party: team});
     };
     function switchScenes() {
-        console.log(SCENE_SWITCH[switchScene()].next, "New Combat Scene");
         setSwitchScene(SCENE_SWITCH[switchScene()].next);
         setArena({...arena(), map: SCENE_SWITCH[switchScene()].key});
         if (switchScene() === UNDERGROUND) checkTeam();

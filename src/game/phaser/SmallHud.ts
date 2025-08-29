@@ -5,13 +5,11 @@ import { Hud } from "../scenes/Hud";
 const MOBILE = ["cursor-reset", "minimap", "pause"];
 
 function xModifier(x: number, index: number, offset = 43.75) {
-    const mod = x * 1.35 + (index * offset);
-    return mod;
+    return x * 1.35 + (index * offset);
 };
 
 function leftXModifier(x: number, index: number, offset = 43.75) {
-    const mod = x * 0.35 - (index * offset);
-    return mod;
+    return x * 0.35 - (index * offset);
 };
 
 export default class SmallHud extends Phaser.GameObjects.Container {

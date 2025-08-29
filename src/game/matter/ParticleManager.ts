@@ -61,6 +61,7 @@ export class Particle {
     timer: Phaser.Time.TimerEvent;
     triggered: boolean = false;
     velocity: number;
+    kill: boolean = false;
 
     constructor(scene: Play, action: string, key: string, player: Player | Enemy | Entity, special: boolean) {
         const particle = PARTICLES.includes(key);
@@ -108,19 +109,9 @@ export class Particle {
         this.effect.setAngle(angleTarget(this.target));
     };
     
-    scaler = (particle: boolean, special: boolean, action: string) => {
-        if (particle && !special) {
-            return 0.5;
-        } else if (action === "achire") {
-            return 0.75;
-        } else {
-            return 0.6; // 0.75
-        };
-    };
+    scaler = (particle: boolean, special: boolean, action: string): number => particle && !special ? 0.5 : action === "achire" ? 0.75 : 0.6;
     
-    sensorer = (special: boolean, action: string): number => {
-        return !special ? 6 : action === "achire" ? 9 : 16;
-    };
+    sensorer = (special: boolean, action: string): number => !special ? 6 : action === "achire" ? 9 : 16;
 
     sensorListener = (player: Player | Enemy | Entity, sensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
@@ -299,6 +290,7 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.stop();
         particle.effect.setActive(false);
         particle.effect.setVisible(false);
+        // this.context.tweens.killTweensOf(particle.effect);
         particle.effect.world.remove(particle.effect.body!);
         if (!particle.triggered) this.impactEffect(particle);
         if (!particle.triggered && particle.magic) {
@@ -325,12 +317,32 @@ export default class ParticleManager extends Phaser.Scene {
             this.particles.push(particle);
         };
 
+        const duration = TIME[particle.action as keyof typeof TIME];
+        const startX = particle.effect.x;
+        const startY = particle.effect.y;
+
+        const distance = particle.velocity * (duration / 1000) * 60; 
+
+        const x = startX + particle.target.x * distance;
+        const y = startY + particle.target.y * distance;
+
+        // console.log({ x, y, duration, startX, startY, dir: particle.target });
         this.context.tweens.add({
             targets: particle.effect,
-            scale: particle.effect.scale * 0.675, // Scale down to simulate depth
+            x, y,
+            scale: particle.effect.scale * 0.675,
             alpha: 0.5, // Fade out slightly
-            duration: TIME[particle.action as keyof typeof TIME], // Same or different duration based on your preference
-            ease: "Quad.easeOut", // Easing for smooth effect
+            duration, // Same or different duration based on your preference
+            // ease: "Quad.easeOut", // Easing for smooth effect
+            onUpdate: () => {
+                if (particle.collided && !particle.kill) {
+                    particle.kill = true;
+                    const tw = this.context.tweens.getTweensOf(particle.effect);
+                    tw.forEach(t => t.stop());
+                    this.removeEffect(particle.id);
+                    return false;
+                };
+            },
         });
         return particle;
     };
@@ -353,8 +365,8 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.stop();
     };
 
-    updateParticle(particle: Particle) { 
-        if (particle == undefined || particle.effect == undefined || !this.particles.find((part) => part.id === particle.id)) return;
+    updateParticle(particle: Particle) {
+        if (!particle || !particle.effect || !this.particles.find((part) => part.id === particle.id)) return;
         if (particle.isParticle === true) particle.effect.play(particle.key, true);
         particle.effect.setVelocity(particle.velocity * particle.target.x, particle.target.y * particle.velocity);
     };

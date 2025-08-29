@@ -690,9 +690,8 @@ export class Game extends Scene {
     cleanUp = (): void => {
         EventBus.off("combat");
         EventBus.off("enemyLootDrop");
-        EventBus.off("minimap");
+        // EventBus.off("minimap");
         EventBus.off("aggressive-enemy");
-        EventBus.off("update-postfx");
         EventBus.off("update-camera-zoom");
         EventBus.off("update-speed");
         EventBus.off("update-enemy-aggression");
@@ -721,17 +720,17 @@ export class Game extends Scene {
             if (drops.scene !== "Game") return;
             drops.drops.forEach((drop: Equipment) => this.lootDrops.push(new LootDrop({ scene: this, enemyID: drops.enemyID, drop })));
         });
-        EventBus.on("minimap", () => {
-            if (this.minimap.minimap.visible === true) {
-                this.minimap.minimap.setVisible(false);
-                this.minimap.border.setVisible(false);
-                this.minimap.reset.setVisible(false);
-            } else {
-                this.minimap.minimap.setVisible(true);
-                this.minimap.border.setVisible(true);
-                this.minimap.minimap.startFollow(this.player);
-            };
-        });
+        // EventBus.on("minimap", () => {
+        //     if (this.minimap.minimap.visible === true) {
+        //         this.minimap.minimap.setVisible(false);
+        //         this.minimap.border.setVisible(false);
+        //         this.minimap.reset.setVisible(false);
+        //     } else {
+        //         this.minimap.minimap.setVisible(true);
+        //         this.minimap.border.setVisible(true);
+        //         this.minimap.minimap.startFollow(this.player);
+        //     };
+        // });
         EventBus.on("aggressive-enemy", (e: {id: string, isAggressive: boolean}) => {
             let enemy = this.enemies.find((enemy: any) => enemy.enemyID === e.id);
             if (!enemy) return;
@@ -744,13 +743,8 @@ export class Game extends Scene {
                 enemy.stateMachine.setState(States.CHASE);
             };
         });
-        EventBus.on("check-stealth", (stealth: boolean) => {
-            this.stealth = stealth;
-        });
-        EventBus.on("update-camera-zoom", (zoom: number) => {
-            let camera = this.cameras.main;
-            camera.zoom = zoom;
-        });
+        EventBus.on("check-stealth", (stealth: boolean) => this.stealth = stealth);
+        EventBus.on("update-camera-zoom", (zoom: number) => this.cameras.main.zoom = zoom);
         EventBus.on("update-speed", (data: { speed: number, type: string }) => {
             switch (data.type) {
                 case "playerSpeed":
@@ -1239,14 +1233,14 @@ export class Game extends Scene {
     };
 
     pause(): void {
-        this.scene.pause();
         this.matter.pause();
+        this.scene.pause();
         this.pauseMusic();
     };
 
     resume(): void {
-        this.scene.resume();
         this.matter.resume();
+        this.scene.resume();
         this.resumeMusic();
     };
 };

@@ -1,7 +1,7 @@
 import Player from "../entities/Player";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
 import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, POSITIVE, staminaCheck, STATE } from "../../utility/player";
-import { FRAME_COUNT, FRAMES } from "../entities/Entity";
+import { FRAMES } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import { screenShake, sprint } from "./ScreenShake";
 import Bubble from "./Bubble";
@@ -851,9 +851,9 @@ export default class PlayerMachine {
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
     }; 
     onAttackUpdate = (_dt: number) => {
-        if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
-            this.scene.combatManager.combatMachine.input("action", "attack");
-        };
+        // if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) {
+        //     this.scene.combatManager.combatMachine.input("action", "attack");
+        // };
         this.player.combatChecker(this.player.isAttacking);
         sprint(this.scene);
     }; 
@@ -946,11 +946,11 @@ export default class PlayerMachine {
         this.player.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isParrying = false);
     };
     onParryUpdate = (_dt: number) => {
-        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
-        if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") >= FRAME_COUNT.PARRY_KILL) {
-            this.scene.combatManager.combatMachine.input("action", "");
-            this.player.isParrying = false;
-        };
+        // if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.scene.combatManager.combatMachine.input("action", "parry");
+        // if (this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES") >= FRAME_COUNT.PARRY_KILL) {
+        //     this.scene.combatManager.combatMachine.input("action", "");
+        //     this.player.isParrying = false;
+        // };
         this.player.combatChecker(this.player.isParrying);
     };
     onParryExit = () => {
@@ -978,9 +978,9 @@ export default class PlayerMachine {
         this.player.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPosturing = false);
     };
     onPostureUpdate = (_dt: number) => {
-        if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
-            this.scene.combatManager.combatMachine.input("action", "posture");
-        };
+        // if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) {
+        //     this.scene.combatManager.combatMachine.input("action", "posture");
+        // };
         this.player.combatChecker(this.player.isPosturing);
         sprint(this.scene);
     };
@@ -1075,9 +1075,9 @@ export default class PlayerMachine {
         this.player.playerRoll();    
     };
     onRollUpdate = (_dt: number) => {
-        if (this.player.liveAction("ROLL_DURATION", "ROLL_FRAMES") === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
-            this.scene.combatManager.combatMachine.input("action", "roll");
-        };
+        // if (this.player.liveAction("ROLL_DURATION", "ROLL_FRAMES") === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) {
+        //     this.scene.combatManager.combatMachine.input("action", "roll");
+        // };
         this.player.combatChecker(this.player.isRolling);
         sprint(this.scene);
     };
@@ -1119,14 +1119,11 @@ export default class PlayerMachine {
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
-        // this.scene.time.delayedCall(FRAME_COUNT.THRUST_DURATION, () => {
-        //     this.player.isThrusting = false;
-        // });
     };
     onThrustUpdate = (_dt: number) => {
-        if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
-            this.scene.combatManager.combatMachine.input("action", "thrust");
-        };
+        // if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) {
+        //     this.scene.combatManager.combatMachine.input("action", "thrust");
+        // };
         this.player.combatChecker(this.player.isThrusting);
         sprint(this.scene);
     };
@@ -1395,6 +1392,7 @@ export default class PlayerMachine {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return; 
         this.player.startCasting("Devour", PLAYER.DURATIONS.DEVOUR, true, true);
         this.player.currentTarget.isConsumed = true;
+        this.player.currentTarget.stateMachine.setState(States.CONSUMED);
         this.player.checkTalentCost(States.DEVOUR, PLAYER.STAMINA.DEVOUR);
         this.scene.sound.play("absorb", { volume: this.scene.hud.settings.volume });
         this.player.flickerCaerenic(2000);
@@ -1680,6 +1678,7 @@ export default class PlayerMachine {
         this.player.flickerCaerenic(3000); 
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
         this.player.currentTarget.isConsumed = true;
+        this.player.currentTarget.stateMachine.setState(States.CONSUMED);
         const power = this.player.checkTalentEnhanced(States.KYRNAICISM) ? 40 : 20;
         this.player.chiomicTimer = this.scene.time.addEvent({
             delay: 1000,

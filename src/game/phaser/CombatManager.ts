@@ -68,9 +68,11 @@ export class CombatManager {
         };
         
         if (e.newComputerHealth <= 0 && e.playerWin === true) player.defeatedEnemyCheck(e.enemyID);
+
         if (newPlayerHealth <= 0) {
             player.isDefeated = true;
             player.disengage();
+            player.playerMachine.stateMachine.setState(States.DEFEATED);
         };
     
         if (player.inCombat === false && this.context.combat === true) this.context.combatEngaged(false);
@@ -90,13 +92,13 @@ export class CombatManager {
         if (enemy.health > newComputerHealth) {
             let damage: number | string = Math.round(e.realizedPlayerDamage); // enemy.health - newComputerHealth
             this.context.showCombatText(enemy, `${damage}`, 1500, BONE, criticalSuccess, false);
-            enemy.checkHurt();
             if (enemy.isFeared) enemy.checkFear();
             if (enemy.isConfused) enemy.checkConfuse();
             if (enemy.isPolymorphed) enemy.isPolymorphed = false;
             if (enemy.isMalicing) enemy.malice(player.playerID);
             if (enemy.isMending) enemy.mend(player.playerID);
             if (!enemy.inCombat && newComputerHealth > 0 && newPlayerHealth > 0) enemy.checkEnemyCombatEnter();
+            enemy.checkHurt();
             const id = enemy.enemies.find((en: ENEMY) => en.id === player.playerID);
             if (id && newComputerHealth > 0) {
                 enemy.updateThreat(player.playerID, calculateThreat(Math.round(enemy.health - newComputerHealth), newComputerHealth, computerHealth));
@@ -106,7 +108,7 @@ export class CombatManager {
             };
         } else if (enemy.health < newComputerHealth) { 
             let heal = Math.round(newComputerHealth - enemy.health);
-            this.context.showCombatText(enemy, `${heal}`, 1500, HEAL, false, false);
+            this.context.showCombatText(enemy, `${heal}`, 1500, HEAL);
         };
         
         enemy.health = newComputerHealth;
@@ -116,11 +118,11 @@ export class CombatManager {
 
         if (e.computerParrySuccess) {
             this.stunned(player.playerID);
-            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false);    
+            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess);    
         };
 
         if (e.computerRollSuccess) {
-            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess, false);
+            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, DAMAGE, computerCriticalSuccess);
         };
         
         enemy.weapons = computerWeapons;
@@ -133,6 +135,10 @@ export class CombatManager {
         if (newPlayerHealth <= 0 && computerWin === true) {
             enemy.isTriumphant = true;
             enemy.clearCombatWin();
+        };
+
+        if (enemy.health <= 0 && !enemy.stateMachine.isCurrentState(States.DEFEATED)) {
+            enemy.stateMachine.setState(States.DEFEATED);
         };
     };
 
@@ -154,12 +160,12 @@ export class CombatManager {
         this.context.showCombatText(this.context.player, `${damage}`, PLAYER.DURATIONS.TEXT, DAMAGE, e.computerCriticalSuccess, false);
 
         player.isHurt = !(player.isSuffering() || player.isTrying() || player.isCasting || player.isContemplating || player.isPraying);
-
         player.isConfused = false;
         player.isPolymorphed = false;
-
+        
         this.handleReactiveEffects(e.damagedID);
         this.checkFearBreak();
+        if (player.isHurt) this.context.player.playerMachine.stateMachine.setState(States.HURT);
     };
 
     private handleReactiveEffects(id: string) {
@@ -209,15 +215,23 @@ export class CombatManager {
             if (enemy.isMalicing) enemy.malice(enemy.scene.player.playerID);
             if (enemy.isMending) enemy.mend(enemy.scene.player.playerID);
             if (!enemy.inCombat && health > 0) enemy.jumpIntoCombat();
-            if (!enemy.isSuffering() && !enemy.isTrying() && !enemy.isCasting && !enemy.isContemplating) enemy.isHurt = true;
+            if (!enemy.isSuffering() && !enemy.isTrying() && !enemy.isCasting && !enemy.isContemplating) {
+                enemy.isHurt = true;
+                enemy.stateMachine.setState(States.HURT);
+            };
             const id = enemy.enemies.find((en: ENEMY) => en.id === enemy.scene.player.playerID);
             if (id && health > 0) enemy.updateThreat(enemy.scene.player.playerID, calculateThreat(Math.round(enemy.health - health), health, enemy.ascean.health.max));
         } else if (enemy.health < health) {
             enemy.scene.showCombatText(enemy, `${Math.round(health - enemy.health)}`, 1500, HEAL);
         };
+
         enemy.health = health;
         enemy.computerCombatSheet.newComputerHealth = enemy.health;
         enemy.updateHealthBar(health);
+
+        if (enemy.health <= 0 && !enemy.stateMachine.isCurrentState(States.DEFEATED)) {
+            enemy.stateMachine.setState(States.DEFEATED);
+        };
     };
 
     public convert = (id: string, faith: string) => {
@@ -296,7 +310,11 @@ export class CombatManager {
                 computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max))
             };
     
-            if (computer.health <= 0) computer.killingBlow = origin;
+            if (computer.health <= 0 && !computer.stateMachine.isCurrentState(States.DEFEATED)) {
+                computer.stateMachine.setState(States.DEFEATED);
+                computer.killingBlow = origin;
+            };
+            
         } else {
             this.context.showCombatText(computer, `${Math.round(damage)}`, 1500, EFFECT, false, false);
             computer.hurt = !computer.isSuffering() && !computer.isTrying() && !computer.isCasting && !computer.isContemplating;
@@ -332,6 +350,10 @@ export class CombatManager {
                     computer.enemies.push({id:origin,threat:0});
                     computer.updateThreat(origin, calculateThreat(damage, computer.health, computer.ascean.health.max));
                 };
+            };
+            
+            if (computer.health <= 0 && !computer.stateMachine.isCurrentState(States.DEFEATED)) {
+                computer.stateMachine.setState(States.DEFEATED);
             };
         };
 
@@ -453,15 +475,15 @@ export class CombatManager {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
         if (target.name === "player") {
-            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.35);
+            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.4);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: "player", value: health, id: (entity as Enemy).enemyID }, type: "Set Health" });
         } else if (entity.name === "player") {
-            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.35);
+            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.4);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: "enemy", value: health, id: (target as Enemy).enemyID }, type: "Health" });
         } else { // Computer Entity + Computer Target
-            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.35);
+            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.4);
             const health = target.health - damage;
             (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
             (target as Enemy).computerCombatSheet.newComputerHealth = health;
@@ -498,13 +520,16 @@ export class CombatManager {
             let caster = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             caster.chiomic(15, id);
             this.context.player.isStunned = true;
-            return;    
+            this.context.player.playerMachine.stateMachine.setState(States.STUN);
+            return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
-            if (enemy.health <= 0) return;
-            enemy.count.stunned++;
-            enemy.isStunned = true;
+        if (enemy && enemy.health > 0) {
+            if (!enemy.sansSuffering("isStunned")) {
+                enemy.count.stunned++;
+                enemy.isStunned = true;
+                enemy.stateMachine.setState(States.STUNNED);
+            };
             if (enemyID === this.context.player.playerID) { // PvC Combat
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player.mastery as keyof typeof this.context.state.player]) 
                     * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
@@ -547,8 +572,11 @@ export class CombatManager {
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);
         if (enemy && enemy.health > 0) {
-            enemy.count.feared++;
-            enemy.isFeared = true;
+            if (!enemy.sansSuffering("isFeared")) {
+                enemy.count.feared++;
+                enemy.isFeared = true;
+                enemy.stateMachine.setState(States.FEARED);
+            };
             if (origin === this.context.player.playerID) {
                 const damage = Math.round(this.context.state?.player?.[this.context.state?.player?.mastery as keyof typeof this.context.state.player] * 1) 
                     * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
@@ -571,8 +599,11 @@ export class CombatManager {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (enemy && enemy.health > 0) {
-            enemy.count.paralyzed++;
-            enemy.isParalyzed = true;
+            if (!enemy.sansSuffering("isParalyzed")) {
+                enemy.count.paralyzed++;
+                enemy.isParalyzed = true;
+                enemy.stateMachine.setState(States.PARALYZED);
+            };
             if (origin === this.context.player.playerID) {  
                 if (enemy.enemyID === this.context.player.getEnemyId()) {
                     this.combatMachine.action({ type: "Tshaeral", data: 15 });
@@ -606,21 +637,22 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isConfused = true;
+            this.context.player.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isConfused")) {
             enemy.count.confused++;
             enemy.isConfused = true;
-            if (origin === this.context.player.playerID) {
-                enemy.specialConfuse = this.context.player.checkTalentEnhanced(States.CONFUSE);
-            };
+            if (origin === this.context.player.playerID) enemy.specialConfuse = this.context.player.checkTalentEnhanced(States.CONFUSE);
+            enemy.stateMachine.setState(States.CONFUSED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isConfused")) {
             party.count.confused++;
             party.isConfused = true;
+            party.playerMachine.stateMachine.setState(States.CONFUSED);
         };
     };
     confuse = (id: string, special: boolean = false): void => {
@@ -628,19 +660,22 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isConfused = true;
+            this.context.player.playerMachine.stateMachine.setState(States.CONFUSED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isConfused")) {
             enemy.count.confused++;
             enemy.isConfused = true;
             enemy.specialConfuse = special;
+            enemy.stateMachine.setState(States.CONFUSED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isConfused")) {
             party.count.confused++;
             party.isConfused = true;
+            party.playerMachine.stateMachine.setState(States.CONFUSED);
         };
     };
     disease = (combatID: string, enemySpecialID?: string): void => {
@@ -686,19 +721,22 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isFeared = true;
+            this.context.player.playerMachine.stateMachine.setState(States.FEARED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isFeared")) {
             enemy.count.feared++;
             enemy.isFeared = true;
             enemy.specialFear = special;
+            enemy.stateMachine.setState(States.FEARED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isFeared")) {
             party.count.feared++;
             party.isFeared = true;
+            party.playerMachine.stateMachine.setState(States.FEARED);
         };
     };
     freeze = (id: string): void => {
@@ -706,24 +744,27 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isFrozen = true;
+            this.context.player.playerMachine.negativeMachine.setState(States.FROZEN);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.currentNegativeState(States.FROZEN)) {
             enemy.count.frozen++;
             enemy.isFrozen = true;
+            enemy.negativeMachine.setState(States.FROZEN);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.currentNegativeState(States.FROZEN)) {
             party.count.frozen++;
             party.isFrozen = true;
+            party.playerMachine.negativeMachine.setState(States.FROZEN);
         };
     };
     fyerus = (id: string, origin: string): void => {
         if (!id) return;
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy !== undefined && enemy.health > 0 && enemy.isDefeated !== true) {
+        if (enemy && enemy.health > 0) {
             if (origin === this.context.player.playerID) { // Player Fyerus
                 const damage = this.context.player.playerMachine.mastery() * 0.35 
                     * this.playerCaerenicPro() * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy) 
@@ -742,6 +783,9 @@ export class CombatManager {
             enemy.slowDuration = 1000;
             enemy.count.slowed++;
             enemy.isSlowed = true;
+            enemy.negativeMachine.setState(States.SLOWED);
+            // if (!enemy.currentNegativeState("isSlowed")) {
+            // };
         };
     };
     howl = (id: string): void => {
@@ -766,37 +810,43 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isParalyzed = true;
+            this.context.player.playerMachine.stateMachine.setState(States.PARALYZED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isParalyzed")) {
             enemy.count.paralyzed++;
             enemy.isParalyzed = true;
+            enemy.stateMachine.setState(States.PARALYZED);
             return;    
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isParalyzed")) {
             party.count.paralyzed++;
             party.isParalyzed = true;
+            party.playerMachine.stateMachine.setState(States.PARALYZED);
         };
     };
     polymorph = (id: string, special: boolean = false): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.context.player.isPolymorphed = true;
+            this.context.player.playerMachine.stateMachine.setState(States.POLYMORPHED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isPolymorphed")) {
             enemy.count.polymorphed += 1;
             enemy.isPolymorphed = true;
             enemy.specialPolymorph = special;
+            enemy.stateMachine.setState(States.POLYMORPHED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isPolymorphed")) {
             party.count.polymorphed += 1;
             party.isPolymorphed = true;
+            party.playerMachine.stateMachine.setState(States.POLYMORPHED);
         };
     };
     renewal = (id: string) => {
@@ -867,24 +917,29 @@ export class CombatManager {
     root = (id: string): void => {
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
         if (!enemy) return;
-        this.context.targetTarget = enemy;
-        enemy.isRooted = true;
-        enemy.count.rooted += 1;
+        if (!enemy.currentNegativeState(States.ROOTED)) {
+            this.context.targetTarget = enemy;
+            enemy.isRooted = true;
+            enemy.count.rooted += 1;
+            enemy.negativeMachine.setState(States.ROOTED);
+        };
     };
     scream = (id: string, origin: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
             this.useGrace(10);
             this.context.player.isFeared = true;
+            this.context.player.playerMachine.stateMachine.setState(States.FEARED);
             return;    
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isFeared")) {
             enemy.isFeared = true;
             enemy.count.feared++;
             if (origin === this.context.player.playerID) {
                 enemy.specialFear = this.context.player.checkTalentEnhanced(States.FEAR);
             };
+            enemy.stateMachine.setState(States.FEARED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
@@ -899,20 +954,23 @@ export class CombatManager {
             if (this.context.player.isSnared) return;
             this.context.player.isSlowed = true;
             this.context.player.slowDuration = time;
+            this.context.player.playerMachine.negativeMachine.setState(States.SLOWED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.currentNegativeState(States.SLOWED)) {
             enemy.count.slowed++;
             enemy.isSlowed = true;
             enemy.slowDuration = time;
+            enemy.negativeMachine.setState(States.SLOWED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.currentNegativeState(States.SLOWED)) {
             party.count.slowed++;
             party.isSlowed = true;
             party.slowDuration = time;
+            party.playerMachine.negativeMachine.setState(States.SLOWED);
         };
     };
     snare = (id: string): void => {
@@ -921,56 +979,65 @@ export class CombatManager {
             this.context.player.isSnared = true;
             this.useGrace(5);
             this.useStamina(5);
+            this.context.player.playerMachine.negativeMachine.setState(States.SNARED);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.currentNegativeState(States.SNARED)) {
             enemy.count.snared += 1;
             enemy.isSnared = true;
+            enemy.negativeMachine.setState(States.SNARED);
             return;    
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.currentNegativeState(States.SNARED)) {
             party.count.snared += 1;
             party.isSnared = true;
+            party.playerMachine.negativeMachine.setState(States.SNARED);
         };
     };
     stun = (id: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
-            this.context.player.isStunned = true;
             this.useStamina(10);
+            this.context.player.isStunned = true;
+            this.context.player.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isStunned")) {
             enemy.count.stunned += 1;
             enemy.isStunned = true;
-            return;    
+            enemy.stateMachine.setState(States.STUNNED);
+            return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isStunned")) {
             party.count.stunned += 1;
             party.isStunned = true;
+            party.playerMachine.stateMachine.setState(States.STUNNED);
         };
     };
     stunned = (id: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
-            this.context.player.isStunned = true;
             this.useStamina(10);
+            this.context.player.isStunned = true;
+            this.context.player.playerMachine.stateMachine.setState(States.STUN);
             return;
         };
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
-        if (enemy) {
+        if (enemy && !enemy.sansSuffering("isStunned")) {
             enemy.count.stunned += 1;
             enemy.isStunned = true;
+            enemy.stateMachine.setState(States.STUNNED);
             return;
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
-        if (party) {
+        if (party && !party.sansSuffering("isStunned")) {
             party.count.stunned += 1;
             party.isStunned = true;
+            party.playerMachine.stateMachine.setState(States.STUNNED);
         };
     };
     writhe = (id: string, enemyID: string, type = "writhe"): void => {

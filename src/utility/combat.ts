@@ -495,10 +495,11 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
     const stal = stalwart(combat.stalwart);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
     const computerStal = computerStalwart(combat.computerStalwart);
+
     if (player) {
         const playerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.pos * computerCaer.neg * computerStal;
         combat.newComputerHealth -= playerDamage;
-        combat.realizedPlayerDamage = playerDamage;
+        combat.realizedPlayerDamage += playerDamage;
         combat.computerDamaged = true;
         if (combat.newComputerHealth < 0) {
             combat.newComputerHealth = 0;
@@ -509,7 +510,7 @@ function damageTick(combat: Combat, effect: StatusEffect, player: boolean): Comb
     } else {
         const computerDamage = effect.effect.damage as number * DAMAGE.TICK_FULL * caer.neg * computerCaer.pos * stal;
         combat.newPlayerHealth -= computerDamage;
-        combat.realizedComputerDamage = computerDamage;
+        combat.realizedComputerDamage += computerDamage;
         combat.playerDamaged = true;
         if (combat.newPlayerHealth < 0) {
             if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
@@ -664,12 +665,9 @@ function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: nu
                 if (combat.computerEffects.length > 0) computerDispel(combat); 
                 combat.playerEffects.pop();
             };
-            if (exists.prayer === PRAYERS.INSIGHT) {
-                combat.isInsight = true;
-            };
-            if (exists.prayer === PRAYERS.QUICKEN) {
-                combat.isQuicken = true;
-            };
+            if (exists.prayer === PRAYERS.INSIGHT) combat.isInsight = true;
+            if (exists.prayer === PRAYERS.QUICKEN) combat.isQuicken = true;
+            
             if (exists.prayer === PRAYERS.DEBUFF) {
                 const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
                 combat.computerDefense = debuff.defense;
@@ -1698,8 +1696,6 @@ function dualActionSplitter(combat: Combat): Combat {
     const playerParry = newCombat.parryGuess;
     const computerAction = newCombat.computerAction;
     const computerParry = newCombat.computerParryGuess; 
-    // computerWeaponMaker(newCombat);
-    // computerActionCompiler(newCombat, playerAction);
 
     newCombat.computerStartDescription = 
         `${newCombat.computer.name} sets to ${computerAction === "" ? "defend" : computerAction.charAt(0).toUpperCase() + computerAction.slice(1)}${computerParry ? "-" + computerParry.charAt(0).toUpperCase() + computerParry.slice(1) : ""} against you.`
@@ -1827,15 +1823,19 @@ function weaponActionSplitter(combat: Combat): Combat {
             "computerDualWielding": cleanData.computerDualWielding,    
         };
     };
-    faithCompiler(cleanData);
-    computerWeaponMaker(cleanData);
+    cleanData = faithCompiler(cleanData);
+    cleanData = computerWeaponMaker(cleanData);
+
     if (cleanData.playerWin === true) cleanData.computerDeathDescription = `${cleanData.computer.name} has been defeated.`;
     if (cleanData.computerWin === true) cleanData.playerDeathDescription = `You have been defeated.`;
+
     cleanData.action = "";
     cleanData.computerAction = "";
     cleanData.combatRound += 1;
     cleanData.sessionRound += 1;
+
     if (cleanData.playerWin === true || cleanData.computerWin === true) statusEffectCheck(cleanData);
+
     changes = {
         ...changes,
         "action": cleanData.action,
@@ -1843,8 +1843,11 @@ function weaponActionSplitter(combat: Combat): Combat {
         "combatRound": cleanData.combatRound,
         "sessionRound": cleanData.sessionRound,
         
-        "playerDamaged": cleanData.realizedComputerDamage > 0,
-        "computerDamaged": cleanData.realizedPlayerDamage > 0,
+        "realizedPlayerDamage": cleanData.realizedPlayerDamage,
+        "realizedComputerDamage": cleanData.realizedComputerDamage,
+        "playerDamaged": cleanData.realizedComputerDamage > 0 || cleanData.playerDamaged,
+        "computerDamaged": cleanData.realizedPlayerDamage > 0 || cleanData.computerDamaged,
+        
         "playerDamagedType": cleanData.playerDamagedType,
         "computerDamagedType": cleanData.computerDamagedType,
         "playerDamageType": cleanData.playerDamageType,
@@ -1880,8 +1883,15 @@ function weaponActionSplitter(combat: Combat): Combat {
         // "parryPostureWeight": cleanData.parryPostureWeight,
         // "parryRollWeight": cleanData.parryRollWeight,
 
+        "playerSpecialDescription": cleanData.playerSpecialDescription,
+        "computerSpecialDescription": cleanData.computerSpecialDescription,
         "playerDeathDescription": cleanData.playerDeathDescription,
         "computerDeathDescription": cleanData.computerDeathDescription,
+        "playerInfluenceDescription": cleanData.playerInfluenceDescription,
+        "computerInfluenceDescription": cleanData.computerInfluenceDescription,
+        "playerInfluenceDescriptionTwo": cleanData.playerInfluenceDescriptionTwo,
+        "computerInfluenceDescriptionTwo": cleanData.computerInfluenceDescriptionTwo,
+
         "playerWin": cleanData.playerWin,
         "computerWin": cleanData.computerWin,
 
@@ -2046,11 +2056,12 @@ function prayerSplitter(combat: Combat, prayer: string): Combat {
     combat.playerBlessing = originalPrayer;
     return combat;
 };
+
 function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     const caer = caerenic(combat.caerenic);
     const computerCaer = computerCaerenic(combat.computerCaerenic);
     const computerStal = computerStalwart(combat.computerStalwart);
-    let damage = combat.player?.[mastery] * (0.5 + (combat.player?.level as number / 10)) * caer.pos * computerCaer.neg * computerStal;
+    let damage = combat.player?.[mastery] * (1 + (combat.player?.level as number / 10)) * caer.pos * computerCaer.neg * computerStal;
     combat.realizedPlayerDamage = damage;
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;

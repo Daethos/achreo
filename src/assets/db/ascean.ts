@@ -3646,13 +3646,13 @@ export const Asceans: any[] = [
         name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
-        name: "Li'kyr Hood",
+        name: "Lilosian Hood",
         rarity: "Uncommon",
     },"chest":{
-        name: "Li'kyr Robes",
+        name: "Lilosian Robes",
         rarity: "Uncommon",
     },"legs":{
-        name: "Li'kyr Pants",
+        name: "Lilosian Pants",
         rarity: "Uncommon",
     },"ringOne":{
         name: "Kyrison Ring",
@@ -5158,13 +5158,13 @@ export const Asceans: any[] = [
         name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
-        name: "Li'kyr Hood",
+        name: "Lilosian Hood",
         rarity: "Uncommon",
     },"chest":{
-        name: "Li'kyr Robes",
+        name: "Lilosian Robes",
         rarity: "Uncommon",
     },"legs":{
-        name: "Li'kyr Pants",
+        name: "Lilosian Pants",
         rarity: "Uncommon",
     },"ringOne":{
         name: "Kyrison Ring",
@@ -6940,13 +6940,13 @@ export const Asceans: any[] = [
         name: "Parma",
         rarity: "Rare",
     },"helmet":{
-        name: "Li'kyr Hood",
+        name: "Lilosian Hood",
         rarity: "Rare",
     },"chest":{
-        name: "Li'kyr Robes",
+        name: "Lilosian Robes",
         rarity: "Rare",
     },"legs":{
-        name: "Li'kyr Pants",
+        name: "Lilosian Pants",
         rarity: "Rare",
     },"ringOne":{
         name: "Kyrison Ring",

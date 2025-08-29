@@ -105,13 +105,13 @@ export default class PlayerComputer extends Player {
     };
     
     currentParticleCheck = () => {
-        if (!this.particleEffect?.triggered) this.scene.particleManager.updateParticle(this.particleEffect as Particle);
+        // if (!this.particleEffect?.triggered) this.scene.particleManager.updateParticle(this.particleEffect as Particle);
         if (this.particleEffect?.success) {
             this.particleEffect.triggered = true;
             this.particleEffect.success = false;
             this.playerActionSuccess();
         } else if (this.particleEffect?.collided) {
-            this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
+            // this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
             this.particleEffect = undefined;              
         };
     };
@@ -238,28 +238,27 @@ export default class PlayerComputer extends Player {
         };
     };
 
-    handleComputerConcerns = (dt: number) => {
-        if (this.actionSuccess === true) {
-            this.actionSuccess = false;
+    particleCheck = () => {
+        const effect = this.particleEffect;
+        if (!effect) return;
+        
+        if (effect.success) {
+            effect.triggered = true;
+            effect.success = false;
             this.playerActionSuccess();
+        } else if (effect.collided) {
+            this.particleEffect = undefined;              
+        } else if (!effect.effect?.active) {
+            this.particleEffect = undefined;   
         };
+    };
 
-        if (this.particleEffect !== undefined) {
-            if (this.particleEffect.success) {
-                this.particleEffect.success = false;
-                this.particleEffect.triggered = true;
-                this.playerActionSuccess();
-            } else if (this.particleEffect.collided) {
-                this.scene.particleManager.removeEffect(this.particleEffect.id);
-                this.particleEffect = undefined;                
-            } else if (!this.particleEffect.effect?.active) {
-                this.particleEffect = undefined;   
-            } else {
-                this.scene.particleManager.updateParticle(this.particleEffect);
-            };
-        };
+    handleComputerConcerns = () => {
+        if (this.scene.combat === true && !this.currentTarget) this.findEnemy();
 
+        this.syncPositions();
         this.getDirection();
+        this.particleCheck();
 
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
@@ -268,64 +267,11 @@ export default class PlayerComputer extends Player {
             };
         };
 
-        if (this.scene.combat === true && (!this.currentTarget || !this.currentTarget.inCombat)) this.findEnemy(); // this.inCombat === true && state.combatEngaged
-
-        if (this.healthbar) this.healthbar.update(this);
-        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        // this.functionality(dt, "player", this.currentTarget as Enemy);
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
-
-        if (this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.DEFEATED)) {
-            this.playerMachine.stateMachine.setState(States.DEFEATED);
-            return;
-        };
-        if (this.isConfused && !this.sansSuffering("isConfused") && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
-            this.playerMachine.stateMachine.setState(States.CONFUSED);
-            return;
-        };
-        if (this.isFeared && !this.sansSuffering("isFeared") && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
-            this.playerMachine.stateMachine.setState(States.FEARED);
-            return;
-        };
-        if (this.isHurt && !this.isDefeated && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
-            this.playerMachine.stateMachine.setState(States.HURT);
-            return;
-        };
-        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
-            this.playerMachine.stateMachine.setState(States.PARALYZED);
-            return;
-        };
-        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
-            this.playerMachine.stateMachine.setState(States.POLYMORPHED);
-            return;
-        };
-        if (this.isStunned && !this.sansSuffering("isStunned") && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
-            this.playerMachine.stateMachine.setState(States.STUN);
-            return;
-        };
-
-        if (this.isUnderRangedAttack()) {
-            this.playerMachine.stateMachine.setState(States.EVADE);
-        };
-
-        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-        };
-        if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
-            this.playerMachine.negativeMachine.setState(States.ROOTED);
-        };
-        if (this.isSlowed && !this.playerMachine.negativeMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
-            this.playerMachine.negativeMachine.setState(States.SLOWED);
-        };
-        if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
-            this.playerMachine.negativeMachine.setState(States.SNARED);
-        };
+        if (this.isUnderRangedAttack()) this.playerMachine.stateMachine.setState(States.EVADE);
     };
 
     update(dt: number) {
-        this.handleComputerConcerns(dt);
+        this.handleComputerConcerns();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

@@ -1,4 +1,4 @@
-import Entity, { calculateThreat, ENEMY, FRAME_COUNT, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE } from "./Entity"; 
+import Entity, { calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE } from "./Entity"; 
 import StateMachine, { specialPositiveMachines, States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
@@ -34,13 +34,6 @@ const ENEMY_COLOR = 0xFF0000;
 const TARGET_COLOR = 0xFFFF00;
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
-const PHYSICAL_ACTIONS = {
-    ATTACK: "attack",
-    PARRY: "parry",
-    POSTURE: "posture",
-    ROLL: "roll",
-    THRUST: "thrust",
-};
 export default class Enemy extends Entity {
     enemyID: string;
     stateMachine: StateMachine;
@@ -301,10 +294,10 @@ export default class Enemy extends Entity {
         }); // Sensor was 48
         const compoundBody = Body.create({
             parts: [enemySensor, colliderLower, colliderUpper],
-            density: 0.0015,
-            frictionAir: 0.1, 
+            density: 0.0025,
+            frictionAir: 0.1,
             restitution: 0.3,
-            friction: 0.15,
+            friction: 0.15
         });
         this.setExistingBody(compoundBody);                                    
         this.setFixedRotation();
@@ -496,7 +489,10 @@ export default class Enemy extends Entity {
     };
 
     checkHurt = () => {
-        if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
+        if (!(this.isSuffering() || this.isTrying() || this.isCasting || this.isPraying || this.isContemplating)) {
+            this.isHurt = true;
+            this.stateMachine.setState(States.HURT);
+        };
     };
 
     checkEnemyGame = (id: string): boolean => {
@@ -609,7 +605,7 @@ export default class Enemy extends Entity {
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend(enemyID);
-            if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
+            if (!(this.inComputerCombat || this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
                 const enemy = this.scene.getEnemy(enemyID) || this.scene.party.find((p: Party) => p.enemyID === enemyID);
                 if (enemy && enemy.health > 0) this.checkComputerEnemyCombatEnter(enemy);
             };
@@ -626,11 +622,12 @@ export default class Enemy extends Entity {
             this.scene.showCombatText(this, `${heal}`, 1500, HEAL);
         };
         if (rollSuccess) {
-            this.scene.showCombatText(this, "Roll", PLAYER.DURATIONS.TEXT, "heal");
+            this.scene.showCombatText(this, "Roll", PLAYER.DURATIONS.TEXT, HEAL);
         };
         if (computerEnemyParrySuccess) {
             this.isStunned = true;
-            this.scene.showCombatText(this, "Parried", PLAYER.DURATIONS.TEXT, "heal");
+            this.scene.showCombatText(this, "Parried", PLAYER.DURATIONS.TEXT, HEAL);
+            this.stateMachine.setState(States.STUNNED);
         };
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
@@ -653,7 +650,10 @@ export default class Enemy extends Entity {
             this.computerCombatSheet.computerWin = false;
             this.clearComputerCombatWin(enemyID);
         };
-        if (this.health <= 0) this.killingBlow = enemyID;
+        if (this.health <= 0) {
+            this.killingBlow = enemyID;
+            this.stateMachine.setState(States.DEFEATED);
+        };
         this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         
     };
@@ -812,8 +812,10 @@ export default class Enemy extends Entity {
 
     checkComputerEnemyCombatEnter = (enemy: Enemy | Party) => {
         if (enemy.health <= 0 || this.health <= 0) return;
+
         this.currentTarget = enemy;
         this.inComputerCombat = true;
+
         this.computerCombatSheet = {
             ...this.computerCombatSheet,
             computerEnemy: enemy.ascean,
@@ -833,10 +835,10 @@ export default class Enemy extends Entity {
             computerEnemyCaerenic: enemy.isCaerenic,
             computerEnemyStalwart: enemy.isStalwart,
         };
+
         const newEnemy = this.isNewComputerEnemy(enemy);
-        if (newEnemy) {
-            this.enemies.push({id:enemy.enemyID,threat:0});
-        };
+        if (newEnemy) this.enemies.push({id:enemy.enemyID,threat:0});
+        
         this.setSpecialCombat(true);
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
@@ -1263,6 +1265,7 @@ export default class Enemy extends Entity {
         if (this.scene?.player?.isCounterSpelling === true) {
             this.isCasting = false;
             this.isCounterSpelled = true;
+            this.stateMachine.setState(States.COUNTERSPELLED);
         };
     };
 
@@ -1759,7 +1762,7 @@ export default class Enemy extends Entity {
     };
     onAttackExit = () => {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
-        if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
+        // if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
         this.setTint(ENEMY_COLOR);
         this.currentAction = "";
     };
@@ -3890,7 +3893,7 @@ export default class Enemy extends Entity {
 
     // ========================== STATUS EFFECT STATES ========================== \\
 
-    onConfusedEnter = () => { 
+    onConfusedEnter = () => {
         this.isConfused = true;
         this.scene.showCombatText(this, "c .OnFu`Se D~", DURATION.TEXT, EFFECT, false, true);
         this.spriteWeapon.setVisible(false);
@@ -4379,7 +4382,7 @@ export default class Enemy extends Entity {
         this.particleEffect = undefined;
     };
 
-    enemyActionSuccess = () => {
+    weaponActionSuccess = () => {
         if (!this.attackedTarget) return;
         let action = "";
         if (this.attackedTarget?.name === "player") {
@@ -4777,13 +4780,14 @@ export default class Enemy extends Entity {
     };
 
     currentParticleCheck = () => {
-        if (!this.particleEffect?.triggered) this.scene.particleManager.updateParticle(this.particleEffect as Particle);
-        if (this.particleEffect?.success) {
-            this.particleEffect.triggered = true;
-            this.particleEffect.success = false;
-            this.enemyActionSuccess();
-        } else if (this.particleEffect?.collided) {
-            this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
+        const effect = this.particleEffect;
+        if (!effect) return;
+        
+        if (effect.success) {
+            effect.triggered = true;
+            effect.success = false;
+            this.weaponActionSuccess();
+        } else if (effect.collided) {
             this.particleEffect = undefined;              
         };
     };
@@ -4808,139 +4812,46 @@ export default class Enemy extends Entity {
 
     cleanCombatAnimation = () => this.stateMachine.isCurrentState(States.COMBAT) || this.stateMachine.isCurrentState(States.CHASE);
 
-    evaluateEnemyStateMinimal = (dt: number) => {
+    distractedInCombat = () => this.isSuffering() || this.isCasting || this.isHurt || this.isPraying || this.isContemplating;
+
+    outOfCombat = () => !(this.inCombat || this.inComputerCombat) || this.health <= 0;
+
+    evaluateEnemyStateMinimal = () => {
         if (this.body) {
-            // this.functionality(dt, NAME, this.currentTarget);
             if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
             if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
             if (this.healthbar) this.healthbar.update(this);
         };
     };
     
-    /* -------------------------------------------- 
-        Updates positions on visuals if they exist 
-        Checks for negative status effects
-        Updates casted particle effects
-        Sets combat states if clear 
-    ---------------------------------------------- */
-    evaluateEnemyState = (dt: number) => {
-        if (this.body) {
-            // this.functionality(dt, NAME, this.currentTarget);
-            if (this.spriteWeapon) this.spriteWeapon.setPosition(this.x, this.y);
-            if (this.spriteShield) this.spriteShield.setPosition(this.x, this.y);
-            if (this.healthbar) this.healthbar.update(this);
-            if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-            if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-        };
-
-        if (this.health <= 0 && !this.stateMachine.isCurrentState(States.DEFEATED)) {
-            this.stateMachine.setState(States.DEFEATED);
-            return;
-        };
-        
-        if ((!this.inCombat && !this.inComputerCombat) || this.health <= 0) return;
-
-        const currentState = this.stateMachine.getCurrentState();
-        const currentNeagtiveState = this.negativeMachine.getCurrentState();
+    /* ----------------------------- 
+        Update positions on visuals, 
+        direction, particle effects.
+        Sets combat state if capable
+    -------------------------------- */
+    evaluateEnemyState = () => {
+        this.syncPositions();
+        if (this.outOfCombat()) return;
 
         this.evaluateEnemyAnimation();
-        if (this.isConfused && !this.sansSuffering("isConfused") && currentState !== States.CONFUSED) {
-            this.stateMachine.setState(States.CONFUSED);
-            return;
-        };
-        if (this.isConsumed && currentState !== States.CONSUMED) {
-            this.stateMachine.setState(States.CONSUMED);
-            return;
-        };
-        if (this.isCounterSpelled && currentState !== States.COUNTERSPELLED) {
-            this.stateMachine.setState(States.COUNTERSPELLED);
-            return;
-        };
-        if (this.isFeared && !this.sansSuffering("isFeared") && currentState !== States.FEARED) {
-            this.stateMachine.setState(States.FEARED);
-            return;
-        };
-        if (this.isHurt && !this.sansSuffering("isHurt") && currentState !== States.HURT) {
-            this.stateMachine.setState(States.HURT);
-            return;
-        };
-        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && currentState !== States.PARALYZED) {
-            this.stateMachine.setState(States.PARALYZED);
-            return;
-        };
-        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && currentState !== States.POLYMORPHED) {
-            this.stateMachine.setState(States.POLYMORPHED);
-            return;
-        };
-        if (this.isStunned && !this.sansSuffering("isStunned") && currentState !== States.STUNNED) {
-            this.stateMachine.setState(States.STUNNED);
-            return;
-        };
-        if (this.isFrozen && currentNeagtiveState !== States.FROZEN && !this.currentNegativeState(States.FROZEN)) {
-            this.negativeMachine.setState(States.FROZEN);
-            return;
-        };
-        if (this.isRooted && currentNeagtiveState !== States.ROOTED && !this.currentNegativeState(States.ROOTED)) {
-            this.negativeMachine.setState(States.ROOTED);
-            return;
-        };
-        if (this.isSlowed && currentNeagtiveState !== States.SLOWED && !this.currentNegativeState(States.SLOWED)) {
-            this.negativeMachine.setState(States.SLOWED);
-            return;
-        };
-        if (this.isSnared && currentNeagtiveState !== States.SNARED && !this.currentNegativeState(States.SNARED)) {
-            this.negativeMachine.setState(States.SNARED); 
-            return;    
-        };
-
-        if (this.actionSuccess) {
-            this.actionSuccess = false;
-            this.enemyActionSuccess();
-        };
-        
-        if (this.particleEffect) this.currentParticleCheck();
         this.getDirection();
-        this.currentTargetCheck();
 
-        if (this.isSuffering() || this.isCasting || this.isHurt || this.isContemplating) return;
+        this.currentParticleCheck();
+        if (this.scene.frameCount % 10 === 0) this.currentTargetCheck();
+
+        if (this.distractedInCombat()) return;
         
         if (this.isUnderRangedAttack()) {
             this.stateMachine.setState(States.EVADE);
-            return;
-        };
-        
-        if (this.currentAction) {
-            switch (this.currentAction) {
-                case States.ATTACK:
-                    this.stateMachine.setState(States.ATTACK);
-                    break;
-                case States.PARRY:
-                    this.stateMachine.setState(States.PARRY);
-                    break;
-                case States.DODGE:
-                    this.stateMachine.setState(States.DODGE);
-                    break;
-                case States.ROLL:
-                    this.stateMachine.setState(States.ROLL);
-                    break;
-                case States.POSTURE:
-                    this.stateMachine.setState(States.POSTURE);
-                    break; 
-                case States.THRUST:
-                    this.stateMachine.setState(States.THRUST);
-                    break;
-                case States.CONTEMPLATE:
-                    this.stateMachine.setState(States.CONTEMPLATE);
-                    break;
-                default: break;                        
-            }; 
+        } else if (this.currentAction) {
+            this.stateMachine.setState(this.currentAction);
         };
     };
  
     update(dt: number) {
-        this.evaluateEnemyState(dt);
-        this.positiveMachine.update(dt);
+        this.evaluateEnemyState();
         this.stateMachine.update(dt);
+        this.positiveMachine.update(dt);
         this.negativeMachine.update(dt);
     };
 

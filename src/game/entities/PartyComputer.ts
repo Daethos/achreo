@@ -508,11 +508,10 @@ export default class Party extends Entity {
     };
 
     computerCombatUpdate = (e: ComputerCombat) => {
-        // if (this.enemyID !== e.personalID) return;
         const { enemyID, newComputerHealth } = e;
+        
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
-            // damage = e.computerEnemyCriticalSuccess ? `${damage} (Critical)` : e.computerEnemyGlancingBlow ? `${damage} (Glancing)` : damage;
             this.scene.showCombatText(this, `${damage}`, 1500, EFFECT, e.computerEnemyCriticalSuccess, false);
             if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
@@ -528,12 +527,12 @@ export default class Party extends Entity {
             if (this.isPolymorphed) this.isPolymorphed = false;
             if (this.isMalicing) this.malice(enemyID);
             if (this.isMending) this.mend();
+
             if ((!this.inComputerCombat || !this.currentTarget) && newComputerHealth > 0 && enemyID !== this.enemyID) {
                 const enemy = this.scene.getEnemy(enemyID);
-                if (enemy) {
-                    this.checkComputerEnemyCombatEnter(enemy);
-                };
+                if (enemy) this.checkComputerEnemyCombatEnter(enemy);
             };
+
             const id = this.enemies.find((en: ENEMY) => en.id === enemyID);
             if (id && newComputerHealth > 0) {
                 this.updateThreat(enemyID, calculateThreat(Math.round(this.health - newComputerHealth), newComputerHealth, this.ascean.health.max));
@@ -546,25 +545,28 @@ export default class Party extends Entity {
             let heal = Math.round(newComputerHealth - this.health);
             this.scene.showCombatText(this, `+${heal}`, 1500, HEAL);
         }; 
+        
         this.health = newComputerHealth;
         this.computerCombatSheet.newComputerHealth = this.health;
         if (this.healthbar.getTotal() < e.computerHealth) this.healthbar.setTotal(e.computerHealth);
         this.updateHealthBar(newComputerHealth);
+
         this.weapons = e.computerWeapons;
         this.currentRound = e.combatRound;
         if (e.computerDamaged) this.scene.combatManager.hitFeedbackSystem.spotEmit(this.enemyID, e.computerEnemyDamageType);
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
         this.computerCombatSheet.computerWin = e.computerWin;
+        
         if (e.newComputerEnemyHealth <= 0 && this.computerCombatSheet.computerWin) {
             this.computerCombatSheet.computerWin = false;
             this.clearComputerCombatWin(enemyID);
         };
+
         this.checkGear(e.computer?.shield as Equipment, e.computerWeapons?.[0] as Equipment, e.computerDamageType.toLowerCase());
         this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
-        if (e?.realizedComputerDamage > 0) {
-            EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction as keyof typeof ENEMY_ATTACKS]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
-        };
+        if (e?.realizedComputerDamage > 0) EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction as keyof typeof ENEMY_ATTACKS]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
+        if (this.health <= 0) this.playerMachine.stateMachine.setState(States.DEFEATED);
     };
     
 
@@ -1334,7 +1336,7 @@ export default class Party extends Entity {
         if (this.particleEffect?.success) {
             this.particleEffect.triggered = true;
             this.particleEffect.success = false;
-            this.partyActionSuccess();
+            this.weaponActionSuccess();
         } else if (this.particleEffect?.collided) {
             this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
             this.particleEffect = undefined;              
@@ -1416,17 +1418,14 @@ export default class Party extends Entity {
 
     getCombatDirection() {
         try {
-            // Use cached distance if available and recent
             if (this.cachedDirection && this.cachedDirectionFrame && 
                 (this.scene.frameCount - this.cachedDirectionFrame) < 60) {
                 return this.cachedDirection;
             };
             
-            // Calculate direction manually (no clone needed)
             const dx = (this.currentTarget as Enemy).x - this.x;
             const dy = (this.currentTarget as Enemy).y - this.y;
             
-            // Cache the direction vector
             this.cachedDirection = { 
                 x: dx, 
                 y: dy,
@@ -1634,6 +1633,20 @@ export default class Party extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
+    particleCheck = () => {
+        const effect = this.particleEffect;
+        if (!effect) return;
+        if (effect.success) {
+            effect.success = false;
+            effect.triggered = true;
+            this.weaponActionSuccess();
+        } else if (effect.collided) {
+            this.particleEffect = undefined;                
+        } else if (!effect.effect.active) {
+            this.particleEffect = undefined;   
+        };
+    };
+
     handlePartyAnimations = () => {
         if (this.isDefeated) return;
         if (this.isPolymorphed) {
@@ -1671,79 +1684,13 @@ export default class Party extends Entity {
         };
     };
 
-    handleComputerConcerns = (dt: number) => {
-        if (this.actionSuccess === true) {
-            this.actionSuccess = false;
-            this.partyActionSuccess();
-        };
-        if (this.particleEffect !== undefined) {
-            if (this.particleEffect.success) {
-                this.particleEffect.success = false;
-                this.particleEffect.triggered = true;
-                this.partyActionSuccess();
-            } else if (this.particleEffect.collided) {
-                this.scene.particleManager.removeEffect(this.particleEffect.id);
-                this.particleEffect = undefined;                
-            } else if (!this.particleEffect.effect?.active) {
-                this.particleEffect = undefined;   
-            } else {
-                this.scene.particleManager.updateParticle(this.particleEffect);
-            };
-        };
-
-        // this.functionality(dt, "party", this.currentTarget as Enemy);
-        if (this.healthbar) this.healthbar.update(this);
-        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
-        
+    handleComputerConcerns = () => {
+        this.syncPositions();
         if (this.scene.combat === true && (!this.currentTarget || !this.inComputerCombat)) this.findEnemy();
-
-        if (this.isConfused && !this.sansSuffering("isConfused") && !this.playerMachine.stateMachine.isCurrentState(States.CONFUSED)) {
-            this.playerMachine.stateMachine.setState(States.CONFUSED);
-            return;
-        };
-        if (this.isFeared && !this.sansSuffering("isFeared") && !this.playerMachine.stateMachine.isCurrentState(States.FEARED)) {
-            this.playerMachine.stateMachine.setState(States.FEARED);
-            return;
-        };
-        if (this.isHurt && !this.sansSuffering("isHurt") && !this.playerMachine.stateMachine.isCurrentState(States.HURT)) {
-            this.playerMachine.stateMachine.setState(States.HURT);
-            return;
-        };
-        if (this.isParalyzed && !this.sansSuffering("isParalyzed") && !this.playerMachine.stateMachine.isCurrentState(States.PARALYZED)) {
-            this.playerMachine.stateMachine.setState(States.PARALYZED);
-            return;
-        };
-        if (this.isPolymorphed && !this.sansSuffering("isPolymorphed") && !this.playerMachine.stateMachine.isCurrentState(States.POLYMORPHED)) {
-            this.playerMachine.stateMachine.setState(States.POLYMORPHED);
-            return;
-        };
-        if (this.isStunned && !this.sansSuffering("isStunned") && !this.playerMachine.stateMachine.isCurrentState(States.STUN)) {
-            this.playerMachine.stateMachine.setState(States.STUN);
-            return;
-        };
-        if (this.isFrozen && !this.playerMachine.negativeMachine.isCurrentState(States.FROZEN) && !this.currentNegativeState(States.FROZEN)) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-            return;
-        };
-
-        if (this.isRooted && !this.playerMachine.negativeMachine.isCurrentState(States.ROOTED) && !this.currentNegativeState(States.ROOTED)) {
-            this.playerMachine.negativeMachine.setState(States.ROOTED);
-            return;
-        };
-        if (this.isSlowed && !this.playerMachine.negativeMachine.isCurrentState(States.SLOWED) && !this.currentNegativeState(States.SLOWED)) {
-            this.playerMachine.negativeMachine.setState(States.SLOWED);
-            return;
-        };
-        if (this.isSnared && !this.playerMachine.negativeMachine.isCurrentState(States.SNARED) && !this.currentNegativeState(States.SNARED)) {
-            this.playerMachine.negativeMachine.setState(States.SNARED);
-            return;
-        };
+        this.particleCheck();
     };
 
-    partyActionSuccess = () => {
+    weaponActionSuccess = () => {
         if (!this.attackedTarget) return;
         let action = "";
         if (this.particleEffect) {
@@ -1809,7 +1756,7 @@ export default class Party extends Entity {
     };
 
     update(dt: number) {
-        this.handleComputerConcerns(dt);
+        this.handleComputerConcerns();
         this.evaluateCombatDistance();
         this.handlePartyAnimations();
         this.playerMachine.stateMachine.update(dt);

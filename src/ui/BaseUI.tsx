@@ -165,7 +165,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     break;
                 case "Remove Tick": // Removing Prayer
                     const remove = prayerRemoveTick(combat(), data);
-                    playerActionDescription = `${data.playerName === combat().player?.name ? "Your" : `${combat().computer?.name}"s`} ${data.name} prayer has expired.`;
+                    playerActionDescription = `${data.playerName === combat().player?.name ? "Your" : `${combat().computer?.name}'s`} ${data.name} prayer has expired.`;
                     res = { ...combat(), ...remove, playerActionDescription };
                     EventBus.emit("blend-combat", remove);
                     affectsHealth = false;

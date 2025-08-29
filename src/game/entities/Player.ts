@@ -164,6 +164,7 @@ export default class Player extends Entity {
             parts: [playerSensor, playerColliderLower, playerColliderUpper],
             frictionAir: 0.5,
             restitution: 0.2,
+            density: 0.1,
         });
         this.setExistingBody(compoundBody);
         this.sensor = playerSensor;
@@ -1020,13 +1021,13 @@ export default class Player extends Entity {
     setTimeEvent = (cooldown: string, limit = 30000) => {
         if (this.isComputer) return;
         const evasion = cooldown === "rollCooldown" || cooldown === "dodgeCooldown";
-        if (evasion === false) {
-            (this as any)[cooldown] = limit;
-        };
+        if (evasion === false) (this as any)[cooldown] = limit;
         const type = cooldown.split("Cooldown")[0];
+        
         this.scene.hud.actionBar.setCurrent(0, limit, type);
-        const button = this.scene.hud.actionBar.getButton(type); 
-        if (this.inCombat || type === "blink" || type || "desperation") {
+        const button = this.scene.hud.actionBar.getButton(type);
+
+        if (this.inCombat || type) { // type === "blink" ||
             this.scene.hud.time.delayedCall(limit, () => {
                 this.scene.hud.actionBar.setCurrent(limit, limit, type);
                 this.scene.hud.actionBar.animateButton(button as ActionButton);
@@ -1376,6 +1377,20 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
+    particleCheck = () => {
+        const effect = this.particleEffect;
+        if (!effect) return;
+        if (effect.success) {
+            effect.success = false;
+            effect.triggered = true;
+            this.playerActionSuccess();
+        } else if (effect.collided) {
+            this.particleEffect = undefined;
+        } else if (!effect.effect?.active) {
+            this.particleEffect = undefined;
+        };
+    };
+
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
@@ -1443,76 +1458,20 @@ export default class Player extends Entity {
         };
     };
 
-    handleConcerns = (dt: number) => {
-        if (this.actionSuccess === true) {
-            this.actionSuccess = false;
-            this.playerActionSuccess();
-        };
-        if (this.particleEffect !== undefined) { 
+    handleConcerns = () => {
+        if (this.scene.combat && !this.currentTarget) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
+        this.syncPositions();
+
+        if (this.particleEffect) { 
             if (this.particleEffect.success) {
                 this.particleEffect.success = false;
                 this.particleEffect.triggered = true;
                 this.playerActionSuccess();
             } else if (this.particleEffect.collided) {
-                this.scene.particleManager.removeEffect(this.particleEffect.id);
-                this.particleEffect = undefined;                
+                this.particleEffect = undefined;
             } else if (!this.particleEffect.effect?.active) {
-                this.particleEffect = undefined;                
-            } else {
-                this.scene.particleManager.updateParticle(this.particleEffect);
+                this.particleEffect = undefined;
             };
-        };
-
-        if (this.scene.combat === true && !this.currentTarget) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
-        if (this.healthbar) this.healthbar.update(this);
-        if (this.negationBubble) this.negationBubble.update(this.x, this.y);
-        if (this.reactiveBubble) this.reactiveBubble.update(this.x, this.y);
-        // this.functionality(dt, "player", this.currentTarget as Enemy);
-
-        const state = this.playerMachine.stateMachine.getCurrentState();
-
-        if (this.isDefeated && state !== States.DEFEATED) {
-            this.playerMachine.stateMachine.setState(States.DEFEATED);
-            return;
-        };
-        if (this.isConfused && state !== States.CONFUSED) {
-            this.playerMachine.stateMachine.setState(States.CONFUSED);
-            return;
-        };
-        if (this.isFeared && state !== States.FEARED) {
-            this.playerMachine.stateMachine.setState(States.FEARED);
-            return;
-        };
-        if (this.isHurt && !this.isDefeated && state !== States.HURT) {
-            this.playerMachine.stateMachine.setState(States.HURT);
-            return;
-        };
-        if (this.isParalyzed && state !== States.PARALYZED) {
-            this.playerMachine.stateMachine.setState(States.PARALYZED);
-            return;
-        };
-        if (this.isStunned && state !== States.STUN) {
-            this.playerMachine.stateMachine.setState(States.STUN);
-            return;
-        };
-        if (this.isPolymorphed && state !== States.POLYMORPHED) {
-            this.playerMachine.stateMachine.setState(States.POLYMORPHED);
-            return;
-        };
-
-        const negState = this.playerMachine.negativeMachine.getCurrentState();
-
-        if (this.isFrozen && negState !== States.FROZEN) {
-            this.playerMachine.negativeMachine.setState(States.FROZEN);
-            return;
-        };
-        if (this.isSlowed && negState !== States.SLOWED) {
-            this.playerMachine.negativeMachine.setState(States.SLOWED);
-            return;
-        };
-        if (this.isSnared && negState !== States.SNARED) {
-            this.playerMachine.negativeMachine.setState(States.SNARED); 
-            return;    
         };
     };
 
@@ -1608,12 +1567,10 @@ export default class Player extends Entity {
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
-        this.spriteWeapon.setPosition(this.x, this.y);
-        this.spriteShield.setPosition(this.x, this.y);
     };
 
     update(dt: number) {
-        this.handleConcerns(dt);
+        this.handleConcerns();
         this.handleActions();
         this.handleMovement();
         this.playerMachine.stateMachine.update(dt);

@@ -18,8 +18,6 @@ import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
 import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
 import { specialPositiveMachines, States } from "../phaser/StateMachine";
-import { Arena } from "../scenes/Arena";
-import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
 import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";
 import { v4 as uuidv4 } from "uuid";
@@ -1331,25 +1329,6 @@ export default class Party extends Entity {
         return false;
     };
     
-    currentParticleCheck = () => {
-        if (!this.particleEffect?.triggered) this.scene.particleManager.updateParticle(this.particleEffect as Particle);
-        if (this.particleEffect?.success) {
-            this.particleEffect.triggered = true;
-            this.particleEffect.success = false;
-            this.weaponActionSuccess();
-        } else if (this.particleEffect?.collided) {
-            this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
-            this.particleEffect = undefined;              
-        };
-    };
-
-    getEnemyParticle = () => {
-        return this.currentTarget?.particleEffect
-            ? this.scene.particleManager.getEffect(this.currentTarget?.particleEffect.id)
-            : undefined;
-    };
-
-    
     killParticle = () => {
         this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
         this.particleEffect = undefined;
@@ -1359,21 +1338,6 @@ export default class Party extends Entity {
         const player = this.getEnemyParticle();
         if (!player) return false;
         return (this.currentTarget?.isRanged && this.checkEvasion(player) && !this.playerMachine.stateMachine.isCurrentState(States.EVADE));
-    };
-
-    checkLineOfSight() {
-        if (this.scene.scene.key === "Game") return false;
-        const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
-        const points = line.getPoints(30);  // Adjust number of points based on precision
-        for (let i = 0; i < points.length; i++) {
-            const point = points[i];
-            const layer = (this.scene as Arena | Underground).groundLayer;
-            const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
-            if (tile && (tile.properties.collides || tile.properties.wall)) {
-                return true;  // Wall is detected
-            };
-        };
-        return false;  // Clear line of sight
     };
 
     clearAttacks = () => {
@@ -1631,20 +1595,6 @@ export default class Party extends Entity {
         };
         let startTime: any = undefined;
         requestAnimationFrame(rollLoop);
-    };
-
-    particleCheck = () => {
-        const effect = this.particleEffect;
-        if (!effect) return;
-        if (effect.success) {
-            effect.success = false;
-            effect.triggered = true;
-            this.weaponActionSuccess();
-        } else if (effect.collided) {
-            this.particleEffect = undefined;                
-        } else if (!effect.effect.active) {
-            this.particleEffect = undefined;   
-        };
     };
 
     handlePartyAnimations = () => {

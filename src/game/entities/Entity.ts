@@ -321,6 +321,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     summons: number = 0;
     lastX: number = 0;
     lastY: number = 0;
+    updating: boolean = true;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -733,7 +734,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (this.velocity?.y as number < 0) {
                 this.weaponHitbox.y -= 16;
             };
-            // if (target) this.hitBoxCheck(target as Enemy);
             if (this.touching.length > 0) {
                 for (let i = 0; i < this.touching.length; i++) {
                     if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
@@ -745,7 +745,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             const distance = direction.length();
             if (distance < FRAME_COUNT.DISTANCE_CLEAR && !this.currentTarget.isProtecting && this.currentTarget.health > 0) {
                 this.attackedTarget = this.currentTarget;
-                // this.actionSuccess = true;
                 (this as unknown as Enemy | Party).weaponActionSuccess();
             } else {
                 this.currentAction = "";
@@ -819,8 +818,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const enemyBounds = enemy.getBounds();
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, enemyBounds)) {
             this.attackedTarget = enemy;
-            // this.actionSuccess = true;
-            (this as any).playerActionSuccess();
+            (this as any).weaponActionSuccess();
         };
     };
 
@@ -845,6 +843,41 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         });
     };
 
+    checkLineOfSight() {
+        if (this.scene.scene.key === "Game") return false;
+        const layer = (this.scene as Arena | Underground).groundLayer;
+        const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
+        const points = line.getPoints(30);  // Adjust number of points based on precision
+        for (let i = 0; i < points.length; i++) {
+            const point = points[i];
+            const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
+            if (tile && tile.properties.wall) {
+                return true;  // Wall is detected
+            };
+        };
+        return false;  // Clear line of sight
+    };
+
+    getEnemyParticle = () => {
+        return this.currentTarget?.particleEffect
+            ? this.scene.particleManager.getEffect(this.currentTarget.particleEffect.id)
+            : undefined;
+    };
+
+    particleCheck = () => {
+        const effect = this.particleEffect;
+        if (!effect) return;
+        if (effect.success) {
+            effect.success = false;
+            effect.triggered = true;
+            (this as any).weaponActionSuccess();
+        } else if (effect.collided) {
+            this.particleEffect = undefined;
+        } else if (!effect.effect?.active) {
+            this.particleEffect = undefined;
+        };
+    };
+
     particleAoe = (effect: Particle) => this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect, entity:this as any});
 
     liveAction = (duration: string, frames: string) => Math.floor(this.timeElapsed / FRAME_COUNT[duration] * FRAME_COUNT[frames]);
@@ -861,6 +894,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
+
         parry: (frame) => {
             const frameIndex = frame.index;
             const configKey = this.hasBow ? BOW : NOBOW;
@@ -871,6 +905,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
+
         thrust: (frame) => {
             const frameIndex = frame.index;
             const configKey = this.hasBow ? BOW : NOBOW;
@@ -880,6 +915,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
+
         posture: (frame) => {
             const frameIndex = frame.index;
             const configKey = this.hasBow ? BOW : NOBOW;
@@ -895,6 +931,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
         },
+
         attack: (frame) => {
             const frameIndex = frame.index;
             const configKey = this.hasBow ? BOW : NOBOW;
@@ -1008,42 +1045,70 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            if (frameIndex === 4 && !this.isRanged) {
+
+            if (frameIndex === 3 && !this.isRanged) {
                 this.currentAction = States.PARRY;
+                if (this.name === "player") {
+                    this.scene.combatManager.combatMachine.input("action", States.PARRY);
+                } else if (this.name === "enemy") {
+                    if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.PARRY;
+                    if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.PARRY, (this as unknown as Enemy).enemyID);
+                } else if (this.name === "party") {
+                    if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.PARRY;
+                };
+            } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
-            };
-            if (frameIndex >= 6) {
+            } else if (frameIndex >= 6) {
                 this.currentAction = "";
+                if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", "", (this as unknown as Enemy).enemyID);
                 this.isParrying = false;
             };
         },
 
         thrust: (frame) => {
             const frameIndex = frame.index;
-            if (frameIndex === 2 && this.isRanged) {
-                if (this.hasMagic) {
-                    this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
-                } else if (this.hasBow) {
-                    this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
+            if (frameIndex === 2) {
+                if (this.isRanged) {
+                    if (this.hasMagic) {
+                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.currentDamageType);
+                    } else if (this.hasBow) {
+                        this.particleEffect = this.scene.particleManager.addEffect(THRUST, this, this.bowDamageType());
+                    };
+                } else {
+                    this.currentAction = States.THRUST;
+                    if (this.name === "player") {
+                        this.scene.combatManager.combatMachine.input("action", States.THRUST);
+                    } else if (this.name === "enemy") {
+                        if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.THRUST;
+                        if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.THRUST, (this as unknown as Enemy).enemyID);
+                    } else if (this.name === "party") {
+                        if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.THRUST;
+                    };
                 };
-            };
-            if (frameIndex === 3 && !this.isRanged) {
-                this.currentAction = States.THRUST;
+            } else if (frameIndex === 3 && !this.isRanged) {
                 this.checkActionSuccess();
             };
         },
 
         roll: (frame) => {
             const frameIndex = frame.index;
-            if (frameIndex === 4 && this.isRanged && this.name !== "player") {
+            if (frameIndex === 3 && !this.isRanged) {
+                this.currentAction = States.ROLL;
+                if (this.name === "player") {
+                    this.scene.combatManager.combatMachine.input("action", States.ROLL);
+                } else if (this.name === "enemy") {
+                    if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.ROLL;
+                    if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.ROLL, (this as unknown as Enemy).enemyID);
+                } else if (this.name === "party") {
+                    if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.ROLL;
+                };
+            } else if (frameIndex === 4 && this.isRanged && this.name !== "player") {
                 if (this.hasMagic) {
                     this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
                 } else if (this.hasBow) {
                     this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.bowDamageType());
                 };
-            };
-            if (frameIndex === 1 && !this.isRanged) {
-                this.currentAction = States.ROLL;
+            } else if (frameIndex === 1 && !this.isRanged) {
                 this.checkActionSuccess();
             };
         },
@@ -1059,17 +1124,26 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? SHIELD_ANIMATION_FRAME_CONFIG.posturing.flipX
                 : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX;
 
-            if (frameIndex === 4 && this.isRanged) {
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
+
+            if (frameIndex === 2 && !this.isRanged) {
+                this.currentAction = States.POSTURE;
+                if (this.name === "player") {
+                    this.scene.combatManager.combatMachine.input("action", States.POSTURE);
+                } else if (this.name === "enemy") {
+                    if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.POSTURE;
+                    if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.POSTURE, (this as unknown as Enemy).enemyID);
+                } else if (this.name === "party") {
+                    if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.POSTURE;
+                };
+            } else if (frameIndex === 4 && this.isRanged) {
                 if (this.hasMagic) {
                     this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
                 } else if (this.hasBow) {
                     this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
                 };
-            };
-            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
-            if (frameIndex === 5 && !this.isRanged) {
-                this.currentAction = States.POSTURE;
+            } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
             };
         },
@@ -1081,17 +1155,26 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].flipX
                 : WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].noFlipX;
 
+
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+
             if (frameIndex === 5 && this.isRanged) {
                 if (this.hasMagic) {
                     this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
                 } else if (this.hasBow) {
                     this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
                 };
-            };
-
-            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-            if (frameIndex === 8 && !this.isRanged) {
+            } else if (frameIndex === 6 && !this.isRanged) {
                 this.currentAction = States.ATTACK;
+                if (this.name === "player") {
+                    this.scene.combatManager.combatMachine.input("action", States.ATTACK);
+                } else if (this.name === "enemy") {
+                    if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.ATTACK;
+                    if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.ATTACK, (this as unknown as Enemy).enemyID);
+                } else if (this.name === "party") {
+                    if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.ATTACK;
+                };
+            } else if (frameIndex === 8 && !this.isRanged) {
                 this.checkActionSuccess();
             };
         },

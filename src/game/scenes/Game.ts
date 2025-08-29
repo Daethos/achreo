@@ -1176,6 +1176,19 @@ export class Game extends Scene {
     };
 
     checkChunk = (entity: Enemy | NPC): boolean => entity.chunkX === this.playerChunkX && entity.chunkY === this.playerChunkY;
+
+    bodyUpdate = (enemy: Enemy | NPC, update: boolean) => {
+        enemy.updating = update;
+        enemy.visible = update;
+        enemy.active = update;
+        if (update) {
+            const body = enemy.body as MatterJS.Body;
+            this.matter.world.add(body);
+        } else {
+            const body = enemy.body as MatterJS.Body;
+            this.matter.world.remove(body, false);
+        };
+    };
     
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
@@ -1183,24 +1196,22 @@ export class Game extends Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             let enemy = this.enemies[i], chunk = this.checkChunk(enemy), dist = this.distanceToPlayer(enemy), target = UPDATE_OFF;
             if (!chunk) {
-                enemy.visible = false;
-                enemy.active = false;
+                if (enemy.updating) this.bodyUpdate(enemy, false);
                 continue;
             };
-            if (dist < DISTANCE_CLOSE) { // < 750px
+            if (dist < DISTANCE_CLOSE) {
                 target = UPDATE_CLOSE;
-            } else if (dist < DISTANCE_MID) { // < 1000px 24fps
+            } else if (dist < DISTANCE_MID) {
                 target = UPDATE_MID;
-            } else if (dist < DISTANCE_FAR) { // < 12500px 5fps
+            } else if (dist < DISTANCE_FAR) {
                 target = UPDATE_FAR;
             };
             enemy.acc += delta;
             const stepMs = 1000 / target;
             if (enemy.acc >= stepMs) { // update
                 enemy.acc -= stepMs;
-                enemy.visible = true;
-                enemy.active = true;
-                enemy.update(delta); // delta
+                if (!enemy.updating) this.bodyUpdate(enemy, true);
+                enemy.update(delta);
                 if (enemy.isDeleting) continue;
                 this.checkEnvironment(enemy);
             };
@@ -1216,14 +1227,12 @@ export class Game extends Scene {
         for (let i = 0; i < this.npcs.length; i++) {
             let npc = this.npcs[i], chunk = this.checkChunk(npc), distance = this.distanceToPlayer(npc), shouldUpdate = false;
             if (!chunk) {
-                npc.visible = false;
-                npc.active = false;
+                if (npc.updating) this.bodyUpdate(npc, false);
                 continue;
             };
             if (distance < DISTANCE_CLOSE) shouldUpdate = this.frameCount % 180 === 0;
             if (shouldUpdate) {
-                npc.visible = true;
-                npc.active = true;
+                if (!npc.updating) this.bodyUpdate(npc, true);
                 npc.update();
             };
         };

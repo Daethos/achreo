@@ -70,118 +70,53 @@ export class Hud extends Phaser.Scene {
         this.currentZoom = this.settings.positions.camera.zoom;
         this.smallHud = new SmallHud(this);
         this.actionBar = new ActionButtons(this);
-        this.joystick = new Joystick(this, 
-            this.gameWidth * this.settings.positions.leftJoystick.x, 
-            this.gameHeight * this.settings.positions.leftJoystick.y,
-            this.settings.positions.leftJoystick.base,
-            this.settings.positions.leftJoystick.thumb
-        );
-        this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
-        this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
-        this.rightJoystick = new Joystick(this,
-            this.gameWidth * this.settings.positions.rightJoystick.x, 
-            this.gameHeight * this.settings.positions.rightJoystick.y,
-            this.settings.positions.rightJoystick.base,
-            this.settings.positions.rightJoystick.thumb
-        );
-        this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
-        this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
-        this.rightJoystick.createPointer(this);
-        this.joystickKeys = this.joystick.createCursorKeys();    
+        this.joysticks();
         this.postFxPipeline = this.plugins.get("rexHorrifiPipeline");
 
-        this.logger = new Logger();
-        this.logger.add("console", new ConsoleLogger());
-        this.time.delayedCall(2000, () => {
-            this.logger.log("Console: [This means something innocuous about the gameplay.]");
-            this.logger.log("Warning: [This means some function did not work, but did not crash the game]");
-            this.logger.log("Error: [This means some portion if not all of the game has crashed]");
-            this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);
-            // this.logger.log(`Console: Scene Renderer Type: ${this.renderer.type === Phaser.WEBGL ? "WebGL" : this.renderer.type === Phaser.CANVAS ? "Canvas" : "Not Categorized"}`);
-        }, undefined, this);
-        this.input.keyboard?.on("keydown-P", () => {
-            EventBus.emit("action-button-sound");
-            EventBus.emit("update-pause")
-        });
-        this.input.on("wheel", (event: Phaser.Input.Pointer) => {
-            if (event.deltaY > 0) {
-                this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), (window.innerWidth > 1200 ? 2 : 0.5));
-            } else if (event.deltaY < 0) {
-                this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), (window.innerWidth > 1200 ? 3 : 1.5));
-            };
-            const newSettings = {
-                ...this.settings,
-                positions: {
-                    ...this.settings.positions,
-                    camera: {
-                        ...this.settings.positions.camera,
-                        zoom: this.currentZoom,
-                    }
-                }
-            };
-            EventBus.emit("save-settings", newSettings);
-            EventBus.emit("update-camera-zoom", this.currentZoom);
-        });
-        
-        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
-        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125);
-        
-        swipe.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-            this.evCache.push(pointer);
-            this.currentX = pointer.x;
-        })
-        .on("pointermove", (pointer: Phaser.Input.Pointer) => {
-            var curDiff = Math.abs(this.currentX - pointer.x);
-            if (curDiff > 0 || this.prevDiff > 0) {
-                if (pointer.x < this.currentX) {
-                    this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), (window.innerWidth > 1200 ? 3 : 1.5));
-                } else if (pointer.x > this.currentX) {
-                    this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), (window.innerWidth > 1200 ? 2 : 0.5));
-                };
-                EventBus.emit("update-camera-zoom", this.currentZoom);
-            };
-            this.prevDiff = curDiff;
-        })
-        .on("pointerup", (pointer: Phaser.Input.Pointer) => {
-            this.removeEvent(pointer);
-            this.prevDiff = -1;
-            this.currentX = 0;
-            const newSettings = {
-                ...this.settings,
-                positions: {
-                    ...this.settings.positions,
-                    camera: {
-                        ...this.settings.positions.camera,
-                        zoom: this.currentZoom,
-                    }
-                }
-            };
-            EventBus.emit("save-settings", newSettings);
-        });
+        this.log();
+        this.desktops();
+        this.swipes();
+        this.startGameScene();
 
-        const swipe2 = this.add.rectangle(0, 0, this.gameWidth * 0.1125, this.gameHeight * 0.1, 0x000000, 0);
-        swipe2.setPosition(this.gameWidth * 0.75, this.gameHeight * 0.2125);
-        
-        swipe2.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-            this.evCache.push(pointer);
-            this.currentX2 = pointer.x;
-        })
-        .on("pointermove", (pointer: Phaser.Input.Pointer) => {
-            var curDiff = Math.abs(this.currentX2 - pointer.x);
-            if ((curDiff > 25 || this.prevDiff2 > 25)) {
-                const scene = this.scene.get(this.currScene);
-                if (scene && ((scene as Player_Scene).state.computer !== undefined || (scene as Player_Scene).player.currentTarget !== undefined) && !(scene as Player_Scene).player.inCombat) {
-                    (scene as Player_Scene).player.disengage();
-                };
-            };
-            this.prevDiff2 = curDiff;
-        })
-        .on("pointerup", (pointer: Phaser.Input.Pointer) => {
-            this.removeEvent(pointer);
-            
-            this.prevDiff2 = -1;
-            this.currentX2 = 0;
-        });
+        // this.createArenas();
+        // this.game.scale.on("resize", this.resize, this);
+    };
+    // toggleArenaView() { 
+    //     // Toggle visibility of the arena grid 
+    //     const isVisible = this.arenaContainers[0].visible; 
+    //     this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
+    //     this.borders.forEach(border => border.setVisible(!isVisible));
+    //     this.updateArenas(!isVisible);
+    // }; 
+    // updateArenas(visible: boolean) { 
+    //     // Fetch new arena data and update each container 
+    //     this.arenaContainers.forEach((_container, index) => { 
+    //         const sceneKey = `ArenaView${index}`;
+    //         const sceneInstance = this.scene.get(sceneKey) as ArenaCvC;
+    //         if (visible) {
+    //             if (sceneInstance && this.scene.isSleeping(sceneKey)) {
+    //                 sceneInstance.resumeScene();
+    //             };
+    //         } else {
+    //             if (sceneInstance && this.scene.isActive(sceneKey)) {
+    //                 sceneInstance.sleepScene();
+    //             };
+    //         };
+    //     }); 
+    // };
+
+    cleanUp() {
+        this.actionBar.cleanUp();
+        this.actionBar.destroy();
+        this.joystick.cleanUp();
+        this.rightJoystick.cleanUp();    
+        this.joystick.destroy();
+        this.rightJoystick.destroy();
+        this.smallHud.cleanUp();
+        this.smallHud.destroy();
+    };
+
+    createArenas = () => {
         // this.arenaButton = this.add.image(this.cameras.main.width - 20, this.cameras.main.height - 50, "toggleButton").setDepth(10).setInteractive(); 
         // this.arenaButton.on("pointerdown", this.toggleArenaView, this);
         // // Create a gridSize squared grid of containers 
@@ -218,43 +153,128 @@ export class Hud extends Phaser.Scene {
         //         this.borders.push(border);
         //     };
         // };
-        // this.game.scale.on("resize", this.resize, this);
-        this.startGameScene();
     };
-    // toggleArenaView() { 
-    //     // Toggle visibility of the arena grid 
-    //     const isVisible = this.arenaContainers[0].visible; 
-    //     this.arenaContainers.forEach(container => container.setVisible(!isVisible)); 
-    //     this.borders.forEach(border => border.setVisible(!isVisible));
-    //     this.updateArenas(!isVisible);
-    // }; 
-    // updateArenas(visible: boolean) { 
-    //     // Fetch new arena data and update each container 
-    //     this.arenaContainers.forEach((_container, index) => { 
-    //         const sceneKey = `ArenaView${index}`;
-    //         const sceneInstance = this.scene.get(sceneKey) as ArenaCvC;
-    //         if (visible) {
-    //             if (sceneInstance && this.scene.isSleeping(sceneKey)) {
-    //                 sceneInstance.resumeScene();
-    //             };
-    //         } else {
-    //             if (sceneInstance && this.scene.isActive(sceneKey)) {
-    //                 sceneInstance.sleepScene();
-    //             };
-    //         };
-    //     }); 
-    // };
 
-    cleanUp() {
-        this.actionBar.cleanUp();
-        this.actionBar.destroy();
-        this.joystick.cleanUp();
-        this.rightJoystick.cleanUp();    
-        this.joystick.destroy();
-        this.rightJoystick.destroy();
-        this.smallHud.cleanUp();
-        this.smallHud.destroy();
-    };    
+    desktops = () => {
+        this.input.keyboard?.on("keydown-P", () => {
+            EventBus.emit("action-button-sound");
+            EventBus.emit("update-pause")
+        });
+        this.input.on("wheel", (event: Phaser.Input.Pointer) => {
+            if (event.deltaY > 0) {
+                this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), (window.innerWidth > 1200 ? 2 : 0.5));
+            } else if (event.deltaY < 0) {
+                this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), (window.innerWidth > 1200 ? 3 : 1.5));
+            };
+            const newSettings = {
+                ...this.settings,
+                positions: {
+                    ...this.settings.positions,
+                    camera: {
+                        ...this.settings.positions.camera,
+                        zoom: this.currentZoom,
+                    }
+                }
+            };
+            EventBus.emit("save-settings", newSettings);
+            EventBus.emit("update-camera-zoom", this.currentZoom);
+        });
+    };
+
+    joysticks = () => {
+        this.joystick = new Joystick(this, 
+            this.gameWidth * this.settings.positions.leftJoystick.x, 
+            this.gameHeight * this.settings.positions.leftJoystick.y,
+            this.settings.positions.leftJoystick.base,
+            this.settings.positions.leftJoystick.thumb
+        );
+        this.joystick.joystick.base.setAlpha(this.settings.positions.leftJoystick.opacity);
+        this.joystick.joystick.thumb.setAlpha(this.settings.positions.leftJoystick.opacity);
+        this.rightJoystick = new Joystick(this,
+            this.gameWidth * this.settings.positions.rightJoystick.x, 
+            this.gameHeight * this.settings.positions.rightJoystick.y,
+            this.settings.positions.rightJoystick.base,
+            this.settings.positions.rightJoystick.thumb
+        );
+        this.rightJoystick.joystick.base.setAlpha(this.settings.positions.rightJoystick.opacity);
+        this.rightJoystick.joystick.thumb.setAlpha(this.settings.positions.rightJoystick.opacity);
+        this.rightJoystick.createPointer(this);
+        this.joystickKeys = this.joystick.createCursorKeys();
+    };
+
+    log = () => {
+        this.logger = new Logger();
+        this.logger.add("console", new ConsoleLogger());
+        this.time.delayedCall(2000, () => {
+            this.logger.log("Console: [If you see this, it means something innocuous about the gameplay.]");
+            this.logger.log("Warning: [If you see this, it means some function did not work, but did not crash the game]");
+            this.logger.log("Error: [If you see this, it means some portion if not all of the game has crashed]");
+            this.logger.log(`Console: Current Height: ${this.gameHeight} / Width: ${this.gameWidth}`);
+            // this.logger.log(`Console: Scene Renderer Type: ${this.renderer.type === Phaser.WEBGL ? "WebGL" : this.renderer.type === Phaser.CANVAS ? "Canvas" : "Not Categorized"}`);
+        }, undefined, this);
+    };
+
+    swipes = () => {
+        const swipe = this.add.rectangle(0, 0, this.gameWidth * 0.225, this.gameHeight * 0.1, 0x000000, 0);
+        swipe.setPosition(this.gameWidth * 0.125, this.gameHeight * 0.2125);
+        
+        swipe.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+            this.evCache.push(pointer);
+            this.currentX = pointer.x;
+        })
+            .on("pointermove", (pointer: Phaser.Input.Pointer) => {
+                var curDiff = Math.abs(this.currentX - pointer.x);
+                if (curDiff > 0 || this.prevDiff > 0) {
+                    if (pointer.x < this.currentX) {
+                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), (window.innerWidth > 1200 ? 3 : 1.5));
+                    } else if (pointer.x > this.currentX) {
+                        this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), (window.innerWidth > 1200 ? 2 : 0.5));
+                    };
+                    EventBus.emit("update-camera-zoom", this.currentZoom);
+                };
+                this.prevDiff = curDiff;
+            })
+            .on("pointerup", (pointer: Phaser.Input.Pointer) => {
+                this.removeEvent(pointer);
+                this.prevDiff = -1;
+                this.currentX = 0;
+                const newSettings = {
+                    ...this.settings,
+                    positions: {
+                        ...this.settings.positions,
+                        camera: {
+                            ...this.settings.positions.camera,
+                            zoom: this.currentZoom,
+                        }
+                    }
+                };
+                EventBus.emit("save-settings", newSettings);
+            });
+
+        const swipe2 = this.add.rectangle(0, 0, this.gameWidth * 0.1125, this.gameHeight * 0.1, 0x000000, 0);
+        swipe2.setPosition(this.gameWidth * 0.75, this.gameHeight * 0.2125);
+        
+        swipe2.setInteractive().on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+            this.evCache.push(pointer);
+            this.currentX2 = pointer.x;
+        })
+            .on("pointermove", (pointer: Phaser.Input.Pointer) => {
+                var curDiff = Math.abs(this.currentX2 - pointer.x);
+                if ((curDiff > 25 || this.prevDiff2 > 25)) {
+                    const scene = this.scene.get(this.currScene);
+                    if (scene && ((scene as Player_Scene).state.computer !== undefined || (scene as Player_Scene).player.currentTarget !== undefined) && !(scene as Player_Scene).player.inCombat) {
+                        (scene as Player_Scene).player.disengage();
+                    };
+                };
+                this.prevDiff2 = curDiff;
+            })
+            .on("pointerup", (pointer: Phaser.Input.Pointer) => {
+                this.removeEvent(pointer);
+                
+                this.prevDiff2 = -1;
+                this.currentX2 = 0;
+            });
+    };
     
     postFxEvent = (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
@@ -373,18 +393,12 @@ export class Hud extends Phaser.Scene {
         this.gameHeight = displaySize.height;
     };
 
-    horizontal = () => {
-        return this.joystickKeys.right.isDown || this.joystickKeys.left.isDown;
-    };
-
-    vertical = () => {
-        return this.joystickKeys.up.isDown || this.joystickKeys.down.isDown;
-    };
+    horizontal = () => this.joystickKeys.right.isDown || this.joystickKeys.left.isDown;
+    
+    vertical = () => this.joystickKeys.up.isDown || this.joystickKeys.down.isDown;
 
     removeEvent = (ev: Phaser.Input.Pointer) => {
-        const index = this.evCache.findIndex(
-            (cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === ev.pointerId,
-        );
+        const index = this.evCache.findIndex((cachedEv: Phaser.Input.Pointer) => cachedEv.pointerId === ev.pointerId,);
         this.evCache.splice(index, 1);
     };
 

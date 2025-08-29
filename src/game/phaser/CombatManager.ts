@@ -57,13 +57,13 @@ export class CombatManager {
         if (player.healthbar.getTotal() < e.playerHealth) player.healthbar.setTotal(e.playerHealth);
         
         if (e.parrySuccess) {
-            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, HEAL, true, false);
+            this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, EFFECT, true, false);
             this.stunned(e.enemyID);
             this.useStamina(-5);
         };
         
         if (e.rollSuccess) {
-            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, HEAL, e.criticalSuccess, false);
+            this.context.showCombatText(this.context.player, "Roll", PLAYER.DURATIONS.TEXT, EFFECT, e.criticalSuccess, false);
             this.useStamina(-5);
         };
         

@@ -1216,7 +1216,7 @@ export default class Player extends Entity {
         this.particleEffect = undefined;
     };
 
-    playerActionSuccess = () => {
+    weaponActionSuccess = () => {
         if (!this.attackedTarget) return;
         let action = "";
         if (this.particleEffect) {
@@ -1377,20 +1377,6 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
-    particleCheck = () => {
-        const effect = this.particleEffect;
-        if (!effect) return;
-        if (effect.success) {
-            effect.success = false;
-            effect.triggered = true;
-            this.playerActionSuccess();
-        } else if (effect.collided) {
-            this.particleEffect = undefined;
-        } else if (!effect.effect?.active) {
-            this.particleEffect = undefined;
-        };
-    };
-
     handleActions = () => {
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget);
@@ -1461,18 +1447,7 @@ export default class Player extends Entity {
     handleConcerns = () => {
         if (this.scene.combat && !this.currentTarget) this.findEnemy(); // || !this.currentTarget.inCombat // this.inCombat === true && state.combatEngaged
         this.syncPositions();
-
-        if (this.particleEffect) { 
-            if (this.particleEffect.success) {
-                this.particleEffect.success = false;
-                this.particleEffect.triggered = true;
-                this.playerActionSuccess();
-            } else if (this.particleEffect.collided) {
-                this.particleEffect = undefined;
-            } else if (!this.particleEffect.effect?.active) {
-                this.particleEffect = undefined;
-            };
-        };
+        this.particleCheck();
     };
 
     handleMovement = () => {

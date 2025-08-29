@@ -1,6 +1,6 @@
 import Party, { COLOR } from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAME_COUNT, FRAMES } from "../entities/Entity";
+import { FRAMES } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
@@ -846,7 +846,6 @@ export default class PlayerMachine {
         this.player.isAttacking = true;
     };
     onComputerAttackUpdate = (_dt: number) => {
-        if (this.player.liveAction("ATTACK_DURATION", "ATTACK_FRAMES") === FRAME_COUNT.ATTACK_LIVE && !this.player.isRanged) this.player.currentAction = States.ATTACK;
         if (!this.player.isAttacking) this.player.evaluateCombatDistance(); 
     };
     onComputerAttackExit = () => {
@@ -867,9 +866,6 @@ export default class PlayerMachine {
         };
     };
     onComputerParryUpdate = (_dt: number) => {
-        const frame = this.player.liveAction("PARRY_DURATION", "PARRY_FRAMES");
-        if (frame === FRAME_COUNT.PARRY_LIVE && !this.player.isRanged) this.player.currentAction = States.PARRY;
-        if (frame >= FRAME_COUNT.PARRY_KILL) this.player.isParrying = false;
         if (!this.player.isParrying) this.player.evaluateCombatDistance();
     };
     onComputerParryExit = () => {
@@ -884,7 +880,6 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(true);
     };
     onComputerPostureUpdate = (_dt: number) => {
-        if (this.player.liveAction("POSTURE_DURATION", "POSTURE_FRAMES") === FRAME_COUNT.POSTURE_LIVE && !this.player.isRanged) this.player.currentAction = States.POSTURE
         if (!this.player.isPosturing) this.player.evaluateCombatDistance();
     };
     onComputerPostureExit = () => {
@@ -898,7 +893,6 @@ export default class PlayerMachine {
         this.player.isThrusting = true;
     };
     onComputerThrustUpdate = (_dt: number) => {
-        if (this.player.liveAction("THRUST_DURATION", "THRUST_FRAMES") === FRAME_COUNT.THRUST_LIVE && !this.player.isRanged) this.player.currentAction = States.THRUST;
         if (!this.player.isThrusting) this.player.evaluateCombatDistance();
     };
     onComputerThrustExit = () => {
@@ -989,7 +983,6 @@ export default class PlayerMachine {
         body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
     };
     onRollUpdate = (_dt: number) => {
-        if (this.player.liveAction("ROLL_DURATION", "ROLL_FRAMES") === FRAME_COUNT.ROLL_LIVE && !this.player.isRanged) this.player.currentAction = States.ROLL;
         this.player.combatChecker(this.player.isRolling);
     };
     onRollExit = () => {

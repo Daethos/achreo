@@ -339,7 +339,7 @@ export default class ParticleManager extends Phaser.Scene {
                     particle.kill = true;
                     const tw = this.context.tweens.getTweensOf(particle.effect);
                     tw.forEach(t => t.stop());
-                    this.removeEffect(particle.id);
+                    this.despawnEffect(particle);
                     return false;
                 };
             },

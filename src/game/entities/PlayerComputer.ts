@@ -5,8 +5,6 @@ import { DURATION } from "../../utility/enemy";
 import { PLAYER, staminaCheck } from "../../utility/player";
 import { Particle } from "../matter/ParticleManager";
 import { States } from "../phaser/StateMachine";
-import { Arena } from "../scenes/Arena";
-import { Underground } from "../scenes/Underground";
 import Enemy from "./Enemy";
 import Player from "./Player";
 
@@ -103,43 +101,11 @@ export default class PlayerComputer extends Player {
         };
         return false;
     };
-    
-    currentParticleCheck = () => {
-        // if (!this.particleEffect?.triggered) this.scene.particleManager.updateParticle(this.particleEffect as Particle);
-        if (this.particleEffect?.success) {
-            this.particleEffect.triggered = true;
-            this.particleEffect.success = false;
-            this.playerActionSuccess();
-        } else if (this.particleEffect?.collided) {
-            // this.scene.particleManager.removeEffect(this.particleEffect?.id as string);
-            this.particleEffect = undefined;              
-        };
-    };
-
-    getEnemyParticle = () => {
-        return this.currentTarget?.particleEffect
-            ? this.scene.particleManager.getEffect(this.currentTarget?.particleEffect.id)
-            : undefined;
-    };
 
     isUnderRangedAttack = () => {
         const player = this.getEnemyParticle();
         if (!player) return false;
         return (this.currentTarget?.isRanged && this.checkEvasion(player) && !this.playerMachine.stateMachine.isCurrentState(States.EVADE));
-    };
-
-    checkLineOfSight() {
-        const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
-        const points = line.getPoints(30);  // Adjust number of points based on precision
-        for (let i = 0; i < points.length; i++) {
-            const point = points[i];
-            const layer = (this.scene as Arena | Underground).groundLayer;
-            const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
-            if (tile && (tile.properties.collides || tile.properties.wall)) {
-                return true;  // Wall is detected
-            };
-        };
-        return false;  // Clear line of sight
     };
 
     clearAttacks = () => {
@@ -158,33 +124,33 @@ export default class PlayerComputer extends Player {
         
         const state = this.playerMachine.stateMachine.getCurrentState();
         let direction = this.currentTarget.position.subtract(this.position);
+        const distance = direction.length();
         const distanceY = Math.abs(direction.y);
         const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
         
-        if (direction.length() >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
+        if (distance >= PLAYER.DISTANCE.CHASE * multiplier) { // Switch to CHASE the Enemy
             this.playerMachine.stateMachine.setState(States.CHASE);
-            return;
         } else if (this.isRanged) { // Contiually Checking Distance for RANGED ENEMIES.
             if (distanceY > PLAYER.DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
-                this.setVelocityY(direction.y * (this.speed + 0.5)); // 2 || 4
+                this.setVelocityY(direction.y * (this.speed + 0.5));
                 this.handleMovementAnimations();
             };
-            if (this.currentTarget.position.subtract(this.position).length() > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
+            if (distance > PLAYER.DISTANCE.THRESHOLD * multiplier) { // 225-525 
                 direction.normalize();
-                this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.25
-                this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.25          
+                this.setVelocityX(direction.x * (this.speed + 0.25));
+                this.setVelocityY(direction.y * (this.speed + 0.25));     
                 this.handleMovementAnimations();
-            } else if (this.currentTarget.position.subtract(this.position).length() < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
-                if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
+            } else if (distance < PLAYER.DISTANCE.THRESHOLD && !this.currentTarget.isRanged) { // Contiually Keeping Distance for RANGED ENEMIES and MELEE PLAYERS.
+                if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) {
                     this.playerMachine.stateMachine.setState(States.EVADE);
                 } else {
                     direction.normalize();
-                    this.setVelocityX(direction.x * -this.speed + 0.5); // -2.25 | -2 | -1.75
-                    this.setVelocityY(direction.y * -this.speed + 0.5); // -1.5 | -1.25
+                    this.setVelocityX(direction.x * -this.speed + 0.5);
+                    this.setVelocityY(direction.y * -this.speed + 0.5);
                     this.handleMovementAnimations();
                 };
-            } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
+            } else if (this.checkLineOfSight() && state !== States.EVADE) {
                 this.playerMachine.stateMachine.setState(States.EVADE);
             } else if (distanceY < 15) { // The Sweet Spot for RANGED ENEMIES.
                 this.setVelocity(0);
@@ -195,7 +161,7 @@ export default class PlayerComputer extends Player {
                 this.handleMovementAnimations();
             };
         } else { // Melee || Continually Maintaining Reach for MELEE ENEMIES.
-            if (direction.length() > PLAYER.DISTANCE.ATTACK) { 
+            if (distance > PLAYER.DISTANCE.ATTACK) { 
                 direction.normalize();
                 this.setVelocityX(direction.x * (this.speed + 0.25)); // 2.5
                 this.setVelocityY(direction.y * (this.speed + 0.25)); // 2.5
@@ -213,7 +179,7 @@ export default class PlayerComputer extends Player {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
         let actionNumber = Math.floor(Math.random() * 101);
         let action = "";
-        const loadout = this.scene.hud.settings.computerLoadout || { attack: 20, parry: 10, roll: 10, thrust: 15, posture: 15, jump: 10 };
+        const loadout = this.scene.hud.settings.computerLoadout; // || { attack: 20, parry: 10, roll: 10, thrust: 15, posture: 15, jump: 10 };
         if (actionNumber > 100 - loadout.attack) { // 81-100 (20%)
             action = States.COMPUTER_ATTACK;
         } else if (actionNumber > 100 - loadout.attack - loadout.parry) { // 71-80 (10%)
@@ -234,38 +200,22 @@ export default class PlayerComputer extends Player {
             this.playerMachine.stateMachine.setState(action);
         } else {
             this.scene.showCombatText(this, "Catch Your Breath", 750, "dread", false, true);
-            this.scene.combatManager.useStamina(-5);    
-        };
-    };
-
-    particleCheck = () => {
-        const effect = this.particleEffect;
-        if (!effect) return;
-        
-        if (effect.success) {
-            effect.triggered = true;
-            effect.success = false;
-            this.playerActionSuccess();
-        } else if (effect.collided) {
-            this.particleEffect = undefined;              
-        } else if (!effect.effect?.active) {
-            this.particleEffect = undefined;   
+            this.scene.combatManager.useStamina(-5);
         };
     };
 
     handleComputerConcerns = () => {
-        if (this.scene.combat === true && !this.currentTarget) this.findEnemy();
-
-        this.syncPositions();
-        this.getDirection();
-        this.particleCheck();
-
+        if (this.scene.combat && !this.currentTarget) this.findEnemy();
         if (this.currentTarget) {
             this.highlightTarget(this.currentTarget); 
             if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
                 this.scene.hud.setupEnemy(this.currentTarget);
             };
         };
+
+        this.syncPositions();
+        this.getDirection();
+        this.particleCheck();
 
         if (this.isUnderRangedAttack()) this.playerMachine.stateMachine.setState(States.EVADE);
     };

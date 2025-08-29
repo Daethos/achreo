@@ -592,80 +592,8 @@ export class Underground extends Scene {
         };
     };
 
-    // private checkWallCollision(): void {
-    //     const tileX = this.map.worldToTileX(this.player.x) as number;
-    //     const tileY = this.map.worldToTileY(this.player.y) as number;
-        
-    //     if (this.isWallTile(tileX, tileY)) {
-    //         console.log("SHUNNING PLAYER!");
-    //         this.shunPlayerFromWall(tileX, tileY);
-    //     };
-    // };
-
-    // private isWallTile(x: number, y: number): boolean {
-    //     // Check if coordinates are within layer bounds
-    //     if (x < 0 || y < 0 || x >= this.groundLayer.width || y >= this.groundLayer.height) {
-    //         console.log("Initial Attempt (coords) to check isWallTile");
-    //         return true; // Treat out-of-bounds as walls
-    //     };
-        
-    //     const tile = this.groundLayer.getTileAt(x, y);
-    //     if (!tile) {
-    //         console.log("Second Attempt (!tile) to check isWallTile");
-    //         return true; // Treat missing tiles as walls (safer)
-    //     };
-        
-    //     console.log("Last Attempt (collides) to check isWallTile");
-    //     return tile.properties.collides || tile.collides;
-    // };
-
-    // private shunPlayerFromWall(wallX: number, wallY: number): void {
-    //     for (let radius = 1; radius <= 3; radius++) {
-    //         for (let y = -radius; y <= radius; y++) {
-    //             for (let x = -radius; x <= radius; x++) {
-    //                 if (Math.abs(x) < radius && Math.abs(y) < radius) continue;
-                    
-    //                 const checkX = wallX + x;
-    //                 const checkY = wallY + y;
-                    
-    //                 if (!this.isWallTile(checkX, checkY)) {
-    //                     if (!Number.isInteger(checkX) || !Number.isInteger(checkY)) {
-    //                         console.error("Non-integer tile coordinates:", checkX, checkY);
-    //                         return;
-    //                     };
-                    
-    //                     if (!this.groundLayer || !this.groundLayer.tileToWorldX) {
-    //                         console.error("Ground layer not properly initialized");
-    //                         return;
-    //                     };
-                    
-    //                     const worldX = this.groundLayer.tileToWorldX(checkX); // + 16
-    //                     const worldY = this.groundLayer.tileToWorldY(checkY); // + 16
-                    
-    //                     console.log("Conversion:", {
-    //                         tileX: checkX,
-    //                         tileY: checkY,
-    //                         worldX,
-    //                         worldY,
-    //                     });
-                    
-    //                     if (isNaN(worldX) || isNaN(worldY)) {
-    //                         console.error("Failed conversion to world coordinates - check your map setup");
-    //                         return;
-    //                     };
-                    
-    //                     this.player.setPosition(worldX, worldY);
-    //                     return;
-    //                 };
-    //             };
-    //         };
-    //     };
-        
-    // };
-
     playerUpdate = (delta: number): void => {// In your playerUpdate method, before any movement:
         this.player.update(delta);
-        // this.checkWallCollision();
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.hud.rightJoystick.update();
@@ -674,12 +602,11 @@ export class Underground extends Scene {
         for (let i = 0; i < this.pillars.length; i++) {
             const pillar = this.pillars[i];
             if (
-                this.player.x > pillar.x &&
-                this.player.x < pillar.x + pillar.width &&
+                (this.player.x + 6) > pillar.x &&
+                (this.player.x - 6) < pillar.x + pillar.width &&
                 (this.player.y + 12) > pillar.y - pillar.height &&
                 (this.player.y - 12) < pillar.y + pillar.height
             ) {
-                // Narrow check passed — player is near the pillar
                 if ((this.player.y + 12) < pillar.y) {
                     this.player.setDepth(1); // Behind pillar
                 } else {

@@ -664,8 +664,8 @@ export class Arena extends Phaser.Scene {
         for (let i = 0; i < this.pillars.length; i++) {
             const pillar = this.pillars[i];
             if (
-                this.player.x > pillar.x &&
-                this.player.x < pillar.x + pillar.width &&
+                (this.player.x + 6) > pillar.x &&
+                (this.player.x - 6) < pillar.x + pillar.width &&
                 (this.player.y + 12) > pillar.y - pillar.height &&
                 (this.player.y - 12) < pillar.y + pillar.height
             ) {

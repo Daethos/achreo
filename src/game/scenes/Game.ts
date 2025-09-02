@@ -213,17 +213,6 @@ export class Game extends Scene {
             callbackScope: this           
         });
 
-        // this.time.addEvent({
-        //     delay: 2000, loop: true, callback: () => {
-        //         const engine = this.matter.world.engine;
-        //         // console.log(engine, "Engine");
-        //         const bodies = (engine.world as any).bodies.length ?? -1;
-        //         const pairs  = engine.pairs?.list?.length ?? -1;
-        //         const tweens = this.tweens.getTweens().length;
-        //         console.log(`[Stats] bodies=${bodies} pairs=${pairs} tweens=${tweens} enemies=${this.enemies.length}`);
-        //     }
-        // });
-
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
 
@@ -240,7 +229,7 @@ export class Game extends Scene {
         //     callback: () => {
         //         const isText = Math.random() > 0.85;
         //         const color = Math.random() > 0.5 ? "damage" : "heal";
-        //         const text = isText ? this.player.ascean.name : `${Math.floor(Math.random() * 100)}`;
+        //         const text = isText ? this.player.ascean.name : `${Math.floor(Math.random() * 400)}`;
         //         const crit = Math.random() > 0.75;
         //         this.showCombatText(this.player, text, 1500, color, crit && !isText, isText);
         //     },

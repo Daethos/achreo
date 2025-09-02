@@ -497,31 +497,83 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         switch (character) {
             case CHARACTERS.CHARACTER:
                 return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
-                    <div>
-                    { dimensions().ORIENTATION === "landscape" ? ( <>
-                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
-                        <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
-                    </> ) : ( <>
+                    <div class="stat-panel souls" style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                    { dimensions().ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
+                        <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
+                        <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
+                    </div> ) : ( <>
                         <h2 style={{ "margin-top": "15%" }}>
                             <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 875 ? "-3%" : "", "margin-bottom": dimensions().WIDTH < 875 ? "1%" : "" }}>
-                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
-                    </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
-                        <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
-                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
-                        <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
-                        <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
-                        <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
-                        <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+                    <AttributeCompiler
+                        ascean={ascean} 
+                        setAttribute={setAttribute} 
+                        show={attrShow} 
+                        setShow={setAttrShow} 
+                        setDisplay={setAttributeDisplay} 
+                    />
+                    <div class="stat-section" />
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Level:</span>
+                            <span class="stat-value gold">{combat()?.player?.level}</span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
+                            <span class="stat-label">Faith:</span>
+                            <span class="stat-value gold">{ascean().faith}</span>
+                            <span class="divider">|</span>
+                            <span class="stat-label">Mastery:</span>
+                            <span class="stat-value gold">
+                                {combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}
+                            </span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Health:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Stamina:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span>
+                            <span class="divider">|</span>
+                            <span class="stat-label">Grace:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span>
+                        </div>
                     </div>
 
-                </div>
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Damage:</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.physicalDamage}</span>
+                            <span class="small-label">Physical</span>
+                            <span class="divider">|</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.magicalDamage}</span>
+                            <span class="small-label">Magical</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Critical:</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalChance}%</span>
+                            <span class="divider">|</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalDamage}x</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Magical Defense:</span>
+                            <span class="stat-value gold">
+                                {combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]
+                            </span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Physical Defense:</span>
+                            <span class="stat-value gold">
+                                {combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]
+                            </span>
+                        </div>
+                    </div>
+                    </div>
             </div>;
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
@@ -976,30 +1028,83 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         {/* <<----- WINDOW TWO -----> */}
         <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
-                    { dimensions().ORIENTATION === "landscape" ? ( <>
-                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
-                        <h2 style={{ margin: "2%" }}>{combat()?.player?.description}</h2>
-                    </> ) : ( <>
+                <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none", margin: "auto" }}>
+                    <div class="stat-panel souls" style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                    { dimensions().ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
+                        <img class="stat-" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
+                        <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
+                    </div> ) : ( <>
                         <h2 style={{ "margin-top": "15%" }}>
-                            <span>
-                                <img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} />
-                            </span>
+                            <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 875 ? "-3%" : "", "margin-bottom": dimensions().WIDTH < 875 ? "1%" : "", transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)" }}>
-                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                    <AttributeCompiler
+                        ascean={ascean} 
+                        setAttribute={setAttribute} 
+                        show={attrShow} 
+                        setShow={setAttrShow} 
+                        setDisplay={setAttributeDisplay} 
+                    />
+                    <div class="stat-section" />
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Level:</span>
+                            <span class="stat-value gold">{combat()?.player?.level}</span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
+                            <span class="stat-label">Faith:</span>
+                            <span class="stat-value gold">{ascean().faith}</span>
+                            <span class="divider">|</span>
+                            <span class="stat-label">Mastery:</span>
+                            <span class="stat-value gold">
+                                {combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}
+                            </span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Health:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Stamina:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span>
+                            <span class="divider">|</span>
+                            <span class="stat-label">Grace:</span>
+                            <span class="stat-value gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span>
+                        </div>
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
-                        <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}</span></div>
-                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
-                        <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
-                        <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
-                        <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
-                        <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Damage:</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.physicalDamage}</span>
+                            <span class="small-label">Physical</span>
+                            <span class="divider">|</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.magicalDamage}</span>
+                            <span class="small-label">Magical</span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Critical:</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalChance}%</span>
+                            <span class="divider">|</span>
+                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalDamage}x</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-section">
+                        <div class="stat-row">
+                            <span class="stat-label">Magical Defense:</span>
+                            <span class="stat-value gold">
+                                {combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]
+                            </span>
+                        </div>
+                        <div class="stat-row">
+                            <span class="stat-label">Physical Defense:</span>
+                            <span class="stat-value gold">
+                                {combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]
+                            </span>
+                        </div>
+                    </div>
                     </div>
                 </div>
             ) : settings().asceanViews === VIEWS.INVENTORY ? (

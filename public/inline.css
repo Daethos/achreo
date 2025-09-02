@@ -1,4 +1,4 @@
-#base-ui {z-index: 99;}
+#base-ui {z-index: 99;pointer-events:auto;}
 #deity-pic {max-height: 37.5%; max-width: 37.5%; border-radius: 50%; border: 0.15rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
 #origin-pic {display: block; max-height: 25%; max-width: 25%; border-radius: 50%; border: 0.1rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
 #origin-pic:hover, #deity-pic:hover {border: 0.1rem solid gold;}
@@ -400,7 +400,11 @@ svg.defs {
 .logout {position: absolute; top: -0.5%; right: -0.5%; margin: 1rem; color: #fdf6d8; font-size: 0.75rem; background: transparent; border: none;}
 .basic-text {color: #fdf6d8; font-size: 0.75rem; margin: 1rem;}
 .bone {color: #fdf6d8; text-align: center;}
-.gold {color: gold; text-align: center;}
+.gold {
+    color: gold; 
+    text-align: center; 
+    text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+}
 .center {margin: auto; text-align: center; align-items: center; justify-content: center;}
 .loosen {margin: 1rem; padding: 1rem;}
 .tighten {margin: 0; padding: 0;}
@@ -700,6 +704,57 @@ svg.defs {
     25% { transform: translateX(-5px); }
     75% { transform: translateX(5px); }
 }
+
+.stat-panel {
+    background: rgba(15, 10, 5, 0.8);
+    border: 2px solid #a67c52; /* bronze/gold trim */
+    border-radius: 12px;
+    padding: 0.5rem;
+    font-family: 'Cinzel', serif;
+    color: #ddd;
+    max-width: 350px;
+    margin: auto;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+.stat-panel.souls {
+    background: rgba(10,10,10,0.9);
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 0.75rem;
+    max-width: 350px;
+    font-family: "Trajan Pro", "Cinzel", serif;
+    color: #ddd;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+}
+.stat-section {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(10,10,10,0.2); 
+    /* rgba(255, 215, 0, 0.2); */
+}
+
+.stat-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.2rem 0;
+}
+
+.stat-label {
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-weight: bold;
+    margin-left: 0.5rem;
+}
+
+.divider {
+    margin: 0 0.4rem;
+    opacity: 0.5;
+}
+
 
 @media screen and (max-width: 800px) {
     .stat-block.wide .section-left,

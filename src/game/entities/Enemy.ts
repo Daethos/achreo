@@ -1237,6 +1237,7 @@ export default class Enemy extends Entity {
     };
 
     suture = (power: number, id: string) => {
+        if (!id) return;
         power = this.entropicMultiplier(power);
         if (id === this.scene?.player?.playerID) {
             if (this.scene.state.newPlayerHealth <= 0) return;
@@ -2098,7 +2099,6 @@ export default class Enemy extends Entity {
         this.enemyAnimation();
         if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
         if (this.currentTarget) {
-            // this.scene.showCombatText(this, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
             this.applyKnockback(this.currentTarget, 250, true);
             this.scene.combatManager.hitFeedbackSystem.spotEmit(this.currentTarget.name === "player" ? this.currentTarget.playerID : this.currentTarget.enemyID, "Parry");
         };
@@ -2107,7 +2107,6 @@ export default class Enemy extends Entity {
     onSummonEnter = () => { 
         this.scene.showCombatText(this, "Summoning Ally", DURATION.TEXT, DAMAGE, false, true);
         this.isPraying = true;
-        // this.spriteShield.setVisible(false);
         this.isAttacking = false;
         this.isParrying = false;
         this.isPosturing = false;
@@ -2119,7 +2118,6 @@ export default class Enemy extends Entity {
     onSummonUpdate = (_dt: number) => this.combatChecker(this.isPraying);
     onSummonExit = () => {
         this.enemyAnimation();
-        // EventBus.emit("summon-help", this);
         this.scene.combatManager.summon(this);
         if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
     };
@@ -3068,7 +3066,7 @@ export default class Enemy extends Entity {
         this.enemySound("absorb", true);
         this.channelCount = 0;
         this.devourTimer = this.scene.time.addEvent({
-            delay: 500,
+            delay: 250,
             callback: () => {
                 if (this.isCasting === false || this.health <= 0 || this.isCounterSpelled === true) { // this.scene.state.computerWin || this.scene.state.playerWin || 
                     this.isCasting = false;
@@ -3076,15 +3074,15 @@ export default class Enemy extends Entity {
                     this.devourTimer = undefined;
                     return;
                 };
-                this.devour(5, this.targetID);
+                this.devour(2.5, this.targetID);
                 this.channelCount++;
-                if (this.channelCount >= 4) {
+                if (this.channelCount >= 8) {
                     this.isCasting = false;
                     this.channelCount = 0;
                 };
             },
             callbackScope: this,
-            repeat: 4,
+            repeat: 8,
         });
     };
     onDevourUpdate = (dt: number) => {

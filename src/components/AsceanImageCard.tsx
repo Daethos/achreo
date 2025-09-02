@@ -7,8 +7,9 @@ interface Props {
     setEquipment: Setter<Equipment | undefined>;
     show: Accessor<boolean>;
     setShow: Setter<boolean>;
+    full?: boolean;
 };
-export default function AsceanImageCard({ ascean, setEquipment, show, setShow }: Props) { 
+export default function AsceanImageCard({ ascean, setEquipment, show, setShow, full }: Props) { 
     function item(rarity: string) {
         return { 
             "background-color": "#000", 
@@ -28,7 +29,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow }:
         setEquipment(item);
         setShow(!show());
     }; 
-    return <div class="imageCardGrid" style={{ width: "90%", margin: "auto" }}>
+    return <div class="imageCardGrid" style={{ width: full ? "100%" : "90%", margin: "auto" }}>
         <div class="imageCardLeft menu" style={{ background: "transparent" }}>
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}

@@ -164,7 +164,7 @@ export class Hud extends Phaser.Scene {
             if (event.deltaY > 0) {
                 this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.05)), (window.innerWidth > 1200 ? 2 : 0.5));
             } else if (event.deltaY < 0) {
-                this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), (window.innerWidth > 1200 ? 3 : 1.5));
+                this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.05)), (window.innerWidth > 1200 ? 3 : 2));
             };
             const newSettings = {
                 ...this.settings,
@@ -226,7 +226,7 @@ export class Hud extends Phaser.Scene {
                 var curDiff = Math.abs(this.currentX - pointer.x);
                 if (curDiff > 0 || this.prevDiff > 0) {
                     if (pointer.x < this.currentX) {
-                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), (window.innerWidth > 1200 ? 3 : 1.5));
+                        this.currentZoom = Math.min(roundToTwoDecimals(Number(this.currentZoom + 0.00675)), (window.innerWidth > 1200 ? 3 : 2));
                     } else if (pointer.x > this.currentX) {
                         this.currentZoom = Math.max(roundToTwoDecimals(Number(this.currentZoom - 0.00675)), (window.innerWidth > 1200 ? 2 : 0.5));
                     };

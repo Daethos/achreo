@@ -73,7 +73,7 @@ function setHealth(data: KVI): void {
     EventBus.emit(INITIATE, { data, type: ActionTypes.SET_HEALTH });
 };
 function removeEnemy(data: KVI) {
-    EventBus.emit(INITIATE, { data, type: ActionTypes.REMOVE })
+    EventBus.emit(INITIATE, { data, type: ActionTypes.REMOVE });
 };
 function removeEffect(data: StatusEffect) {
     EventBus.emit(INITIATE, { data, type: "Remove Tick" });

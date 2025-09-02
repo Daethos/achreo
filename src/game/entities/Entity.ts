@@ -38,7 +38,7 @@ export type Player_Scene = Game | Underground | Tutorial | Arena | Gauntlet;
 type check = {[key: string]: number;};
 type frame = {[key: string]: string;};
 const FRAME_KEYS: frame = {
-    "player_climb": States.MOVING,
+    "player_climb": "movingVertical",
     "player_crouch_idle": States.IDLE,
     "player_idle": States.IDLE,
     "player_running": States.MOVING,
@@ -928,6 +928,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX
                 
             this.spriteWeapon.setDepth(this.depth + 1);
+            this.spriteShield.setAlpha(1).setDepth(this.depth + 1).setScale(0.6);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
         },
@@ -943,40 +944,74 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
 
-        movingVertical: () => {
+        dodge: (_frame) => {
+            this.spriteShield?.setVisible(false);
+        },
+
+        roll: (_frame) => {
+            this.spriteShield?.setVisible(false);
+        },
+
+        movingVertical: (_frame) => {
+            this.spriteShield?.setVisible(true);
+            this.spriteShield?.setAngle(0);
+            if (this.movingDown()) {
+                this.spriteShield?.setDepth(this.depth - ((this.isStalwart || this.isClimbing) ? -1 : 1));
+                this.spriteWeapon?.setDepth(this.depth + 1);
+            } else {
+                this.spriteShield?.setDepth(this.depth + (this.isStalwart ? -1 : 1));
+                this.spriteWeapon?.setDepth(this.depth - 1);
+            };
             if (!this.flipX) {
+                this.spriteShield?.setFlipX(false);
                 if (this.hasBow) {
-                    this.spriteWeapon?.setDepth(1);
                     this.spriteWeapon?.setOrigin(0.25, 0.25);
                     this.spriteWeapon?.setAngle(107.5);
                 } else {
-                    this.spriteWeapon?.setDepth(this.depth + 1);
-                    this.spriteWeapon?.setOrigin(0, 0.75);
+                    this.spriteWeapon?.setOrigin(-0.2, 0.75);
                     this.spriteWeapon?.setAngle(107.5);
                 };
-                if (this.isStalwart) this.spriteShield?.setOrigin(-0.2, 0.25);
+                if (this.isStalwart) {
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(0, 0.5);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    if (this.isClimbing) {
+                        this.spriteShield?.setOrigin(0.4, 0.5);
+                    } else {
+                        this.spriteShield?.setOrigin(0.2, 0.5);
+                    };
+                };
             } else {
+                this.spriteShield?.setFlipX(true);
                 if (this.hasBow) {
-                    this.spriteWeapon?.setDepth(1);
                     this.spriteWeapon?.setOrigin(0, 0.5);
                     this.spriteWeapon?.setAngle(-7.5);
                 } else {
-                    this.spriteWeapon?.setDepth(this.depth + 1);
-                    this.spriteWeapon?.setOrigin(0.25, 1.2);
+                    this.spriteWeapon?.setOrigin(0.2, 1.2);
                     this.spriteWeapon?.setAngle(-194.5);
                 };
-                if (this.isStalwart) this.spriteShield?.setOrigin(1.2, 0.25);
-            };
-            if (this.movingDown()) {
-                this.spriteShield?.setDepth(this.depth + 1);
-                this.spriteWeapon?.setDepth(this.depth + 1);
-            } else {
-                this.spriteShield?.setDepth(this.depth - 1);
-                this.spriteWeapon?.setDepth(this.depth - 1);
+                if (this.isStalwart) {
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(1, 0.5);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    if (this.isClimbing) {
+                        this.spriteShield?.setOrigin(0.6, 0.5);
+                    } else {
+                        this.spriteShield?.setOrigin(0.8, 0.5);
+                    };
+                };
             };
         },
 
         moving: () => {
+            this.spriteShield?.setVisible(true);
+            this.spriteShield?.setFlipX(this.flipX);
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(1);
@@ -987,7 +1022,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(0.5, 1.2);
                     this.spriteWeapon?.setAngle(-194.5);
                 };
-                if (this.isStalwart) this.spriteShield?.setOrigin(1.2, 0.25);
+                if (this.isStalwart) {
+                    this.spriteShield?.setOrigin(1, 0.25);
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setDepth(this.depth + 1);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setOrigin(0.25, 0.5);
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    this.spriteShield?.setAngle(-40);
+                    this.spriteShield?.setDepth(this.depth - 1);
+                };
             } else {  
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(1);
@@ -998,11 +1044,25 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(-0.25, 0.5);
                     this.spriteWeapon?.setAngle(107.5);
                 };
-                if (this.isStalwart) this.spriteShield?.setOrigin(-0.2, 0.25);
+                if (this.isStalwart) {
+                    this.spriteShield?.setOrigin(0, 0.25);
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setDepth(this.depth + 1);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setOrigin(0.75, 0.5);
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    this.spriteShield?.setAngle(40);
+                    this.spriteShield?.setDepth(this.depth - 1);
+                };
             };
         },
 
         idle: () => {
+            this.spriteShield?.setVisible(true);
+            this.spriteShield?.setAngle(0);
+            this.spriteShield?.setDepth(this.depth - 1);
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(this.depth + 1);
@@ -1012,6 +1072,16 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setDepth(1);
                     this.spriteWeapon?.setOrigin(-0.25, 1.2);
                     this.spriteWeapon?.setAngle(-250);
+                };
+                this.spriteShield?.setFlipX(true);
+                if (this.isStalwart) {
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(1, 0.3);
+                    this.spriteShield?.setScale(0.6);
+                } else {
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setOrigin(0.25, 0.5);
                 };
             } else {
                 if (this.hasBow) {
@@ -1023,11 +1093,28 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(-0.15, 1.3);
                     this.spriteWeapon?.setAngle(-195);
                 };
+                this.spriteShield?.setFlipX(false);
+                if (this.isStalwart) {
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setOrigin(0, 0.3);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setScale(0.35, 0.6);
+                    this.spriteShield?.setOrigin(0.75, 0.5);
+                };
             };
         }
     };
 
     updateHandlers: Record<string, (frame: any) => void> = {
+        // movingVertical: (frame) => {
+        //     console.log({index:frame.index});
+        //     if (frame.index === 4) {
+        //         this.scene.pause();
+        //     };
+        // },
+
         prayingCasting: (frame) => {
             const frameIndex = frame.index;
             const config = this.flipX

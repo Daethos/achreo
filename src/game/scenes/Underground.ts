@@ -571,9 +571,8 @@ export class Underground extends Scene {
     };
 
     killEnemy = (enemy: Enemy) => {
-        if (enemy.isCurrentTarget) {
-            this.player.disengage();
-        };
+        if (enemy.isCurrentTarget) this.player.disengage();
+        
         this.time.delayedCall(500, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();

@@ -13,6 +13,16 @@ import { COLORS } from "../phaser/AoE";
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
 
+type CollisionRule = (attacker: Entity, target: any) => boolean;
+
+const rules: Record<string, CollisionRule> = {
+  "player:enemy": (attacker, target) => attacker.name === "player" && target.name === "enemy",
+  "enemy:player": (attacker, target) => attacker.name === "enemy" && target.name === "player" && !target.isProtecting && !target.isImpermanent,
+  "enemy:party":  (attacker, target) => attacker.name === "enemy" && target.name === "party" && !target.isProtecting && !target.isImpermanent,
+  "party:enemy":  (attacker, target) => attacker.name === "party" && target.name === "enemy",
+  "enemy:enemy":  (attacker, target) => attacker.name === "enemy" && target.name === "enemy" && (attacker as Enemy).enemyID !== target.enemyID,
+};
+
 function angleImpact(target: Phaser.Math.Vector2): number {
     let angle = -90;
     if (target.x > 0 && target.y < 0) { // Up-Right
@@ -113,7 +123,7 @@ export class Particle {
     
     sensorer = (special: boolean, action: string): number => !special ? 6 : action === "achire" ? 9 : 16;
 
-    sensorListener = (player: Player | Enemy | Entity, sensor: any) => {
+    sensorListener = (attacker: Player | Enemy | Entity, sensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other: any) => {
@@ -121,32 +131,26 @@ export class Particle {
                     this.collided = true;
                     return;
                 };
-                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "player") { // !other.gameObjectB.isDefeated, && other.gameObjectB.health > 0 
-                    player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
-                };
-                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "party" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
-                    player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
-                }; // (other.bodyB.label === "body" || other.bodyB.label === "legs") && 
-                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "player" && player.name === "enemy" && !other.gameObjectB.isProtecting && !other.gameObjectB.isImpermanent) {
-                    player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
-                };
-                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect && other.gameObjectB.name === "enemy" && player.name === "party") { // Party v Computer
-                    const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
-                    if (!isEnemy) return;
-                    player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
-                };
-                if ((other.bodyB.label === "body" || other.bodyB.label === "legs") && other.gameObjectB && player.particleEffect 
-                    && other.gameObjectB.name === "enemy" && player.name === "enemy" 
-                    && other.gameObjectB.enemyID !== (player as Enemy).enemyID) 
-                { // CvC
-                    const isEnemy = (player as Enemy).enemies.find((e: ENEMY) => e.id === other.gameObjectB.enemyID);
-                    if (!isEnemy) return;
-                    player.attackedTarget = other.gameObjectB;
-                    player.particleEffect.success = true;
+                
+                if (!attacker.particleEffect) return;
+
+                const target = other.gameObjectB;
+                if (!target) return;
+                
+                const bodyB = other.bodyB.label;
+                if (bodyB !== "body" && bodyB !== "legs") return;
+                
+                for (const [key, rule] of Object.entries(rules)) {
+                    if (rule(attacker, target)) { // Special handling if needed (party vs enemy, CvC lookup, etc.)
+                        if (key === "party:enemy" || key === "enemy:enemy") {
+                            const isEnemy = (attacker as Enemy).enemies.find((e: ENEMY) => e.id === target.enemyID);
+                            if (!isEnemy) return;
+                        };
+                        
+                        attacker.attackedTarget = target;
+                        attacker.particleEffect.success = true;
+                        return;
+                    };
                 };
             },
             context: this.scene,

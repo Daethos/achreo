@@ -1318,6 +1318,15 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
         };
     };
 
+    
+    if (playerAction === ACTION_TYPES.THRUST ) {
+        if (combat.physicals.thrust.enhanced) {
+            combat.realizedPlayerDamage *= DAMAGE.LOW;
+        } else {
+            combat.realizedPlayerDamage *= DAMAGE.NEG_LOW;
+        };
+    };
+
     combat.realizedPlayerDamage *= caer.pos;
     
     const computerCaer = computerCaerenic(combat.computerCaerenic);
@@ -1510,6 +1519,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
     
     if (playerAction === ACTION_TYPES.POSTURE) {
+        if (combat.physicals.posture.enhanced) {
+            const num = 1 + (combat.player?.shield?.magicalResistance as number + (combat.player?.shield?.physicalResistance as number)) / 200;
+            combat.realizedPlayerDamage *= num;
+        };
         if (combat.computerAction) {
             combat.realizedPlayerDamage *= DAMAGE.LOW;
         } else {
@@ -2019,6 +2032,7 @@ function newDataCompiler(combat: Combat): any {
         isEnemy: combat.isEnemy,
         isAggressive: combat.isAggressive,
         startedAggressive: combat.startedAggressive,
+        physicals: combat.physicals,
         isStealth: combat.isStealth,
         isSeering: combat.isSeering,
         isInsight: combat.isInsight,
@@ -2066,7 +2080,7 @@ function instantDamageSplitter(combat: Combat, mastery: string): Combat {
     combat.newComputerHealth -= combat.realizedPlayerDamage;
     combat.computerDamaged = true;
     combat.playerAction = "invoke";
-    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}"s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
+    combat.playerActionDescription = `You tshaer ${combat.computer?.name}'s caeren with your ${combat.player?.mastery}'s Invocation of ${combat.weapons[0]?.influences?.[0]} for ${Math.round(damage)} Damage.`;    
     return combat;
 };
 

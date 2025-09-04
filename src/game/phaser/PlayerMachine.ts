@@ -781,6 +781,7 @@ export default class PlayerMachine {
     onComputerAttackExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
+        this.player.isAttacking = false;
     };
 
     onComputerParryEnter = () => {
@@ -819,7 +820,8 @@ export default class PlayerMachine {
     onComputerPostureExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.spriteShield.setVisible(this.player.isStalwart);
-        this.player.computerAction = false;    
+        this.player.computerAction = false;
+        this.player.isPosturing = false;
     };
 
     onComputerThrustEnter = () => {
@@ -834,10 +836,11 @@ export default class PlayerMachine {
     onComputerThrustExit = () => {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
+        this.player.isThrusting = false;
     };
 
     onAttackEnter = () => {
-        if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) return;
+        // if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) return;
         if (this.player.isRanged === true && this.player.inCombat === true) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
@@ -854,7 +857,11 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isAttacking);
         sprint(this.scene);
     }; 
-    onAttackExit = () => {if (this.scene.state.action === "attack") this.scene.combatManager.combatMachine.input("action", "");  this.player.computerAction = false;};
+    onAttackExit = () => {
+        if (this.scene.state.action === "attack") this.scene.combatManager.combatMachine.input("action", ""); 
+        this.player.computerAction = false; 
+        this.player.isAttacking = false;
+    };
 
     onJumpEnter = () => {
         screenShake(this.scene);
@@ -948,10 +955,11 @@ export default class PlayerMachine {
     onParryExit = () => {
         if (this.scene.state.action === "parry") this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
+        this.player.isParrying = false;
     };
 
     onPostureEnter = () => {
-        if (this.player.isAttacking || this.player.isParrying || this.player.isThrusting) return;
+        // if (this.player.isAttacking || this.player.isParrying || this.player.isThrusting) return;
         if (this.player.isRanged === true) {
             if (this.player.moving()) {
                 this.scene.showCombatText(this.player, "Posture Issue: You are Moving", 1000, DAMAGE, false, true);
@@ -977,6 +985,7 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input("action", ""); 
         this.player.spriteShield.setVisible(this.player.isStalwart); 
         this.player.computerAction = false;
+        this.player.isPosturing = false;
     };
 
     onDodgeEnter = () => {
@@ -1114,7 +1123,11 @@ export default class PlayerMachine {
         this.player.combatChecker(this.player.isThrusting);
         sprint(this.scene);
     };
-    onThrustExit = () => {if (this.scene.state.action === "thrust") this.scene.combatManager.combatMachine.input("action", ""); this.player.computerAction = false;};
+    onThrustExit = () => {
+        if (this.scene.state.action === "thrust") this.scene.combatManager.combatMachine.input("action", ""); 
+        this.player.computerAction = false;
+        this.player.isThrusting = false;
+    };
 
     onFlaskEnter = () => {
         this.player.isHealing = true;

@@ -39,7 +39,7 @@ const config: Phaser.Types.Core.GameConfig = {
     input: {
         activePointers: 10,
         mouse:true, 
-        windowEvents:false
+        windowEvents:true
     },
     scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Gauntlet,Hud],
     physics: {

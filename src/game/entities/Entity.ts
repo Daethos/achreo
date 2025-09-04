@@ -904,6 +904,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
             this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+
+            if (this.name === "player" && (this as unknown as Player).checkTalentEnhanced(States.PARRY)) {
+                this.scene.combatManager.combatMachine.input("action", States.PARRY);
+            };
         },
 
         thrust: (frame) => {
@@ -1062,7 +1066,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         idle: () => {
             this.spriteShield?.setVisible(true);
             this.spriteShield?.setAngle(0);
-            this.spriteShield?.setDepth(this.depth - 1);
+            this.spriteShield?.setDepth(this.depth - (this.isStalwart ? -1 : 1));
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(this.depth + 1);
@@ -1108,13 +1112,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     updateHandlers: Record<string, (frame: any) => void> = {
-        // movingVertical: (frame) => {
-        //     console.log({index:frame.index});
-        //     if (frame.index === 4) {
-        //         this.scene.pause();
-        //     };
-        // },
-
         prayingCasting: (frame) => {
             const frameIndex = frame.index;
             const config = this.flipX
@@ -1132,7 +1129,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-
             if (frameIndex === 3 && !this.isRanged) {
                 this.currentAction = States.PARRY;
                 if (this.name === "player") {
@@ -1154,6 +1150,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
         thrust: (frame) => {
             const frameIndex = frame.index;
+            // if (this.name === "player") {
+            //     console.log({frameIndex});
+            //     (this as unknown as Player).playerMachine.stateMachine.setState(States.PARRY);
+            //     if ((this as unknown as Player).checkTalentEnhanced(States.THRUST)) {
+            //         if (this.currentTarget && this.currentTarget.currentAction !== "") {
+            //             (this as unknown as Player).playerMachine.stateMachine.setState(States.PARRY);
+            //         };
+            //     };
+            // };
             if (frameIndex === 2) {
                 if (this.isRanged) {
                     if (this.hasMagic) {
@@ -1183,13 +1188,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.currentAction = States.ROLL;
                 if (this.name === "player") {
                     this.scene.combatManager.combatMachine.input("action", States.ROLL);
+                    if ((this as unknown as Player).checkTalentEnhanced(States.ROLL)) {
+                        this.checkActionSuccess();
+                    };
                 } else if (this.name === "enemy") {
                     if (this.inComputerCombat) (this as unknown as Enemy).computerCombatSheet.computerAction = States.ROLL;
                     if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input("computerAction", States.ROLL, (this as unknown as Enemy).enemyID);
                 } else if (this.name === "party") {
                     if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.ROLL;
                 };
-            } else if (frameIndex === 4 && this.isRanged && this.name !== "player") {
+            } else if (frameIndex === 4 && this.isRanged) {
+                if (this.name === "player" && !(this as unknown as Player).checkTalentEnhanced(States.ROLL)) return;
                 if (this.hasMagic) {
                     this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.currentDamageType);
                 } else if (this.hasBow) {
@@ -1244,6 +1253,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+
+            if (this.name === "player" && (this as unknown as Player).checkTalentEnhanced(States.ATTACK) && !this.isRanged && frameIndex === 4) {
+                this.scene.combatManager.combatMachine.input("action", States.ATTACK);
+                this.checkActionSuccess();
+            };
 
             if (frameIndex === 5 && this.isRanged) {
                 if (this.hasMagic) {

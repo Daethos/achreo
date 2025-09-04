@@ -177,14 +177,16 @@ export default function App() {
             console.warn("Error loading Ascean:", err);
         };
     };
+
     const loadingAscean = () => EventBus.emit("enter-game");
     const makeToast = (header: string, body: string, delay = 4000, key = "", extra = "", arg: any): void => {
         setShow(false);
         setAlert({ header, body, delay, key, extra, arg });
         setShow(true);
     };
+
     const setTips = (on: boolean): void => {
-        if (on === true) {
+        if (on) {
             const interval: number = 1000 * 60 * 3; // 3 minutes
             tips = setInterval(() => {
                 const tip = TIPS[Math.floor(Math.random() * TIPS.length)];
@@ -195,19 +197,21 @@ export default function App() {
             clearInterval(tips);
         };
     };
+
     function togglePause(pause: boolean): void {
         const scene = phaserRef.scene as Game;
+        if (!scene) return;
         const running = scene.scene.isActive(scene.scene.key);
-        if (scene) {
-            if (pause === true || running === true) {
-                scene.pause();
-            } else {
-                scene.resume();
-            };
+        if (pause || running) {
+            scene.pause();
+        } else {
+            scene.resume();
         };
         EventBus.emit("toggle-pause", pause);
     };
+
     const quickAscean = (a: Ascean): Ascean => setAscean(a);
+    
     async function saveAscean(vaEsai: any): Promise<void> {
         try {
             const save = await updateAscean(vaEsai);
@@ -223,6 +227,7 @@ export default function App() {
             console.warn("Error saving Ascean:", err);
         };
     };
+
     async function silentSave(vaEsai: Ascean): Promise<void> {
         try {
             await scrub(vaEsai);
@@ -230,6 +235,7 @@ export default function App() {
             console.warn("Error saving Ascean:", err);
         };
     };
+
     async function fetchInventory() {
         try {
             const inv = await getInventory(ascean()._id);
@@ -247,6 +253,7 @@ export default function App() {
             console.warn(err, "Error Saving Inventory"); 
         };
     };
+
     async function insertSettings(insert: any) {
         try {
             const set = { ...settings(), ...insert };
@@ -256,6 +263,7 @@ export default function App() {
             console.warn("Error saving Settings:", err);
         };
     };
+
     async function saveSettings(set: Settings): Promise<void> {
         try {
             await updateSettings(set);
@@ -264,6 +272,7 @@ export default function App() {
             console.warn("Error saving Settings:", err);
         };
     };
+
     async function saveThisSetting(data: any) {
         try {
             const update = { ...settings(), ...data };
@@ -272,7 +281,8 @@ export default function App() {
             console.warn("Error Saving This Setting", err);
         };
     };
-    const updateAscean = async (vaEsai: Ascean): Promise<void> => {
+
+    async function updateAscean(vaEsai: Ascean): Promise<void> {
         try {
             const save = await scrub(vaEsai);
             const pop = await populate(save);
@@ -306,6 +316,7 @@ export default function App() {
             console.warn(err, "Error Adding to Party");
         };
     };
+
     async function removeParty(party: Ascean) {
         try {
             console.log(party, "removeParty");
@@ -327,6 +338,7 @@ export default function App() {
             console.warn(err, "Error Adding to Party");
         };
     };
+    
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
         try {
             const { title, enemy } = quest;
@@ -398,10 +410,12 @@ export default function App() {
         try {
             await updateTalents(talents);
             setTalents(talents);
+            EventBus.emit("update-combat-talents");
         } catch (err) {
             console.warn("Error Updating Talents", err);
         };
     };
+
     async function viewAscean(id: string): Promise<void> {
         click.play();
         if (ascean()?._id === id) {
@@ -423,6 +437,7 @@ export default function App() {
         setStatistics(stat);
         setTalents(tal);
     };
+
     function enterMenu(): void {
         if (menu()?.asceans?.length > 0) {
             setMenu({ ...menu(), choosingCharacter: true});
@@ -430,15 +445,18 @@ export default function App() {
             setMenu({ ...menu()});
         };
     };
+
     function switchScene(current: string, next: string): void {
         setShow(false);
         EventBus.emit("switch-scene", { current, next });
         EventBus.emit("insert-settings", { map: next });
     };
+
     function summonEnemy(val: number = 1) {
         EventBus.emit("summon-enemy", val);
         setShow(false);
     };
+
     function setScreen(screen: string) {
         setMenu({ ...menu(), screen });
     };
@@ -543,6 +561,7 @@ export default function App() {
         Phaser.Core.TimeStep.call(game.loop, game, fps);
         game.loop.start(game.step.bind(game));
     });
+
     return <div id="app">
         <Show when={startGame()} fallback={<div class="">
         {menu().creatingCharacter ? (

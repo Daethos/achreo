@@ -332,7 +332,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const displayedSpecials = createMemo(() => {
-    return ["Caerenic", "Stalwart", "Stealth"]
+    return ["Caerenic", "Stalwart", "Stealth", "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"]
         .concat(specials())
         .filter((spec) => talents().talents[spec.toLowerCase() as keyof typeof talents]);
     });
@@ -457,10 +457,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const cooldown = () => efficient()
                             ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
                             : spec?.cooldown;
-                        // const efficient = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).efficient;
-                        // const enhanced = (talents().talents[special.toLowerCase() as keyof typeof talents] as any).enhanced;
-                        // const cost = efficient ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST] : spec?.cost;
-                        // const cooldown = efficient ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN] : spec?.cooldown;
                         return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
@@ -469,9 +465,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>
                                 {spec?.description} <span style={{ color: "gold" }}>{enhanced() ? spec?.talent.split(".")[1] : ""}</span>
                             </p>
-                            <p style={{ color: "aqua" }}>
+                            <p style={{ color: spec?.special.includes("Stance") ? "#A19D94" : spec?.special.includes("Physical") ? "green" : "aqua" }}>
                                 {spec?.time} {spec?.special} <br />
-                                <span style={{ color: efficient() ? "gold" : "aqua" }}>{cost()}. {cooldown()} Cooldown</span> <br />
+                                <span style={{ color: efficient() ? "gold" : spec?.special.includes("Stance") ? "#A19D94" : spec?.special.includes("Physical") ? "green" : "aqua" }}>{cost()}. {cooldown()} Cooldown</span> <br />
                             </p>
                             </div>
                         </div>
@@ -1308,7 +1304,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </Show>
         <Show when={showTalent().show}>
             <div class="modal">
-                <div class="superCenter" style={{ width:"50%" }}>
+                <div class="superCenter" style={{ width:"50%", "max-height":"" }}>
                 <div class="border row moisten" style={{ margin: "1em auto", 
                     "--glow-color":masteryColor(ascean().mastery), 
                     "--base-shadow":"#000 0 0 0 0.2em", "border-color": masteryColor(ascean().mastery), 

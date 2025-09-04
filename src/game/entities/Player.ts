@@ -542,6 +542,16 @@ export default class Player extends Entity {
         return this.scene.hud.talents.talents[type].enhanced;
     };
 
+    checkTalentOptimized = (type: string): boolean => {
+        return this.scene.hud.talents.talents[type].efficient;
+    };
+
+    checkTalentFrame = (type: string, current: number, potential: number): number => {
+        const frame = this.scene.hud.talents.talents[type].enhanced ? potential : current;
+        console.log({frame});
+        return frame;
+    };
+
     damageDistance = (enemy: Enemy) => {
         const distance = enemy.position.subtract(this.position).length();
         this.playerMachine.chiomism(enemy.enemyID, distance);
@@ -644,7 +654,7 @@ export default class Player extends Entity {
         this.timeElapsed = 0;
         this.isRushing = true;
         this.isThrusting = true;
-        this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume });
+        this.scene.sound.play("caerenic", { volume: this.scene.hud.settings.volume });
         const target = this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
@@ -1329,10 +1339,12 @@ export default class Player extends Entity {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
+        const duration = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DURATION * 2 : PLAYER.DODGE.DURATION;
+        const distance = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-            if (progress >= PLAYER.DODGE.DURATION || currentDistance >= PLAYER.DODGE.DISTANCE) {
+            if (progress >= duration || currentDistance >= distance) {
                 this.spriteWeapon.setVisible(true);
                 this.dodgeCooldown = 0;
                 this.isDodging = false;
@@ -1355,10 +1367,12 @@ export default class Player extends Entity {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
+        const duration = this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DURATION * 2 : PLAYER.ROLL.DURATION;
+        const distance = this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DISTANCE * 2 : PLAYER.ROLL.DISTANCE;
         const rollLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
-            if (progress >= PLAYER.ROLL.DURATION || currentDistance >= PLAYER.ROLL.DISTANCE) {
+            if (progress >= duration || currentDistance >= distance) {
                 this.spriteWeapon.setVisible(true);
                 this.rollCooldown = 0;
                 this.isRolling = false;

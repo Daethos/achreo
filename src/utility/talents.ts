@@ -9,6 +9,13 @@ type TalentSchema = {
     caerenic: Talent;
     stalwart: Talent;
     stealth: Talent;
+    attack: Talent;
+    dodge: Talent;
+    jump: Talent;
+    parry: Talent;
+    posture: Talent;
+    roll: Talent;
+    thrust: Talent;
     invoke: Talent;
     consume: Talent;
     absorb: Talent;
@@ -92,6 +99,13 @@ const initTalentSchema: TalentSchema = {
         caerenic: initTalent,
         stalwart: initTalent,
         stealth: initTalent,
+        attack: initTalent,
+        dodge: initTalent,
+        jump: initTalent,
+        parry: initTalent,
+        posture: initTalent,
+        roll: initTalent,
+        thrust: initTalent,
         invoke: initTalent,
         consume: initTalent,
         absorb: initTalent,

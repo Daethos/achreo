@@ -1,6 +1,6 @@
 import { EventBus } from "../EventBus";
 import { Hud } from "../scenes/Hud";
-const FORCE = 0.1;
+const FORCE = 0.125;
 export default class Joystick extends Phaser.GameObjects.Container {
     public scene: Hud;
     public pointer: any;
@@ -11,22 +11,22 @@ export default class Joystick extends Phaser.GameObjects.Container {
         this.scene.add.existing(this);
         this.pointer = null;
         const height = window.innerHeight;
-        this.joystick = (scene?.plugins?.get('rexVirtualJoystick') as any).add(scene, {
+        this.joystick = (scene?.plugins?.get("rexVirtualJoystick") as any).add(scene, {
             x,
             y,
             radius: height / 6,
             base: scene.add.circle(0, 0, height / 6, base, 1),
             thumb: scene.add.circle(0, 0, height / 12, thumb, 1),
-            dir: '8dir',
+            dir: "8dir",
         });
         this.joystick.setVisible(!scene.settings.desktop);
         this.doubleTap();
     };
 
     cleanUp() {
-        EventBus.off('update-cursor');
-        EventBus.off('update-desktop-cursor');
-        this.joystick.off('update', this.update, this);
+        EventBus.off("update-cursor");
+        EventBus.off("update-desktop-cursor");
+        this.joystick.off("update", this.update, this);
         this?.pointer?.destroy();
         this.joystick.destroy();
     };
@@ -45,25 +45,25 @@ export default class Joystick extends Phaser.GameObjects.Container {
         };    
     };
     controlPointer() {
-        this.joystick.on('update', this.update, this);
+        this.joystick.on("update", this.update, this);
     };
     attachMouseToPointer() {
-        this.scene.input.on('pointermove', this.updatePointerPosition, this);
+        this.scene.input.on("pointermove", this.updatePointerPosition, this);
     };
     detachMouseFromPointer() {
-        this.scene.input.off('pointermove', this.updatePointerPosition, this);
+        this.scene.input.off("pointermove", this.updatePointerPosition, this);
     };
     updatePointerPosition(pointer: any) {
         this.pointer.x = pointer.x;
         this.pointer.y = pointer.y;
     };
     doubleTap() {
-        EventBus.on('update-cursor', () => {
+        EventBus.on("update-cursor", () => {
             if (!this.pointer) return;
             this.pointer.x = this.scene.cameras.main.width / 2;
             this.pointer.y = this.scene.cameras.main.height / 2;
         });
-        EventBus.on('update-desktop-cursor', (desktop: boolean) => {
+        EventBus.on("update-desktop-cursor", (desktop: boolean) => {
             if (!this.pointer) return;
             if (desktop) {
                 this.attachMouseToPointer();
@@ -73,9 +73,9 @@ export default class Joystick extends Phaser.GameObjects.Container {
         });
     };
     highlightAnimation(type: string) {
-        const base = type === 'left' ? this.scene.settings.positions.leftJoystick.base : this.scene.settings.positions.rightJoystick.base;
-        const thumb = type === 'left' ? this.scene.settings.positions.leftJoystick.thumb : this.scene.settings.positions.rightJoystick.thumb;
-        const opacity = type === 'left' ? this.scene.settings.positions.leftJoystick.opacity : this.scene.settings.positions.rightJoystick.opacity;
+        const base = type === "left" ? this.scene.settings.positions.leftJoystick.base : this.scene.settings.positions.rightJoystick.base;
+        const thumb = type === "left" ? this.scene.settings.positions.leftJoystick.thumb : this.scene.settings.positions.rightJoystick.thumb;
+        const opacity = type === "left" ? this.scene.settings.positions.leftJoystick.opacity : this.scene.settings.positions.rightJoystick.opacity;
         this.joystick.base.setFillStyle();
         this.joystick.base.setFillStyle(thumb);
         this.joystick.thumb.setFillStyle();

@@ -21,7 +21,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [attrShow, setAttrShow] = createSignal(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
-    const viewMargin = { margin: "2% auto", width: "80%" };
+    const viewMargin = { margin: "1% auto", width: "90%", "font-family": "Trajan Pro" };
     const [positioning, setPositioning] = createSignal({
         top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
         left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
@@ -66,21 +66,42 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     }>
         <div class="stat-block superCenter flickerJuiceInsert" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":masteryColor(ascean().mastery), "--base-shadow":"#000 0 0 0 0.2em" }}>
             <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
-                <div class="creature-heading superCenter" style={{ width: "100%" }}>
-                    <div class="stat-row stat-section" style={{ width: "85%", margin: "auto" }}>
+                <div class="creature-heading superCenter" style={{ width: "100%", transform: dimensions().WIDTH > 1200 ? "[scale(1), translate(-50%, -50%)]" : "[scale(0.9), translate(-50%, -50%)]" }}>
+                    <div class="stat-row stat-section" style={{ width: "90%", margin: "auto" }}>
                         <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id="origin-pic" />
                         <div>
                             <h1>{ascean().name}</h1>
                             <h2>{ascean().description}</h2>
                         </div>
                     </div>
-                    <div style={viewMargin}>
+                    
+                    <div class="stat-section" style={{...viewMargin, "margin": "0 auto"}}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div class="stat-section" style={viewMargin}></div>
-                    <p class="stat-row stat-section" style={viewMargin}>Level: <span class="gold stat-value">{ascean().level}</span> <span class="divider">|</span> Experience: <span class="gold stat-value">{ascean().experience}</span></p>
-                    <p class="stat-row stat-section" style={viewMargin}>Health: <span class="gold stat-value">{Math.round(ascean().health.current)} <span class="bone divider">/</span> {ascean().health.max}</span> <span class="divider">|</span> Wealth: <span class="gold stat-value">{ascean().currency.gold}g {ascean().currency.silver}s</span></p>
-                    <p class="stat-row stat-section" onClick={() => setShowFaith(!showFaith())} style={viewMargin}>Faith: <span class="gold stat-value">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> <span class="divider">|</span> Mastery: <span class="gold stat-value">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span></p>
+
+                    <div class="stat-section" style={{ ...viewMargin }}>
+                        <div class="stat-row" style={viewMargin}>
+                            <span class="stat-label">Level:</span> <span class="gold stat-value">{ascean().level}</span> <span class="divider">|</span> 
+                            <span class="stat-label">Experience: </span> <span class="gold stat-value">{ascean().experience}</span>
+                        </div>
+                        <div class="stat-row" style={viewMargin}>
+                            <span class="stat-label">Health:</span> <span class="gold stat-value">{Math.round(ascean().health.current)} <span class="bone divider">/</span> {ascean().health.max}</span> <span class="divider">|</span> 
+                            <span class="stat-label">Wealth:</span> <span class="stat-value"><span class="gold">{ascean().currency.gold}g</span> <span style={{ color: "silver" }}>{ascean().currency.silver}s</span></span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())} style={viewMargin}>
+                            <span class="stat-label">Faith:</span> <span class="gold stat-value">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> <span class="divider">|</span> 
+                            <span class="stat-label">Mastery:</span> <span class="gold stat-value">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span>
+                        </div>
+                        <div class="stat-row" style={viewMargin}>
+                            <span class="stat-label">Damage:</span> <span class="gold stat-value">{ascean().weaponOne.physicalDamage}</span> <span class="small-label">Physical</span> <span class="divider">|</span> 
+                            <span class="gold stat-value">{ascean().weaponOne.magicalDamage}</span> <span class="small-label">Magical</span> 
+                        </div>
+                        <div class="stat-row" style={viewMargin}>
+                            <span class="stat-label">Critical:</span> <span class="gold stat-value">{ascean().weaponOne.criticalChance}%</span> <span class="small-label">Chance</span> <span class="divider">|</span> 
+                            <span class="gold stat-value">{ascean().weaponOne.criticalDamage}x</span> <span class="small-label">Damage</span> 
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>

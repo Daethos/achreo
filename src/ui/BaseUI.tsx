@@ -376,7 +376,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     const suture = Math.round(playerMastery * caerenicPos * computerCaer.neg * computerStal * (playerLevel * playerLevel) * (1 + data / SUTURE));
                     newPlayerHealth = newPlayerHealth + suture > combat().playerHealth ? combat().playerHealth : newPlayerHealth + suture;
                     newComputerHealth = newComputerHealth - suture < 0 ? 0 : newComputerHealth - suture;
-                    playerActionDescription = `Your suture ${combat().computer?.name}"s caeren into you, absorbing and healing for ${suture}.`;    
+                    playerActionDescription = `You suture ${combat().computer?.name}'s caeren into you, absorbing and healing for ${suture}.`;    
                     playerWin = newComputerHealth === 0;
                     realizedPlayerDamage = suture;
                     res = { ...combat(), newPlayerHealth, newComputerHealth, playerWin, playerActionDescription, realizedPlayerDamage };

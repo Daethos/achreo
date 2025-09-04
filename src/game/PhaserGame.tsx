@@ -873,6 +873,7 @@ export default function PhaserGame (props: IProps) {
 
     function setPlayer(stats: Compiler) {
         const traits = getAsceanTraits(stats.ascean);
+        const talents = props.talents().talents;
         setCombat({
             ...combat(),
             player: stats.ascean,
@@ -886,7 +887,15 @@ export default function PhaserGame (props: IProps) {
             playerDefense: stats.defense,
             playerDefenseDefault: stats.defense,
             playerBlessing: props.settings().prayer,
-            playerDamageType: stats.combatWeaponOne.damageType?.includes(combat().playerDamageType) ? combat().playerDamageType : stats.combatWeaponOne.damageType?.[0] as string
+            playerDamageType: stats.combatWeaponOne.damageType?.includes(combat().playerDamageType) ? combat().playerDamageType : stats.combatWeaponOne.damageType?.[0] as string,
+            physicals: {
+                attack: { enhanced: talents?.attack?.enhanced, optimized: talents?.attack?.efficient },
+                dodge: { enhanced: talents?.dodge?.enhanced, optimized: talents?.dodge?.efficient },
+                parry: { enhanced: talents?.parry?.enhanced, optimized: talents?.parry?.efficient },
+                posture: { enhanced: talents?.posture?.enhanced, optimized: talents?.posture?.efficient },
+                roll: { enhanced: talents?.roll?.enhanced, optimized: talents?.roll?.efficient },
+                thrust: { enhanced: talents?.thrust?.enhanced, optimized: talents?.thrust?.efficient },
+            }
         });
         setStamina(stats.attributes.stamina as number);
         setGrace(stats.attributes.grace as number);
@@ -936,6 +945,7 @@ export default function PhaserGame (props: IProps) {
         const fresh = await getAscean(id);
         const pop = await populate(fresh);
         const res = asceanCompiler(pop);
+        const talents = props.talents().talents;
         const cleanCombat: Combat = { 
             ...combat(), 
             player: res?.ascean as Ascean, 
@@ -950,6 +960,14 @@ export default function PhaserGame (props: IProps) {
             playerHealth: res?.ascean.health.max as number,
             playerDamageType: res?.combatWeaponOne?.damageType?.[0] as string,
             playerBlessing: props.settings().prayer,
+            physicals: {
+                attack: { enhanced: talents?.attack?.enhanced, optimized: talents?.attack?.efficient },
+                dodge: { enhanced: talents?.dodge?.enhanced, optimized: talents?.dodge?.efficient },
+                parry: { enhanced: talents?.parry?.enhanced, optimized: talents?.parry?.efficient },
+                posture: { enhanced: talents?.posture?.enhanced, optimized: talents?.posture?.efficient },
+                roll: { enhanced: talents?.roll?.enhanced, optimized: talents?.roll?.efficient },
+                thrust: { enhanced: talents?.thrust?.enhanced, optimized: talents?.thrust?.efficient },
+            }
         };
         setCombat(cleanCombat);
         EventBus.emit("combat", cleanCombat);
@@ -1302,6 +1320,20 @@ export default function PhaserGame (props: IProps) {
             };
             EventBus.emit("update-ascean", update);
         });
+        EventBus.on("update-combat-talents", () => {
+            const talents = props.talents().talents;
+            setCombat({
+                ...combat(),
+                physicals: {
+                    attack: { enhanced: talents?.attack?.enhanced, optimized: talents?.attack?.efficient },
+                    dodge: { enhanced: talents?.dodge?.enhanced, optimized: talents?.dodge?.efficient },
+                    parry: { enhanced: talents?.parry?.enhanced, optimized: talents?.parry?.efficient },
+                    posture: { enhanced: talents?.posture?.enhanced, optimized: talents?.posture?.efficient },
+                    roll: { enhanced: talents?.roll?.enhanced, optimized: talents?.roll?.efficient },
+                    thrust: { enhanced: talents?.thrust?.enhanced, optimized: talents?.thrust?.efficient },
+                }
+            });
+        });
 
         onCleanup(() => {
             if (instance.game) {
@@ -1379,6 +1411,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("update-caerenic");
             EventBus.removeListener("update-stalwart");
             EventBus.removeListener("update-stealth");
+            EventBus.removeListener("update-combat-talents");
             EventBus.removeListener("useHighlight");
             EventBus.removeListener("useScroll");
             EventBus.removeListener("upgrade-item");

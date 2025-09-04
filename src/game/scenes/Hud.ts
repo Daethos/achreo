@@ -439,15 +439,9 @@ export class Hud extends Phaser.Scene {
     };
 
     gameEvents = (): void => {
-        EventBus.on("game", (game: GameState) => {
-            this.gameState = game;
-        });
-        EventBus.on("reputation", (reputation: Reputation) => {
-            this.reputation = reputation;
-        });
-        EventBus.on("talents", (talents: Talents) => {
-            this.talents = talents;
-        });
+        EventBus.on("game", (game: GameState) => this.gameState = game);
+        EventBus.on("reputation", (reputation: Reputation) => this.reputation = reputation);
+        EventBus.on("talents", (talents: Talents) => this.talents = talents);
         EventBus.on("settings", (settings: Settings) => {
             this.settings = settings;
             this.currentZoom = settings.positions.camera.zoom;
@@ -596,6 +590,25 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on("show-dialog-false", () => this.showDialog(false));
         EventBus.on("update-postfx", this.postFxEvent);
+        // this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+        //     const ev = pointer.event as any;
+        //     const client = { x: ev.touches?.[0].clientX, y: ev.touches?.[0].clientY }
+        //     console.log({client});
+        //     const el = document.elementFromPoint(client.x, client.y);
+        //     console.log({el});
+        //     if (el && el.tagName !== "CANVAS") {
+        //         console.log("Is this a thing?");
+        //         el.dispatchEvent(
+        //         new MouseEvent("click", {
+        //             bubbles: true,
+        //             cancelable: true,
+        //             clientX: client.x,
+        //             clientY: client.y,
+        //         })
+        //         );
+        //     }
+        // });
+
     };
     
     highlightElements(type: string) {

@@ -124,6 +124,14 @@ export interface Combat {
     conviction: { active: boolean; charges: number; talent: boolean; };
     caerenic: {active:boolean; enhanced:boolean, optimized: boolean};
     stalwart: {active:boolean; enhanced:boolean, optimized: boolean};
+    physicals: {
+        attack: {enhanced: boolean; optimized: boolean;};
+        dodge: {enhanced: boolean; optimized: boolean;};
+        parry: {enhanced: boolean; optimized: boolean;};
+        posture: {enhanced: boolean; optimized: boolean;};
+        roll: {enhanced: boolean; optimized: boolean;};
+        thrust: {enhanced: boolean; optimized: boolean;};
+    };
     isStealth: boolean; //
     isSeering: boolean;
     isInsight: boolean;
@@ -265,6 +273,14 @@ export const initCombat: Combat = {
     conviction: { active: false, charges: 0, talent: false },
     caerenic: {active:false, enhanced:false, optimized: false},
     stalwart: {active:false, enhanced:false, optimized: false},
+    physicals: {
+        attack: {enhanced: false, optimized: false,},
+        dodge: {enhanced: false, optimized: false,},
+        parry: {enhanced: false, optimized: false,},
+        posture: {enhanced: false, optimized: false,},
+        roll: {enhanced: false, optimized: false,},
+        thrust: {enhanced: false, optimized: false,},
+    },
     isStealth: false,
     isSeering: false,
     isInsight: false,

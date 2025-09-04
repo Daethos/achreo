@@ -74,42 +74,40 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                             <h2>{ascean().description}</h2>
                         </div>
                     </div>
-                    
                     <div class="stat-section" style={{...viewMargin, "margin": "0 auto"}}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-
                     <div class="stat-section" style={{ ...viewMargin }}>
                         <div class="stat-row" style={viewMargin}>
-                            <span class="stat-label">Level:</span> <span class="gold stat-value">{ascean().level}</span> <span class="divider">|</span> 
-                            <span class="stat-label">Experience: </span> <span class="gold stat-value">{ascean().experience}</span>
+                            <span class="stat-label">Level:</span> <span class="gold">{ascean().level}</span> <span class="divider">|</span> 
+                            <span class="stat-label">Experience: </span> <span class="gold">{ascean().experience}</span>
+                        </div>
+                        <div class="stat-row" style={{...viewMargin}}>
+                            <span class="stat-label">Health:</span> <span class="gold ">{Math.round(ascean().health.current)}<span class="bone divider">/</span>{ascean().health.max}</span> <span class="divider">|</span>
+                            <span class="stat-label">Wealth:</span> <span><span class="gold">{ascean().currency.gold}g</span> <span style={{ color: "silver" }}>{ascean().currency.silver}s</span></span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())} style={{...viewMargin, margin: "1% auto 2%"}}>
+                            <span class="stat-label">Faith:</span> <span class="gold ">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> <span class="divider">|</span>
+                            <span class="stat-label">Mastery:</span> <span class="gold ">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span>
+                        </div>
+                        <div style={{ "border-bottom":"1px solid rgba(10,10,10,0.2)" }}></div>
+                        <div class="stat-row" style={viewMargin}>
+                            <span class="stat-label">Damage:</span> <span class="gold ">{ascean().weaponOne.physicalDamage}</span> <span class="small-label">Physical</span> <span class="divider">|</span>
+                            <span class="gold ">{ascean().weaponOne.magicalDamage}</span> <span class="small-label">Magical</span>
                         </div>
                         <div class="stat-row" style={viewMargin}>
-                            <span class="stat-label">Health:</span> <span class="gold stat-value">{Math.round(ascean().health.current)} <span class="bone divider">/</span> {ascean().health.max}</span> <span class="divider">|</span> 
-                            <span class="stat-label">Wealth:</span> <span class="stat-value"><span class="gold">{ascean().currency.gold}g</span> <span style={{ color: "silver" }}>{ascean().currency.silver}s</span></span>
-                        </div>
-                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())} style={viewMargin}>
-                            <span class="stat-label">Faith:</span> <span class="gold stat-value">{ascean().faith.charAt(0).toUpperCase() + ascean().faith.slice(1)}</span> <span class="divider">|</span> 
-                            <span class="stat-label">Mastery:</span> <span class="gold stat-value">{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</span>
-                        </div>
-                        <div class="stat-row" style={viewMargin}>
-                            <span class="stat-label">Damage:</span> <span class="gold stat-value">{ascean().weaponOne.physicalDamage}</span> <span class="small-label">Physical</span> <span class="divider">|</span> 
-                            <span class="gold stat-value">{ascean().weaponOne.magicalDamage}</span> <span class="small-label">Magical</span> 
-                        </div>
-                        <div class="stat-row" style={viewMargin}>
-                            <span class="stat-label">Critical:</span> <span class="gold stat-value">{ascean().weaponOne.criticalChance}%</span> <span class="small-label">Chance</span> <span class="divider">|</span> 
-                            <span class="gold stat-value">{ascean().weaponOne.criticalDamage}x</span> <span class="small-label">Damage</span> 
+                            <span class="stat-label">Critical:</span> <span class="gold ">{ascean().weaponOne.criticalChance}%</span> <span class="small-label">Chance</span> <span class="divider">|</span> 
+                            <span class="gold ">{ascean().weaponOne.criticalDamage}x</span> <span class="small-label">Damage</span> 
                         </div>
                     </div>
-
                 </div>
             </div>
             <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "9.5%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
                 <div class="superCenter view" style={{ position: "absolute", ...positioning() }}>
                     <Suspense fallback={<Puff color="gold" />}>
-                    <div style={{ "margin-left": "-15%", transform: "scale(1.15)" }}>
-                        <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} full={true} />
-                    </div>
+                        <div style={{ "margin-left": "-15%", transform: "scale(1.15)" }}>
+                            <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} full={true} />
+                        </div>
                     </Suspense>
                 </div>
             </div>

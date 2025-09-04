@@ -486,7 +486,8 @@ export type EnemySheet = {
     playerTrait: string;
 };
 const levelRanges = [
-    { range: [1, 2], min: 0.5, max: 2 }, // { range: [1, 2], min: 1, max: 2 },  
+    { range: [1, 1], min: 0.25, max: 1 }, // { range: [1, 2], min: 1, max: 2 },  
+    { range: [2, 2], min: 0.5, max: 2 }, // { range: [1, 2], min: 1, max: 2 },  
     { range: [3, 4], min: 1, max: 4 }, // { range: [3, 4], min: 2, max: 4 }, 
     { range: [5, 6], min: 2, max: 6 }, // { range: [5, 6], min: 4, max: 6 }, 
     { range: [7, 8], min: 4, max: 12 }, // { range: [7, 8], min: 5, max: 9 }, 

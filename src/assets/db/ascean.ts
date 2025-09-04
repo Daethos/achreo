@@ -1,5 +1,653 @@
 export const Asceans: any[] = [
 {
+    "_id":"chiomic_jester_0.25",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"kyosir",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Chiomic Jester",
+    "description":"Traveling Jester of the West Fangs",
+    "constitution":7,
+    "strength":7,
+    "agility":7,
+    "achre":7,
+    "caeren":7,
+    "kyosir":14,
+    "weaponOne":{
+        name: 'Nightmare',
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Lava Spit",
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Wildstrike',
+        rarity: "Common",
+    },"shield":{
+        name: "Parma",
+        rarity: "Common",
+    },"helmet":{
+        name: 'Achreon Helm',
+        rarity: "Common",
+    },"chest":{
+        name: 'Fireland Cuirass',
+        rarity: "Common",
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
+},{
+    "_id":"daethic_inquisitor_0.25",
+    "origin":"Li'ivi",
+    "sex":"Woman",
+    "mastery":"constitution",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Daethic Inquisitor",
+    "description":"Old Caste of Worship in the Seyr",
+    "constitution":11,
+    "strength":7,
+    "agility":7,
+    "achre":9,
+    "caeren":9,
+    "kyosir":8,
+    "weaponOne":{
+        name: "Tendril",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Hush",
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Daethic Bow',
+        rarity: "Common",
+    },"shield":{
+        name: "Parma",
+        rarity: "Common",
+    },"helmet":{
+        name: "Dae Hood",
+        rarity: "Common",
+    },"chest":{
+        name: "Dae Robes",
+        rarity: "Common",
+    },"legs":{
+        name: "Dae Pants",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":147,"max":147}
+},{
+    "_id":"daethic_knight_0.25",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"caeren",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Daethic Knight",
+    "description":"Devoted Knight of Daethos. This caste is pledged to the Seyr",
+    "constitution":9,
+    "strength":7,
+    "agility":7,
+    "achre":7,
+    "caeren":9,
+    "kyosir":8,
+    "weaponOne":{
+        name: "Hush of Daethos",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Daethic Halberd',
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Daethic Greatbow',
+        rarity: "Common",
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: "Common",
+    },"helmet":{
+        name: "Daethic Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Daethic Cuirass",
+        rarity: "Common",
+    },"legs":{
+        name: "Daethic Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
+},{
+    "_id":"fang_duelist_0.25",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Fang Duelist",
+    "description":"Refined Gentleman of the Fangs",
+    "constitution":7,
+    "strength":7,
+    "agility":9,
+    "achre":8,
+    "caeren":7,
+    "kyosir":8,
+    "weaponOne":{
+        name: "Longsword",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Scimitar',
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Pernach',
+        rarity: "Common",
+    },"shield":{
+        name: "Parma",
+        rarity: "Common",
+    },"helmet":{
+        name: "Fireland Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Fireland Cuirass",
+        rarity: "Common",
+    },"legs":{
+        name: "Fireland Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":29,"max":29}
+},{
+    "_id":"fang_mercenary_0.25",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Fang Mercenary",
+    "description":"Of a Clan in the West Fangs",
+    "constitution":8,
+    "strength":9,
+    "agility":7,
+    "achre":7,
+    "caeren":7,
+    "kyosir":7,
+    "weaponOne":{
+        name: "War Hammer",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Battle Axe",
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Claymore",
+        rarity: "Common",
+    },"shield":{
+        name: "Parma",
+        rarity: "Common",
+    },"helmet":{
+        name: "Fang Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Fang Armor",
+        rarity: "Common",
+    },"legs":{
+        name: "Fang Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":36,"max":36}
+},{
+    "_id":"marauder_0.25",
+    "origin":"Sedyreal",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Marauder",
+    "description":"Ravaging countryside; akin to Fang Mercenaries",
+    "constitution":8,
+    "strength":8,
+    "agility":10,
+    "achre":7,
+    "caeren":7,
+    "kyosir":7,
+    "weaponOne":{
+        name: 'Hand Axe',
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Longbow",
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Spear",
+        rarity: "Common",
+    },"shield":{
+        name: 'Scutum',
+        rarity: "Common",
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: "Common",
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":32,"max":32}
+},{
+    "_id":"mavrosin_occultist_0.25",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"strength",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Mavrosin Occultist",
+    "description":"Cultist of Mavros Ilios. Adherence to the true Sun",
+    "constitution":8,
+    "strength":9,
+    "agility":7,
+    "achre":7,
+    "caeren":7,
+    "kyosir":7,
+    "weaponOne":{
+        name: "Sunshatter",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Sunshear',
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Sevashyr Greatbow",
+        rarity: "Common",
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: "Common",
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: "Common",
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":36,"max":36}
+},{
+    "_id":"northren_wanderer_0.25",
+    "origin":"Nothos",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Northren Wanderer",
+    "description":"Dispossessed Warrior from the Northren Wars",
+    "constitution":8,
+    "strength":7,
+    "agility":7,
+    "achre":8,
+    "caeren":8,
+    "kyosir":8,
+    "weaponOne":{
+        name: "Quor'eite Crush",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Wildstrike',
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Caeren Barrage',
+        rarity: "Common",
+    },"shield":{
+        name: 'Pavise',
+        rarity: "Common",
+    },"helmet":{
+        name: "Soverain Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Soverain Cuirass",
+        rarity: "Common",
+    },"legs":{
+        name: "Soverain Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":39,"max":39}
+},{
+    "_id":"nyren_0.25",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Nyren",
+    "description":"Occultist of the Schism from the Museum of Sages",
+    "constitution":7,
+    "strength":7,
+    "agility":7,
+    "achre":12,
+    "caeren":10,
+    "kyosir":7,
+    "weaponOne":{
+        name: "Nyrolean Bolt",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Shrenari',
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Se'narian Spear",
+        rarity: "Common",
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: "Common",
+    },"helmet":{
+        name: "Sage Hood",
+        rarity: "Common",
+    },"chest":{
+        name: "Sage Robes",
+        rarity: "Common",
+    },"legs":{
+        name: "Sage Pants",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
+},{
+    "_id":"quor'eite_stalker_0.25",
+    "origin":"Quor'eite",
+    "sex":"Man",
+    "mastery":"agility",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Quor'eite Stalker",
+    "description":"Hunters of Sedyrus",
+    "constitution":8,
+    "strength":8,
+    "agility":9,
+    "achre":8,
+    "caeren":8,
+    "kyosir":8,
+    "weaponOne":{
+        name: 'Longsword',
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Longbow",
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Spear",
+        rarity: "Common",
+    },"shield":{
+        name: 'Pavise',
+        rarity: "Common",
+    },"helmet":{
+        name: "Marauder's Helm",
+        rarity: "Common",
+    },"chest":{
+        name: "Marauder's Armor",
+        rarity: "Common",
+    },"legs":{
+        name: "Marauder's Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":29,"max":29}
+},{
+    "_id":"rahvrecur_0.25",
+    "origin":"Notheo",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Rahvrehcur",
+    "description":"Old Occultist to the Ancient of Dreams",
+    "constitution":8,
+    "strength":8,
+    "agility":8,
+    "achre":8,
+    "caeren":8,
+    "kyosir":7,
+    "weaponOne":{
+        name: "Nightmare",
+        rarity: "Common",
+    },"weaponTwo":{
+        name: 'Caeren Barrage',
+        rarity: "Common",
+    },"weaponThree":{
+        name: 'Cursed Dagger',
+        rarity: "Common",
+    },"shield":{
+        name: 'Shaorahi',
+        rarity: "Common",
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: "Common",
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: "Common",
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
+},{
+    "_id":"shrygeian_bard_0.25",
+    "origin":"Quor'eite",
+    "sex":"Man",
+    "mastery":"kyosir",
+    "level":0.25,
+    "experience":0,
+    "inventory":[],
+    "name":"Shrygeian Bard",
+    "description":"Traveling Bard of the Southron Provinces",
+    "constitution":8,
+    "strength":8,
+    "agility":8,
+    "achre":8,
+    "caeren":8,
+    "kyosir":12,
+    "weaponOne":{
+        name: 'Shrenari',
+        rarity: "Common",
+    },"weaponTwo":{
+        name: "Pernach",
+        rarity: "Common",
+    },"weaponThree":{
+        name: "Quor'eite Crush",
+        rarity: "Common",
+    },"shield":{
+        name: "Parma",
+        rarity: "Common",
+    },"helmet":{
+        name: "Quor'eite Hood",
+        rarity: "Common",
+    },"chest":{
+        name: 'Occult Armor',
+        rarity: "Common",
+    },"legs":{
+        name: "Achreon Greaves",
+        rarity: "Common",
+    },"ringOne":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"ringTwo":{
+        name: "Empty Ring Slot",
+        rarity: "Default",
+    },"amulet":{
+        name: "Empty Amulet Slot",
+        rarity: "Default",
+    },"trinket":    {
+        name: "Empty Trinket Slot",
+        rarity: "Default",
+    },
+    "faith":"Adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":33,"max":33}
+},{
     "_id":"chiomic_jester_0.5",
     "origin":"Fyers",
     "sex":"Man",

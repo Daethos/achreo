@@ -1,6 +1,113 @@
 import { States } from "../game/phaser/StateMachine";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
+type Concerns = {
+    "state": {
+        key: string; // stateMachine / positiveMachine / negativeMachine
+        state: string; // isStunned / isFeared etc.    
+    };
+    "status": string[];
+};
+export const Counters: Record<string, Record<string, Concerns>[]> = {
+    "Achire" : [],
+    "Astrave" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.STUNNED
+        },
+        status: ["isStunned"]
+    }}],
+    "Chiomism" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.CONFUSED
+        },
+        status: ["isConfused"]
+    }}],
+    "Confuse" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.CONFUSED
+        },
+        status: ["isConfused"]
+    }}],
+    "Devour" : [{"player": {
+        state: {
+            key: "stateMachine",
+            state: States.SUTURE
+        },
+        status: [],
+    }}],
+    "Fear" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.FEARED
+        },
+        status: ["isFeared"],
+    }}],
+    "Frost" : [{"enemy": {
+        state: {
+            key: "negativeMachine",
+            state: States.FROZEN
+        },
+        status: ["isFrozen"],
+    }}],
+    "Healing" : [],
+    "Ilirech" : [],
+    "Kyrisian" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.PARALYZED
+        },
+        status: ["isParalyzed"],
+    }}],
+    "Kyrnaicism" : [{"enemy": {
+        state: {
+            key: "negativeMachine",
+            state: States.SLOWED
+        },
+        status: ["isSlowed"],
+    }}],
+    "Likyr" : [],
+    "Maiereth" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.FEARED
+        },
+        status: ["isFeared"],
+    }}],
+    "Paralyze" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.PARALYZED
+        },
+        status: ["isParalyzed"],
+    }}],
+    "Polymorph" : [{"enemy": {
+        state: {
+            key: "stateMachine",
+            state: States.POLYMORPHED
+        },
+        status: ["isPolymorphed"],
+    }}],
+    "Quor" : [],
+    "Reconstitute" : [{"player": {
+        state: {
+            key: "positiveMachine",
+            state:  States.RENEWAL
+        },
+        status: [],
+    }}],
+    "Snare" : [{"enemy": {
+        state: {
+
+            key: "negativeMachine",
+            state: States.SNARED
+        },
+        status: ["isSnared"],
+
+    }}],
+};
 
 export const PHYSICAL_ACTIONS = ["attack", "posture", "thrust"];
 export const PHYSICAL_EVASIONS = ["dodge", "roll"];

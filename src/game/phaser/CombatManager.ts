@@ -8,7 +8,7 @@ import { computerCombatCompiler } from "../../utility/computerCombat";
 import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";
 import { BONE, DAMAGE, EFFECT, HEAL } from "./ScrollingCombatText";
-import { PLAYER } from "../../utility/player";
+import { Counters, PLAYER } from "../../utility/player";
 import { getHitFeedbackContext, HitFeedbackSystem } from "./HitFeedbackSystem";
 import { Combat } from "../../stores/combat";
 import { calculateThreat, ENEMY } from "../entities/Entity";
@@ -493,6 +493,25 @@ export class CombatManager {
 
     // ============================ Combat Specials ============================ \\ 
 
+    counterspellCheck = (enemy: Enemy, counter: string) => {
+        const clean = counter.split("Countered ")[1];
+        const counters = Counters[clean];
+        const talented = this.context.hud.talents.talents.parry.enhanced;
+        if (!counters || !talented) return;
+        for (const key of counters) {
+            // console.log({key});
+            if (key["enemy"]) {
+                const record = key["enemy"];
+                for (const status of record.status) {
+                    (enemy as any)[status] = true;
+                };
+                (enemy as any)[record.state.key].setState(record.state.state);
+            } else if (key["player"]) {
+                const record = key["player"];
+                (this.context.player as any).playerMachine[record.state.key].setState(record.state.state);
+            };
+        };
+    };
     playerMelee = (id: string, type: string): void => {
         if (!id) return;
         let enemy = this.context.enemies.find((e: any) => e.enemyID === id);

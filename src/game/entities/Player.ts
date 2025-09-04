@@ -1332,6 +1332,11 @@ export default class Player extends Entity {
             this.stealthUpdate();
         } else {
             this.applyKnockback(this.attackedTarget, SWING_FORCE[this.scene.state.weapons[0]?.grip as string] * this.ascean[SWING_FORCE_ATTRIBUTE[this.scene.state.weapons[0]?.attackType as string]] * SWING_FORCE[action]);
+            if (action === States.POSTURE) {
+                if (this.checkTalentEnhanced(States.POSTURE) && Math.random() > 0.75) {
+                    this.scene.combatManager.stun(this.attackedTarget.enemyID);
+                };
+            };
         };
     };
 

@@ -15,7 +15,7 @@ export interface Combat {
     playerHealth: number;
     newPlayerHealth: number;
     
-    weapons: [Equipment | undefined, Equipment | undefined, Equipment | undefined];
+    weapons: Equipment[];
     weaponOne: Equipment | undefined;
     weaponTwo: Equipment | undefined;
     weaponThree: Equipment | undefined;
@@ -163,7 +163,7 @@ export const initCombat: Combat = {
     playerHealth: 0,
     newPlayerHealth: 0,
     
-    weapons: [undefined, undefined, undefined],
+    weapons: [],
 
     weaponOne: undefined,
     weaponTwo: undefined,

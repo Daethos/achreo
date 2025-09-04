@@ -716,6 +716,7 @@ svg.defs {
     margin: auto;
     box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
 }
+
 .stat-panel.souls {
     background: rgba(10,10,10,0.9);
     border: 1px solid #444;
@@ -726,6 +727,7 @@ svg.defs {
     color: #ddd;
     box-shadow: 0 2px 8px rgba(0,0,0,0.7);
 }
+
 .stat-section {
     margin-bottom: 0.8rem;
     padding-bottom: 0.5rem;
@@ -759,7 +761,6 @@ svg.defs {
     margin: 0 0.4rem;
     opacity: 0.5;
 }
-
 
 @media screen and (max-width: 800px) {
     .stat-block.wide .section-left,

@@ -1,5 +1,6 @@
 import { randomFloatFromInterval } from "../../models/equipment";
 import { Combat } from "../../stores/combat";
+import { masteryColor, masteryNumber } from "../../utility/styling";
 import { Play } from "../main";
 import { HitProfile, HitProfiles } from "./HitProfiles";
 import { screenShake } from "./ScreenShake";
@@ -62,6 +63,8 @@ export class HitFeedbackSystem {
     private wind: Phaser.GameObjects.Particles.ParticleEmitter;
     private heal: Phaser.GameObjects.Particles.ParticleEmitter;
     private parry: Phaser.GameObjects.Particles.ParticleEmitter;
+    private trail: Phaser.GameObjects.Particles.ParticleEmitter;
+    private trailEvent: Phaser.Time.TimerEvent | undefined;
 
     constructor(scene: Play) {
         this.scene = scene;
@@ -385,6 +388,22 @@ export class HitFeedbackSystem {
             visible: true,
             gravityY: 0,
         }).setScrollFactor(1).setDepth(100).stop();
+
+        this.scene.make.graphics({x:0,y:0}).fillStyle(0xFFFFFF, 1).fillCircle(3, 3, 3).generateTexture("trail", 6, 6).destroy();
+        this.trail = this.scene.add.particles(0, 0, "trail", {
+            x: 0, y: 0,
+            quantity: 100,
+            frequency: 20,
+            follow: this.scene.player,
+            followOffset: {x: 0, y: 16},
+            lifespan: 250,
+            scale: { start: 0.5, end: 0 },
+            alpha: { start: 0.6, end: 0 },
+            tint: masteryNumber(this.scene.player.ascean.master),
+            blendMode: "ADD",
+            speed: { min: -40, max: 40 },
+            angle: { min: 0, max: 360 }
+        }).setScrollFactor(1).setDepth(100).stop();
     };
 
     public emitParticles(pos: Phaser.Math.Vector2, type: string, crit: boolean, glance: boolean, parry: boolean): void {
@@ -450,5 +469,41 @@ export class HitFeedbackSystem {
 
     public healing = (pos: Phaser.Math.Vector2): void => {
         this.heal.explode(25, pos.x, pos.y+6);
+    };
+
+    private ghost = (add: number) => {
+        const ghost = this.scene.add.sprite(this.scene.player.x, this.scene.player.y, "player_actions", "player_idle_0");
+        ghost.setAlpha(0.4 + add)
+        .setDepth(this.scene.player.depth - 1)
+        .setFlipX(this.scene.player.flipX)
+        .setScale(0.8)
+        .setTint(masteryNumber(this.scene.player.ascean.mastery));
+        
+        this.scene.tweens.add({
+            targets: ghost,
+            alpha: 0,
+            duration: 300,
+            onComplete: () => ghost.destroy()
+        });
+    };
+
+    public trailing = (on: boolean): void => {
+        if (on) {
+            const offset = this.scene.player.flipX ? 6 : -6;
+            let add = 0.0;
+            this.trail.updateConfig({followOffset: { x: offset, y: 16 }});
+            this.trail.start();
+            this.scene.time.addEvent({
+                delay: 75,
+                callback: () => {
+                    add += 0.1;
+                    this.ghost(add)
+                },
+                callbackScope: this,
+                repeat: 5,
+            });
+        } else {
+            this.trail.stop();
+        };
     };
 };

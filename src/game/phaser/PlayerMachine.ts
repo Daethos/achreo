@@ -771,6 +771,10 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
+        if (this.player.checkTalentOptimized(States.ATTACK)) {
+            this.player.adjustSpeed(2);
+            if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
+        };
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_ATTACK);
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
     };
@@ -782,6 +786,10 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
         this.player.isAttacking = false;
+        if (this.player.checkTalentOptimized(States.ATTACK)) {
+            this.player.adjustSpeed(-2);
+            if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
+        };
     };
 
     onComputerParryEnter = () => {
@@ -826,6 +834,10 @@ export default class PlayerMachine {
 
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
+        if (this.player.checkTalentOptimized(States.THRUST)) {
+            this.player.adjustSpeed(2);
+            if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
+        };
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.COMPUTER_THRUST);
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
     };
@@ -837,6 +849,10 @@ export default class PlayerMachine {
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
         this.player.isThrusting = false;
+        if (this.player.checkTalentOptimized(States.THRUST)) {
+            this.player.adjustSpeed(-2);
+            if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
+        };
     };
 
     onAttackEnter = () => {
@@ -849,6 +865,10 @@ export default class PlayerMachine {
             };
         };
         this.player.isAttacking = true;
+        if (this.player.checkTalentOptimized(States.ATTACK)) {
+            this.player.adjustSpeed(2);
+            if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
+        };
         this.player.swingReset(States.ATTACK, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
@@ -861,6 +881,10 @@ export default class PlayerMachine {
         if (this.scene.state.action === "attack") this.scene.combatManager.combatMachine.input("action", ""); 
         this.player.computerAction = false; 
         this.player.isAttacking = false;
+        if (this.player.checkTalentOptimized(States.ATTACK)) {
+            this.player.adjustSpeed(-2);
+            if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
+        };
     };
 
     onJumpEnter = () => {
@@ -1019,6 +1043,10 @@ export default class PlayerMachine {
         legs.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         this.player.anims.play(FRAMES.DODGE, true);
         this.player.playerDodge();
+        if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
+            this.scene.combatManager.hitFeedbackSystem.trailing(true);
+            if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
+        };
     };
     onDodgeUpdate = (_dt: number) => this.player.combatChecker(this.player.isDodging);
     onDodgeExit = () => {
@@ -1049,6 +1077,10 @@ export default class PlayerMachine {
         legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[0].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
+            this.scene.combatManager.hitFeedbackSystem.trailing(false);
+            if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
+        };
     };
 
     onRollEnter = () => {
@@ -1115,6 +1147,10 @@ export default class PlayerMachine {
             };
         };
         this.player.isThrusting = true;
+        if (this.player.checkTalentOptimized(States.THRUST)) {
+            this.player.adjustSpeed(2);
+            if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
+        };
         this.player.swingReset(States.THRUST, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
@@ -1127,6 +1163,10 @@ export default class PlayerMachine {
         if (this.scene.state.action === "thrust") this.scene.combatManager.combatMachine.input("action", ""); 
         this.player.computerAction = false;
         this.player.isThrusting = false;
+        if (this.player.checkTalentOptimized(States.THRUST)) {
+            this.player.adjustSpeed(-2);
+            if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
+        };
     };
 
     onFlaskEnter = () => {

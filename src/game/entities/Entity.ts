@@ -654,6 +654,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
     movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
+    down = (): boolean => this.body?.velocity?.y as number > 0;
+    up = (): boolean => this.body?.velocity?.y as number < 0;
 
     syncPositions = () => {
         if (!this.moving() || !(this.scene.frameCount & 1)) return;
@@ -933,6 +935,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 
             this.spriteWeapon.setDepth(this.depth + 1);
             this.spriteShield.setAlpha(1).setDepth(this.depth + 1).setScale(0.6);
+            if (this.up()) {
+                this.spriteShield.setAngle(this.flipX ? 45 : -45);
+            } else if (this.down()) {
+                this.spriteShield.setAngle(this.flipX ? -45 : 45);
+            } else {
+                this.spriteShield.setAngle(0);
+            };
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
         },
@@ -948,17 +957,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
 
-        dodge: (_frame) => {
-            this.spriteShield?.setVisible(false);
-        },
+        dodge: () => this.spriteShield?.setVisible(false),
 
-        roll: (_frame) => {
-            this.spriteShield?.setVisible(false);
-        },
+        roll: () => this.spriteShield?.setVisible(false),
 
-        movingVertical: (_frame) => {
-            this.spriteShield?.setVisible(true);
+        movingVertical: () => {
             this.spriteShield?.setAngle(0);
+            this.spriteShield?.setVisible(true);
+            this.spriteShield?.setFlipX(this.flipX);
             if (this.movingDown()) {
                 this.spriteShield?.setDepth(this.depth - ((this.isStalwart || this.isClimbing) ? -1 : 1));
                 this.spriteWeapon?.setDepth(this.depth + 1);
@@ -967,7 +973,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteWeapon?.setDepth(this.depth - 1);
             };
             if (!this.flipX) {
-                this.spriteShield?.setFlipX(false);
                 if (this.hasBow) {
                     this.spriteWeapon?.setOrigin(0.25, 0.25);
                     this.spriteWeapon?.setAngle(107.5);
@@ -989,7 +994,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                 };
             } else {
-                this.spriteShield?.setFlipX(true);
                 if (this.hasBow) {
                     this.spriteWeapon?.setOrigin(0, 0.5);
                     this.spriteWeapon?.setAngle(-7.5);

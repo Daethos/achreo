@@ -949,7 +949,7 @@ export default function PhaserGame (props: IProps) {
         const cleanCombat: Combat = { 
             ...combat(), 
             player: res?.ascean as Ascean, 
-            weapons: [res?.combatWeaponOne, res?.combatWeaponTwo, res?.combatWeaponThree],
+            weapons: [res?.combatWeaponOne as Equipment, res?.combatWeaponTwo as Equipment, res?.combatWeaponThree as Equipment],
             playerAttributes: res?.attributes,
             playerDefense: res?.defense,
             playerDefenseDefault: res?.defense,

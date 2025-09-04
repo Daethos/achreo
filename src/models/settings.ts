@@ -237,10 +237,10 @@ export default class Settings {
         this.difficulty = {
             arena: true,
             aggressionImmersion: false,
-            aggression: 0.5,
+            aggression: 0.25,
             aim: false,
             computer: false,
-            special: 0.5,
+            special: 0,
             tidbits: false,
             tooltips: true,
             playerSpeed: 0,

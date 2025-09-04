@@ -16,7 +16,8 @@ import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import Settings from "../models/settings";
 
 export const LEVEL_SELECTOR = {
-    0.5: { prev: 0.5, next: 1 },
+    0.25: { prev: 0.25, next: 0.5 },
+    0.5: { prev: 0.25, next: 1 },
     1: { prev: 0.5, next: 2 },
     2: { prev: 1, next: 4 },
     4: { prev: 2, next: 6 },

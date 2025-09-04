@@ -449,14 +449,21 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const lower = special.toLowerCase();
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const talent = () => talents().talents[lower as keyof typeof talents] as any;
+                        const physical = spec?.special.includes("Physical");
+                        const stance = spec?.special.includes("Stance");
                         const efficient = () => talent().efficient;
                         const enhanced = () => talent().enhanced;
                         const cost = () => efficient()
-                            ? COST[spec?.cost.split(" Grace")[0] as keyof typeof COST]
+                            ? (spec?.special.includes("Physical") || spec?.special.includes("Stance")) 
+                                ? spec?.cost
+                                : COST[spec?.cost.split(" Grace")[0] as keyof typeof COST]
                             : spec?.cost;
                         const cooldown = () => efficient()
-                            ? COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
+                            ? (spec?.special.includes("Physical") || spec?.special.includes("Stance")) 
+                                ? spec?.cooldown 
+                                : COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
                             : spec?.cooldown;
+                        console.log("physical:", physical, "special:", special, "cost:", cost(), "cooldown:", cooldown(), spec?.cost, stance);
                         return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
@@ -1305,11 +1312,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={showTalent().show}>
             <div class="modal">
                 <div class="superCenter" style={{ width:"50%", "max-height":"" }}>
-                <div class="border row moisten" style={{ margin: "1em auto", 
-                    "--glow-color":masteryColor(ascean().mastery), 
-                    "--base-shadow":"#000 0 0 0 0.2em", "border-color": masteryColor(ascean().mastery), 
-                    "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em`, 
-                    animation: "borderTalent 1.5s infinite ease alternate" 
+                <div class="border row moisten" style={{ margin: "1em auto",
+                    "--glow-color":masteryColor(ascean().mastery),
+                    "--base-shadow":"#000 0 0 0 0.2em", "border-color": masteryColor(ascean().mastery),
+                    "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em`,
+                    animation: "borderTalent 1.5s infinite ease alternate"
                 }}>
                     <div style={{ padding: "1em" }}>
                         <p class="row" style={{ color: "gold", "font-size": "1.5em", margin: "3%" }}>
@@ -1340,8 +1347,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 "--glow-color":(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "gold" : "#0ff",
                                 animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "flicker 0.5s infinite alternate" : ""
                             }}>
-                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COST[showTalent()?.talent.cost.split(" Grace")[0] as keyof typeof COST] : showTalent()?.talent.cost}.{" "}
-                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? COOLDOWN[showTalent()?.talent.cooldown as keyof typeof COOLDOWN] : showTalent()?.talent.cooldown} Cooldown. <br />
+                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? (showTalent()?.talent.special.includes("Physical") || showTalent()?.talent.special.includes("Stance")) ? showTalent()?.talent.cost : COST[showTalent()?.talent.cost.split(" Grace")[0] as keyof typeof COST] : showTalent()?.talent.cost}.{" "}
+                                {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? (showTalent()?.talent.special.includes("Physical") || showTalent()?.talent.special.includes("Stance")) ? showTalent()?.talent.cooldown : COOLDOWN[showTalent()?.talent.cooldown as keyof typeof COOLDOWN] : showTalent()?.talent.cooldown} Cooldown. <br />
                             </span>
                         </p>
                     </div>

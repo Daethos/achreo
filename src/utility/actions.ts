@@ -9,7 +9,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "ATTACK",
-        talent: "Optimized: [Uncertain]. Enhanced: Extra Attack on Upswing.",
+        talent: "Optimized: You gain a burst of caerenic speed. Enhanced: Extra Attack on Upswing.",
     },
     DODGE: {
         name: "Dodge",
@@ -19,7 +19,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "DODGE",
-        talent: "Optimized: Doubles Dodge Distance. Enhanced: [Uncertain].",
+        talent: "Optimized: Doubles Dodge Distance. Enhanced: Leave behind a mirror image.", // No use yet
     },
     JUMP: {
         name: "Jump",
@@ -39,7 +39,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "PARRY",
-        talent: "Optimized: [Uncertain]. Enhanced: Melee Increases Parry Time.",
+        talent: "Optimized: Can Dispel Prayers. Enhanced: Melee Increases Parry Time, Ranged Can Reflect Statuses Countered.",
     },
     POSTURE: {
         name: "Posture",
@@ -49,7 +49,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "POSTURE",
-        talent: "Optimized: [Uncertain]. Enhanced: Add Shield Defense to Damage.",
+        talent: "Optimized: Add Shield Defense to Damage. Enhanced: Chance to Stun.",
     },
     ROLL: {
         name: "Roll",
@@ -69,7 +69,7 @@ export const ACTION_ORIGIN = {
         time: "Instant",
         special: "(Physical)",
         svg: "THRUST",
-        talent: "Optimized: [Uncertain]. Enhanced: Increases Thrust Damage.",
+        talent: "Optimized: You gain a burst of caerenic speed. Enhanced: Increases Thrust Damage.",
     },
 
     CAERENIC: {
@@ -102,7 +102,6 @@ export const ACTION_ORIGIN = {
         svg: "INVOKE",
         talent: "Optimized: Increases Speed (Normal). Enhanced: Can Disengage From Combat.",
     },
-
 
     INVOKE: {
         name: "Invoke",

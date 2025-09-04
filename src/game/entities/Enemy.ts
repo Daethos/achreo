@@ -1307,7 +1307,10 @@ export default class Enemy extends Entity {
         this.castbar.reset();
         this.beam.reset();
         if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
-        if (this.isCounterSpelled === true) this.scene.showCombatText(this, counter, 750, DAMAGE, false, true);
+        if (this.isCounterSpelled === true) {
+            this.scene.showCombatText(this, counter, 750, DAMAGE, false, true);
+            this.scene.combatManager.counterspellCheck(this, counter);
+        };
         this.evaluateCombatDistance();        
     };
 
@@ -2783,7 +2786,7 @@ export default class Enemy extends Entity {
             if (this.castingSuccess === true) this.scene.combatManager.paralyze(this.targetID);
         };
         this.enemySound("combat-round", this.castingSuccess);
-        this.stopCasting("Paralyze Countered");
+        this.stopCasting("Countered Paralyze");
         this.instincts();
     };
     onPolymorphingEnter = () => {

@@ -31,15 +31,15 @@ const config: Phaser.Types.Core.GameConfig = {
         mode: Phaser.Scale.FIT, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH
     },
-    parent: "game-container",
+    // parent: "game-container",
+    // dom: {
+    //     createContainer: true
+    // },
     backgroundColor: "#000",
-    dom: {
-        createContainer: true
-    },
     input: {
         activePointers: 10,
         mouse:true, 
-        windowEvents:true
+        windowEvents:false
     },
     scene: [Boot,Preloader,MainMenu,Tutorial,Game,Intro,Underground,Arena,ArenaCvC,Gauntlet,Hud],
     physics: {

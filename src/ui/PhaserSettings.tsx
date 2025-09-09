@@ -20,6 +20,7 @@ const cleanSettings = {
     enemyInteractive: false,
     enemySpecials: false,
     tidbits: false,
+    hudCombatText: false
 };
 const cleanFrame = {
     combat: false,
@@ -183,6 +184,11 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
 
     async function handleComputerCombat() {
         const newSettings = { ...settings(), difficulty: { ...settings().difficulty, computer: !settings().difficulty.computer } };
+        await saveSettings(newSettings);
+    };
+
+    async function handleHudCombatText() {
+        const newSettings = { ...settings(), show: { ...settings().show, hudCombatText: !settings().show?.hudCombatText } };
         await saveSettings(newSettings);
     };
 
@@ -404,17 +410,24 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
             </Match>
             <Match when={settings().control === CONTROLS.DIFFICULTY}>
                 <div class="center creature-heading wrap" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
-
                     <h1 onClick={() => resetFrame("combat", !frame().combat)} style={font("1.25em")}>Combat</h1>
                     <Collapse value={frame().combat} class="my-transition">
+                        <h1 onClick={() => resetDifficulty("hudCombatText", !difficulty().hudCombatText)} style={font("0.85em")}>Hud Combat Text</h1>
+                        <Collapse value={difficulty().hudCombatText} class="my-transition"> 
+                            <div style={font("0.85em", "#fdf6d8")}>
+                                <button class="highlight" onClick={handleHudCombatText} style={{ color: settings().show?.hudCombatText ? "gold" : "#fdf6d8" }}>{settings().show?.hudCombatText ? "On" : "Off"}</button>
+                                <div style={font("0.5em")}>[Whether you have a pop-up on the left of combat actions your targeted enemy is performing.]</div>
+                            </div>
+                        </Collapse>
+                        
                         <h1 onClick={() => resetDifficulty("computerArena", !difficulty().computerArena)} style={font("0.85em")}>Arena Combat</h1>
                         <Collapse value={difficulty().computerArena} class="my-transition"> 
                             <div style={font("0.85em", "#fdf6d8")}>
-                                <button class="highlight" onClick={() => handleArenaCombat()} style={{ color: settings().difficulty.arena ? "red" : "#fdf6d8" }}>{settings().difficulty.arena ? "Manual" : "Computer"}</button>
+                                <button class="highlight" onClick={handleArenaCombat} style={{ color: settings().difficulty.arena ? "red" : "#fdf6d8" }}>{settings().difficulty.arena ? "Manual" : "Computer"}</button>
                                 <div style={font("0.5em")}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
 
                                 <h1 class="gold" style={font("0.85em")}>Player Computer Focus</h1>
-                                <button class="highlight" onClick={() => handleComputerFocus()} style={{ color: settings().computerFocus === "Balanced" ? "gold" : settings().computerFocus === "Offensive" ? "red" : "#fdf6d8" }}>{settings().computerFocus || "Balanced"}</button>
+                                <button class="highlight" onClick={handleComputerFocus} style={{ color: settings().computerFocus === "Balanced" ? "gold" : settings().computerFocus === "Offensive" ? "red" : "#fdf6d8" }}>{settings().computerFocus || "Balanced"}</button>
                                 <ComputerLoadout settings={settings} />
                             </div>
                         </Collapse>

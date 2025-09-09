@@ -98,7 +98,7 @@ export const ENEMY_ATTACKS = {
     quor: "quorses through",
     rush: "rushes through",
     storm: "storms through",
-    thrust: "thrust attacks",
+    thrust: "thrusts",
     writhe: "writhes into",
 };
 export const MASTERY = {

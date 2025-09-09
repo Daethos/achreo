@@ -471,8 +471,8 @@ export class Tutorial extends Phaser.Scene {
 
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
-        const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
-        enemy.specialCombatText = this.showCombatText(enemy, saying, 1500, "bone", false, true);
+        // const saying = enemy.isDefeated ? `I'll have my revenge in this world!` : `I'll be seeing you, ${this.state.player?.name}.`;
+        // enemy.specialCombatText = this.showCombatText(enemy, saying, 1500, "bone", false, false);
         enemy.stateMachine.setState(States.DEATH);
         if (enemy.isCurrentTarget) {
             this.player.disengage();

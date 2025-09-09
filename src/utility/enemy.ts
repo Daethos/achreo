@@ -269,7 +269,7 @@ export const ENEMY_RANGED: MasteryAbility = {
 export const DISTANCE = {
     MIN: 0,
     ATTACK: 25,
-    MOMENTUM: 1.25,
+    MOMENTUM: 1,
     THRESHOLD: 75,
     CHASE: 75,
     RANGED_ALIGNMENT: 25,
@@ -534,7 +534,7 @@ export function fetchArena(enemies: ARENA_ENEMY[]): Compiler[] {
     //     console.warn(err, "Error Retrieving Enemies");
     // };
 };
-export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.5, mastery: ["constitution", "strength", "agility", "achre", "caeren", "kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
+export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.25, mastery: ["constitution", "strength", "agility", "achre", "caeren", "kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
     try {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {

@@ -37,7 +37,8 @@ export default class Settings {
         dialog: boolean; 
         inventory: boolean; 
         loot: boolean; 
-        player: boolean; 
+        player: boolean;
+        hudCombatText: boolean;
     };
     public asceanViews: string;
     public settingViews: string;
@@ -210,6 +211,7 @@ export default class Settings {
             inventory: false,
             loot: false,
             player: false,
+            hudCombatText: false
         };
         this.asceanViews = "Inventory";
         this.settingViews = "Control";

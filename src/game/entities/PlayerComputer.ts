@@ -225,5 +225,6 @@ export default class PlayerComputer extends Player {
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);
+        this.updatePositionHistory();
     };
 };

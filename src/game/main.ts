@@ -31,10 +31,6 @@ const config: Phaser.Types.Core.GameConfig = {
         mode: Phaser.Scale.FIT, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH
     },
-    // parent: "game-container",
-    // dom: {
-    //     createContainer: true
-    // },
     backgroundColor: "#000",
     input: {
         activePointers: 10,
@@ -69,7 +65,7 @@ const config: Phaser.Types.Core.GameConfig = {
             key: "rexGlowFilterPipeline",
             plugin: GlowFilterPipelinePlugin,
             start: true
-        }, {
+        },{
             key: "rexWarpPipeline",
             plugin: WarpPipelinePlugin,
             start: true

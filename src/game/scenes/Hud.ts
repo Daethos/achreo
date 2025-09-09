@@ -18,6 +18,8 @@ import { EnemySheet } from "../../utility/enemy";
 import Talents from "../../utility/talents";
 import { Player_Scene } from "../entities/Entity";
 import { Gauntlet } from "./Gauntlet";
+import ScrollingCombatText from "../phaser/ScrollingCombatText";
+import { ObjectPool } from "../phaser/ObjectPool";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
@@ -51,6 +53,10 @@ export class Hud extends Phaser.Scene {
     pipelines: any = {};
     hitStopping: boolean = false;
     switchingScene: boolean = false;
+    scrollingTextPool: ObjectPool<ScrollingCombatText>;
+    textQueue: ScrollingCombatText[] = [];
+    lastTweenTime = 0;
+    TEXT_BUFFER_TIME = 350;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -77,6 +83,23 @@ export class Hud extends Phaser.Scene {
         this.desktops();
         this.swipes();
         this.startGameScene();
+
+        this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
+        for (let i = 0; i < 40; i++) {
+            this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
+        };
+
+        // Testing Scrolling Combat Text
+        // const random = ["Attack (Glancing)", "Thrust (Critical)", "Cast (Slowed)", "Posture (Hit)", "Prayer (Sacrifice)", "Cast (Heal)"];
+        // this.time.addEvent({
+        //     delay: 500,
+        //     loop: true,
+        //     callback: () => {
+        //         const text = random[Math.floor(Math.random() * random.length)];
+        //         this.showCombatHud(text);
+        //     },
+        //     callbackScope: this
+        // });
 
         // this.createArenas();
         // this.game.scale.on("resize", this.resize, this);
@@ -590,25 +613,59 @@ export class Hud extends Phaser.Scene {
         });
         EventBus.on("show-dialog-false", () => this.showDialog(false));
         EventBus.on("update-postfx", this.postFxEvent);
-        // this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-        //     const ev = pointer.event as any;
-        //     const client = { x: ev.touches?.[0].clientX, y: ev.touches?.[0].clientY }
-        //     console.log({client});
-        //     const el = document.elementFromPoint(client.x, client.y);
-        //     console.log({el});
-        //     if (el && el.tagName !== "CANVAS") {
-        //         console.log("Is this a thing?");
-        //         el.dispatchEvent(
-        //         new MouseEvent("click", {
-        //             bubbles: true,
-        //             cancelable: true,
-        //             clientX: client.x,
-        //             clientY: client.y,
-        //         })
-        //         );
-        //     }
-        // });
+        EventBus.on("hud-text", this.showCombatHud);
+    };
 
+    combatText(sct: ScrollingCombatText) {
+        this.textQueue.push(sct);
+        this.processText();
+    };
+
+    processText() {
+        if (this.textQueue.length === 0) return;
+
+        const currentTime = this.time.now;
+        const timeSinceLastTween = currentTime - this.lastTweenTime;
+
+        if (timeSinceLastTween < this.TEXT_BUFFER_TIME) {
+            const remainingTime = this.TEXT_BUFFER_TIME - timeSinceLastTween;
+            this.time.delayedCall(remainingTime, this.processText, [], this);
+            return;
+        };
+        
+        this.lastTweenTime = currentTime;
+
+        const sct = this.textQueue.shift() as ScrollingCombatText;
+    
+        sct.setPosition(this.gameWidth * 0.01, this.gameHeight * 0.7).setScrollFactor(0);
+        sct.text.setActive(true).setVisible(true);
+
+        const tweenObj = { t: 0 };
+        this.tweens.add({
+            targets: tweenObj,
+            t: 1,
+            duration: 3000,
+            ease: Phaser.Math.Easing.Sine.Out,
+            onStart: () => {
+                sct.active = true;
+                sct.visible = true;
+            },
+            onUpdate: () => {
+                const t = tweenObj.t;
+                const linear = Phaser.Math.Interpolation.Linear([0.75, 1], t);
+
+                sct.setPosition(sct.x, sct.y-1);
+                sct.text.setAlpha(linear).setScale(linear);
+            },
+            onComplete: () => sct.release(),
+            callbackScope: sct
+        });
+    };
+
+    showCombatHud = (text: string, context?: string) => {
+        if (!this.settings.show?.hudCombatText) return;
+        const combatText = this.scrollingTextPool.acquire();
+        combatText.write(text, context);
     };
     
     highlightElements(type: string) {
@@ -658,14 +715,11 @@ export class Hud extends Phaser.Scene {
 
     hitStop = (duration: number) => {
         if (this.hitStopping) return;
-        // console.log("Hit Stop");
         this.hitStopping = true;
         const scene = this.scene.get(this.currScene) as Play;
-        scene.matter.pause();
         scene.pause();
 
         this.time.delayedCall(duration, () => {
-            scene.matter.resume();
             scene.resume();
             this.hitStopping = false;
         }, undefined, this);

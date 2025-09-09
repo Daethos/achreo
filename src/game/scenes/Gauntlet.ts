@@ -674,7 +674,7 @@ export class Gauntlet extends Phaser.Scene {
     destroyEnemy = (enemy: Enemy) => {
         enemy.isDeleting = true;
         const saying = enemy.isDefeated ? DEFEATED[Math.floor(Math.random() * DEFEATED.length)] : VICTORIOUS[Math.floor(Math.random() * VICTORIOUS.length)];
-        enemy.specialCombatText = this.showCombatText(enemy, saying, 2500, "bone", false, true);
+        enemy.specialCombatText = this.showCombatText(enemy, saying, 2500, "bone", false, false);
         enemy.stateMachine.setState(States.DESTROY);
         this.time.delayedCall(2000, () => {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);

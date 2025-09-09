@@ -83,7 +83,7 @@ function getLevel(ascean: Accessor<Ascean>): number {
 
 export default function Roster({ arena, ascean, setArena, base, game, settings, instance }: { arena: Accessor<ArenaRoster>; ascean: Accessor<Ascean>; setArena: Setter<ArenaRoster>; base: boolean; game: Accessor<GameState>; settings: Accessor<Settings>; instance: IRefPhaserGame }) {
     const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: getLevel(ascean), mastery: "constitution", id: "" });
-    const [switchScene, setSwitchScene] = createSignal<any>(ARENA);
+    const [switchScene, setSwitchScene] = createSignal<any>(UNDERGROUND);
     const [lootDrop, setLootDrop] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
     const [opponents, setOpponents] = createSignal<number>(1);

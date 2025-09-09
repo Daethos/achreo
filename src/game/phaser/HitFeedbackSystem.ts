@@ -1,9 +1,10 @@
 import { randomFloatFromInterval } from "../../models/equipment";
 import { Combat } from "../../stores/combat";
-import { masteryColor, masteryNumber } from "../../utility/styling";
+import { masteryNumber } from "../../utility/styling";
 import { Play } from "../main";
 import { HitProfile, HitProfiles } from "./HitProfiles";
 import { screenShake } from "./ScreenShake";
+// import ParticlesAlongBounds from 'phaser3-rex-plugins/plugins/particlesalongbounds.js';
 
 type HitFeedbackContext = {
     source: string;
@@ -51,6 +52,7 @@ export function getHitFeedbackContext(combat: Combat, pos: Phaser.Math.Vector2, 
 export class HitFeedbackSystem {
     private scene: Play;
     private profiles: Record<string, HitProfile>;
+    private zooming: boolean = false;
     private blood: Phaser.GameObjects.Particles.ParticleEmitter;
     private earth: Phaser.GameObjects.Particles.ParticleEmitter;
     private fire: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -64,7 +66,8 @@ export class HitFeedbackSystem {
     private heal: Phaser.GameObjects.Particles.ParticleEmitter;
     private parry: Phaser.GameObjects.Particles.ParticleEmitter;
     private trail: Phaser.GameObjects.Particles.ParticleEmitter;
-    private trailEvent: Phaser.Time.TimerEvent | undefined;
+    // private trailEvent: Phaser.Time.TimerEvent | undefined;
+    // private caerenic : Phaser.GameObjects.Particles.ParticleEmitter;
 
     constructor(scene: Play) {
         this.scene = scene;
@@ -114,7 +117,6 @@ export class HitFeedbackSystem {
         this.emitParticles(pos, damageType, critical, glancing, parry);
         screenShake(this.scene);
 
-
         this.scene.sound.play(key, { volume, rate });
     };
 
@@ -146,22 +148,17 @@ export class HitFeedbackSystem {
         });
     };
 
-    // private hitStop(duration: number) {
-    //     const timing = this.scene.matter.world.engine.timing;
-    //     timing.timeScale = 0.1;
-    //     this.scene.time.delayedCall(duration, () => {
-    //         timing.timeScale = 1;
-    //     }, undefined, this);
-    // };
-
     private zoom(zoom: number, duration = 300, ease: any) {
+        if (this.zooming) return;
+        this.zooming = true;
         const cam = this.scene.cameras.main;
         this.scene.tweens.add({
             targets: cam,
             zoom: cam.zoom * zoom,
             ease, // : Phaser.Math.Easing.Elastic.Out, // Phaser.Math.Easing.Elastic.InOut,
             duration,
-            yoyo: true
+            yoyo: true,
+            onComplete: () => this.zooming = false
         });
     };
 
@@ -404,6 +401,18 @@ export class HitFeedbackSystem {
             speed: { min: -40, max: 40 },
             angle: { min: 0, max: 360 }
         }).setScrollFactor(1).setDepth(100).stop();
+
+        // this.caerenic = ParticlesAlongBounds(this.scene.player, {
+        //     textureKey: "splash",
+        //     lifespan: 750,
+        //     scale: { start: 0.0, end: 0.03 },
+        //     alpha: { start: 1.0, end: 0 },
+        //     blendMode: "ADD",
+        //     tint: masteryNumber(this.scene.player.ascean.mastery),
+        //     spread: 20,
+        //     stepRate: 10,
+        // }).setScrollFactor(1).setDepth(99)
+        // console.log(this.caerenic);
     };
 
     public emitParticles(pos: Phaser.Math.Vector2, type: string, crit: boolean, glance: boolean, parry: boolean): void {

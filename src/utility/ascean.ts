@@ -597,13 +597,24 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     newAttributes.equipCaeren = newAttributes.totalCaeren - newAttributes.rawCaeren;
     newAttributes.equipKyosir = newAttributes.totalKyosir - newAttributes.rawKyosir;
 
-    newAttributes.healthTotal = HEALTH + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
+    newAttributes.healthTotal = baseHealth(ascean.level) + ((newAttributes.totalConstitution * ascean.level) + ((newAttributes.constitutionMod + Math.round((newAttributes.caerenMod + newAttributes.strengthMod) / 2)) * ascean.level));
     newAttributes.initiative = INITIATIVE + (newAttributes.agilityMod + newAttributes.achreMod);
     newAttributes.stamina = STAMINA + (newAttributes.rawConMod + newAttributes.rawStrMod + newAttributes.rawAgiMod); // Use the raw and mod it (newAttributes.rawConstitution - 10) / 2
     newAttributes.grace = GRACE + (newAttributes.rawAchMod + newAttributes.rawCaerMod + newAttributes.rawKyoMod); // Use the raw and mod it
     newAttributes.stamina *= (ascean.origin === RACE.QUOREITE ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHEO) ? 1.05 : 1);
     newAttributes.grace *= (ascean.origin === RACE.FYERS ? 1.1 : (ascean.origin === RACE.LIIVI || ascean.origin === RACE.NOTHOS) ? 1.05 : 1);
     return newAttributes;
+};
+
+function baseHealth(level: number): number {
+    switch (level) {
+        case 0.25:
+            return HEALTH / 4;
+        case 0.5:
+            return HEALTH / 2;
+        default:
+        return HEALTH;
+    };
 };
 
 function origin(weapon: any, ascean: Ascean): Equipment {

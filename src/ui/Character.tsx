@@ -454,16 +454,16 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const efficient = () => talent().efficient;
                         const enhanced = () => talent().enhanced;
                         const cost = () => efficient()
-                            ? (spec?.special.includes("Physical") || spec?.special.includes("Stance")) 
+                            ? (physical || stance) 
                                 ? spec?.cost
                                 : COST[spec?.cost.split(" Grace")[0] as keyof typeof COST]
                             : spec?.cost;
                         const cooldown = () => efficient()
-                            ? (spec?.special.includes("Physical") || spec?.special.includes("Stance")) 
+                            ? (physical || stance) 
                                 ? spec?.cooldown 
                                 : COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
                             : spec?.cooldown;
-                        console.log("physical:", physical, "special:", special, "cost:", cost(), "cooldown:", cooldown(), spec?.cost, stance);
+                        // console.log("physical:", physical, "special:", special, "cost:", cost(), "cooldown:", cooldown(), spec?.cost, stance);
                         return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
@@ -472,9 +472,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>
                                 {spec?.description} <span style={{ color: "gold" }}>{enhanced() ? spec?.talent.split(".")[1] : ""}</span>
                             </p>
-                            <p style={{ color: spec?.special.includes("Stance") ? "#A19D94" : spec?.special.includes("Physical") ? "green" : "aqua" }}>
+                            <p style={{ color: stance ? "#A19D94" : physical ? "green" : "aqua" }}>
                                 {spec?.time} {spec?.special} <br />
-                                <span style={{ color: efficient() ? "gold" : spec?.special.includes("Stance") ? "#A19D94" : spec?.special.includes("Physical") ? "green" : "aqua" }}>{cost()}. {cooldown()} Cooldown</span> <br />
+                                <span style={{ color: efficient() ? "gold" : stance ? "#A19D94" : physical ? "green" : "aqua" }}>{cost()}. {cooldown()} Cooldown</span> <br />
                             </p>
                             </div>
                         </div>

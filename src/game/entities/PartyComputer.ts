@@ -1712,5 +1712,6 @@ export default class Party extends Entity {
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);
+        this.updatePositionHistory();
     };
 };

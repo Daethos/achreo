@@ -1307,7 +1307,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("record-loss", (e:Combat) => recordLoss(e));
         EventBus.on("record-win", (e: { record: Combat; experience: LevelSheet; }) => recordWin(e.record, e.experience));
         EventBus.on("save-health", saveHealth);
-        EventBus.on("enemy-combat-text", (e: { computerSpecialDescription: string; }) => EventBus.emit("add-combat-logs", { ...combat(), computerActionDescription: e.computerSpecialDescription }));
+        EventBus.on("enemy-combat-text", (e: { computerSpecialDescription: string; }) => EventBus.emit("add-combat-logs", { ...combat(), computerSpecialDescription: e.computerSpecialDescription }));
         EventBus.on("special-combat-text", (e: { playerSpecialDescription: string; }) => EventBus.emit("add-combat-logs", { ...combat(), playerActionDescription: e.playerSpecialDescription }));
         EventBus.on("update-currency", (currency: { silver: number; gold: number; }) => {
             const update = {

@@ -26,7 +26,7 @@ export function screenShake(scene: Phaser.Scene, duration = 32, intensity = 0.00
         };
     }, delta);
 };
-export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.002) { // 48 || 0.0004
+export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.0015) { // 48 || 0.0004
     scene.cameras.main.shake(duration, intensity);
 };
 export function walk(scene: any, duration = 32, intensity = 0.000675) { // 32 || 0.0003

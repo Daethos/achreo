@@ -1011,8 +1011,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             });
             const efficient = (this.scene.talents.talents?.[button.name.toLowerCase() as keyof typeof this.scene.talents.talents])?.efficient;
             const enhanced = (this.scene.talents.talents?.[button.name.toLowerCase() as keyof typeof this.scene.talents.talents])?.enhanced;
-            const cost = efficient ? COST[action.cost.split(" Grace")[0] as keyof typeof COST] : action.cost;
-            const cooldown = efficient ? COOLDOWN[action.cooldown as keyof typeof COOLDOWN] : action.cooldown;
+            const cost = efficient && action.cost.includes("Grace") ? COST[action.cost.split(" Grace")[0] as keyof typeof COST] : action.cost;
+            const cooldown = efficient && action.cost.includes("Grace") ? COOLDOWN[action.cooldown as keyof typeof COOLDOWN] : action.cooldown;
             const textSuper = this.scene.add.text(0, textTitle?.height + textDescription?.height, `${cost} \n ${action.time} ${action.special} \n ${cooldown} Cooldown ${enhanced ? `\n ${action.talent.split(".")[1]}` : ``}`, {
                 align: "left",
                 color: efficient ? "#ffd700" : STAMINA.includes(button.name.toLowerCase()) ? "#0f0" : "#0cf",

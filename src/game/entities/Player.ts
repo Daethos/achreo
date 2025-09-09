@@ -17,6 +17,7 @@ import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH } from "../../utility/enemy";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { EFFECT } from "../phaser/ScrollingCombatText";
+import { masteryNumber } from "../../utility/styling";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -109,6 +110,7 @@ export default class Player extends Entity {
     hurtTime: number = 0;
     collider: any;
     jumpTime: number = 0;
+    caerenesis: any;
 
     constructor(data: any) {
         const { scene } = data;
@@ -215,6 +217,9 @@ export default class Player extends Entity {
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
         });
         this.beam = new Beam(this);
+
+        // this.generateCaerenesis();
+
         scene.registry.set("player", this);
     };
 
@@ -222,6 +227,37 @@ export default class Player extends Entity {
         EventBus.on("player-ascean-ready", (ascean: Ascean) => this.ascean = ascean);
         EventBus.emit("player-ascean");
         return this.ascean;
+    };
+
+    generateCaerenesis = () => {
+        // const verts = (this.body as any).parts
+        //     .filter((p: any, i: number) => i !== 0 && p.label !== "playerSensor")
+        //     .flatMap((p: any) => p.vertices.map((v: any) => ({ x: v.x, y: v.y })));
+        
+        // const poly = new Phaser.Geom.Polygon(verts);
+        const circ = new Phaser.Geom.Ellipse(0, 0, 16, 32);
+
+        this.caerenesis = this.scene.add.particles(0, 0, "splash", {
+            // follow: this,
+            // followOffset: {x: -265, y: -172.5},
+            speed: 0,
+            lifespan: { min: 400, max: 1000 },
+            scale: { start: 0.0, end: 0.02 },
+            alpha: { start: 1.0, end: 0 },
+            blendMode: "ADD",
+            tint: masteryNumber(this.ascean.mastery),
+            frequency: 300,
+            rotate: {
+                min: 0,
+                max: 360
+            },
+            quantity: 24,
+            emitZone: {
+                type: "edge",
+                source: circ,
+                quantity: 24
+            }
+        }).setDepth(99).stop();
     };
 
     speedUpdate = (e: Ascean) => {
@@ -260,11 +296,13 @@ export default class Player extends Entity {
             this.setGlow(this.spriteWeapon, true, "weapon");
             this.setGlow(this.spriteShield, true, "shield"); 
             this.adjustSpeed(PLAYER.SPEED.CAERENIC * enhanced);
+            // if (this.checkTalentEnhanced("caerenic")) {this.caerenesis.start();this.glowTalent=true;};
         } else {
             this.setGlow(this, false);
             this.setGlow(this.spriteWeapon, false, "weapon")
             this.setGlow(this.spriteShield, false, "shield"); 
             this.adjustSpeed(-PLAYER.SPEED.CAERENIC * enhanced);
+            // if (this.checkTalentEnhanced("caerenic")) {this.caerenesis.stop();this.glowTalent=false;};
         };
     };
 
@@ -1017,12 +1055,8 @@ export default class Player extends Entity {
 
     combatChecker = (state: boolean) => {
         if (state) return;
-        if (this.inCombat) {
-            if (this.isComputer) {
-                this.playerMachine.stateMachine.setState(States.CHASE);
-            } else {
-                this.playerMachine.stateMachine.setState(States.IDLE);
-            };
+        if (this.inCombat && this.isComputer) {
+            this.playerMachine.stateMachine.setState(States.CHASE);
         } else {
             this.playerMachine.stateMachine.setState(States.IDLE);
         };
@@ -1564,11 +1598,12 @@ export default class Player extends Entity {
     };
 
     update(dt: number) {
-        this.handleConcerns();
         this.handleActions();
-        this.handleMovement();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);
+        this.handleConcerns();
+        this.handleMovement();
+        this.updatePositionHistory();
     };
 };

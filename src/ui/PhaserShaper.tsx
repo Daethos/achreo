@@ -443,7 +443,7 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
             <div style={font("1em")}>
             <button class="highlight" onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), (dimensions().WIDTH > 1200 ? 2 : 0.5)))}>-</button>
             Zoom: ({settings().positions.camera?.zoom})
-            <button class="highlight" onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), (dimensions().WIDTH > 1200 ? 3 : 1.5)))}>+</button></div>
+            <button class="highlight" onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), (dimensions().WIDTH > 1200 ? 3 : 2)))}>+</button></div>
         </Collapse>
     
         <h1 onClick={() => resetShaper("castbar", !shaper().castbar)} style={font("1.25em")}>Castbar</h1>

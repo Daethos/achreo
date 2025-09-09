@@ -1,11 +1,34 @@
+import { States } from "../game/phaser/StateMachine";
+
+type frame = {[key: string]: string;};
+export const FRAME_KEYS: frame = {
+    "player_climb": "movingVertical",
+    "player_crouch_idle": States.IDLE,
+    "player_idle": States.IDLE,
+    "player_running": States.MOVING,
+    "run_down": "movingVertical",
+    "run_up": "movingVertical",
+    "swim_down": "movingVertical",
+    "swim_up": "movingVertical",
+    "player_health": "prayingCasting",
+    "player_hurt": States.HURT,
+    "player_pray": "prayingCasting",
+    "player_attack_1": States.ATTACK,
+    "player_slide": States.DODGE,
+    "player_jump": States.JUMP,
+    "player_attack_6": States.PARRY,
+    "player_attack_3": States.POSTURE,
+    "player_roll": States.ROLL,
+    "player_attack_2": States.THRUST,
+};
 export const WEAPON_ANIMATION_FRAME_CONFIG = {
     prayingCasting: {
         flipX: {
-            1: { origin: [0.65, 1.5], angle: -175 },
+            // 1: { origin: [0.65, 1.5], angle: -175 },
             3: { origin: [-0.3, 0.65], angle: -225 }
         },
         noFlipX: {
-            1: { origin: [-0.75, 0.65], angle: -275 },
+            // 1: { origin: [-0.75, 0.65], angle: -275 },
             3: { origin: [0.35, 1.3], angle: -225 }
         }
     },
@@ -116,15 +139,15 @@ export const WEAPON_ANIMATION_FRAME_CONFIG = {
         },
         noBow: {
             flipX: {
-                1: { origin: [0.25, 1.1], angle: 55 },
-                2: { origin: [0.5, 0.75], angle: 40 },
-                3: { origin: [0, 1.2], angle: -220 },
-                4: { origin: [0, 1.4], angle: -235 },
+                1: { origin: [0, 1.1], angle: 30 },
+                2: { origin: [0.1, 0.75], angle: -15 },
+                3: { origin: [-0.1, 1.2], angle: -90 },
+                4: { origin: [0, 1.4], angle: -215 },
                 5: { angle: -250 }
             },
             noFlipX: {
-                1: { origin: [0, 0.5], angle: -165 },
-                2: { origin: [0, 1], angle: -45 },
+                1: { origin: [0, 0.75], angle: -165 },
+                2: { origin: [0.25, 1], angle: -90 },
                 3: { origin: [-0.25, 1.1], angle: 15 },
                 4: { origin: [-0.1, 1.2], angle: -205 },
                 5: { angle: -175 }

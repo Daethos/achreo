@@ -1,12 +1,14 @@
 import Enemy from "../entities/Enemy";
 import Player from "../entities/Player";
 import { Entity } from "../main";
+import { Hud } from "../scenes/Hud";
 import { ObjectPool } from "./ObjectPool";
 
 export const BONE = "bone";
 export const CAST = "cast";
 export const DAMAGE = "damage";
 export const EFFECT = "effect";
+export const GLANCE = "glancing";
 export const HEAL = "heal";
 export const HUSH = "hush";
 export const TENDRIL = "tendril";
@@ -24,11 +26,11 @@ export type CombatText = {
 
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private color: string;
-    private text: Phaser.GameObjects.Text;
     private duration: number;
     private timerTime: number;
     private constant: boolean;
     private pool: ObjectPool<ScrollingCombatText>;
+    public text: Phaser.GameObjects.Text;
 
     constructor(scene: Phaser.Scene, pool: ObjectPool<ScrollingCombatText>, x: number = 0, y: number = 0) {
         super(scene, x, y);
@@ -108,6 +110,22 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         });
     };
 
+    public write(text: string, color?: string) {
+        const context = color 
+            ? color : text.includes("Glancing") 
+            ? GLANCE : text.includes("Critical") 
+            ? DAMAGE : (text.includes("desperation") || text.includes("heals") || text.includes("reconstitutes"))
+            ? HEAL : text.includes("Cast") 
+            ? EFFECT : text.includes("Prayer") 
+            ? TENDRIL : BONE
+        this.color = this.setColor(context);
+        this.text.setText(text).setColor(this.color).setFontSize("20px");
+        this.timerTime = 0;
+        this.duration = 2000;
+        this.constant = false;
+        (this.scene as Hud).combatText(this);
+    };
+
     private setColor = (context: string) => {
         switch (context) {
             case BONE:
@@ -118,6 +136,8 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
                 return "red";
             case EFFECT:
                 return "gold";
+            case GLANCE:
+                return "lightblue";
             case HEAL:
                 return "green";
             case HUSH:
@@ -138,7 +158,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         }; 
     };
 
-    private release(): void {
+    public release(): void {
         this.scene.tweens.add({
             targets: this.text,
             duration: Phaser.Math.Between(500, 750),
@@ -146,6 +166,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             onComplete: () => {
                 this.active = false;
                 this.visible = false;
+                this.setScrollFactor(1);
                 this.setPosition(-1000, -1000);
                 this.text.setAlpha(1).setScale(1);
                 this.pool.release(this);

@@ -488,7 +488,9 @@ export default class Enemy extends Entity {
     };
 
     checkHurt = () => {
-        if (!(this.isSuffering() || this.isTrying() || this.isCasting || this.isPraying || this.isContemplating)) {
+        if (this.isSuffering() || this.isPraying) return;
+        const chance = Math.random() > 0.9;
+        if (!(this.isTrying() || this.isCasting || this.isContemplating) || chance) {
             this.isHurt = true;
             this.stateMachine.setState(States.HURT);
         };
@@ -799,6 +801,7 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
         this.scene.combatEngaged(true);
         this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
+        this.scene.hud.showCombatHud(`${this.ascean.name} Engaged`, EFFECT);
         this.ping();
     };
 
@@ -814,6 +817,7 @@ export default class Enemy extends Entity {
         if (this.scene.combat === false) this.scene.player.targetEngagement(this.enemyID); // player.inCombat
         this.scene.combatEngaged(true);
         this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
+        this.scene.hud.showCombatHud(`${this.ascean.name} Engaged`, EFFECT);
         this.ping();
     };
 
@@ -1039,6 +1043,7 @@ export default class Enemy extends Entity {
             this.scene.combatEngaged(true);
         };
         this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
+        this.scene.hud.showCombatHud(`${this.ascean.name} Engaged`, EFFECT);
         this.ping();
     };
 
@@ -1246,11 +1251,11 @@ export default class Enemy extends Entity {
             } else {
                 const suture = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.playerCaerenicNeg() * this.scene.combatManager.playerStalwart() * (this.levelModifier() ** 2)) * (1 + power / SUTURE);
                 let newComputerHealth = Math.min(this.health + suture, this.combatStats.attributes.healthTotal);
-                const computerActionDescription = `${this.ascean?.name} sutured ${suture} health from you, absorbing ${suture}.`;
+                const computerSpecialDescription = `${this.ascean?.name} sutures ${suture} health from you, absorbing ${suture}.`;
                 const ratio = suture / this.scene.state.playerHealth * 100;
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: "player", value: -ratio, id: this.enemyID } });
                 this.scene.combatManager.combatMachine.action({ type: HEALTH, data: { key: NAME, value: newComputerHealth, id: this.enemyID } });
-                EventBus.emit("add-combat-logs", { ...this.scene.state, computerActionDescription });
+                EventBus.emit("add-combat-logs", { ...this.scene.state, computerSpecialDescription });
             };
         } else { // CvC
             const suture = Math.round(this.mastery() * this.scene.combatManager.computerCaerenicPro(this) * this.scene.combatManager.computerCaerenicNegID(id) * this.scene.combatManager.computerStalwartID(id) * (this.levelModifier() ** 2)) * (1 + power / SUTURE);
@@ -1365,7 +1370,7 @@ export default class Enemy extends Entity {
     };
 
     onDeathEnter = () => {
-        this.scene.showCombatText(this, `${this.ascean.name} has perished in combat!`, 3000, BONE, true, true); 
+        this.scene.showCombatText(this, `${this.ascean.name} has perished in combat!`, 3000, BONE, false, true); 
         this.scene.tweens.add({
             targets: [this],
             alpha: 0,
@@ -1597,60 +1602,35 @@ export default class Enemy extends Entity {
         this.enemyAnimation();
         // this.scene.navMesh.enableDebug();
         this.chaseTimer = this.scene.time.addEvent({
-            delay: 1500,
+            delay: 1000,
             callback: () => {
-                // this.scene.navMesh.debugDrawClear();
-                if (!this.currentTarget || !this.currentTarget.body || !this.currentTarget.position || !this.scene?.navMesh || this.isDeleting) {
-                    this.path = [];
-                    return;
-                };
-                this.path = this.scene.navMesh.findPath(this.position, this.currentTarget.position);
-                if (this.path && this.path.length > 1) {
-                    if (!this.isPathing) this.isPathing = true;
-                    const nextPoint = this.path[1];
-                    this.nextPoint = nextPoint;
-                    // this.scene.navMesh.debugDrawPath(this.path, 0xffd900);
-                    const pathDirection = new Phaser.Math.Vector2(this.nextPoint.x, this.nextPoint.y);
-                    this.pathDirection = pathDirection;
-                    this.pathDirection.subtract(this.position);
-                    this.pathDirection.normalize();
-                    const distanceToNextPoint = Math.sqrt((this.nextPoint.x - this.position.x) ** 2 + (this.nextPoint.y - this.position.y) ** 2);
-                    if (distanceToNextPoint < 10) {
-                        this.path.shift();
-                    };
-                };
+                this.calculatePath();
             },
             callbackScope: this,
             loop: true
         }); 
     }; 
     onChaseUpdate = (_dt: number) => {
-        if (!this.currentTarget || !this.currentTarget.body  || !this.currentTarget.position) {
+        if (this.shouldLeash()) {
             this.stateMachine.setState(States.LEASH);
             return;
         };
-        const rangeMultiplier = this.rangedDistanceMultiplier(3);
-        const direction = this.currentTarget.position.subtract(this.position);
+
+        const direction = this.currentTarget.position.clone().subtract(this.position);
         const distance = direction.length();
-        if (Math.abs(this.originPoint.x - this.position.x) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier 
-            || Math.abs(this.originPoint.y - this.position.y) > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier 
-            || (!this.inCombat && !this.inComputerCombat)
-            || distance > RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier) 
-        {
-            this.stateMachine.setState(States.LEASH);
-            return;
-        };  
-        if (distance >= 50 * rangeMultiplier) { // was 75 || 100
-            if (this.path && this.path.length > 1) {
-                this.setVelocity(this.pathDirection.x * (this.speed) * (this.isClimbing ? 0.65 : 1), this.pathDirection.y * (this.speed) * (this.isClimbing ? 0.65 : 1)); // 2.5
-            } else {
-                if (this.isPathing) this.isPathing = false;
-                direction.normalize();
-                this.setVelocity(direction.x * (this.speed) * (this.isClimbing ? 0.65 : 1), direction.y * (this.speed) * (this.isClimbing ? 0.65 : 1)); // 2.5
-            };
-        } else {
+
+        const rangeMultiplier = this.rangedDistanceMultiplier(3);
+        if (distance < 55 * rangeMultiplier) { // was 75 || 100
             this.stateMachine.setState(States.COMBAT);
+            return;
         };
+
+        const moveDirection = this.pathingVector() || direction.normalize();
+        const climb = this.isClimbing ? 0.65 : 1;
+        this.setVelocity(
+            moveDirection.x * this.speed * climb,
+            moveDirection.y * this.speed * climb
+        );
         this.enemyAnimation();
     };
     onChaseExit = () => {
@@ -1663,10 +1643,58 @@ export default class Enemy extends Entity {
         };
     };
 
+    calculatePath = () => {
+        // this.scene.navMesh.debugDrawClear();
+        if (!this.currentTarget || !this.currentTarget.body || !this.currentTarget.position || !this.scene?.navMesh || this.isDeleting) {
+            this.path = [];
+            return;
+        };
+        this.path = this.scene.navMesh.findPath(this.position, this.currentTarget.position);
+    };
+
+    pathingVector = () => {
+        if (!this.path || this.path.length <= 1) {
+            if (this.isPathing) this.isPathing = false;
+            return undefined;
+        }
+
+        if (!this.isPathing) this.isPathing = true;
+        let nextPoint = this.path[1];
+        const distanceToNextPoint = Phaser.Math.Distance.Between(this.position.x, this.position.y, nextPoint.x, nextPoint.y);
+
+        if (distanceToNextPoint < 10) {
+            this.path.shift();
+            if (this.path.length <= 1) {
+                this.isPathing = false;
+                return undefined;
+            };
+            nextPoint = this.path[1];
+        };
+        
+        return new Phaser.Math.Vector2(nextPoint.x, nextPoint.y)
+            .subtract(this.position)
+            .normalize();
+    };
+
+    shouldLeash = (): boolean => {
+        const rangeMultiplier = this.rangedDistanceMultiplier(3);
+        const maxRange = RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier;
+
+        const isTooFarFromOrigin = 
+            Math.abs(this.originPoint.x - this.position.x) > maxRange ||
+            Math.abs(this.originPoint.y - this.position.y) > maxRange;
+
+        const isTargetInvalidOrTooFar = 
+            !this.currentTarget || !this.inCombat && !this.inComputerCombat ||
+            this.currentTarget.position.distance(this.position) > maxRange;
+
+        return isTargetInvalidOrTooFar || isTooFarFromOrigin;
+    };
+
     computerEnemies = () => this.enemies.some((e: Enemy) => e.name === "enemy");
 
-    swingTime = (): number => {
-        return Math.max(0.3, 1 - (this.ascean.level - 1) * 0.075) * this.swingTimer; // 1 / Math.log2(this.ascean.level + 1);
+    swingTime = (): number => { // new algo
+        return Math.max(0.1, 1 - (this.ascean.level - 1) * 0.09) * this.swingTimer;
     };
 
     onCombatEnter = () => {
@@ -1675,9 +1703,8 @@ export default class Enemy extends Entity {
             this.inComputerCombat = false;
             return;
         };
-        if (this.inCombat && this.scene.state.newPlayerHealth <= 0) {
-            this.inCombat = false;
-        };
+        if (this.inCombat && this.scene.state.newPlayerHealth <= 0) this.inCombat = false;
+        
         if (this.inComputerCombat && this.currentTarget?.name === "enemy" && this.currentTarget?.health <= 0) {
             this.clearComputerCombatWin(this.currentTarget.enemyID);
             if (!this.computerEnemies()) this.inComputerCombat = false;
@@ -2193,7 +2220,7 @@ export default class Enemy extends Entity {
 
     randomHeal = () => this.stateMachine.setState(HEALS[Math.floor(Math.random() * HEALS.length)]);
 
-    castHeal = (power: number) => {
+    castHeal = (power: number, type: string) => {
         this.enemySound("phenomena", true);
         if (this.mindState.healPriority > 0) {
             const selfRatio = this.health / this.ascean.health.max;
@@ -2210,7 +2237,7 @@ export default class Enemy extends Entity {
             };
             if (mostInjured && lowestRatio < selfRatio) {
                 if (mostInjured.name === "party") (mostInjured as unknown as Party).playerMachine.heal(power);
-                if (mostInjured.name === "enemy") (mostInjured as Enemy).getHeal(power);
+                if (mostInjured.name === "enemy") (mostInjured as Enemy).getHeal(power, type);
                 if (mostInjured.name === "player") (mostInjured as unknown as Player).playerMachine.getHeal(power * 100);
                 
                 // if (mostInjured.name !== "player") this.scene.combatManager.checkPlayerFocus((mostInjured as Enemy | Party).enemyID, this.health);
@@ -2218,16 +2245,16 @@ export default class Enemy extends Entity {
                 return;
             };
         };
-        this.getHeal(power);
+        this.getHeal(power, type);
     };
 
-    getHeal = (power: number) => {
+    getHeal = (power: number, type: string) => {
         const heal = Math.round(this.ascean.health.max * power);
         const total = Math.min(this.health + heal, this.ascean.health.max);
 
         if (this.inCombat) {
             if (this.isCurrentTarget) {
-                this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID }, type: HEALTH });
+                this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: total, id: this.enemyID, type }, type: HEALTH });
             } else {
                 this.health = total;
                 this.updateHealthBar(total);
@@ -2278,7 +2305,7 @@ export default class Enemy extends Entity {
         if (this.castingSuccess === true) { 
             this.particleEffect = this.scene.particleManager.addEffect("achire", this, "achire", true);
             if (this.inCombat) EventBus.emit("enemy-combat-text", {
-                text: `${this.ascean.name}'s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
+                computerSpecialDescription: `${this.ascean.name}'s Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.castingSuccess = false;
             this.enemySound("wild", true);
@@ -2322,19 +2349,12 @@ export default class Enemy extends Entity {
         this.setVelocityX(x);
         this.flickerCaerenic(500);
         this.scene.time.delayedCall(500, () => {
-            // Define the map boundaries (you can derive these dynamically from your tilemap or world bounds)
             const mapBounds = {
                 minX: this.chunkX + 32,
                 maxX: CHUNK_SIZE - 32,
                 minY: this.chunkY + 32,
                 maxY: CHUNK_SIZE - 32
             };
-            // const mapBounds = {
-            //     minX: 32,
-            //     maxX: this.scene.map.widthInPixels - 32, // Maximum width of the map
-            //     minY: 32,
-            //     maxY: this.scene.map.heightInPixels - 32  // Maximum height of the map
-            // };
             const clampedX = Phaser.Math.Clamp(this.x, mapBounds.minX, mapBounds.maxX);
             const clampedY = Phaser.Math.Clamp(this.y, mapBounds.minY, mapBounds.maxY);
             this.setPosition(clampedX, clampedY);
@@ -2420,15 +2440,7 @@ export default class Enemy extends Entity {
     onDesperationExit = () => {
         if (this.health <= 0) return;
         this.scene.showCombatText(this, "Desperation", PLAYER.DURATIONS.HEALING / 2, CAST, false, true);
-        this.castHeal(0.5);
-        // if (!this.isGlowing && !this.isCaerenic) this.checkCaerenic(true);
-        // this.scene.time.delayedCall(PLAYER.DURATIONS.DESPERATION, () => {
-            // if (this.health <= 0) return;
-            // if (this.isGlowing && !this.isCaerenic) this.checkCaerenic(false);
-            // this.count.stunned += 1;
-            // this.isStunned = true;
-            // this.stateMachine.setState(States.STUNNED);
-        // }, undefined, this);
+        this.castHeal(0.5, "heals in desperation");
     };
 
     onFearingEnter = () => {
@@ -2498,9 +2510,7 @@ export default class Enemy extends Entity {
         };
     };
     onHealingExit = () => {
-        if (this.castingSuccess === true) {
-            this.castHeal(0.25);
-        };
+        if (this.castingSuccess === true) this.castHeal(0.25, "heals");
         this.stopCasting("Countered Healing");
     };
     onHookEnter = () => {
@@ -2684,7 +2694,7 @@ export default class Enemy extends Entity {
         this.scene.showCombatText(this, "Leaping!", 900, DAMAGE);
         if (this.inCombat) {
             EventBus.emit("enemy-combat-text", {
-                computerSpecialDescription: `${this.ascean.name} launches through the air!`
+                computerSpecialDescription: `${this.ascean.name} leaps through the air!`
             });
         };
     };
@@ -2779,7 +2789,7 @@ export default class Enemy extends Entity {
             if (this.castingSuccess === true && this.checkPlayerResist() === true) {
                 this.scene.combatManager.paralyze(this.targetID);
                 if (this.inCombat) EventBus.emit("enemy-combat-text", {
-                    text: `${this.ascean.name} paralyzes you for several seconds!`
+                    computerSpecialDescription: `${this.ascean.name} paralyzes you for several seconds!`
                 });
             };
         } else {
@@ -2849,7 +2859,7 @@ export default class Enemy extends Entity {
         if (this.castingSuccess === true) {
             this.particleEffect =  this.scene.particleManager.addEffect("quor", this, "quor", true);
             if (this.inCombat) EventBus.emit("enemy-combat-text", {
-                text: `${this.ascean.name}'s Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
+                computerSpecialDescription: `${this.ascean.name}'s Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
             });
             this.castingSuccess = false;
             this.enemySound("freeze", true);
@@ -2886,7 +2896,7 @@ export default class Enemy extends Entity {
             this.reconTimer = undefined;
             return;
         };
-        this.castHeal(0.15);
+        this.castHeal(0.15, "reconstitutes");
         this.channelCount++;
         if (this.channelCount >= 5) {
             this.isCasting = false;
@@ -3028,7 +3038,7 @@ export default class Enemy extends Entity {
                 this.scene.combatManager.useGrace(10);
                 this.scene.combatManager.snare(this.targetID);
                 EventBus.emit("enemy-combat-text", {
-                    computerSpecialDescription: `${this.ascean.name} ensorcels you into a snare!`
+                    computerSpecialDescription: `${this.ascean.name} ensorcels and snares you!`
                 }); 
                 screenShake(this.scene);
             };
@@ -3123,7 +3133,7 @@ export default class Enemy extends Entity {
             };    
         }, undefined, this);
         if (this.inCombat) EventBus.emit("enemy-combat-text", {
-            text: `${this.ascean.name} warps oncoming damage into grace.`
+            computerSpecialDescription: `${this.ascean.name} warps oncoming damage into grace.`
         });
     };
     onAbsorbUpdate = (_dt: number) => {if (!this.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
@@ -3201,7 +3211,7 @@ export default class Enemy extends Entity {
             };    
         }, undefined, this);
         if (this.inCombat) EventBus.emit("enemy-combat-text", {
-            text: `${this.ascean.name} envelops themself, shirking oncoming attacks.`
+            computerSpecialDescription: `${this.ascean.name} envelops themself, shirking oncoming attacks.`
         });
     };
     onEnvelopUpdate = (_dt: number) => {if (!this.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
@@ -3433,7 +3443,7 @@ export default class Enemy extends Entity {
             };
         }, undefined, this);
         if (this.inCombat) EventBus.emit("enemy-combat-text", {
-            text: `${this.ascean.name} seeks to moderate oncoming attacks.`
+            computerSpecialDescription: `${this.ascean.name} seeks to moderate oncoming attacks.`
         });
     };
     onModerateUpdate = (_dt: number) => {if (!this.isModerating) this.positiveMachine.setState(States.CLEAN);};
@@ -3729,7 +3739,7 @@ export default class Enemy extends Entity {
             this.isShirking = false;
         }, undefined, this); 
         if (this.inCombat) EventBus.emit("enemy-combat-text", {
-            text: `${this.ascean.name}'s caeren's hush grants reprieve, freeing them.`
+            computerSpecialDescription: `${this.ascean.name}'s caeren's shirk grants reprieve, freeing them.`
         });
     };
     onShirkExit = () => {};
@@ -4593,7 +4603,7 @@ export default class Enemy extends Entity {
             return;
         };
 
-        if (this.isRanged || mind.keepDistance) { // RANGED ENEMY LOGIC
+        if (this.isRanged || (mind.keepDistance && this.ascean.level >= 4)) { // RANGED ENEMY LOGIC
             if (!this.stateMachine.isCurrentState(States.COMBAT) && this.isRanged) this.stateMachine.setState(States.COMBAT);
 
             const thresholdSq = mind.minDistanceSq * ctx.multiplier;
@@ -4788,6 +4798,7 @@ export default class Enemy extends Entity {
         this.stateMachine.update(dt);
         this.positiveMachine.update(dt);
         this.negativeMachine.update(dt);
+        this.updatePositionHistory();
     };
 
     evaluateCombat = () => {  

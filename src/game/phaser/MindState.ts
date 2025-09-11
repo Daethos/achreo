@@ -95,7 +95,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Berserker: {
         healPriority: 0,
         keepDistance: false,
-        chaseThresholdSq: (DISTANCE.CHASE * 0.9) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.9) ** 2,
         callHelp: false,
         summon: false,
@@ -136,7 +136,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Commander: {
         healPriority: 0.3,
         keepDistance: false,
-        chaseThresholdSq: (DISTANCE.CHASE * 1.1) ** 2,
+        chaseThresholdSq: (DISTANCE.CHASE * 1.2) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.3) ** 2,
         callHelp: true,
         summon: true,
@@ -182,7 +182,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Controller: {
         healPriority: 0,
         keepDistance: true,
-        chaseThresholdSq: (DISTANCE.CHASE * 1.0) ** 2,
+        chaseThresholdSq: (DISTANCE.CHASE * 1.1) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.1) ** 2,
         callHelp: false,
         summon: false,
@@ -225,7 +225,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Jester: {
         healPriority: 0,
         keepDistance: false,
-        chaseThresholdSq: (DISTANCE.CHASE * 1.0) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.8) ** 2,
         callHelp: false,
         summon: true,
@@ -256,7 +256,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Priest: {
         healPriority: 1.0,
         keepDistance: true,
-        chaseThresholdSq: (DISTANCE.CHASE * 0.8) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.8) ** 2,
         callHelp: true,
         summon: false,
@@ -297,7 +297,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Ranger: {
         healPriority: 0,
         keepDistance: true,
-        chaseThresholdSq: (DISTANCE.CHASE * 0.9) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.9) ** 2,
         callHelp: true,
         summon: false,
@@ -343,7 +343,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Rogue: {
         healPriority: 0,
         keepDistance: false,
-        chaseThresholdSq: (DISTANCE.CHASE * 0.9) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.9) ** 2,
         callHelp: true,
         summon: false,
@@ -445,7 +445,7 @@ export const MindStates: {[key:string]: MindState;} = {
     Stalwart: {
         healPriority: 0,
         keepDistance: false,
-        chaseThresholdSq: (DISTANCE.CHASE * 0.9) ** 2,
+        chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.9) ** 2,
         callHelp: true,
         summon: false,

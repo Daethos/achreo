@@ -1,6 +1,6 @@
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
-const ATTACKS = ["Attack", "Posture", "Roll", "Parry", "attack", "posture", "roll", "parry", "attacks", "rolls", "postures", "parries", "parried", "rolled", "attacked", "defend", "postured", 
+const ATTACKS = ["Attack", "Posture", "Roll", "Parry", "attack", "posture", "roll", "parry", "attacks", "rolls", "postures", "parries", "parried", "rolled", "attacked", "defend", "postured", "stunned",
     "tshaer", "tshaers", "tshaering", "leap", "leaps", "rush", "rushes", "writhe", "writhes", "writhing", "devour", "devours", "storm", "storming", "storms", "thrust", "thrusts", "Hooks", "hooks", "quorse", "quorses"];
 const QUALITIES = ["(Critical)", "(Glancing)", "Critical)"];
 const CAST = ["chiomic", "confuse", "confusing", "fear", "fearing", "freezes", "multifare", "paralyze", "paralyzes", "polymorph", "polymorphs", "polymorphing", "slow", "slowing", "shirk", "shimmers", "snare", "snares", "snaring", "sprint", "warps"];

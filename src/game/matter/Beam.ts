@@ -67,7 +67,7 @@ export default class Beam {
             followOffset: { x: -this.xOffset, y: -this.yOffset },
             visible: true
         };
-        this.emitter = this.scene.add.particles(player.x, player.y, 'beam', this.settings).setDepth(100);
+        this.emitter = this.scene.add.particles(player.x, player.y, "beam", this.settings).setDepth(100);
         this.scene.add.existing(this.emitter);
         this.emitter.stop();
         this.emitter.setVisible(false);

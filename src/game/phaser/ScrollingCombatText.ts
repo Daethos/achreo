@@ -119,7 +119,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             ? EFFECT : text.includes("Prayer") 
             ? TENDRIL : BONE
         this.color = this.setColor(context);
-        this.text.setText(text).setColor(this.color).setFontSize("20px");
+        this.text.setText(text).setColor(this.color).setFontSize("20px").setFontStyle("italic");
         this.timerTime = 0;
         this.duration = 2000;
         this.constant = false;

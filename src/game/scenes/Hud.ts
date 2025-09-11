@@ -20,6 +20,7 @@ import { Player_Scene } from "../entities/Entity";
 import { Gauntlet } from "./Gauntlet";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { ObjectPool } from "../phaser/ObjectPool";
+import { DebugMonitor } from "../phaser/DebugMonitor";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dimensions = useResizeListener();
 export const X_OFFSET = 12.5;
@@ -57,6 +58,7 @@ export class Hud extends Phaser.Scene {
     textQueue: ScrollingCombatText[] = [];
     lastTweenTime = 0;
     TEXT_BUFFER_TIME = 350;
+    debugMonitor: DebugMonitor;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
@@ -79,15 +81,15 @@ export class Hud extends Phaser.Scene {
         this.joysticks();
         this.postFxPipeline = this.plugins.get("rexHorrifiPipeline");
 
-        this.log();
-        this.desktops();
-        this.swipes();
-        this.startGameScene();
-
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 40; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+        this.log();
+        this.desktops();
+        this.swipes();
+        this.startGameScene();
+        // this.debugMonitor = new DebugMonitor(this);
 
         // Testing Scrolling Combat Text
         // const random = ["Attack (Glancing)", "Thrust (Critical)", "Cast (Slowed)", "Posture (Hit)", "Prayer (Sacrifice)", "Cast (Heal)"];
@@ -637,7 +639,7 @@ export class Hud extends Phaser.Scene {
 
         const sct = this.textQueue.shift() as ScrollingCombatText;
     
-        sct.setPosition(this.gameWidth * 0.01, this.gameHeight * 0.7).setScrollFactor(0);
+        sct.setPosition(this.gameWidth * 0.015, this.gameHeight * 0.7).setScrollFactor(0);
         sct.text.setActive(true).setVisible(true);
 
         const tweenObj = { t: 0 };

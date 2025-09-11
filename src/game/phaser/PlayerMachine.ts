@@ -162,6 +162,10 @@ export default class PlayerMachine {
         };
     };
 
+    specialCombatText = (playerSpecialDescription: string): void => {
+        EventBus.emit("special-combat-text", { playerSpecialDescription });
+    };
+
     health = () => this.scene.state.playerHealth / 20;
 
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
@@ -1195,9 +1199,7 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) { 
             this.player.particleEffect =  this.scene.particleManager.addEffect("achire", this.player, "achire", true);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.ACHIRE, PLAYER.COOLDOWNS.SHORT);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`
-            });
+            this.specialCombatText(`Your Achre and Caeren entwine; projecting it through the ${this.scene.state.weapons[0]?.name}.`);
             this.player.castingSuccess = false;
             this.scene.sound.play("wild", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.ACHIRE, PLAYER.STAMINA.ACHIRE);
@@ -1228,9 +1230,7 @@ export default class PlayerMachine {
                 this.player.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, true);
                 this.player.checkTalentCooldown(States.ASTRAVE, PLAYER.COOLDOWNS.MODERATE);
             };
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You unearth the winds and lightning from the land of hush and tendril.`
-            });
+        this.specialCombatText("You unearth the winds and lightning from the land of hush and tendril.");
             this.player.castingSuccess = false;
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.ASTRAVE, PLAYER.STAMINA.ASTRAVE);
@@ -1247,9 +1247,7 @@ export default class PlayerMachine {
         this.player.castbar.setVisible(true); 
         this.player.setStatic(true);
         this.player.flickerCaerenic(3000); 
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You begin arcing with your ${this.scene.state.weapons[0]?.name}.`
-        });
+        this.specialCombatText(`You begin arcing with your ${this.scene.state.weapons[0]?.name}.`);
     };
     onArcUpdate = (dt: number) => {
         this.player.combatChecker(this.player.isArcing);
@@ -1355,9 +1353,7 @@ export default class PlayerMachine {
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.CHIOMISM) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.confuse(this.player.spellTarget, this.player.checkTalentEnhanced(States.CONFUSE));
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You bleed and laugh at ${this.player.spellName} with tendrils of Chiomyr.`
-            });
+            this.specialCombatText(`You bleed and laugh at ${this.player.spellName} with tendrils of Chiomyr.`);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.CHIOMISM, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play("death", { volume: this.scene.hud.settings.volume });
@@ -1386,9 +1382,7 @@ export default class PlayerMachine {
             this.scene.sound.play("death", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.CONFUSE, PLAYER.STAMINA.CONFUSE);
             screenShake(this.scene);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You confuse ${this.player.spellName}, and they stumble around in a daze.`
-            });
+            this.specialCombatText(`You confuse ${this.player.spellName}, and they stumble around in a daze.`);
         };
         this.player.stopCasting();
     };
@@ -1419,9 +1413,7 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Desperation", PLAYER.DURATIONS.HEALING / 2, HEAL, false, true);
         this.player.checkTalentCost(States.DESPERATION, PLAYER.STAMINA.DESPERATION);
         this.player.flickerCaerenic(PLAYER.DURATIONS.HEALING); 
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes your body.`
-        });
+        this.specialCombatText(`Your caeren shrieks like a beacon, and a hush of ${this.scene.state.weapons[0]?.influences?.[0]} soothes your body.`);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.DESPERATION, PLAYER.COOLDOWNS.LONG);
         const power = this.player.checkTalentEnhanced(States.DESPERATION) ? 100 : 50;
         this.healCheck(power);
@@ -1496,9 +1488,7 @@ export default class PlayerMachine {
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.FEAR, PLAYER.STAMINA.FEAR);
             screenShake(this.scene);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You strike fear into ${this.scene.state.computer?.name}!`
-            });
+            this.specialCombatText(`You strike fear into ${this.scene.state.computer?.name}!`);
         };
         this.player.stopCasting();
     };
@@ -1518,9 +1508,7 @@ export default class PlayerMachine {
     };
     onFrostExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`
-            });
+            this.specialCombatText(`You seize into this world with Nyrolean tendrils, slowing ${this.player.spellName}.`);
             this.chiomism(this.player.spellTarget, (50 + this.mastery()));
             if (this.player.checkTalentEnhanced(States.FROST)) {
                 this.scene.combatManager.snare(this.player.spellTarget);
@@ -1550,9 +1538,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
         if (!this.player.isComputer) this.player.setTimeEvent("fyerusCooldown", PLAYER.COOLDOWNS.SHORT);
         this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You unearth the fires and water from the land of hush and tendril.`
-        });
+        this.specialCombatText("You unearth the fires and water from the land of hush and tendril.");
     };
     onFyerusUpdate = (dt: number) => {
         if (this.player.moving()) this.player.isCasting = false;
@@ -1608,9 +1594,7 @@ export default class PlayerMachine {
     };
     onIlirechExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You rip into this world with Ilian tendrils entwining.`
-            });
+            this.specialCombatText("You rip into this world with Ilian tendrils entwining.");
             this.chiomism(this.player.spellTarget, (100 + this.mastery()));
             if (this.player.checkTalentEnhanced(States.ILIRECH)) {
                 const chance = Phaser.Math.Between(1, 100);
@@ -1669,9 +1653,7 @@ export default class PlayerMachine {
             } else {
                 this.player.aoe = this.scene.aoePool.get("kynisos", 3, false, undefined, true);    
             };
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You unearth the netting of the golden hunt.`
-            });
+            this.specialCombatText("You unearth the netting of the golden hunt.");
             if (!this.player.isComputer) this.player.setTimeEvent("kynisosCooldown", PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
@@ -1699,9 +1681,7 @@ export default class PlayerMachine {
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.KYRISIAN) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.paralyze(this.player.spellTarget);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You bleed and bewitch ${this.player.spellName} with tendrils of Kyrisos.`
-            });
+            this.specialCombatText(`You bleed and bewitch ${this.player.spellName} with tendrils of Kyrisos.`);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.KYRISIAN, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play("spooky", { volume: this.scene.hud.settings.volume });
@@ -1763,9 +1743,7 @@ export default class PlayerMachine {
     };
     onLikyrExit = () => {
         if (this.player.castingSuccess === true) {
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You blend caeren into this world with Likyrish tendrils entwining.`
-            });
+            this.specialCombatText("You blend caeren into this world with Likyrish tendrils entwining.");
             this.suture(this.player.spellTarget, 30);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.LIKYR, PLAYER.COOLDOWNS.MODERATE);
             if (this.player.checkTalentEnhanced(States.LIKYR)) this.scene.combatManager.combatMachine.action({ type: "Prayer", data: "Heal" });
@@ -1804,9 +1782,7 @@ export default class PlayerMachine {
             const chance = Phaser.Math.Between(1, 100);
             const ceiling = this.player.checkTalentEnhanced(States.MAIERETH) ? 50 : 75;
             if (chance > ceiling) this.scene.combatManager.fear(this.player.spellTarget);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You bleed and strike ${this.scene.state.computer?.name} with tendrils of Ma"anre.`
-            });
+            this.specialCombatText(`You bleed and strike ${this.scene.state.computer?.name} with tendrils of Ma'anre.`);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.MAIERETH, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play("spooky", { volume: this.scene.hud.settings.volume });
@@ -1968,9 +1944,7 @@ export default class PlayerMachine {
             if (this.player.checkTalentEnhanced(States.PARALYZE)) this.scene.combatManager.combatMachine.action({ type: "Prayer", data: "Debuff" });
             this.player.castingSuccess = false;
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });        
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You paralyze ${this.scene.state.computer?.name} for several seconds!`
-            });
+            this.specialCombatText(`You paralyze ${this.scene.state.computer?.name} for several seconds!`);
             screenShake(this.scene);
         };
         this.player.stopCasting();
@@ -1992,9 +1966,7 @@ export default class PlayerMachine {
     onPolymorphingExit = () => {
         if (this.player.castingSuccess === true) {
             this.scene.combatManager.polymorph(this.player.spellTarget, this.player.checkTalentEnhanced(States.POLYMORPH));
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You ensorcel ${this.player.spellName}, polymorphing them!`
-            });
+            this.specialCombatText(`You ensorcel ${this.player.spellName}, polymorphing them!`);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.POLYMORPH, PLAYER.COOLDOWNS.SHORT);
             this.player.checkTalentCost(States.POLYMORPH, PLAYER.STAMINA.POLYMORPH);
             this.player.castingSuccess = false;
@@ -2056,9 +2028,7 @@ export default class PlayerMachine {
     onQuorExit = () => {
         if (this.player.castingSuccess === true) {
             this.player.particleEffect =  this.scene.particleManager.addEffect("quor", this.player, "quor", true);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`
-            });
+            this.specialCombatText(`Your Achre is imbued with instantiation, its Quor auguring it through the ${this.scene.state.weapons[0]?.name}.`);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.QUOR, PLAYER.COOLDOWNS.SHORT);
             this.player.checkTalentCost(States.QUOR, PLAYER.STAMINA.QUOR);
             this.player.castingSuccess = false;
@@ -2133,9 +2103,7 @@ export default class PlayerMachine {
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.ROOT, PLAYER.COOLDOWNS.SHORT);
             this.player.checkTalentCost(States.ROOT, PLAYER.STAMINA.ROOT);
             if (this.player.checkTalentEnhanced(States.ROOT)) this.scene.combatManager.combatMachine.action({ type: "Prayer", data: "Silence" });
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You ensorcel ${this.player.spellName}, rooting them!`
-            });
+            this.specialCombatText(`You ensorcel ${this.player.spellName}, rooting them!`);
         };
         this.player.stopCasting();
     };
@@ -2167,9 +2135,7 @@ export default class PlayerMachine {
             this.player.checkTalentCost(States.SLOW, PLAYER.STAMINA.SLOW);
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.SLOW, PLAYER.COOLDOWNS.SHORT);
             const name = this.scene.combatManager.combatant(this.player.spellTarget)?.ascean.name;
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You ensorcel ${name}, slowing them!`
-            });
+            this.specialCombatText(`You ensorcel ${name}, slowing them!`);
             screenShake(this.scene);
             this.player.spellTarget = "";
         };
@@ -2222,9 +2188,7 @@ export default class PlayerMachine {
             this.player.castingSuccess = false;
             this.scene.sound.play("debuff", { volume: this.scene.hud.settings.volume });
             screenShake(this.scene);
-            EventBus.emit("special-combat-text", {
-                playerSpecialDescription: `You ensorcel ${this.player.spellName}, snaring them!`
-            });
+            this.specialCombatText(`You ensorcel ${this.player.spellName}, snaring them!`);
         };
         this.player.stopCasting();
     };
@@ -2275,9 +2239,7 @@ export default class PlayerMachine {
                 if (this.player.negationName === States.ABSORB) this.player.negationName = "";
             };    
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You warp oncoming damage into grace.`
-        });
+        this.specialCombatText("You warp oncoming damage into grace.");
     };
     onAbsorbUpdate = (_dt: number) => {if (!this.player.isAbsorbing) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2310,9 +2272,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.CHIOMIC, () => {
             this.player.isChiomic = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You mock and confuse your surrounding foes.`
-        });
+        this.specialCombatText("You mock and confuse your surrounding foes.");
     };
     onChiomicUpdate = (_dt: number) => {if (this.player.isChiomic === false) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2327,9 +2287,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.DISEASE, () => {
             this.player.isDiseasing = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You swirl such sweet tendrils which wrap round and reach to writhe.`
-        });
+        this.specialCombatText("You swirl such sweet tendrils which wrap round and reach to writhe.");
     };
     onDiseaseUpdate = (_dt: number) => {if (this.player.isDiseasing === false) this.positiveMachine.setState(States.CLEAN);};
     onDiseaseExit = () => this.player.aoe.cleanAnimation(this.scene);
@@ -2345,9 +2303,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.HOWL, () => {
             this.player.isHowling = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You howl, it's otherworldly nature stunning nearby foes.`
-        });
+        this.specialCombatText("You howl, it's otherworldly nature stunning nearby foes.");
     };
     onHowlUpdate = (_dt: number) => {if (this.player.isHowling === false) this.positiveMachine.setState(States.CLEAN);};
     onHowlExit = () => this.player.aoe.cleanAnimation(this.scene);
@@ -2373,9 +2329,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };    
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You envelop yourself, shirking oncoming attacks.`
-        });
+        this.specialCombatText("You envelop yourself, shirking oncoming attacks.");
     };
     onEnvelopUpdate = (_dt: number) => {if (!this.player.isEnveloping) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2406,9 +2360,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.FREEZE, () => {
             this.player.isFreezing = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You freeze nearby foes.`
-        });
+        this.specialCombatText("You freeze nearby foes.");
     };
     onFreezeUpdate = (_dt: number) => {if (!this.player.isFreezing) this.positiveMachine.setState(States.CLEAN);};
     onFreezeExit = () => {
@@ -2435,9 +2387,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You wrack malicious foes with the hush of their own attack.`
-        });
+        this.specialCombatText("You wrack malicious foes with the hush of their own attack.");
     };
     onMaliceUpdate = (_dt: number) => {if (!this.player.isMalicing) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2481,9 +2431,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You seek to menace oncoming attacks.`
-        });
+        this.specialCombatText("You seek to menace oncoming attacks.");
     };
     onMenaceUpdate = (_dt: number) => {if (!this.player.isMenacing) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2526,9 +2474,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You seek to mend oncoming attacks.`
-        });
+        this.specialCombatText("You seek to mend oncoming attacks.");
     };
     onMendUpdate = (_dt: number) => {if (!this.player.isMending) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2571,9 +2517,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You seek to moderate oncoming attacks.`
-        });
+        this.specialCombatText("You seek to moderate oncoming attacks.");
     };
     onModerateUpdate = (_dt: number) => {if (!this.player.isModerating) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2621,9 +2565,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You seek to multifare oncoming attacks.`
-        });
+        this.specialCombatText("You seek to multifare oncoming attacks.");
     };
     onMultifariousUpdate = (_dt: number) => {if (!this.player.isMultifaring) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2667,9 +2609,7 @@ export default class PlayerMachine {
                 this.player.reactiveName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You seek to mystify enemies when struck.`
-        });
+        this.specialCombatText("You seek to mystify enemies when struck.");
     };
     onMystifyUpdate = (_dt: number) => {if (!this.player.isMystifying) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2711,9 +2651,7 @@ export default class PlayerMachine {
                 this.player.negationBubble = undefined;
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You protect yourself from oncoming attacks.`
-        });
+        this.specialCombatText("You protect yourself from oncoming attacks.");
     };
     onProtectUpdate = (_dt: number) => {if (!this.player.isProtecting) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2735,9 +2673,7 @@ export default class PlayerMachine {
                 this.player.reactiveBubble = undefined;
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You warp oncoming damage into stamina.`
-        });
+        this.specialCombatText("You warp oncoming damage into stamina.");
     };
     onRecoverUpdate = (_dt: number) => {if (!this.player.isRecovering) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2768,9 +2704,7 @@ export default class PlayerMachine {
                 if (this.player.reactiveName === States.REIN) this.player.reactiveName = "";
             };    
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your hush warps oncoming damage into grace.`
-        });
+        this.specialCombatText("Your hush warps oncoming damage into grace.");
     };
     onReinUpdate = (_dt: number) => {if (!this.player.isReining) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2791,9 +2725,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.RENEWAL, () => {
             this.player.isRenewing = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Tears of a Hush proliferate and heal old wounds.`
-        });
+        this.specialCombatText("Tears of a hush proliferate and heal old wounds.");
     };
     onRenewalUpdate = (_dt: number) => {if (!this.player.isRenewing) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2806,9 +2738,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.SCREAM, () => {
             this.player.isScreaming = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You scream, fearing nearby foes.`
-        });
+        this.specialCombatText("You scream, fearing nearby foes.");
     };
     onScreamUpdate = (_dt: number) => {if (!this.player.isScreaming) this.positiveMachine.setState(States.CLEAN);};
     onScreamExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.SCREAM, PLAYER.COOLDOWNS.SHORT)};
@@ -2834,9 +2764,7 @@ export default class PlayerMachine {
                 this.player.negationName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You shield yourself from oncoming attacks.`
-        });
+        this.specialCombatText("You shield yourself from oncoming attacks.");
     };
     onShieldUpdate = (_dt: number) => {if (!this.player.isShielding) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2882,9 +2810,7 @@ export default class PlayerMachine {
             this.player.isShimmering = false;
             this.stealthEffect(false);
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You shimmer, fading in and out of this world.`
-        });
+        this.specialCombatText("You shimmer, fading in and out of this world.");
     };
     onShimmerUpdate = (_dt: number) => {if (!this.player.isShimmering) this.positiveMachine.setState(States.CLEAN);};
 
@@ -2908,18 +2834,14 @@ export default class PlayerMachine {
             this.player.isSprinting = false;
             this.player.adjustSpeed(-speed);    
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You tap into your caeren, bursting into an otherworldly sprint.`
-        });
+        this.specialCombatText("You tap into your caeren, bursting into an otherworldly sprint.");
     };
     onSprintUpdate = (_dt: number) => {if (!this.player.isSprinting) this.positiveMachine.setState(States.CLEAN);};
 
     onStealthEnter = () => {
         if (!this.player.isShimmering) this.player.isStealthing = true; 
-        this.stealthEffect(true);    
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You step halfway into the land of hush and tendril.`
-        });
+        this.stealthEffect(true);
+        this.specialCombatText("You step halfway into the land of hush and tendril.");
     };
     onStealthUpdate = (_dt: number) => {if (!this.player.isStealthing || this.scene.combat) this.positiveMachine.setState(States.CLEAN);};
     onStealthExit = () => {
@@ -2986,9 +2908,7 @@ export default class PlayerMachine {
                 this.player.negationName = "";
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You ward yourself from oncoming attacks.`
-        });
+        this.specialCombatText("You ward yourself from oncoming attacks.");
     };
     onWardUpdate = (_dt: number) => {if (!this.player.isWarding) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3021,9 +2941,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.WRITHE, () => {
             this.player.isWrithing = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
-        });
+        this.specialCombatText("Your caeren grips your body and contorts, writhing around you.");
     };
     onWritheUpdate = (_dt: number) => {if (!this.player.isWrithing) this.positiveMachine.setState(States.CLEAN);};
     onWritheExit = () => {
@@ -3046,9 +2964,7 @@ export default class PlayerMachine {
             this.scene.combatManager.combatMachine.input("astrication", {active:false,charges:0});
             this.player.isAstrifying = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren astrifies, wrapping round your attacks.`
-        });
+        this.specialCombatText("Your caeren astrifies, wrapping round your attacks.");
     };
     onAstricationUpdate = (_dt: number) => {if (!this.player.isAstrifying) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3057,16 +2973,16 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.BERSERK, PLAYER.STAMINA.BERSERK);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.BERSERK, PLAYER.COOLDOWNS.LONG);  
         this.scene.sound.play("howl", { volume: this.scene.hud.settings.volume });
-        this.scene.combatManager.combatMachine.input("berserk", {active:true,charges:1,talent:this.player.checkTalentEnhanced(States.BERSERK)});
+        const level = this.player.ascean.level;
+        const charges = this.player.checkTalentEnhanced("berserk") ? (level > 8 ? 7 : level > 4 ? 5 : 3) : level > 8 ? 3 : level > 4 ? 2 : 1;
+        this.scene.combatManager.combatMachine.input("berserk", {active:true,charges,talent:this.player.checkTalentEnhanced(States.BERSERK)});
         this.scene.showCombatText(this.player, "Berserking", 750, DAMAGE, false, true);
         this.player.isBerserking = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.BERSERK, () => {
             this.scene.combatManager.combatMachine.input("berserk", {active:false,charges:0,talent:this.player.checkTalentEnhanced(States.BERSERK)});
             this.player.isBerserking = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren feeds off the pain, its hush shrieking forth.`
-        });
+        this.specialCombatText("Your caeren feeds off the pain, its hush shrieking forth.");
     };
     onBerserkUpdate = (_dt: number) => {if (!this.player.isBerserking) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3079,9 +2995,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.BLIND, () => {
             this.player.isBlinding = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren shines with brilliance, blinding those around you.`
-        });
+        this.specialCombatText("Your caeren shines with brilliance, blinding those around you.");
     };
     onBlindUpdate = (_dt: number) => {if (!this.player.isBlinding) this.positiveMachine.setState(States.CLEAN);};
     onBlindExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.BLIND, PLAYER.COOLDOWNS.SHORT)};
@@ -3098,9 +3012,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.CAERENESIS * count, () => {
             this.player.isCaerenesis = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren grips your body and contorts, writhing around you.`
-        });
+        this.specialCombatText("Your caeren grips your body and contorts, writhing around you.");
     };
     onCaerenesisUpdate = (_dt: number) => {if (!this.player.isCaerenesis) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3113,12 +3025,12 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Conviction", 750, TENDRIL, false, true);
         this.player.isConvicted = true;
         this.scene.time.delayedCall(PLAYER.DURATIONS.CONVICTION, () => {
-            this.scene.combatManager.combatMachine.input("conviction", {active:false,charges:0,talent:this.player.checkTalentEnhanced(States.CONVICTION)});
+        const level = this.player.ascean.level;
+        const charges = this.player.checkTalentEnhanced("conviction") ? (level > 8 ? 7 : level > 4 ? 5 : 3) : level > 8 ? 3 : level > 4 ? 2 : 1;
+            this.scene.combatManager.combatMachine.input("conviction", {active:false,charges,talent:this.player.checkTalentEnhanced(States.CONVICTION)});
             this.player.isConvicted = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren steels itself in admiration of your physical form.`
-        });
+        this.specialCombatText("Your caeren steels itself in admiration of your physical form.");
     };
     onConvictionUpdate = (_dt: number) => {if (!this.player.isConvicted) this.positiveMachine.setState(States.CLEAN)};
 
@@ -3139,9 +3051,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(PLAYER.DURATIONS.ENDURANCE, () => {
             this.player.isEnduring = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren's hush pours into other faculties, invigorating you.`
-        });
+        this.specialCombatText("Your caeren's hush pours into other faculties, invigorating you.");
     };
     onEnduranceUpdate = (_dt: number) => {if (!this.player.isEnduring) this.positiveMachine.setState(States.CLEAN);};
     onEnduranceExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.ENDURANCE, PLAYER.COOLDOWNS.LONG)};  
@@ -3158,9 +3068,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(duration, () => {
             this.player.isImpermanent = false;
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren grips your body and fades, its hush concealing.`
-        });
+        this.specialCombatText("Your caeren grips your body and fades, its hush concealing.");
     };
     onImpermanenceUpdate = (_dt: number) => {if (!this.player.isImpermanent) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3180,9 +3088,7 @@ export default class PlayerMachine {
                 this.scene.combatManager.combatMachine.input("isSeering", false);
             };
         }, undefined, this);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren calms your body to focus, its hush bleeding into you.`
-        });
+        this.specialCombatText("Your caeren calms your body to focus, its hush bleeding into you.");
     };
     onSeerUpdate = (_dt: number) => {if (!this.player.isSeering) this.positiveMachine.setState(States.CLEAN);};
 
@@ -3237,9 +3143,7 @@ export default class PlayerMachine {
         this.scene.time.delayedCall(1500, () => {
             this.player.isShirking = false;
         }, undefined, this); 
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren's hush grants reprieve, freeing you.`
-        });
+        this.specialCombatText("Your caeren's hush grants reprieve, freeing you.");
     };
     onShirkExit = () => {};
 
@@ -3306,9 +3210,7 @@ export default class PlayerMachine {
             this.player.isStimulating = false;
         }, undefined, this);
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.STIMULATE, PLAYER.COOLDOWNS.LONG);
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `Your caeren's hush grants reprieve, refreshing you.`
-        });
+        this.specialCombatText("Your caeren's hush grants reprieve, refreshing you.");
         for (let i = 0; i < this.scene.hud.actionBar.specialButtons.length; i++) {
             const name = this.scene.hud.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
@@ -3673,9 +3575,7 @@ export default class PlayerMachine {
         this.player.setTint(0xFF0000);
         this.player.setStatic(true);
         this.player.anims.pause();
-        EventBus.emit("special-combat-text", {
-            playerSpecialDescription: `You've been stunned.`
-        });
+        this.specialCombatText("You've been stunned.");
         screenShake(this.scene, 64);
     };
     onStunnedUpdate = (dt: number) => {

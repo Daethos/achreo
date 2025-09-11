@@ -268,10 +268,11 @@ export const ENEMY_RANGED: MasteryAbility = {
 };
 export const DISTANCE = {
     MIN: 0,
-    ATTACK: 25,
+    ATTACK: 50,
     MOMENTUM: 1,
     THRESHOLD: 75,
-    CHASE: 75,
+    CHASE: 125,
+    COMBAT: 60,
     RANGED_ALIGNMENT: 25,
     RANGED_MULTIPLIER: 3,
     DODGE: 1152, // 2304

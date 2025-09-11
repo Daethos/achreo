@@ -63,7 +63,7 @@ export type ENEMY = {id:string; threat:number};
 const ACTION = "action";
 const COMPUTER_ACTION = "computerAction";
 const DISTANCE_CLEAR = 51;
-export const ENEMY_SWING_TIME = { "One Hand": 3000, "Two Hand": 4000 }; // 750, 1250 [old]
+export const ENEMY_SWING_TIME = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
 type Force = {[key:string]:number;};
 export const SWING_FORCE: Force = { 
@@ -86,9 +86,10 @@ export const SWING_FORCE_ATTRIBUTE: Attribute = {
     "Physical": "strength",
     "Magic": "caeren"
 };
+type DamageArray = { [key:string]: string[]; };
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.5
-const DAMAGE_TYPES = { "magic": ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], "physical": ["blunt", "pierce", "slash"] };
+const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], physical: ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
@@ -377,60 +378,48 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.scene.time.delayedCall(10, () => this.startGlowTween(object, type));
             return;
         };
-        // const mult = this.name === "player" && (this as unknown as Player).checkTalentEnhanced("caerenic") ? 2 : 1;
-        switch(type) {
+        let duration = 600, innerStrength = {from: 1, to: 0}, outerStrength = {from: 1, to: 2};
+        if (this.name === "player" && (this as unknown as Player).checkTalentEnhanced("caerenic")) {
+            innerStrength.from = 2;
+            outerStrength.from = 2;
+            outerStrength.to = 4;
+            duration = 500;
+        };
+        switch (type) {
             case "self":
                 this.glowInstanceSelf = instance;
                 this.glowSelfTween = this.scene.tweens.add({
                     targets: instance,
-                    outerStrength: {
-                        from: 2,
-                        to: 4
-                    },
-                    innerStrength: {
-                        from: 2,
-                        to: 0
-                    },
+                    outerStrength,
+                    innerStrength,
                     yoyo: true,
                     repeat: -1,
                     ease: "Sine.easeInOut",
-                    duration: 500,
+                    duration,
                 });
                 break;
             case "weapon":
                 this.glowInstanceWeapon = instance;
                 this.glowWeaponTween = this.scene.tweens.add({
                     targets: instance,
-                    outerStrength: {
-                        from: 2,
-                        to: 4
-                    },
-                    innerStrength: {
-                        from: 2,
-                        to: 0
-                    },
+                    outerStrength,
+                    innerStrength,
                     yoyo: true,
                     repeat: -1,
                     ease: "Sine.easeInOut",
-                    duration: 500,
+                    duration,
                 });
                 break;
             case "shield":
                 this.glowInstanceShield = instance;
                 this.glowShieldTween = this.scene.tweens.add({
                     targets: instance,
-                    outerStrength: {
-                        from: 2,
-                        to: 4
-                    },
-                    innerStrength: {
-                        from: 2,
-                        to: 0
-                    },
+                    outerStrength,
+                    innerStrength,
                     yoyo: true,
                     repeat: -1,
                     ease: "Sine.easeInOut",
-                    duration: 500,
+                    duration,
                 });
                 break;
         };
@@ -438,7 +427,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     setGlow = (object: any, glow: boolean, type: string = "self") => {
         this.glowColor = this.setColor(this.ascean?.mastery);
-
         if (!glow) {
             switch (type) {
                 case "shield":
@@ -476,7 +464,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (type === "self" && this.glowSelfTween) this.glowSelfTween.stop();
             if (type === "weapon" && this.glowWeaponTween) this.glowWeaponTween.stop();
             if (type === "shield" && this.glowShieldTween) this.glowShieldTween.stop();
-
             this.startGlowTween(object, type);
         };
     };
@@ -502,65 +489,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.glowInstanceShield = undefined;
     };
 
-    // setGlow = (object: any, glow: boolean, type: string | undefined = undefined) => {
-    //     this.glowColor = this.setColor(this.ascean?.mastery);
-        
-    //     this.scene?.glowFilter?.remove(object);
-    //     if (!glow) {
-    //         switch (type) {
-    //             case "shield":
-    //                 if (this.glowShield !== undefined) {
-    //                     this.glowShield.remove(false);
-    //                     this.glowShield.destroy();
-    //                     this.glowShield = undefined;
-    //                 };
-    //                 break;
-    //             case "weapon":
-    //                 if (this.glowWeapon !== undefined) {
-    //                     this.glowWeapon.remove(false);
-    //                     this.glowWeapon.destroy();
-    //                     this.glowWeapon = undefined;
-    //                 };
-    //                 break;
-    //             default:
-    //                 if (this.glowSelf !== undefined) {
-    //                     this.glowSelf.remove(false);
-    //                     this.glowSelf.destroy();
-    //                     this.glowSelf = undefined;
-    //                 };
-    //                 break;
-    //         };
-    //         return;
-    //     };
-    //     this.updateGlow(object);
-    //     switch (type) {
-    //         case "shield":
-    //             this.glowShield = this.scene.time.addEvent({
-    //                 delay: 250, // 125 Adjust the delay as needed
-    //                 callback: () => this.updateGlow(object),
-    //                 loop: true,
-    //                 callbackScope: this
-    //             });
-    //             break;
-    //         case "weapon":
-    //             this.glowWeapon = this.scene.time.addEvent({
-    //                 delay: 250,
-    //                 callback: () => this.updateGlow(object),
-    //                 loop: true,
-    //                 callbackScope: this
-    //             });
-    //             break;
-    //         default:
-    //             this.glowSelf = this.scene.time.addEvent({
-    //                 delay: 250,
-    //                 callback: () => this.updateGlow(object),
-    //                 loop: true,
-    //                 callbackScope: this
-    //             });
-    //             break;
-    //     };
-    // };
-
     setColor = (mastery: string): number => {
         switch (mastery) {
             case "constitution": return 0xFDF6D8;
@@ -573,45 +501,27 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    // removeGlow = () => {
-    //     if (this.glowShield !== undefined) {
-    //         this.glowShield.remove(false);
-    //         this.glowShield.destroy();
-    //         this.glowShield = undefined;
+    // updateGlow = (object: any) => {
+    //     const glowFilter = this?.scene?.glowFilter;
+    //     if (!glowFilter) {
+    //         this.removeGlow();
+    //         return;
     //     };
-    //     if (this.glowWeapon !== undefined) {
-    //         this.glowWeapon.remove(false);
-    //         this.glowWeapon.destroy();
-    //         this.glowWeapon = undefined;
-    //     };
-    //     if (this.glowSelf !== undefined) {
-    //         this.glowSelf.remove(false);
-    //         this.glowSelf.destroy();
-    //         this.glowSelf = undefined;
+    //     let instance = glowFilter.get(object)[0];
+    //     // const strength = this.name === "player" && (this as unknown as Player).checkTalentEnhanced("caerenic") ? 5 : 2;
+    //     if (instance) {
+    //         instance.outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
+    //         instance.innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
+    //     } else {
+    //         glowFilter.add(object, {
+    //             outerStrength: 2 + Math.sin(this.scene.time.now * 0.005) * 2,
+    //             innerStrength: 2 + Math.cos(this.scene.time.now * 0.005) * 2,
+    //             glowColor: this.glowColor,
+    //             quality: GLOW_INTENSITY,
+    //             knockout: true
+    //         });
     //     };
     // };
-
-    updateGlow = (object: any) => {
-        const glowFilter = this?.scene?.glowFilter;
-        if (!glowFilter) {
-            this.removeGlow();
-            return;
-        };
-        let instance = glowFilter.get(object)[0];
-        // const strength = this.name === "player" && (this as unknown as Player).checkTalentEnhanced("caerenic") ? 5 : 2;
-        if (instance) {
-            instance.outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
-            instance.innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
-        } else {
-            glowFilter.add(object, {
-                outerStrength: 2 + Math.sin(this.scene.time.now * 0.005) * 2,
-                innerStrength: 2 + Math.cos(this.scene.time.now * 0.005) * 2,
-                glowColor: this.glowColor,
-                quality: GLOW_INTENSITY,
-                knockout: true
-            });
-        };
-    };
 
     adjustSpeed = (speed: number): number => {
         return this.speed += speed;
@@ -716,7 +626,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleIdleAnimations = () => {
-        if (this.isCasting || this.isPraying) return;
+        // if (this.isCasting || this.isPraying) return;
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -747,6 +657,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const velocityMoving = this.body.velocity.x !== 0 || this.body.velocity.y !== 0;
         return moved || velocityMoving;
     };
+    velMoving = (): boolean => this.body?.velocity.x !== 0 || this.body?.velocity.y !== 0;
+    hMoving = (): boolean => this.body?.velocity.x !== 0;
     movingHorizontal = (): boolean => this.body?.velocity.x !== 0 && this.body?.velocity.y === 0;
     movingVertical = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y !== 0;
     movingDown = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y > 0;
@@ -857,7 +769,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     checkBow = (type: string) => type === "Bow" || type === "Greatbow";
 
-    checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern as keyof typeof DAMAGE_TYPES].includes(type);
+    checkDamageType = (type: string, concern: string) => DAMAGE_TYPES[concern].includes(type);
     
     checkMeleeOrRanged = (weapon: Equipment) => {
         if (weapon === undefined) return;
@@ -1068,8 +980,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.spriteShield?.setDepth(this.depth - ((this.isStalwart || this.isClimbing) ? -1 : 1));
                 this.spriteWeapon?.setDepth(this.depth + 1);
             } else {
-                this.spriteShield?.setDepth(this.depth + (this.isStalwart ? -1 : 1));
-                this.spriteWeapon?.setDepth(this.depth - 1);
+                this.spriteShield?.setDepth(this.depth + (this.isStalwart && !this.isClimbing ? -1 : 1));
+                this.spriteWeapon?.setDepth(this.depth - (this.isClimbing ? -1 : 1));
             };
             if (!this.flipX) {
                 if (this.hasBow) {
@@ -1079,7 +991,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(-0.2, 0.75);
                     this.spriteWeapon?.setAngle(107.5);
                 };
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setAlpha(1);
                     this.spriteShield?.setOrigin(0, 0.5);
@@ -1100,7 +1012,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(0.2, 1.2);
                     this.spriteWeapon?.setAngle(-194.5);
                 };
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setAlpha(1);
                     this.spriteShield?.setOrigin(1, 0.5);
@@ -1129,7 +1041,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(0.5, 1.2);
                     this.spriteWeapon?.setAngle(-194.5);
                 };
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setOrigin(1, 0.25);
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setAlpha(1);
@@ -1151,7 +1063,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setOrigin(-0.25, 0.5);
                     this.spriteWeapon?.setAngle(107.5);
                 };
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setOrigin(0, 0.25);
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setAlpha(1);
@@ -1169,7 +1081,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         idle: () => {
             this.spriteShield?.setVisible(true);
             this.spriteShield?.setAngle(0);
-            this.spriteShield?.setDepth(this.depth - (this.isStalwart ? -1 : 1));
+            this.spriteShield?.setDepth(this.depth - (this.isStalwart && !this.isClimbing ? -1 : 1));
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(this.depth + 1);
@@ -1181,7 +1093,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setAngle(-250);
                 };
                 this.spriteShield?.setFlipX(true);
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setAlpha(1);
                     this.spriteShield?.setOrigin(1, 0.3);
                     this.spriteShield?.setScale(0.6);
@@ -1201,7 +1113,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteWeapon?.setAngle(-195);
                 };
                 this.spriteShield?.setFlipX(false);
-                if (this.isStalwart) {
+                if (this.isStalwart && !this.isClimbing) {
                     this.spriteShield?.setAlpha(1);
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setOrigin(0, 0.3);
@@ -1336,8 +1248,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
             };
-            // console.log({frameIndex});
-            // this.scene.pause();
         },
 
         attack: (frame) => {

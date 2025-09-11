@@ -16,22 +16,22 @@ export const Asceans: any[] = [
     "caeren":7,
     "kyosir":14,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"shield":{
         name: "Parma",
         rarity: "Common",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Common",
     },"legs":{
         name: "Li'kyr Pants",
@@ -76,7 +76,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -127,13 +127,13 @@ export const Asceans: any[] = [
         name: "Hush of Daethos",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Daethic Halberd',
+        name: "Daethic Halberd",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Greatbow',
+        name: "Daethic Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Daethic Helm",
@@ -181,10 +181,10 @@ export const Asceans: any[] = [
         name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Pernach',
+        name: "Pernach",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -286,7 +286,7 @@ export const Asceans: any[] = [
     "caeren":7,
     "kyosir":7,
     "weaponOne":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -295,7 +295,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -349,7 +349,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -397,13 +397,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -451,13 +451,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sage Hood",
@@ -502,7 +502,7 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":8,
     "weaponOne":{
-        name: 'Longsword',
+        name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -511,7 +511,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -559,13 +559,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -610,7 +610,7 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":12,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponTwo":{
         name: "Pernach",
@@ -625,7 +625,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Common",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Common",
     },"legs":{
         name: "Achreon Greaves",
@@ -664,22 +664,22 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":18,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"shield":{
         name: "Parma",
         rarity: "Common",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Common",
     },"legs":{
         name: "Li'kyr Pants",
@@ -724,7 +724,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -775,13 +775,13 @@ export const Asceans: any[] = [
         name: "Hush of Daethos",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Daethic Halberd',
+        name: "Daethic Halberd",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Greatbow',
+        name: "Daethic Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Daethic Helm",
@@ -829,10 +829,10 @@ export const Asceans: any[] = [
         name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Pernach',
+        name: "Pernach",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -934,7 +934,7 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":8,
     "weaponOne":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -943,7 +943,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -997,7 +997,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -1045,13 +1045,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -1099,13 +1099,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sage Hood",
@@ -1150,7 +1150,7 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":8,
     "weaponOne":{
-        name: 'Longsword',
+        name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -1159,7 +1159,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -1207,13 +1207,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -1258,7 +1258,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":14,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponTwo":{
         name: "Pernach",
@@ -1273,7 +1273,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Common",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Common",
     },"legs":{
         name: "Achreon Greaves",
@@ -1366,25 +1366,25 @@ export const Asceans: any[] = [
     "caeren":18,
     "kyosir":12,
     "weaponOne":{
-        name: 'Caerenic Shatter',
+        name: "Caerenic Shatter",
         rarity: "Common",
     },"weaponTwo":{
         name: "Ahn'vyer's Wing",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Nyrolean Wave',
+        name: "Nyrolean Wave",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
-        name: 'Cambiren Helm',
+        name: "Cambiren Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Cambiren Armor',
+        name: "Cambiren Armor",
         rarity: "Common",
     },"legs":{
-        name: 'Cambiren Greaves',
+        name: "Cambiren Greaves",
         rarity: "Common",
     },"ringOne":{
         name: "Empty Ring Slot",
@@ -1420,22 +1420,22 @@ export const Asceans: any[] = [
     "caeren":8,
     "kyosir":22,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"shield":{
         name: "Parma",
         rarity: "Common",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Common",
     },"legs":{
         name: "Li'kyr Pants",
@@ -1480,7 +1480,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -1531,13 +1531,13 @@ export const Asceans: any[] = [
         name: "Hush of Daethos",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Daethic Halberd',
+        name: "Daethic Halberd",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Greatbow',
+        name: "Daethic Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Daethic Helm",
@@ -1585,10 +1585,10 @@ export const Asceans: any[] = [
         name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Pernach',
+        name: "Pernach",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -1744,7 +1744,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":10,
     "weaponOne":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -1753,7 +1753,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -1807,7 +1807,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -1855,13 +1855,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -1909,13 +1909,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sage Hood",
@@ -1960,7 +1960,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":12,
     "weaponOne":{
-        name: 'Longsword',
+        name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -1969,7 +1969,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -2017,13 +2017,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -2068,7 +2068,7 @@ export const Asceans: any[] = [
     "caeren":14,
     "kyosir":18,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponTwo":{
         name: "Pernach",
@@ -2083,7 +2083,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Common",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Common",
     },"legs":{
         name: "Achreon Greaves",
@@ -2125,13 +2125,13 @@ export const Asceans: any[] = [
         name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -2293,7 +2293,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Ashtre Helm",
@@ -2338,25 +2338,25 @@ export const Asceans: any[] = [
     "caeren":20,
     "kyosir":14,
     "weaponOne":{
-        name: 'Caerenic Shatter',
+        name: "Caerenic Shatter",
         rarity: "Common",
     },"weaponTwo":{
         name: "Ahn'vyer's Wing",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Nyrolean Wave',
+        name: "Nyrolean Wave",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
-        name: 'Cambiren Helm',
+        name: "Cambiren Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Cambiren Armor',
+        name: "Cambiren Armor",
         rarity: "Common",
     },"legs":{
-        name: 'Cambiren Greaves',
+        name: "Cambiren Greaves",
         rarity: "Common",
     },"ringOne":{
         name: "Empty Ring Slot",
@@ -2392,22 +2392,22 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":26,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"shield":{
         name: "Parma",
         rarity: "Common",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Common",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Common",
     },"legs":{
         name: "Li'kyr Pants",
@@ -2452,7 +2452,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -2503,13 +2503,13 @@ export const Asceans: any[] = [
         name: "Hush of Daethos",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Daethic Halberd',
+        name: "Daethic Halberd",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Daethic Greatbow',
+        name: "Daethic Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Daethic Helm",
@@ -2557,10 +2557,10 @@ export const Asceans: any[] = [
         name: "Longsword",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Pernach',
+        name: "Pernach",
         rarity: "Common",
     },"shield":{
         name: "Parma",
@@ -2725,7 +2725,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Common",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Common",
     },"helmet":{
         name: "Knight's Helm",
@@ -2878,7 +2878,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":11,
     "weaponOne":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -2887,7 +2887,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -2941,7 +2941,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -2989,13 +2989,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -3043,13 +3043,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sage Hood",
@@ -3094,7 +3094,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":14,
     "weaponOne":{
-        name: 'Kynshear',
+        name: "Kynshear",
         rarity: "Common",
     },"weaponTwo":{
         name: "Longbow",
@@ -3103,7 +3103,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Common",
     },"helmet":{
         name: "Marauder's Helm",
@@ -3151,13 +3151,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -3211,7 +3211,7 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Common",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Common",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -3259,13 +3259,13 @@ export const Asceans: any[] = [
         name: "Hand of Se'dyro",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Sedyrus Shortbow',
+        name: "Sedyrus Shortbow",
         rarity: "Common",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -3313,13 +3313,13 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Sevashyr Greatbow',
+        name: "Sevashyr Greatbow",
         rarity: "Common",
     },"weaponThree":{
         name: "Claymore",
         rarity: "Common",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Common",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -3364,7 +3364,7 @@ export const Asceans: any[] = [
     "caeren":16,
     "kyosir":20,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Common",
     },"weaponTwo":{
         name: "Pernach",
@@ -3379,7 +3379,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Common",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Common",
     },"legs":{
         name: "Achreon Greaves",
@@ -3421,13 +3421,13 @@ export const Asceans: any[] = [
         name: "Longbow",
         rarity: "Common",
     },"weaponTwo":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Common",
     },"weaponThree":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Common",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Common",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -3481,7 +3481,7 @@ export const Asceans: any[] = [
         name: "Caerenic Shatter",
         rarity: "Common",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Common",
     },"helmet":{
         name: "Soverain Helm",
@@ -3643,7 +3643,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Ashtre Helm",
@@ -3796,25 +3796,25 @@ export const Asceans: any[] = [
     "caeren":23,
     "kyosir":16,
     "weaponOne":{
-        name: 'Caerenic Shatter',
+        name: "Caerenic Shatter",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Ahn'vyer's Wing",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Nyrolean Wave',
+        name: "Nyrolean Wave",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
-        name: 'Cambiren Helm',
+        name: "Cambiren Helm",
         rarity: "Uncommon",
     },"chest":{
-        name: 'Cambiren Armor',
+        name: "Cambiren Armor",
         rarity: "Uncommon",
     },"legs":{
-        name: 'Cambiren Greaves',
+        name: "Cambiren Greaves",
         rarity: "Uncommon",
     },"ringOne":{
         name: 'Cambiren Ring',
@@ -3856,7 +3856,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
@@ -3961,10 +3961,10 @@ export const Asceans: any[] = [
         name: "Longsword",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Scimitar',
+        name: "Scimitar",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Pernach',
+        name: "Pernach",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
@@ -4237,7 +4237,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Knight's Helm",
@@ -4288,7 +4288,7 @@ export const Asceans: any[] = [
         name: "Cursed Dagger",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
@@ -4444,7 +4444,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":12,
     "weaponOne":{
-        name: 'Hand Axe',
+        name: "Hand Axe",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Longbow",
@@ -4453,7 +4453,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Scutum',
+        name: "Scutum",
         rarity: "Uncommon",
     },"helmet":{
         name: "Marauder's Helm",
@@ -4507,7 +4507,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Soverain Helm",
@@ -4561,7 +4561,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fang Helm",
@@ -4609,13 +4609,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
         name: "Soverain Helm",
@@ -4663,13 +4663,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Uncommon",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Sage Hood",
@@ -4723,7 +4723,7 @@ export const Asceans: any[] = [
         name: "Shrenari",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -4777,7 +4777,7 @@ export const Asceans: any[] = [
         name: "Achestra",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
         name: "Quor'eite Hood",
@@ -4822,7 +4822,7 @@ export const Asceans: any[] = [
     "caeren":10,
     "kyosir":16,
     "weaponOne":{
-        name: 'Kynshear',
+        name: "Kynshear",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Longbow",
@@ -4831,7 +4831,7 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
         name: "Marauder's Helm",
@@ -4879,13 +4879,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -4939,7 +4939,7 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -4987,13 +4987,13 @@ export const Asceans: any[] = [
         name: "Hand of Se'dyro",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Sedyrus Shortbow',
+        name: "Sedyrus Shortbow",
         rarity: "Uncommon",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -5041,13 +5041,13 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Sevashyr Greatbow',
+        name: "Sevashyr Greatbow",
         rarity: "Uncommon",
     },"weaponThree":{
         name: "Claymore",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -5101,7 +5101,7 @@ export const Asceans: any[] = [
         name: "Longbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Marauder's Helm",
@@ -5146,22 +5146,22 @@ export const Asceans: any[] = [
     "caeren":12,
     "kyosir":28,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Uncommon",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Uncommon",
     },"legs":{
         name: "Li'kyr Pants",
@@ -5200,7 +5200,7 @@ export const Asceans: any[] = [
     "caeren":18,
     "kyosir":24,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Pernach",
@@ -5215,7 +5215,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Uncommon",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Uncommon",
     },"legs":{
         name: "Achreon Greaves",
@@ -5263,7 +5263,7 @@ export const Asceans: any[] = [
         name: "Caerenic Shatter",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Soverain Helm",
@@ -5371,7 +5371,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Ashtre Helm",
@@ -5416,25 +5416,25 @@ export const Asceans: any[] = [
     "caeren":29,
     "kyosir":18,
     "weaponOne":{
-        name: 'Caerenic Shatter',
+        name: "Caerenic Shatter",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Ahn'vyer's Wing",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Nyrolean Wave',
+        name: "Nyrolean Wave",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
-        name: 'Cambiren Helm',
+        name: "Cambiren Helm",
         rarity: "Rare",
     },"chest":{
-        name: 'Cambiren Armor',
+        name: "Cambiren Armor",
         rarity: "Rare",
     },"legs":{
-        name: 'Cambiren Greaves',
+        name: "Cambiren Greaves",
         rarity: "Rare",
     },"ringOne":{
         name: 'Cambiren Ring',
@@ -5476,7 +5476,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
@@ -5695,7 +5695,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Fang Helm",
@@ -5800,7 +5800,7 @@ export const Asceans: any[] = [
         name: "Cursed Dagger",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
@@ -5965,7 +5965,7 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -6013,13 +6013,13 @@ export const Asceans: any[] = [
         name: "Hand of Se'dyro",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Sedyrus Shortbow',
+        name: "Sedyrus Shortbow",
         rarity: "Rare",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -6067,13 +6067,13 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Sevashyr Greatbow',
+        name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"weaponThree":{
         name: "Claymore",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -6127,7 +6127,7 @@ export const Asceans: any[] = [
         name: "Caerenic Shatter",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Soverain Helm",
@@ -6181,7 +6181,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Knight's Helm",
@@ -6235,7 +6235,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Soverain Helm",
@@ -6283,13 +6283,13 @@ export const Asceans: any[] = [
         name: "Quor'eite Crush",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Uncommon",
     },"helmet":{
         name: "Soverain Helm",
@@ -6337,13 +6337,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Rare",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sage Hood",
@@ -6397,7 +6397,7 @@ export const Asceans: any[] = [
         name: "Shrenari",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -6442,22 +6442,22 @@ export const Asceans: any[] = [
     "caeren":12,
     "kyosir":32,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Uncommon",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Uncommon",
     },"shield":{
         name: "Parma",
         rarity: "Uncommon",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Uncommon",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Uncommon",
     },"legs":{
         name: "Li'kyr Pants",
@@ -6499,13 +6499,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Uncommon",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Uncommon",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Uncommon",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -6550,7 +6550,7 @@ export const Asceans: any[] = [
     "caeren":20,
     "kyosir":28,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Rare",
     },"weaponTwo":{
         name: "Pernach",
@@ -6565,7 +6565,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Uncommon",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Uncommon",
     },"legs":{
         name: "Achreon Greaves",
@@ -6613,7 +6613,7 @@ export const Asceans: any[] = [
         name: "Longbow",
         rarity: "Uncommon",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Uncommon",
     },"helmet":{
         name: "Marauder's Helm",
@@ -6721,7 +6721,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Ashtre Helm",
@@ -6775,7 +6775,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Legendary",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Legendary",
     },"helmet":{
         name: "Daethic Helm",
@@ -6820,25 +6820,25 @@ export const Asceans: any[] = [
     "caeren":35,
     "kyosir":20,
     "weaponOne":{
-        name: 'Caerenic Shatter',
+        name: "Caerenic Shatter",
         rarity: "Rare",
     },"weaponTwo":{
         name: "Ahn'vyer's Wing",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Nyrolean Wave',
+        name: "Nyrolean Wave",
         rarity: "Rare",
     },"shield":{
-        name: 'Pavise',
+        name: "Pavise",
         rarity: "Rare",
     },"helmet":{
-        name: 'Cambiren Helm',
+        name: "Cambiren Helm",
         rarity: "Rare",
     },"chest":{
-        name: 'Cambiren Armor',
+        name: "Cambiren Armor",
         rarity: "Rare",
     },"legs":{
-        name: 'Cambiren Greaves',
+        name: "Cambiren Greaves",
         rarity: "Rare",
     },"ringOne":{
         name: 'Cambiren Ring',
@@ -6874,22 +6874,22 @@ export const Asceans: any[] = [
     "caeren":18,
     "kyosir":36,
     "weaponOne":{
-        name: 'Nightmare',
+        name: "Nightmare",
         rarity: "Rare",
     },"weaponTwo":{
         name: "Lava Spit",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Rare",
     },"shield":{
         name: "Parma",
         rarity: "Rare",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Rare",
     },"chest":{
-        name: 'Fireland Cuirass',
+        name: "Fireland Cuirass",
         rarity: "Rare",
     },"legs":{
         name: "Li'kyr Pants",
@@ -6934,7 +6934,7 @@ export const Asceans: any[] = [
         name: "Hush",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Daethic Bow',
+        name: "Daethic Bow",
         rarity: "Rare",
     },"shield":{
         name: "Parma",
@@ -7045,7 +7045,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Epic",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Epic",
     },"helmet":{
         name: "Daethic Helm",
@@ -7099,7 +7099,7 @@ export const Asceans: any[] = [
         name: "Daethic Bow",
         rarity: "Epic",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Epic",
     },"helmet":{
         name: "Licivitan Helm",
@@ -7420,13 +7420,13 @@ export const Asceans: any[] = [
         name: "Spear",
         rarity: "Epic",
     },"weaponThree":{
-        name: 'Wildstrike',
+        name: "Wildstrike",
         rarity: "Epic",
     },"shield":{
         name: "Parma",
         rarity: "Epic",
     },"helmet":{
-        name: 'Achreon Helm',
+        name: "Achreon Helm",
         rarity: "Epic",
     },"chest":{
         name: 'Achreon Armor',
@@ -7582,7 +7582,7 @@ export const Asceans: any[] = [
         name: "Cursed Dagger",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Rare",
     },"shield":{
         name: "Parma",
@@ -7801,7 +7801,7 @@ export const Asceans: any[] = [
         name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Fang Helm",
@@ -7855,7 +7855,7 @@ export const Asceans: any[] = [
         name: "Tendril of Daethos",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Knight's Helm",
@@ -7903,13 +7903,13 @@ export const Asceans: any[] = [
         name: "Nyrolean Bolt",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Rare",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sage Hood",
@@ -7963,7 +7963,7 @@ export const Asceans: any[] = [
         name: "Shrenari",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -8011,13 +8011,13 @@ export const Asceans: any[] = [
         name: "Nightmare",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Caeren Barrage',
+        name: "Caeren Barrage",
         rarity: "Rare",
     },"weaponThree":{
-        name: 'Cursed Dagger',
+        name: "Cursed Dagger",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Li'kyr Hood",
@@ -8071,7 +8071,7 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Chain-Knight Helm",
@@ -8119,13 +8119,13 @@ export const Asceans: any[] = [
         name: "Hand of Se'dyro",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Sedyrus Shortbow',
+        name: "Sedyrus Shortbow",
         rarity: "Rare",
     },"weaponThree":{
         name: "Se'narian Spear",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -8173,13 +8173,13 @@ export const Asceans: any[] = [
         name: "Halberd",
         rarity: "Rare",
     },"weaponTwo":{
-        name: 'Sevashyr Greatbow',
+        name: "Sevashyr Greatbow",
         rarity: "Rare",
     },"weaponThree":{
         name: "Claymore",
         rarity: "Rare",
     },"shield":{
-        name: 'Shaorahi',
+        name: "Shaorahi",
         rarity: "Rare",
     },"helmet":{
         name: "Sedyrus Helm",
@@ -8224,7 +8224,7 @@ export const Asceans: any[] = [
     "caeren":24,
     "kyosir":32,
     "weaponOne":{
-        name: 'Shrenari',
+        name: "Shrenari",
         rarity: "Rare",
     },"weaponTwo":{
         name: "Pernach",
@@ -8239,7 +8239,7 @@ export const Asceans: any[] = [
         name: "Quor'eite Hood",
         rarity: "Rare",
     },"chest":{
-        name: 'Occult Armor',
+        name: "Occult Armor",
         rarity: "Rare",
     },"legs":{
         name: "Achreon Greaves",
@@ -8287,7 +8287,7 @@ export const Asceans: any[] = [
         name: "Caerenic Shatter",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Soverain Helm",
@@ -8395,7 +8395,7 @@ export const Asceans: any[] = [
         name: "Longbow",
         rarity: "Rare",
     },"shield":{
-        name: 'Heater',
+        name: "Heater",
         rarity: "Rare",
     },"helmet":{
         name: "Marauder's Helm",
@@ -8440,37 +8440,37 @@ export const Asceans: any[] = [
     "caeren":31,
     "kyosir":24,
     "weaponOne":{
-        name: 'Tendril',
+        name: "Tendril",
         rarity: "Epic",
     },"weaponTwo":{
-        name: 'Hush',
+        name: "Hush",
         rarity: "Epic",
     },"weaponThree":{
         name: "Daethic Bow",
         rarity: "Epic",
     },"shield":{
-        name: 'Heater',
+        name: "Pavise",
         rarity: "Epic",
     },"helmet":{
-        name: 'Dae Hood',
+        name: "Dae Hood",
         rarity: "Epic",
     },"chest":{
-        name: 'Dae Robes',
+        name: "Dae Robes",
         rarity: "Epic",
     },"legs":{
-        name: 'Dae Pants',
+        name: "Dae Pants",
         rarity: "Epic",
     },"ringOne":{
-        name: 'Dae Ring',
+        name: "Dae Ring",
         rarity: "Epic",
     },"ringTwo":{
-        name: 'Dae Ring',
+        name: "Dae Ring",
         rarity: "Epic",
     },"amulet":{
-        name: 'Dae Amulet',
+        name: "Dae Amulet",
         rarity: "Epic",
     },"trinket":    {
-        name: 'Dae Trinket',
+        name: "Dae Trinket",
         rarity: "Epic",
     },
     "faith":"Adherent",

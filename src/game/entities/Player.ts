@@ -238,8 +238,8 @@ export default class Player extends Entity {
         const circ = new Phaser.Geom.Ellipse(0, 0, 16, 32);
 
         this.caerenesis = this.scene.add.particles(0, 0, "splash", {
-            // follow: this,
-            // followOffset: {x: -265, y: -172.5},
+            follow: this,
+            followOffset: {x:0,y:4},// {x: -265, y: -172.5},
             speed: 0,
             lifespan: { min: 400, max: 1000 },
             scale: { start: 0.0, end: 0.02 },
@@ -1591,7 +1591,7 @@ export default class Player extends Entity {
                 this.playerVelocity.y = 0;
             };
         };
-        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed += 1;
+        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed += 0.5; // 1
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);

@@ -7,7 +7,7 @@ import Ascean from "../../models/ascean";
 import { initReputation, Reputation } from "../../utility/player";
 import Settings, { initSettings } from "../../models/settings";
 import { EventBus } from "../EventBus";
-import { useResizeListener } from "../../utility/dimensions";
+import { dimensions } from "../../utility/dimensions";
 import Logger, { ConsoleLogger } from "../../utility/Logger";
 import { roundToTwoDecimals } from "../../utility/combat";
 import { Play } from "../main";
@@ -22,7 +22,7 @@ import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { ObjectPool } from "../phaser/ObjectPool";
 import { DebugMonitor } from "../phaser/DebugMonitor";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
-const dimensions = useResizeListener();
+const dims = dimensions();
 export const X_OFFSET = 12.5;
 export const X_SPEED_OFFSET = 5;
 export const Y_OFFSET = 10;
@@ -59,14 +59,15 @@ export class Hud extends Phaser.Scene {
     lastTweenTime = 0;
     TEXT_BUFFER_TIME = 350;
     debugMonitor: DebugMonitor;
+    cinemaMode: boolean = false;
     // private arenaContainers: Phaser.GameObjects.Container[] = [];
     // private arenaButton: Phaser.GameObjects.Image;
     // private borders: Phaser.GameObjects.Graphics[] = [];
 
     constructor() {
         super("Hud");
-        this.gameHeight = dimensions()?.HEIGHT;
-        this.gameWidth = dimensions()?.WIDTH;
+        this.gameHeight = dims.HEIGHT;
+        this.gameWidth = dims.WIDTH;
     };
 
     create() {
@@ -438,7 +439,8 @@ export class Hud extends Phaser.Scene {
             weapons: enemy.weapons,
             health: enemy.health, 
             isAggressive: enemy.isAggressive, 
-            startedAggressive: enemy.startedAggressive, 
+            startedAggressive: enemy.startedAggressive,
+            isHostile: enemy.isHostile, 
             isCaerenic: enemy.isCaerenic,
             isDefeated: enemy.defeatedByPlayer, 
             isTriumphant: enemy.isTriumphant,
@@ -646,7 +648,7 @@ export class Hud extends Phaser.Scene {
         this.tweens.add({
             targets: tweenObj,
             t: 1,
-            duration: 3000,
+            duration: sct.duration,
             ease: Phaser.Math.Easing.Sine.Out,
             onStart: () => {
                 sct.active = true;
@@ -656,7 +658,7 @@ export class Hud extends Phaser.Scene {
                 const t = tweenObj.t;
                 const linear = Phaser.Math.Interpolation.Linear([0.75, 1], t);
 
-                sct.setPosition(sct.x, sct.y-1);
+                sct.setPosition(sct.x, Math.max(sct.y-1, this.gameHeight * 0.175));
                 sct.text.setAlpha(linear).setScale(linear);
             },
             onComplete: () => sct.release(),
@@ -664,10 +666,10 @@ export class Hud extends Phaser.Scene {
         });
     };
 
-    showCombatHud = (text: string, context?: string) => {
+    showCombatHud = (text: string, context?: string, duration: number = 2000) => {
         if (!this.settings.show?.hudCombatText) return;
         const combatText = this.scrollingTextPool.acquire();
-        combatText.write(text, context);
+        combatText.write(text, context, duration);
     };
     
     highlightElements(type: string) {
@@ -681,9 +683,9 @@ export class Hud extends Phaser.Scene {
         };
     };
     
-    showDialog = (dialogTag: boolean) => {
+    showDialog = (dialogTag: boolean, activate: boolean = true) => {
         EventBus.emit("blend-game", { dialogTag });
-        this.smallHud.activate("dialog", dialogTag);
+        if (activate) this.smallHud.activate("dialog", dialogTag);
     };
 
     switchScene = (data: {current: string; next: string;}) => {

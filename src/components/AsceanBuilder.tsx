@@ -1,5 +1,5 @@
 import { createSignal, For, Show, Switch, Match, Accessor, Setter, lazy, Suspense } from "solid-js";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { Menu, SCREENS } from "../utility/screens";
 import { CharacterSheet, STARTING_CHARACTERS } from "../utility/ascean";
 import { Puff } from "solid-spinner";
@@ -27,25 +27,25 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
     const [showFaith, setShowFaith] = createSignal(false);
     const [showOrigin, setShowOrigin] = createSignal(false);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const photo = { 
-        "height": dimensions().ORIENTATION === "landscape" ? "auto" : "auto", 
-        "width": dimensions().ORIENTATION === "landscape" ? "5vw" : "15vw", 
-        "top": dimensions().ORIENTATION === "landscape" ? "3vh" : "0", 
-        "left": dimensions().ORIENTATION === "landscape" ? "20vw" : "3vw",
+        "height": dims.ORIENTATION === "landscape" ? "auto" : "auto", 
+        "width": dims.ORIENTATION === "landscape" ? "5vw" : "15vw", 
+        "top": dims.ORIENTATION === "landscape" ? "3vh" : "0", 
+        "left": dims.ORIENTATION === "landscape" ? "20vw" : "3vw",
         "border": "0.15em solid #fdf6d8", "border-radius": "50%",  };
     const font = { "font-size": "1em", margin: "0" };
-    const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block", "padding":"2%" };
+    const inline = { width: dims.ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block", "padding":"2%" };
     function toggle(attr: string) {
         setAttribute(Attributes.find(a => a.name === attr) as any);
         setAttrShow(!attrShow());
     };
     return <div class="stat-block superCenter" style={{ overflow: "hidden", "scrollbar-width": "none" }}>
-        <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION !== "landscape"}>
+        <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dims.ORIENTATION !== "landscape"}>
             <Preview newAscean={newAscean} />
         </Show>
         {/* <<---------- PORTRAIT ---------->> */}
-        <Show when={dimensions()?.ORIENTATION === "landscape"} fallback={ 
+        <Show when={dims?.ORIENTATION === "landscape"} fallback={ 
             <Switch>
                 <Match when={menu().screen === SCREENS.CHARACTER.KEY}>
                     <div class="border superCenter center" style={{ height: "70%", width: "85%", "margin-top": "10%" }}>

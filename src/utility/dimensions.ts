@@ -1,4 +1,4 @@
-import { createSignal, onCleanup } from "solid-js";
+import { createSignal, createRoot } from "solid-js";
 
 export type DIMS = {
   WIDTH: number;
@@ -6,20 +6,22 @@ export type DIMS = {
   ORIENTATION: "landscape" | "portrait";
 };
 
-export function useResizeListener() {
-    const getDims = (): DIMS => ({
-        WIDTH: window.innerWidth,
-        HEIGHT: window.innerHeight,
-        ORIENTATION: window.innerWidth > window.innerHeight ? "landscape" : "portrait"
-    });
+const getDims = (): DIMS => ({
+  WIDTH: window.innerWidth,
+  HEIGHT: window.innerHeight,
+  ORIENTATION: window.innerWidth > window.innerHeight ? "landscape" : "portrait"
+});
 
-    const [dimensions, setDimensions] = createSignal<DIMS>(getDims());
-
-    const handleResize = () => setDimensions(getDims());
-
+const [dimensions, _updateDimensions] = createRoot(() => {
+    const [dims, setDims] = createSignal<DIMS>(getDims());
+    
+    const handleResize = () => {
+        setDims(getDims())
+        // console.log({ height: dims().HEIGHT, width: dims().WIDTH });
+    };
     window.addEventListener("resize", handleResize);
+    
+    return [dims, setDims] as const;
+});
 
-    onCleanup(() => window.removeEventListener("resize", handleResize));
-
-    return dimensions;
-};
+export { dimensions };

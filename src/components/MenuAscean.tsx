@@ -1,5 +1,5 @@
-import { Accessor, createEffect, createMemo, createSignal, For, Setter } from "solid-js";
-import { useResizeListener } from "../utility/dimensions";
+import { Accessor, createMemo, createSignal, For, Setter } from "solid-js";
+import { dimensions } from "../utility/dimensions";
 import { Menu } from "../utility/screens";
 import { backgroundGradient, masteryColor } from "../utility/styling";
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
 };
 export default function MenuAscean({ menu, setMenu, viewAscean, loadAscean }: IProps) {
     const [focus, setFocus] = createSignal("");
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const shortDescription = (desc: string): string => desc.split(" ").slice(0, 3).join(" ") + (desc.split(" ").length > 3 ? "..." : "");
     const shortName = (name: string): string => name.split(" ").slice(0, 2).join(" ") + (name.split(" ").length > 2 ? "..." : "");
     // createEffect(() => {
@@ -30,11 +30,11 @@ export default function MenuAscean({ menu, setMenu, viewAscean, loadAscean }: IP
     const buttonStyle = {
         "margin-bottom": "5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em"
     };
-    return <div class="menu menu-3d" style={{ display: "inline-flex", "flex-direction": dimensions().ORIENTATION === "landscape" ? "row" : "column", "align-items": "center", "gap": "1%", "justify-content": "center" }}>
+    return <div class="menu menu-3d" style={{ display: "inline-flex", "flex-direction": dims.ORIENTATION === "landscape" ? "row" : "column", "align-items": "center", "gap": "1%", "justify-content": "center" }}>
         <For each={menu()?.asceans}> 
             {((asc, ind) => {
                 const style = createMemo(() => {
-                    const orientation = dimensions()?.ORIENTATION;
+                    const orientation = dims?.ORIENTATION;
                     const currentFocus = focus() === asc._id;
                     const length = menu()?.asceans.length;
                     const mastery = backgroundGradient(asc.mastery, currentFocus);
@@ -59,7 +59,7 @@ export default function MenuAscean({ menu, setMenu, viewAscean, loadAscean }: IP
                         "background": `linear-gradient(#000, ${mastery})`,
                     };
                 });
-                return <div class={dimensions().ORIENTATION === "landscape" ? "border center card glowJuice juice focused-card menu-item-3d" : "border center glowJuice juice"} 
+                return <div class={dims.ORIENTATION === "landscape" ? "border center card glowJuice juice focused-card menu-item-3d" : "border center glowJuice juice"} 
                     // label
                     id={`slot${ind()}`}
                     tabIndex={0}

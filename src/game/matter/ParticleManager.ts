@@ -320,6 +320,12 @@ export default class ParticleManager extends Phaser.Scene {
             particle = new Particle(this.context, action, key, player, special); 
             this.particles.push(particle);
         };
+        const config = {
+            key: particle.key,
+            repeat: -1
+        };
+
+        if (particle.isParticle === true) particle.effect.play(config);
 
         const duration = TIME[particle.action as keyof typeof TIME];
         const startX = particle.effect.x;

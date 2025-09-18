@@ -1,7 +1,9 @@
 import { createSignal, Show, For, Accessor, Setter } from "solid-js";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 import { click } from "../App";
+
+const dims = dimensions();
 
 export const FAITHS = [{
     name: "Ancients",
@@ -27,12 +29,11 @@ export const FAITHS = [{
 }]; 
 
 export const FaithModal = ({ faith }: { faith: string }) => {
-    const dimensions = useResizeListener();
     const religion = FAITHS.find((f) => f.worshipers === faith);
-    return <div class="border verticalCenter borderTalent" style={dimensions()?.ORIENTATION === "landscape" ? { position: "absolute", left: "15%", top: "48%", width: "70%", 
+    return <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ? { position: "absolute", left: "15%", top: "48%", width: "70%", 
         "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : {}}>
         <div class="creature-heading" style={{ "text-wrap": "balance" }}> 
-            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
+            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
             <p class="gold small wrap" style={{ margin: "3%" }}>{religion?.origin}</p>
             <h2 class="gold wrap" style={{ margin: "3%" }}>{religion?.character}</h2>
         </div>
@@ -41,7 +42,6 @@ export const FaithModal = ({ faith }: { faith: string }) => {
  
 const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; }) => {
     const [show, setShow] = createSignal(false);
-    const dimensions = useResizeListener();
     const handleShow = () => setShow(!show()); 
     const handleFaith = () => {
         setNewAscean({ ...newAscean(), faith: faith.worshipers });
@@ -50,9 +50,9 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
     };
     return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ "--glow-color":"gold", color: faith.worshipers === newAscean().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === newAscean().faith ? "texty 1s infinite ease alternate" : "none" }}>{faith.name}</button>}>
         <div class="modal" onClick={handleShow}>
-        <div class="border verticalCenter borderTalent" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%", top: "48%", "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : { }}>
+        <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%", top: "48%", "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : { }}>
         <div class="creature-heading" style={{ "white-space": "pre-wrap" }}> 
-            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
+            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
             <p class="gold small" style={{ margin: "3%" }}>{faith.origin}</p>
             <h2 class="gold wrap" style={{ margin: "3%" }}>{faith.character}</h2>
         </div>

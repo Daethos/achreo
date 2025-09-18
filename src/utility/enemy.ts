@@ -269,7 +269,7 @@ export const ENEMY_RANGED: MasteryAbility = {
 export const DISTANCE = {
     MIN: 0,
     ATTACK: 50,
-    MOMENTUM: 1,
+    MOMENTUM: -0.35,
     THRESHOLD: 75,
     CHASE: 125,
     COMBAT: 60,
@@ -478,6 +478,7 @@ export type EnemySheet = {
     health: number;
     isAggressive: boolean;
     startedAggressive: boolean;
+    isHostile: boolean;
     isCaerenic: boolean;
     isDefeated: boolean;
     isTriumphant: boolean;

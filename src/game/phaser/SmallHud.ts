@@ -373,12 +373,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     this.switches.settings = !this.switches.settings;
                     break;
                 case "info":
-                    this.switches.info = !this.switches.info;
                     EventBus.emit("set-show-player");
                     if (this.switches.info === true) {
                         this.closed = false;
                         this.draw();
                     };
+                    this.switches.info = !this.switches.info;
                     break;
                 case "dialog":
                     EventBus.emit("action-button-sound");

@@ -10,7 +10,7 @@ import { Game } from "./scenes/Game";
 import { MainMenu } from "./scenes/MainMenu";
 import { Hud } from "./scenes/Hud";
 import { Preloader } from "./scenes/Preloader";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { Intro } from "./scenes/Intro";
 import { Underground } from "./scenes/Underground";
 import { Arena } from "./scenes/Arena";
@@ -22,11 +22,11 @@ import Enemy from "./entities/Enemy";
 import Party from "./entities/PartyComputer";
 export type Play = Arena | ArenaCvC | Game | Gauntlet | Tutorial | Underground;
 export type Entity = Player | Enemy | Party;
-const dimensions = useResizeListener();
+const dims = dimensions();
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
-    height: dimensions().HEIGHT,
-    width: dimensions().WIDTH,
+    height: dims.HEIGHT,
+    width: dims.WIDTH,
     scale: {
         mode: Phaser.Scale.FIT, // FIT
         autoCenter: Phaser.Scale.CENTER_BOTH, // CENTER_BOTH

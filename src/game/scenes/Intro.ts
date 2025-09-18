@@ -2,8 +2,8 @@ import { Scene } from "phaser";
 import TextTyping from "phaser3-rex-plugins/plugins/texttyping.js";
 import { EventBus } from "../EventBus";
 import { INTRO_NODES } from "../../utility/scene";
-import { useResizeListener } from "../../utility/dimensions";
-const dimensions = useResizeListener();
+import { dimensions } from "../../utility/dimensions";
+const dims = dimensions();
 const WRAP = {
     HEIGHT: 0.7,
     WIDTH: 0.8
@@ -22,8 +22,8 @@ export class Intro extends Scene {
     constructor() {super("Intro");};
     preload() {};
     create() {
-        const height = dimensions()?.HEIGHT;
-        const width = dimensions()?.WIDTH;
+        const height = dims.HEIGHT;
+        const width = dims.WIDTH;
         const fontSize = width > 1024 ? "32px" : width > 768 ? "24px" : "20px";
         
         this.scene.sleep("Hud");

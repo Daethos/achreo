@@ -1,16 +1,16 @@
 import { createSignal, createEffect, Accessor, Setter } from "solid-js";
 import createGrace from "../utility/Grace";
 import Settings from "../models/settings";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 export default function GraceBubble({ grace, show, setShow, settings }: {grace:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings: Accessor<Settings>;}) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const { gracePercentage, usedGrace } = createGrace(grace);
     const [newGrace, setNewGrace] = createSignal(0);
     createEffect(() => setNewGrace(Math.round((gracePercentage() * grace() / 100))));
     function setText(setting: string) {
-        const smol = dimensions().WIDTH < 850;
-        const mobile = dimensions().WIDTH < 1024;
-        const desktop = dimensions().WIDTH > 1600;
+        const smol = dims.WIDTH < 850;
+        const mobile = dims.WIDTH < 1024;
+        const desktop = dims.WIDTH > 1600;
         switch (setting) {
             case "PERCENTAGE":
                 if (smol) {

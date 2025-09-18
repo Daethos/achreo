@@ -1,6 +1,6 @@
 import Enemy from "../entities/Enemy";
 import Player from "../entities/Player";
-import { Entity } from "../main";
+import { Entity, Play } from "../main";
 import { Hud } from "../scenes/Hud";
 import { ObjectPool } from "./ObjectPool";
 
@@ -26,11 +26,12 @@ export type CombatText = {
 
 export default class ScrollingCombatText extends Phaser.GameObjects.Container {
     private color: string;
-    private duration: number;
+    public duration: number;
     private timerTime: number;
     private constant: boolean;
     private pool: ObjectPool<ScrollingCombatText>;
     public text: Phaser.GameObjects.Text;
+    public dialog: boolean;
 
     constructor(scene: Phaser.Scene, pool: ObjectPool<ScrollingCombatText>, x: number = 0, y: number = 0) {
         super(scene, x, y);
@@ -73,9 +74,10 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         const tweenObj = { t: 0 };
 
         this.setPosition(startX, startY);
-        this.text.setActive(true).setVisible(true);
+        this.text.setActive(true).setVisible(true).setWordWrapWidth((this.scene as Play).cameras.main.width / 1.5, true);
 
         this.scene.tweens.add({
+            delay: 128,
             targets: tweenObj,
             t: 1,
             duration: this.duration,
@@ -90,14 +92,14 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
                 const curveX = constant ? pos.x - (this.text.displayWidth / 2) : startX + arcDirection * Math.sin(t * Math.PI) * arcAmplitude;
                 const curveY = constant ? startY : startY - t * floatHeight;
                 
-                const newAlpha = isNonNumeric
+                const newAlpha = isNonNumeric && constant
                     ? Phaser.Math.Interpolation.Linear([0.65, 1], t)
                     : critical 
                         ? 0.8 + Math.sin(t * Math.PI * 4) * 0.2
                         : Phaser.Math.Interpolation.Linear([0.9, 1.0, 0.75], t);
                 
-                const newScale = isNonNumeric
-                    ? Phaser.Math.Interpolation.Linear([0.75, 1], t) 
+                const newScale = isNonNumeric && constant
+                    ? Phaser.Math.Interpolation.Linear([0.65, 0.75], t) 
                     : critical 
                         ? 1 + Math.sin(t * Math.PI * 4) * 0.1
                         : Phaser.Math.Interpolation.Linear([initialScale, 1.1, 1], t);
@@ -110,7 +112,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         });
     };
 
-    public write(text: string, color?: string) {
+    public write(text: string, color?: string, duration: number = 2000) {
         const context = color 
             ? color : text.includes("Glancing") 
             ? GLANCE : text.includes("Critical") 
@@ -119,9 +121,9 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
             ? EFFECT : text.includes("Prayer") 
             ? TENDRIL : BONE
         this.color = this.setColor(context);
-        this.text.setText(text).setColor(this.color).setFontSize("20px").setFontStyle("italic");
+        this.text.setText(text).setColor(this.color).setFontSize("20px").setFontStyle("italic").setWordWrapWidth((this.scene as Hud).gameWidth / 3, true);
         this.timerTime = 0;
-        this.duration = 2000;
+        this.duration = duration;
         this.constant = false;
         (this.scene as Hud).combatText(this);
     };
@@ -168,7 +170,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
                 this.visible = false;
                 this.setScrollFactor(1);
                 this.setPosition(-1000, -1000);
-                this.text.setAlpha(1).setScale(1);
+                this.text.setAlpha(1).setScale(0.65);
                 this.pool.release(this);
             },
             callbackScope: this

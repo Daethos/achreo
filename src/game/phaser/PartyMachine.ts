@@ -878,6 +878,7 @@ export default class PlayerMachine {
     onComputerPostureEnter = () => {
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
+        this.player.setStatic(true);
     };
     onComputerPostureUpdate = (_dt: number) => {
         if (!this.player.isPosturing) this.player.evaluateCombatDistance();
@@ -887,6 +888,7 @@ export default class PlayerMachine {
         this.player.currentAction = "";
         this.player.computerAction = false;
         if (!this.player.isRanged) this.player.anims.play("player_idle", true);
+        this.player.setStatic(false);
     };
 
     onComputerThrustEnter = () => {

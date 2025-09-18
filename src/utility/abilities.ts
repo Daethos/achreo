@@ -1,4 +1,4 @@
-export const ACTIONS = ["Attack", "Posture", "Roll", "Dodge", "Jump", "Parry", "Thrust"];
+export const ACTIONS = Object.freeze(["Attack", "Posture", "Roll", "Dodge", "Jump", "Parry", "Thrust"]);
 export const SPECIALS = [
     "Invoke",
     "Consume",
@@ -35,6 +35,13 @@ export const SPECIALS = [
     "Kyrnaicism",
     "Leap",
     "Likyr",
+
+    // "Luckout (Arbituous)",
+    // "Luckout (Chiomic)",
+    // "Luckout (Kyr'naic)",
+    // "Luckout (Lilosian)",
+    // "Luckout (Tshaeral)",
+
     "Maiereth",
     "Malice",
     "Mark",
@@ -45,6 +52,16 @@ export const SPECIALS = [
     "Mystify",
     "Netherswap",
     "Paralyze",
+
+    // "Persuasion (Arbituous)",
+    // "Persuasion (Chiomic)",
+    // "Persuasion (Fyeran)",
+    // "Persuasion (Kyr'naic)",
+    // "Persuasion (Ilian)",
+    // "Persuasion (Lilosian)",
+    // "Persuasion (Shaorahi)",
+    // "Persuasion (Tshaeral)",
+    
     "Polymorph",
     "Protect",
     "Pursuit",

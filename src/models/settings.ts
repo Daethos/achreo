@@ -272,7 +272,7 @@ export default class Settings {
                 x: 0,
                 y: 0,
                 z: 0,
-                zoom: window.innerWidth > 1200 ? 3 : 1,
+                zoom: window.innerWidth > 1200 ? 3 : 1.5,
             },
             castbar: {
                 barHeight: 20,
@@ -321,14 +321,14 @@ export default class Settings {
             },
             leftHud: {
                 offset: 36,
-                scale: 0.08,
-                x: 0.365,
+                scale: 0.085,
+                x: 0.35,
                 y: 0.9125,
             },
             smallHud: { 
                 offset: 36,
-                scale: 0.08,
-                x: 0.495,
+                scale: 0.085,
+                x: 0.5,
                 y: 0.9125
             },
         };

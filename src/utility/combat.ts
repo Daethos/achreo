@@ -65,19 +65,15 @@ export type CombatStats =  {
     [key: string]: any;
 };
 
-// const actionMultipliers: { [key: string]: { physical: number; magical: number } } = {
 const actionMultipliers: { [key: string]: { physical: number; magical: number } } = {
-    [ACTION_TYPES.ACHIRE]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
-    [ACTION_TYPES.ARC]: { physical: DAMAGE.THREE, magical: DAMAGE.THREE },
-    [ACTION_TYPES.LEAP]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
-    [ACTION_TYPES.QUOR]: { physical: DAMAGE.THREE, magical: DAMAGE.THREE },
-    [ACTION_TYPES.RUSH]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
-    [ACTION_TYPES.WRITHE]: { physical: DAMAGE.ONE_FIFTY, magical: DAMAGE.ONE_FIFTY },
-    [ACTION_TYPES.STORM]: { physical: DAMAGE.NEG_LOW, magical: DAMAGE.NEG_LOW },
-    [ACTION_TYPES.THRUST]: { physical: DAMAGE.NEG_LOW, magical: DAMAGE.NEG_LOW },
-    // [ACTION_TYPES.ROLL]: combat.rollSuccess
-    //     ? { physical: DAMAGE.MID, magical: DAMAGE.MID }
-    //     : { physical: DAMAGE.NEG_HIGH, magical: DAMAGE.NEG_HIGH }
+    [ACTION_TYPES.ACHIRE]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
+    [ACTION_TYPES.ARC]: { physical: DAMAGE.TWO, magical: DAMAGE.TWO },
+    [ACTION_TYPES.LEAP]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
+    [ACTION_TYPES.QUOR]: { physical: DAMAGE.TWO, magical: DAMAGE.TWO },
+    [ACTION_TYPES.RUSH]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
+    [ACTION_TYPES.WRITHE]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
+    [ACTION_TYPES.STORM]: { physical: DAMAGE.SEVENTY_FIVE, magical: DAMAGE.SEVENTY_FIVE },
+    [ACTION_TYPES.THRUST]: { physical: DAMAGE.SEVENTY_FIVE, magical: DAMAGE.SEVENTY_FIVE },
 };
 
 
@@ -413,75 +409,75 @@ function phaserSuccessConcerns(parrySuccess: boolean, rollSuccess: boolean, comp
 //     switch (weather) {
 //         case "Alluring Isles":
 //             if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
-//                 physicalDamage *= DAMAGE.LOW;
-//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             break;
 //         case "Astralands":
-//             magicalDamage *= DAMAGE.LOW;
-//             physicalDamage *= DAMAGE.LOW;
+//             magicalDamage *= DAMAGE.ONE_TEN;
+//             physicalDamage *= DAMAGE.ONE_TEN;
 //             break;
 //         case "Fangs": 
 //             if (weapon.attackType === ATTACK_TYPES.PHYSICAL) {
 //                 if (weapon.type !== WEAPON_TYPES.BOW && weapon.type !== WEAPON_TYPES.GREATBOW) {
-//                     physicalDamage *= DAMAGE.LOW; // +10% Physical Melee Damage
+//                     physicalDamage *= DAMAGE.ONE_TEN; // +10% Physical Melee Damage
 //                 } else {
-//                     physicalDamage *= DAMAGE.NEG_HIGH; // -10% Physical Ranged Damage
+//                     physicalDamage *= DAMAGE.NINETY; // -10% Physical Ranged Damage
 //                 };
 //             } else {
 //                 if (weapon?.damageType?.includes(DAMAGE_TYPES.FIRE) || weapon?.damageType?.includes(DAMAGE_TYPES.FROST) || weapon?.damageType?.includes(DAMAGE_TYPES.EARTH) || weapon?.damageType?.includes(DAMAGE_TYPES.WIND) || weapon?.damageType?.includes(DAMAGE_TYPES.LIGHTNING) || weapon?.damageType?.includes(DAMAGE_TYPES.WILD)) {
-//                     magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
+//                     magicalDamage *= DAMAGE.ONE_TEN; // +10% Magical Damage
 //                 };
 //             };
 //             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-//                 magicalDamage *= DAMAGE.LOW; // +10% Magical Damage
+//                 magicalDamage *= DAMAGE.ONE_TEN; // +10% Magical Damage
 //             };
 //             break;
 //         case "Firelands":
-//             physicalDamage *= DAMAGE.LOW;
-//             magicalDamage *= DAMAGE.LOW;
+//             physicalDamage *= DAMAGE.ONE_TEN;
+//             magicalDamage *= DAMAGE.ONE_TEN;
 //             if (critical === true) {
-//                 magicalDamage *= DAMAGE.HIGH;
-//                 physicalDamage *= DAMAGE.HIGH;
+//                 magicalDamage *= DAMAGE.ONE_THIRTY;
+//                 physicalDamage *= DAMAGE.ONE_THIRTY;
 //             };
 //             break;
 //         case "Kingdom":
-//             physicalDamage *= DAMAGE.LOW;
+//             physicalDamage *= DAMAGE.ONE_TEN;
 //             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-//                 magicalDamage *= DAMAGE.LOW;
-//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             break;
 //         case "Licivitas":
 //             if (weapon?.influences?.[0] === DEITIES.DAETHOS) {
-//                 magicalDamage *= DAMAGE.MID;
-//                 physicalDamage *= DAMAGE.MID;
+//                 magicalDamage *= DAMAGE.ONE_FIFTEEN;
+//                 physicalDamage *= DAMAGE.ONE_FIFTEEN;
 //             };
 //             if (critical === true) {
-//                 magicalDamage *= DAMAGE.HIGH;
-//                 physicalDamage *= DAMAGE.HIGH;
+//                 magicalDamage *= DAMAGE.ONE_THIRTY;
+//                 physicalDamage *= DAMAGE.ONE_THIRTY;
 //             };
 //             break;
 //         case "Sedyrus":
-//             magicalDamage *= DAMAGE.LOW;
+//             magicalDamage *= DAMAGE.ONE_TEN;
 //             if (weapon?.influences?.[0] !== DEITIES.DAETHOS) {
-//                 magicalDamage *= DAMAGE.LOW;
-//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             if (weapon.type === WEAPON_TYPES.BOW || weapon.type === WEAPON_TYPES.GREATBOW) {
-//                 physicalDamage *= DAMAGE.LOW;
-//                 magicalDamage *= DAMAGE.LOW;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             if (critical === true) {
-//                 magicalDamage *= DAMAGE.LOW;
-//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             break;
 //         case "Soverains":
-//             magicalDamage *= DAMAGE.LOW;
+//             magicalDamage *= DAMAGE.ONE_TEN;
 //             if (weapon.influences?.[0] !== DEITIES.DAETHOS) {
-//                 magicalDamage *= DAMAGE.LOW;
-//                 physicalDamage *= DAMAGE.LOW;
+//                 magicalDamage *= DAMAGE.ONE_TEN;
+//                 physicalDamage *= DAMAGE.ONE_TEN;
 //             };
 //             break;
 //         default:
@@ -972,14 +968,16 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefense: number
             combat.realizedComputerDamage *= (caeren / 150);
         };
     };
-    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;    
-    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
-    if (computerAction === ACTION_TYPES.ACHIRE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (computerAction === ACTION_TYPES.QUOR) combat.realizedComputerDamage *= DAMAGE.THREE;
-    if (computerAction === ACTION_TYPES.LEAP) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (computerAction === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (computerAction === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_FIFTY;
-    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.ONE_TEN;
+    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NINETY;
+    if (computerAction === ACTION_TYPES.ACHIRE) combat.realizedComputerDamage *= DAMAGE.ONE_TWENTY_FIVE;
+    if (computerAction === ACTION_TYPES.QUOR) combat.realizedComputerDamage *= DAMAGE.TWO;
+    if (computerAction === ACTION_TYPES.LEAP) combat.realizedComputerDamage *= DAMAGE.ONE_TWENTY_FIVE;
+    if (computerAction === ACTION_TYPES.RUSH) combat.realizedComputerDamage *= DAMAGE.ONE_TWENTY_FIVE;
+    if (computerAction === ACTION_TYPES.WRITHE) combat.realizedComputerDamage *= DAMAGE.ONE_TWENTY_FIVE;
+
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.ONE_TEN;
+
     combat.realizedComputerDamage *= stal;
     combat.realizedComputerDamage *= caer.neg;
     combat.realizedComputerDamage *= computerCaer.pos;
@@ -1019,16 +1017,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.HIGH;
-                            computerMagicalDamage *= DAMAGE.MID;
+                            computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.HIGH;
-                        computerMagicalDamage *= DAMAGE.MID;
+                        computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (combat.computerWeapons[0].attackType === ATTACK_TYPES.MAGIC) {
@@ -1039,16 +1037,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.MID;
-                            computerMagicalDamage *= DAMAGE.HIGH;
+                            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.MID;
-                        computerMagicalDamage *= DAMAGE.HIGH;
+                        computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
         };
@@ -1061,16 +1059,16 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else { 
-                            computerPhysicalDamage *= DAMAGE.HIGH;
-                            computerMagicalDamage *= DAMAGE.MID;
+                            computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else { 
-                        computerPhysicalDamage *= DAMAGE.HIGH;
-                        computerMagicalDamage *= DAMAGE.MID;
+                        computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (combat.computerWeapons[0].attackType === ATTACK_TYPES.MAGIC) {
@@ -1081,79 +1079,83 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
                             computerDualWieldCompiler(combat, playerPhysicalDefense, playerMagicalDefense);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.MID;
-                            computerMagicalDamage *= DAMAGE.HIGH;
+                            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.MID;
-                        computerMagicalDamage *= DAMAGE.HIGH;
+                        computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (combat.computerWeapons[0].type === WEAPON_TYPES.BOW || combat.computerWeapons[0].type === WEAPON_TYPES.GREATBOW) {
-                computerPhysicalDamage *= DAMAGE.HIGH;
-                computerMagicalDamage *= DAMAGE.HIGH; 
+                computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                computerMagicalDamage *= DAMAGE.ONE_THIRTY; 
             };
         };
     };
     if (computerAction === ACTION_TYPES.ROLL ) {
         if (combat.computerRollSuccess === true) {
-            computerPhysicalDamage *= DAMAGE.MID;
-            computerMagicalDamage *= DAMAGE.MID;
+            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
         } else {
-            computerPhysicalDamage *= DAMAGE.NEG_HIGH;
-            computerMagicalDamage *= DAMAGE.NEG_HIGH;
+            computerPhysicalDamage *= DAMAGE.NINETY;
+            computerMagicalDamage *= DAMAGE.NINETY;
         };
     };
     if (computerAction === ACTION_TYPES.POSTURE) {
         if (!combat.action) {
-            computerPhysicalDamage *= DAMAGE.NEG_HIGH;
-            computerMagicalDamage *= DAMAGE.NEG_HIGH;
+            computerPhysicalDamage *= DAMAGE.NINETY;
+            computerMagicalDamage *= DAMAGE.NINETY;
         } else {
-            computerPhysicalDamage *= DAMAGE.LOW;
-            computerMagicalDamage *= DAMAGE.LOW;
+            computerPhysicalDamage *= DAMAGE.ONE_TEN;
+            computerMagicalDamage *= DAMAGE.ONE_TEN;
         };
     };
     if (computerAction === ACTION_TYPES.ACHIRE) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
-    if (computerAction === ACTION_TYPES.LEAP ) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.LEAP) {
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
     if (computerAction === ACTION_TYPES.QUOR) {
-        computerPhysicalDamage *= DAMAGE.THREE;
-        computerMagicalDamage *= DAMAGE.THREE;
+        computerPhysicalDamage *= DAMAGE.TWO;
+        computerMagicalDamage *= DAMAGE.TWO;
     };
-    if (computerAction === ACTION_TYPES.RUSH ) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.RUSH) {
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
-    if (computerAction === ACTION_TYPES.THRUST ) {
-        computerPhysicalDamage *= DAMAGE.NEG_LOW;
-        computerMagicalDamage *= DAMAGE.NEG_LOW;
+    if (computerAction === ACTION_TYPES.THRUST) {
+        computerPhysicalDamage *= DAMAGE.SEVENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.SEVENTY_FIVE;
     };
-    if (computerAction === ACTION_TYPES.WRITHE ) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+    if (computerAction === ACTION_TYPES.WRITHE) {
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
+
     const criticalClearance = Math.floor(Math.random() * 101);
     let criticalChance = combat.computerWeapons[0].criticalChance;
     criticalChance -= (combat.playerAttributes?.kyosirMod as number / 2);
     // if (combat.weather === "Astralands") criticalChance += 10;
     const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.computerGlancingBlow, combat.computerCriticalSuccess);
+    
     combat.computerGlancingBlow = criticalResult.glancingBlow;
     combat.computerCriticalSuccess = criticalResult.criticalSuccess;
     computerPhysicalDamage = criticalResult.physicalDamage;
     computerMagicalDamage = criticalResult.magicalDamage;
+    
     const physicalPenetration = combat.computerWeapons?.[0].physicalPenetration as number;
     const magicalPenetration = combat.computerWeapons?.[0].magicalPenetration as number;
     computerPhysicalDamage *= penetrationCompiler(playerPhysicalDefense, physicalPenetration);
     computerMagicalDamage *= penetrationCompiler(playerMagicalDefense, magicalPenetration);
+    
     const damageType = damageTypeCompiler(combat.computerDamageType, combat.player as Ascean, combat.computerWeapons[0], computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;
@@ -1166,15 +1168,17 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
 
     if (computerTotalDamage < 0) computerTotalDamage = 0;
     combat.realizedComputerDamage = computerTotalDamage;
-    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
-    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
-    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.LOW;
+    if (combat.action === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.ONE_TEN;
+    if (combat.action === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NINETY;
+    if (combat.prayerData.includes(PRAYERS.AVARICE)) combat.realizedComputerDamage *= DAMAGE.ONE_TEN;
     combat.realizedComputerDamage *= stal;
     combat.realizedComputerDamage *= caer.neg;
     combat.realizedComputerDamage *= computerCaer.pos;
     if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
+
     combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${combat.computerWeapons[0].name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? "damage (Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
+    
     if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
             combat.newPlayerHealth = 1;
@@ -1184,8 +1188,10 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
             combat.computerWin = true;
         };
     };
-    if (combat.newPlayerHealth > 0) combat.computerWin = false;
-    if (combat.newComputerHealth > 0) combat.playerWin = false;
+
+    combat.computerWin = combat.newPlayerHealth <= 0;
+    combat.playerWin = combat.newComputerHealth <= 0;
+
     return combat;
 }; 
     
@@ -1294,14 +1300,14 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
     };
 
     if (combat.computerAction === ACTION_TYPES.ATTACK) {
-        combat.realizedPlayerDamage *= DAMAGE.LOW;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_TEN;
     };
     if (combat.computerAction === ACTION_TYPES.POSTURE) {
-        combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+        combat.realizedPlayerDamage *= DAMAGE.NINETY;
     };
 
     if (playerAction === ACTION_TYPES.ROLL) {
-        const rollMult = combat.rollSuccess ? DAMAGE.MID : DAMAGE.NEG_HIGH;
+        const rollMult = combat.rollSuccess ? DAMAGE.ONE_FIFTEEN : DAMAGE.NINETY;
         combat.realizedPlayerDamage *= rollMult;
     } else {
         const mult = actionMultipliers[playerAction];
@@ -1312,18 +1318,18 @@ function dualWieldCompiler(combat: Combat, computerPhysicalDefense: number, comp
 
     if (playerAction === ACTION_TYPES.POSTURE) {
         if (combat.computerAction) {
-            combat.realizedPlayerDamage *= DAMAGE.LOW;
+            combat.realizedPlayerDamage *= DAMAGE.ONE_TEN;
         } else {
-            combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+            combat.realizedPlayerDamage *= DAMAGE.NINETY;
         };
     };
 
     
-    if (playerAction === ACTION_TYPES.THRUST ) {
+    if (playerAction === ACTION_TYPES.THRUST) {
         if (combat.physicals.thrust.enhanced) {
-            combat.realizedPlayerDamage *= DAMAGE.LOW;
+            combat.realizedPlayerDamage *= DAMAGE.ONE_TEN;
         } else {
-            combat.realizedPlayerDamage *= DAMAGE.NEG_LOW;
+            combat.realizedPlayerDamage *= DAMAGE.SEVENTY_FIVE;
         };
     };
 
@@ -1396,16 +1402,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= DAMAGE.HIGH;
-                            playerMagicalDamage *= DAMAGE.MID;
+                            playerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            playerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else {
-                        playerPhysicalDamage *= DAMAGE.HIGH;
-                        playerMagicalDamage *= DAMAGE.MID;
+                        playerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        playerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    playerPhysicalDamage *= DAMAGE.LOW;
-                    playerMagicalDamage *= DAMAGE.LOW;
+                    playerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    playerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (mainWeapon.attackType === ATTACK_TYPES.MAGIC) {
@@ -1416,16 +1422,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= DAMAGE.MID;
-                            playerMagicalDamage *= DAMAGE.HIGH;
+                            playerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            playerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         };
                     } else {
-                        playerPhysicalDamage *= DAMAGE.MID;
-                        playerMagicalDamage *= DAMAGE.HIGH;
+                        playerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        playerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    playerPhysicalDamage *= DAMAGE.LOW;
-                    playerMagicalDamage *= DAMAGE.LOW;
+                    playerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    playerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
         };
@@ -1438,16 +1444,16 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= DAMAGE.HIGH;
-                            playerMagicalDamage *= DAMAGE.MID;
+                            playerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            playerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else {
-                        playerPhysicalDamage *= DAMAGE.HIGH;
-                        playerMagicalDamage *= DAMAGE.MID;
+                        playerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        playerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    playerPhysicalDamage *= DAMAGE.LOW;
-                    playerMagicalDamage *= DAMAGE.LOW;
+                    playerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    playerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (mainWeapon.attackType === ATTACK_TYPES.MAGIC) {
@@ -1458,26 +1464,26 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
                             dualWieldCompiler(combat, computerPhysicalDefense, computerMagicalDefense);
                             return combat;
                         } else {
-                            playerPhysicalDamage *= DAMAGE.MID;
-                            playerMagicalDamage *= DAMAGE.HIGH;
+                            playerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            playerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         }
                     } else {
-                        playerPhysicalDamage *= DAMAGE.MID;
-                        playerMagicalDamage *= DAMAGE.HIGH;
+                        playerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        playerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    playerPhysicalDamage *= DAMAGE.LOW;
-                    playerMagicalDamage *= DAMAGE.LOW;
+                    playerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    playerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (mainWeapon.type === WEAPON_TYPES.BOW || mainWeapon.type !== WEAPON_TYPES.GREATBOW) {
-                playerPhysicalDamage *= DAMAGE.HIGH;
-                playerMagicalDamage *= DAMAGE.HIGH;
+                playerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                playerMagicalDamage *= DAMAGE.ONE_THIRTY;
             };
         }; 
     };
     if (playerAction === ACTION_TYPES.ROLL) {
-        const rollMult = combat.rollSuccess ? DAMAGE.MID : DAMAGE.NEG_HIGH;
+        const rollMult = combat.rollSuccess ? DAMAGE.ONE_FIFTEEN : DAMAGE.NINETY;
         playerPhysicalDamage *= rollMult;
         playerMagicalDamage *= rollMult;
     } else {
@@ -1512,10 +1518,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     };
     combat.realizedPlayerDamage = playerTotalDamage;
     if (combat.computerAction === ACTION_TYPES.ATTACK) {
-        combat.realizedPlayerDamage *= DAMAGE.LOW;
+        combat.realizedPlayerDamage *= DAMAGE.ONE_TEN;
     };
     if (combat.computerAction === ACTION_TYPES.POSTURE) {
-        combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+        combat.realizedPlayerDamage *= DAMAGE.NINETY;
     };
     
     if (playerAction === ACTION_TYPES.POSTURE) {
@@ -1524,9 +1530,9 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
             combat.realizedPlayerDamage *= num;
         };
         if (combat.computerAction) {
-            combat.realizedPlayerDamage *= DAMAGE.LOW;
+            combat.realizedPlayerDamage *= DAMAGE.ONE_TEN;
         } else {
-            combat.realizedPlayerDamage *= DAMAGE.NEG_HIGH;
+            combat.realizedPlayerDamage *= DAMAGE.NINETY;
         };
     };
     
@@ -1908,6 +1914,7 @@ function newDataCompiler(combat: Combat): any {
         npcType: combat.npcType,
         isEnemy: combat.isEnemy,
         isAggressive: combat.isAggressive,
+        isHostile: combat.isHostile,
         startedAggressive: combat.startedAggressive,
         physicals: combat.physicals,
         isStealth: combat.isStealth,

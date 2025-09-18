@@ -1,4 +1,4 @@
-import { useResizeListener } from "../../utility/dimensions";
+import { dimensions } from "../../utility/dimensions";
 import { EventBus } from "../EventBus";
 import { Hud } from "../scenes/Hud";
 const COLORS = {
@@ -9,7 +9,7 @@ const COLORS = {
     TENDRIL: 0x800080,
     FYERUS: 0xE0115F,
 };
-const dimensions = useResizeListener();
+const dims = dimensions();
 
 export default class CastingBar extends Phaser.GameObjects.Container {
     private bar: Phaser.GameObjects.Graphics;
@@ -48,7 +48,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
             this.barY = (scene as Hud).settings.positions.castbar.barY;
             this.barHeight = (scene as Hud).settings.positions.castbar.barHeight;
             this.barWidth = (scene as Hud).settings.positions.castbar.barWidth;
-            this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - this.barY);
+            this.setPosition(dims.WIDTH / 2, dims.HEIGHT - 40 - this.barY);
             this.borderColor = 0x000000;
             this.fillColor = COLORS.CAST;
             this.bar = new Phaser.GameObjects.Graphics(scene);
@@ -151,7 +151,7 @@ export default class CastingBar extends Phaser.GameObjects.Container {
 
     private yCastbar = (y: number) => {
         this.barY = y;
-        this.setPosition(dimensions().WIDTH / 2, dimensions().HEIGHT - 40 - y);
+        this.setPosition(dims.WIDTH / 2, dims.HEIGHT - 40 - y);
     };
 
     private showCastbar = (show: boolean) => {

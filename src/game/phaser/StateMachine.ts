@@ -13,6 +13,7 @@ export const States = {
     AWARE: "aware",
     CHASE: "chase",
     FOLLOW: "follow",
+    HOSTILE: "hostile",
     IDLE: "idle",
     MOVING: "moving",
     LEASH: "leash",
@@ -104,6 +105,28 @@ export const States = {
     IMPERMANENCE: "impermanence",
     SEER: "seer",
     STIMULATE: "stimulate",
+
+    AVOIDANCE: "avoidance", // New Physical
+    CAERENICISM: "caerenicism", // New Special
+
+    LUCKOUT: "luckout",
+
+    "LUCKOUT (ARBITUOUS)": "luckout",
+    "LUCKOUT (CHIOMIC)": "luckout",
+    "LUCKOUT (KYR'NAIC)": "luckout",
+    "LUCKOUT (LILOSIAN)": "luckout",
+    "LUCKOUT (TSHAERAL)": "luckout",
+
+    PERSUASION: "persuasion",
+
+    "PERSUASION (ARBITUOUS)": "persuasion",
+    "PERSUASION (CHIOMIC)": "persuasion",
+    "PERSUASION (FYERAN)": "persuasion",
+    "PERSUASION (KYR'NAIC)": "persuasion",
+    "PERSUASION (ILIAN)": "persuasion",
+    "PERSUASION (LILOSIAN)": "persuasion",
+    "PERSUASION (SHAORAHI)": "persuasion",
+    "PERSUASION (TSHAERAL)": "persuasion",
 
     // Meta Machine
     CLEAN: "clean",

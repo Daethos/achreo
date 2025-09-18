@@ -1,20 +1,20 @@
 import { Accessor, createSignal, Show, lazy, Suspense, createEffect } from "solid-js";
 import { AttributeCompiler, AttributeNumberModal } from "./Attributes";
 import { Attributes } from "../utility/attributes";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { Puff } from "solid-spinner";
 import { OriginModal } from "./Origin";
 import { FaithModal } from "./Faith";
 import { backgroundGradient, masteryColor } from "../utility/styling";
-import { Quest } from "../utility/quests";
+// import { Quest } from "../utility/quests";
 const AsceanImageCard = lazy(async () => await import("./AsceanImageCard"));
 const ItemModal = lazy(async () => await import("./ItemModal"));
 const AttributeModal = lazy(async () => await import("./Attributes"));
 
 export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const [show, setShow] = createSignal(false);
     const [showFaith, setShowFaith] = createSignal(false);
     const [showOrigin, setShowOrigin] = createSignal(false);
@@ -24,16 +24,16 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const viewMargin = { margin: "2% auto", width: "95%", "font-family": "Trajan Pro" };
     const [positioning, setPositioning] = createSignal({
-        top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
-        left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
+        top: dims.WIDTH > 1800 ? "33%" : dims.WIDTH > 1400 ? "30%" : "50%",
+        left: dims.WIDTH > 1800 ? "27.5%" : dims.WIDTH > 1400 ? "25%" : "50%",
     });
     createEffect(() => {
         setPositioning({
-            top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1400 ? "30%" : "50%",
-            left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1400 ? "25%" : "50%",
+            top: dims.WIDTH > 1800 ? "33%" : dims.WIDTH > 1400 ? "30%" : "50%",
+            left: dims.WIDTH > 1800 ? "27.5%" : dims.WIDTH > 1400 ? "25%" : "50%",
         });
     });
-    return <Show when={dimensions().ORIENTATION === "landscape"} fallback={
+    return <Show when={dims.ORIENTATION === "landscape"} fallback={
         <div class="border superCenter center" style={{ height: "100", width: "85%", overflow: "scroll", "scrollbar-width": "none" }}>
         <div class="creature-heading" style={{ width: "100%", height: "100%" }}>
             <h1>{ascean().name}</h1>

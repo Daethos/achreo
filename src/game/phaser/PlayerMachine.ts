@@ -9,8 +9,15 @@ import { BlendModes } from "phaser";
 import { Play } from "../main";
 import PlayerComputer from "../entities/PlayerComputer";
 import Party from "../entities/PartyComputer";
-import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
+import { BONE, CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "./ScrollingCombatText";
 import { CHIOMISM, SACRIFICE, SUTURE } from "../../utility/combatTypes";
+import Ascean from "../../models/ascean";
+import { LevelSheet } from "../../utility/ascean";
+import { TRAIT_DESCRIPTIONS } from "../../utility/traits";
+import Enemy from "../entities/Enemy";
+
+const enemyArticle = (enemy: Enemy) => ["a", "e", "i", "o", "u"].includes(enemy.ascean.name.charAt(0).toLowerCase()) ? "an" : "a";
+
 const DURATION = {
     CONSUMED: 2000,
     CONFUSED: 6000,
@@ -54,6 +61,8 @@ export default class PlayerMachine {
             .addState(States.EVADE, { onEnter: this.onEvasionEnter, onUpdate: this.onEvasionUpdate }) // onExit: this.onEvasionExit
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
             .addState(States.CONTEMPLATE, { onEnter: this.onContemplateEnter, onUpdate: this.onContemplateUpdate }) // , onExit: this.onContemplateExit
+            .addState(States.PERSUASION, { onEnter: this.onPersuasionEnter, onUpdate: this.onPersuasionUpdate, onExit: this.onPersuasionExit }) // , onExit: this.onContemplateExit
+            .addState(States.LUCKOUT, { onEnter: this.onLuckoutEnter, onUpdate: this.onLuckoutUpdate, onExit: this.onLuckoutExit }) // , onExit: this.onContemplateExit
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
@@ -1004,6 +1013,7 @@ export default class PlayerMachine {
         this.player.swingReset(States.POSTURE, true);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
         this.player.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPosturing = false);
+        this.player.setStatic(true); // Experimental
     };
     onPostureUpdate = (_dt: number) => {
         this.player.combatChecker(this.player.isPosturing);
@@ -1014,6 +1024,7 @@ export default class PlayerMachine {
         this.player.spriteShield.setVisible(this.player.isStalwart); 
         this.player.computerAction = false;
         this.player.isPosturing = false;
+        this.player.setStatic(false); // Experimental
     };
 
     onDodgeEnter = () => {
@@ -1763,6 +1774,266 @@ export default class PlayerMachine {
         this.player.checkTalentCost(States.LEAP, PLAYER.STAMINA.LEAP);
     };
 
+    onLuckoutEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        const zero = this.player.buttonPressed.split(" ")[0].toLowerCase();
+        const one = this.player.buttonPressed.split(" ")[1].toLowerCase();
+        const duration = this.player.checkTalentEnhanced(zero.toLowerCase()) ? PLAYER.DURATIONS.LUCKOUT / 2 : PLAYER.DURATIONS.LUCKOUT;
+        this.player.startCasting("Luckout", duration, true, true, false);
+        this.player.luckoutLock = one;
+        
+        let luck = this.player.luckoutLock.split("(")[1].split(")")[0];
+        const luckoutTrait = TRAIT_DESCRIPTIONS[luck.charAt(0).toUpperCase() + luck.slice(1)];
+        const enemy = this.player.currentTarget;
+        const influence = this.scene.state.weapons?.[0]?.influences?.[0] as string;
+
+        const text = `${luckoutTrait?.luckout?.action
+            .replace("{enemy.name}", enemy.ascean.name)
+            .replace("{ascean.weaponOne.influences[0]}", influence)
+            .replace("{ascean.name}", this.player.ascean.name)
+            .replace("{enemy.weaponOne.influences[0]}", enemy.computerCombatSheet?.computerWeapons?.[0]?.influences?.[0] as string)
+            .replace("{enemy.faith}", enemy.ascean.faith)
+            .replace("{article}", enemyArticle(enemy))}`;
+
+        this.scene.showCombatText(this.player, text, 3000, BONE, false, true);
+    
+        // this.player.setStatic(true);
+    };
+    onLuckoutUpdate = (dt: number) => {
+        if (this.player.moving()) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time <= 0 && this.player.isCasting) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting) this.player.castbar.update(dt, "channel", "TENDRIL");
+    };
+    onLuckoutExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.handleLuckout();
+            this.player.castingSuccess = false;
+            this.player.checkTalentCost("luckout", PLAYER.STAMINA[this.player.buttonPressed as keyof typeof PLAYER.STAMINA]);
+            if (!this.player.isComputer) this.player.checkTalentCooldown("luckout", PLAYER.COOLDOWNS.SHORT);
+        };
+        this.player.stopCasting();
+        this.player.luckoutLock = "";
+    };
+
+    handleLuckout = () => {
+        const enemy = this.player?.currentTarget?.enemyID === this.player.spellTarget ? this.player.currentTarget : this.scene.combatManager.combatant(this.player.spellTarget);
+        const player = this.scene.state.player as Ascean;
+        let playerLuck = 0, enemyLuck = 0;
+        let luck = this.player.luckoutLock.split("(")[1].split(")")[0], luckout = false, particle = "";
+        const luckoutTrait = TRAIT_DESCRIPTIONS[luck.charAt(0).toUpperCase() + luck.slice(1)];
+        // console.log({luck, luckoutTrait});
+        switch (luck) {
+            case "arbituous":
+                playerLuck = player.achre + player.constitution;
+                enemyLuck = enemy.ascean.achre + enemy.ascean.constitution;
+                particle = "Wild";
+                break;
+            case "chiomic":
+                playerLuck = player.achre + player.kyosir;
+                enemyLuck = enemy.ascean.achre + enemy.ascean.kyosir;
+                particle = "Sorcery";
+                break;
+            case "kyr'naic":
+                playerLuck = player.constitution + player.kyosir;
+                enemyLuck = enemy.ascean.constitution + enemy.ascean.kyosir;
+                particle = "Spooky";
+                break;
+            case "lilosian":
+                playerLuck = player.caeren + player.constitution;
+                enemyLuck = enemy.ascean.caeren + enemy.ascean.constitution;
+                particle = "Righteous";
+                break;
+            default: break;
+        };
+
+        const influence = this.scene.state.weapons?.[0]?.influences?.[0] as string;
+
+        enemyLuck *= 1.25;
+
+        if (playerLuck >= enemyLuck) {
+            const experience = Math.min(player.level * 1000, player.experience + Math.round(enemy.ascean.level * 100 * (enemy.ascean.level / player.level)) + (this.scene.state.playerAttributes?.rawKyosir as number));
+            const loot = { enemyID: enemy.enemyID, level: enemy.ascean.level };
+            const state: LevelSheet = {
+                ascean: player,
+                currency: player.currency,
+                currentHealth: this.scene.state.newPlayerHealth,
+                experience: player.experience,
+                experienceNeeded: player.level * 1000,
+                faith: player.faith,
+                firewater: player.firewater,
+                mastery: player.mastery,
+                avarice: this.scene.state.prayerData.length ? this.scene.state.prayerData.includes("Avavrice") : false,
+                opponent: enemy.ascean.level,
+                opponentExp: experience,
+                constitution: 0,
+                strength: 0,
+                agility: 0,
+                achre: 0,
+                caeren: 0,
+                kyosir: 0,
+            };
+            luckout = true;
+            
+            EventBus.emit("gain-experience", state);
+            EventBus.emit("enemy-loot", loot);
+            EventBus.emit("luckout", { luck, luckout });
+
+            const num = Math.floor(Math.random() * 2);
+            console.log(luckoutTrait?.luckout?.success[num]);
+            const text = `${luckoutTrait?.luckout?.success[num]
+                .replace("{enemy.name}", enemy.ascean.name)
+                .replace("{ascean.weaponOne.influences[0]}", influence)
+                .replace("{ascean.name}", player.name)
+                .replace("{enemy.weaponOne.influences[0]}", enemy.computerCombatSheet.computerWeapons?.[0].influences?.[0])
+                .replace("{enemy.faith}", enemy.ascean.faith)
+                .replace("{article}", enemyArticle(enemy))}`;
+            
+            this.scene.sound.play("dungeon", { volume: this.scene.hud.settings.volume });
+            this.scene.hud.showCombatHud(text, "bone", 8000);
+            this.scene.combatManager.hitFeedbackSystem.emitParticles(new Phaser.Math.Vector2(enemy.x, enemy.y), particle, true, false, false);    
+        } else {
+            EventBus.emit("luckout", { luck, luckout });
+            
+            const text = `${luckoutTrait?.luckout?.failure
+                .replace("{enemy.name}", enemy.ascean.name)
+                .replace("{ascean.weaponOne.influences[0]}", influence)
+                .replace("{ascean.name}", player.name)
+                .replace("{enemy.weaponOne.influences[0]}", enemy.computerCombatSheet.computerWeapons?.[0].influences?.[0])
+                .replace("{enemy.faith}", enemy.ascean.faith)
+                .replace("{article}", enemyArticle(enemy))}.`
+          
+            this.scene.hud.showCombatHud(text, "damage", 8000);
+        };
+    };
+
+    onPersuasionEnter = () => {
+        if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return;
+        const zero = this.player.buttonPressed.split(" ")[0].toLowerCase();
+        const one = this.player.buttonPressed.split(" ")[1].toLowerCase();
+        const duration = this.player.checkTalentEnhanced(zero) ? PLAYER.DURATIONS.PERSUASION / 2 : PLAYER.DURATIONS.PERSUASION;
+        this.player.startCasting("Persuasion", duration, true, true, false);
+        this.player.persuasionLock = one.toLowerCase();
+        
+        let persuasion = this.player.persuasionLock.split("(")[1].split(")")[0];
+        const persuasionTrait = TRAIT_DESCRIPTIONS[persuasion.charAt(0).toUpperCase() + persuasion.slice(1)];
+        const enemy = this.player.currentTarget;
+        const influence = this.scene.state.weapons?.[0]?.influences?.[0] as string;
+
+        const text = `${persuasionTrait?.persuasion?.action
+            .replace("{enemy.name}", enemy.ascean.name)
+            .replace("{ascean.weaponOne.influences[0]}", influence)
+            .replace("{ascean.name}", this.player.ascean.name)
+            .replace("{enemy.weaponOne.influences[0]}", this.scene.state.computerWeapons?.[0]?.influences?.[0] as string)
+            .replace("{enemy.faith}", enemy.ascean.faith)
+            .replace("{article}", enemyArticle(enemy))}`;
+
+        this.scene.showCombatText(this.player, text, 3000, BONE, false, true);
+
+        if (this.player.checkTalentOptimized(zero)) this.player.setStatic(true);
+    };
+    onPersuasionUpdate = (dt: number) => {
+        if (this.player.moving()) this.player.isCasting = false;
+        this.player.combatChecker(this.player.isCasting);
+        if (this.player.castbar.time <= 0 && this.player.isCasting) {
+            this.player.castingSuccess = true;
+            this.player.isCasting = false;
+        };
+        if (this.player.isCasting) this.player.castbar.update(dt, "channel", "TENDRIL");
+    };
+    onPersuasionExit = () => {
+        if (this.player.castingSuccess === true) {
+            this.handlePersuasion();
+            this.player.castingSuccess = false;
+            if (!this.player.isComputer) this.player.checkTalentCooldown("persuasion", PLAYER.COOLDOWNS.SHORT);
+            this.player.checkTalentCost("persuasion", PLAYER.STAMINA[this.player.buttonPressed as keyof typeof PLAYER.STAMINA]);
+        };
+        this.player.stopCasting();
+        this.player.persuasionLock = "";
+        if (this.player.checkTalentOptimized(this.player.buttonPressed.split(" ")[0].toLowerCase())) this.player.setStatic(false);
+    };
+
+    handlePersuasion = () => {
+        const enemy = this.player?.currentTarget?.enemyID === this.player.spellTarget ? this.player.currentTarget : this.scene.combatManager.combatant(this.player.spellTarget);
+        const player = this.scene.state.player as Ascean;
+        let playerPersuasion = 0, enemyPersuasion = 0;
+        let persuasion = this.player.persuasionLock.split("(")[1].split(")")[0], persuaded = false;
+        const persuasionTrait = TRAIT_DESCRIPTIONS[persuasion.charAt(0).toUpperCase() + persuasion.slice(1)];
+    
+        switch (persuasion) {
+            case "arbituous":
+                playerPersuasion = player.achre + player.constitution;
+                enemyPersuasion = enemy.ascean.achre + enemy.ascean.constitution;
+                break;
+            case "chiomic":
+                playerPersuasion = player.achre + player.kyosir;
+                enemyPersuasion = enemy.ascean.achre + enemy.ascean.kyosir;
+                break;
+            case "kyr'naic":
+                playerPersuasion = player.constitution + player.kyosir;
+                enemyPersuasion = enemy.ascean.constitution + enemy.ascean.kyosir;
+                break;
+            case "lilosian":
+                playerPersuasion = player.caeren + player.constitution;
+                enemyPersuasion = enemy.ascean.caeren + enemy.ascean.constitution;
+                break;
+            case "Ilian": // Heroism
+                playerPersuasion = player.constitution + player.strength;
+                enemyPersuasion = enemy.ascean.constitution + enemy.ascean.strength;
+                break;
+            case "Fyeran": // Seer
+                playerPersuasion = player.achre + player.caeren;
+                enemyPersuasion = enemy.ascean.achre + enemy.ascean.caeren;
+                break;
+            case "Shaorahi": // Awe
+                playerPersuasion = player.strength + player.caeren;
+                enemyPersuasion = enemy.ascean.strength + enemy.ascean.caeren;
+                break;
+            case "Tshaeral": // Fear
+                playerPersuasion = player.strength as number + player.caeren;
+                enemyPersuasion = enemy.ascean.strength + enemy.ascean.caeren;
+                break;
+            default: break;
+        };
+
+        const influence = this.scene.state.weapons?.[0]?.influences?.[0] as string;
+
+        // enemyPersuasion *= 1.25;
+
+        if (playerPersuasion >= enemyPersuasion) {
+            persuaded = true;        
+            EventBus.emit("persuasion", { persuasion, persuaded });
+
+            const num = Math.floor(Math.random() * 2);
+            const text = `${persuasionTrait?.persuasion?.success[num]
+                .replace("{enemy.name}", enemy.name)
+                .replace("{ascean.weaponOne.influences[0]}", influence)
+                .replace("{ascean.name}", player.name)
+                .replace("{enemy.weaponOne.influences[0]}", enemy.computerCombatSheet.computerWeapons?.[0].influences?.[0])
+                .replace("{enemy.faith}", enemy.faith)
+                .replace("{article}", enemyArticle(enemy))}`;
+            
+            this.scene.sound.play("phenomena", { volume: this.scene.hud.settings.volume });
+            this.scene.hud.showCombatHud(text, "bone", 8000);
+            this.player.disengage();
+        } else {
+            EventBus.emit("persuasion", { persuasion, persuaded });
+            
+            const text = `${persuasionTrait?.persuasion?.failure
+                .replace("{enemy.name}", enemy.ascean.name)
+                .replace("{ascean.weaponOne.influences[0]}", influence)
+                .replace("{ascean.name}", player.name)
+                .replace("{enemy.weaponOne.influences[0]}", enemy.computerCombatSheet.computerWeapons?.[0].influences?.[0])
+                .replace("{enemy.faith}", enemy.ascean.faith)
+                .replace("{article}", enemyArticle(enemy))}.`
+          
+            this.scene.hud.showCombatHud(text, "damage", 8000);
+        };
+    };
+
     onMaierethEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
         this.player.startCasting("Maiereth", PLAYER.DURATIONS.MAIERETH);
@@ -1801,13 +2072,20 @@ export default class PlayerMachine {
         this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
         this.player.hookTime = 0;
         screenShake(this.scene);
-        // this.scene.tweens.add({
-        //     targets: this.scene.cameras.main,
-        //     zoom: this.scene.cameras.main.zoom * 1.25,
-        //     ease: Phaser.Math.Easing.Elastic.InOut,
-        //     duration: 750,
-        //     yoyo: true
-        // });
+
+        const camera = this.scene.cameras.main;
+
+        this.scene.hud.cinemaMode = true;
+        camera.stopFollow();
+        camera.startFollow(this.player.particleEffect.effect);
+
+        this.scene.time.delayedCall(1750, () => {
+            if (!this.scene.hud.cinemaMode || this.player.hooking) return;
+            
+            this.scene.hud.cinemaMode = false;
+            camera.stopFollow();
+            camera.startFollow(this.player, false, 0.1, 0.1);
+        });
     };
     onHookUpdate = (dt: number) => {
         this.player.hookTime += dt;
@@ -1816,6 +2094,7 @@ export default class PlayerMachine {
         };
     };
     onHookExit = () => {
+        if (this.player.hooking) return;
         this.player.beam.reset();
     };
 

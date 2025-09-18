@@ -169,9 +169,10 @@ interface TypewriterProps {
     styling?: JSX.CSSProperties;
     performAction: (action: string) => void;
     main?: boolean;
+    noScroll?: boolean
 };
 
-export default function Typewriter({ stringText, styling, performAction, main }: TypewriterProps) {
+export default function Typewriter({ stringText, styling, performAction, main, noScroll }: TypewriterProps) {
     const [el, setEl] = createSignal<HTMLDivElement | null>(null);
     const [scrolling, setScrolling] = createSignal<boolean>(false);
     let observer: MutationObserver | undefined = undefined;
@@ -226,13 +227,15 @@ export default function Typewriter({ stringText, styling, performAction, main }:
     createEffect(() => {
         if (typed) (typed as Typed).destroy();
         if (el()) {
-            observer?.disconnect();
-            observer = setupScrollObserver(".dialog-window");
+            if (!noScroll) {
+                observer?.disconnect();
+                observer = setupScrollObserver(".dialog-window");
+            };
             typewriter(stringText);
         };
 
         onCleanup(() => {
-            observer?.disconnect();
+            if (!noScroll) observer?.disconnect();
         });
     });
     function typewriter(text: string | Accessor<string>) {

@@ -8,7 +8,7 @@ import AsceanImageCard from "../components/AsceanImageCard";
 import { itemStyle } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
 import PrayerEffects from "./PrayerEffects";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { Combat } from "../stores/combat";
 import { Attributes } from "../utility/attributes";
 import Ascean from "../models/ascean";
@@ -21,6 +21,8 @@ import { Puff } from "solid-spinner";
 import { createHealthDisplay } from "../utility/health";
 const HealthBar = lazy(async () => await import("./HealthBar"));
 
+const dims = dimensions();
+
 function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState>, instance: Store<IRefPhaserGame> }) {
     const [enemy, setEnemy] = createSignal(state().computer);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
@@ -28,7 +30,6 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
     const [attributeShow, setAttributeShow] = createSignal<boolean>(false);
     const [itemShow, setItemShow] = createSignal<boolean>(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
-    const dimensions = useResizeListener(); 
     createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
         const combat = instance.game?.registry.get("inCombat");
@@ -49,7 +50,7 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
         setShow(!show());
     };
     function transformScale() {
-        const width = dimensions().WIDTH;
+        const width = dims.WIDTH;
         if (width > 1800) { // FHD
             return 1.1;
         } else if (width > 1200) { // Mid
@@ -63,10 +64,10 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
     return <Portal>
         <div class="modal">
             <div class="border center" style={{ 
-                "height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%", 
-                // "max-height": dimensions().ORIENTATION === "landscape" ? "95%" : "50%",
-                "width": dimensions().ORIENTATION === "landscape" ? "50%" : "70%", 
-                "margin-top": dimensions().ORIENTATION === "landscape" ? `${dimensions().HEIGHT * 0.025}px` : "25%",
+                "height": dims.ORIENTATION === "landscape" ? "95%" : "50%", 
+                // "max-height": dims.ORIENTATION === "landscape" ? "95%" : "50%",
+                "width": dims.ORIENTATION === "landscape" ? "50%" : "70%", 
+                "margin-top": dims.ORIENTATION === "landscape" ? `${dims.HEIGHT * 0.025}px` : "25%",
             }}>
                 <button class="highlight cornerBL" onClick={clearEnemy}>
                     <p>Clear UI</p>
@@ -91,22 +92,22 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
                         {state().computer?.description}
                     </h2>
                     <Suspense fallback={<Puff color="gold"/>}>
-                    <div style={{ position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dimensions().WIDTH > 1200 ? "1%" : "0%" }}>
+                    <div style={{ position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dims.WIDTH > 1200 ? "1%" : "0%" }}>
                         <HealthBar combat={state} enemy={true} game={game} />
                     </div>
                     </Suspense>
-                    <div style={{ color: "#fdf6d8", "margin-top": dimensions().WIDTH > 1200 ? "13.5%" : "10%", "font-size": dimensions().WIDTH > 1200 ? "1.25em" : "0.875em" }}>
+                    <div style={{ color: "#fdf6d8", "margin-top": dims.WIDTH > 1200 ? "13.5%" : "10%", "font-size": dims.WIDTH > 1200 ? "1.25em" : "0.875em" }}>
                         Level <span class="gold">{state().computer?.level}</span> | Mastery <span class="gold">{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                     </div>
-                    <div class="" style={{ transform: "scale(0.875)", "margin-top": dimensions().WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dimensions().WIDTH > 1200 ? "7.5%" : "3%" }}>
+                    <div class="" style={{ transform: "scale(0.875)", "margin-top": dims.WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dims.WIDTH > 1200 ? "7.5%" : "3%" }}>
                         <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-left": "0", 
-                        "margin-top": dimensions().WIDTH > 1200 
+                        "margin-top": dims.WIDTH > 1200 
                             ? "" 
-                            : dimensions().HEIGHT > 420 
+                            : dims.HEIGHT > 420 
                             ? "-5%" 
-                            : dimensions().WIDTH < 875 
+                            : dims.WIDTH < 875 
                             ? "-10%" 
                             : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
                         <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
@@ -133,7 +134,6 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
 };
 
 export default function EnemyUI({ state, game, enemies, instance }: { state: Accessor<Combat>, game: Accessor<GameState>, enemies: Accessor<EnemySheet[]>, instance: Store<IRefPhaserGame> }) {
-    const dimensions = useResizeListener();
     const [showModal, setShowModal] = createSignal(false);
     const [itemShow, setItemShow] = createSignal(false);
     const [prayerShow, setPrayerShow] = createSignal(false);
@@ -146,12 +146,12 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
     };
     const size = (len: number) => {
         switch (true) {
-            case len < 10 && dimensions().WIDTH > 1200: return "1.5em"; // 1.15em
-            case len < 20 && dimensions().WIDTH > 1200: return "1.3em"; // 1em
-            case len < 30 && dimensions().WIDTH > 1200: return "1.1em"; // 0.85em
-            case len < 10 && dimensions().WIDTH < 875: return "1.25em"; // 1.15em
-            case len < 20 && dimensions().WIDTH < 875: return "1.15em"; // 1em
-            case len < 30 && dimensions().WIDTH < 875: return "1.05em"; // 0.85em
+            case len < 10 && dims.WIDTH > 1200: return "1.5em"; // 1.15em
+            case len < 20 && dims.WIDTH > 1200: return "1.3em"; // 1em
+            case len < 30 && dims.WIDTH > 1200: return "1.1em"; // 0.85em
+            case len < 10 && dims.WIDTH < 875: return "1.25em"; // 1.15em
+            case len < 20 && dims.WIDTH < 875: return "1.15em"; // 1em
+            case len < 30 && dims.WIDTH < 875: return "1.05em"; // 0.85em
             case len < 10: return "1.25em"; // 1.15em
             case len < 20: return "1.15em"; // 1em
             case len < 30: return "1em"; // 0.85em
@@ -160,12 +160,12 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
     };
     const top = (len: number) => {
         switch (true) {
-            case len < 10 && dimensions().WIDTH > 1200: return "3%"; // 1.15em
-            case len < 20 && dimensions().WIDTH > 1200: return "3.5%"; // 1em
-            case len < 30 && dimensions().WIDTH > 1200: return "4%"; // 0.85em
-            case len < 10 && dimensions().WIDTH < 875: return "1vh"; // 1.15em
-            case len < 20 && dimensions().WIDTH < 875: return "1.25vh"; // 1em
-            case len < 30 && dimensions().WIDTH < 875: return "1.5vh"; // 0.85em
+            case len < 10 && dims.WIDTH > 1200: return "3%"; // 1.15em
+            case len < 20 && dims.WIDTH > 1200: return "3.5%"; // 1em
+            case len < 30 && dims.WIDTH > 1200: return "4%"; // 0.85em
+            case len < 10 && dims.WIDTH < 875: return "1vh"; // 1.15em
+            case len < 20 && dims.WIDTH < 875: return "1.25vh"; // 1em
+            case len < 30 && dims.WIDTH < 875: return "1.5vh"; // 0.85em
             case len < 10: return "1.5%"; // -3%
             case len < 20: return "2%"; // -2%
             case len < 30: return "2.5%"; // -1%

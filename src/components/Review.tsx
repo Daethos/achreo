@@ -1,6 +1,6 @@
 import { Accessor, Show, createEffect, createSignal } from "solid-js";
 import { FAITHS } from "./Faith";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 
 const LANDS = {
@@ -26,7 +26,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
     const land = LANDS[newAscean()?.origin as keyof typeof LANDS];
     const [name, setName] = createSignal("");
     const [character, setCharacter] = createSignal("");
-    const dimensions = useResizeListener();
+    const dims = dimensions();
 
     createEffect(() => {
         const deity = FAITHS.find(faith => faith.worshipers === newAscean()?.faith);
@@ -48,9 +48,9 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
                 in some sense, that is how one perceives this world. Your faith is <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.faith}</span>, the worship of <span class="gold" style={{ "--glow-color":"gold" }}>{name()}</span>. {character()} 
             </h2>
         </div>
-        <Show when={dimensions().ORIENTATION === "landscape"} fallback={<>
+        <Show when={dims.ORIENTATION === "landscape"} fallback={<>
             <div class="center">
-            <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="origin-pic" style={{ width: dimensions().ORIENTATION === "landscape" ? "50%" : "25%", height: dimensions().ORIENTATION === "landscape" ? "50%" : "25%", border: "0.15em solid gold" }} />
+            <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "50%" : "25%", height: dims.ORIENTATION === "landscape" ? "50%" : "25%", border: "0.15em solid gold" }} />
             </div>
             <br />
             <div class="creature-heading">

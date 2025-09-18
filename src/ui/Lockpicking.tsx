@@ -7,6 +7,7 @@ import { Store } from "solid-js/store";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { font } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
+import { Play } from "../game/main";
 var picking = new Audio("../assets/sounds/lockpick-sound.mp3");
 var success = new Audio("../assets/sounds/lockpick-success.mp3");
 const PLAYING = "PLAYING";
@@ -14,11 +15,11 @@ const SUCCESS = "SUCCESS";
 const FAILURE = "FAILURE";
 
 const LOCKPICK = {
-    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 480, PLAYER: 2, DURATION: 20, INTENSITY: 0.002, NEXT: "Medium" },
-    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 420, PLAYER: 3, DURATION: 20, INTENSITY: 0.00175, NEXT: "Hard" },
-    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, PLAYER: 4, DURATION: 20, INTENSITY: 0.0015, NEXT: "Master" },
-    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, PLAYER: 5, DURATION: 20, INTENSITY: 0.00125, NEXT: "Legendary" },
-    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 20, INTENSITY: 0.001, NEXT: "Easy" },
+    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 480, PLAYER: 2, DURATION: 32, INTENSITY: 0.002, NEXT: "Medium" },
+    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 420, PLAYER: 3, DURATION: 32, INTENSITY: 0.00175, NEXT: "Hard" },
+    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, PLAYER: 4, DURATION: 32, INTENSITY: 0.0015, NEXT: "Master" },
+    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, PLAYER: 5, DURATION: 32, INTENSITY: 0.00125, NEXT: "Legendary" },
+    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 32, INTENSITY: 0.001, NEXT: "Easy" },
 };
 
 export default function Lockpicking({ ascean, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; lockpick: Accessor<{id: string; interacting: boolean; type: string;}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
@@ -63,12 +64,12 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     };
 
     const breakPick = () => {
-        if (!load.ended) {   
-            load.pause();
-        };
+        if (!load.ended) load.pause();
         load.play();
         vibrate(1000); // Long buzz
         setBroke(true);
+        setActiveTouch(undefined);
+        setTotalRotation(0);
         setTimeout(() => {
             setBroke(false);
             setLockpicks(prev => Math.max(prev - 1, 0));
@@ -126,9 +127,10 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
 
         const normalizedDistance = Math.min(distance / (sweetSpotWidth / 2), 1); // Normalize distance to 0-1 range (0 = center, 1 = edge of sweet spot)
 
-        if (distance < sweetSpotWidth * 1.5) {
-            const duration = 1 - normalizedDistance;
-            screenShake(instance?.scene as Phaser.Scene, duration * lockDifficulty().DURATION, lockDifficulty().INTENSITY); // Tweak multipliers
+        if (distance * 1.8 < sweetSpotWidth) {
+            const duration = Math.max(24, (1 - normalizedDistance) * lockDifficulty().DURATION);
+            console.log({ distance, sweetSpotWidth, duration, intensity: lockDifficulty().INTENSITY });
+            screenShake(instance?.scene as Play, duration, lockDifficulty().INTENSITY); // Tweak multipliers
         };
     };
     function isInSweetSpot(): boolean {
@@ -180,22 +182,6 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             checkDistance();
             if (totalRotation() > lockDifficulty().ROTATION) {
                 breakPick();
-                // if (!load.ended) {   
-                //     load.pause();
-                // };
-                // load.play();
-                // setTotalRotation(0);
-                // setPickDurability(0);
-                // vibrate(1000); // Long buzz
-                // setBroke(true);
-                // setTimeout(() => {
-                //     setBroke(false);
-                //     setLockpicks(prev => Math.max(prev - 1, 0));
-                //     if (lockpicks() > 0) {
-                //         setPickDurability(100);
-                //         return;
-                //     };
-                // }, 1000);
             };
         } else if (activeTouch() === "wrench") {
             if (!isInSweetSpot()) {
@@ -206,22 +192,6 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
 
             if (pickDurability() === 0) {
                 breakPick();
-                // if (!load.ended) {
-                //     load.pause();
-                // };
-                // load.play();
-                // vibrate(1000); // Long buzz
-                // setBroke(true);
-                // setTimeout(() => {
-                //     setBroke(false);
-                // }, 1000);
-                // setLockpicks(prev => Math.max(prev - 1, 0));
-                // if (lockpicks() > 0) {
-                //     setPickDurability(100);
-                //     return;
-                // };
-                // setPickDurability(0);
-                // setGameStatus(FAILURE);
             };
 
             if (tension() >= 205 || tension() <= 25) {
@@ -238,6 +208,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         picking.pause();
         setActiveTouch(undefined);
     };
+
     const getDifficultyColor = (difficulty: string) => {
         const colors = {
             Easy: "#4CAF50",

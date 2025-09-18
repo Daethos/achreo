@@ -9,8 +9,8 @@ interface Props {
     x?: boolean;
 };
 export default function LootDrop({ lootDrop, setShow, setLootDrop, x = true }: Props) {
-    const article: string = ["a", "e", "i", "o", "u"].includes(lootDrop.type[0].toLowerCase()) ? "an" : "a";
-    const excess: string = lootDrop.type.includes("-") ? "piece of" : "";
+    // const article: string = ["a", "e", "i", "o", "u"].includes(lootDrop.type[0].toLowerCase()) ? "an" : "a";
+    // const excess: string = lootDrop.type.includes("-") ? "piece of" : "";
     async function saveItem(): Promise<void> {
         try {
             EventBus.emit("add-item", [lootDrop]);

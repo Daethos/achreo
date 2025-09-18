@@ -111,6 +111,9 @@ export default class Player extends Entity {
     collider: any;
     jumpTime: number = 0;
     caerenesis: any;
+    buttonPressed: string = "";
+    luckoutLock: string = "";
+    persuasionLock: string = "";
 
     constructor(data: any) {
         const { scene } = data;
@@ -166,7 +169,8 @@ export default class Player extends Entity {
             parts: [playerSensor, playerColliderLower, playerColliderUpper],
             frictionAir: 0.5,
             restitution: 0.2,
-            density: 0.1,
+            density: 0.75,
+            friction: 0.5
         });
         this.setExistingBody(compoundBody);
         this.sensor = playerSensor;
@@ -282,7 +286,11 @@ export default class Player extends Entity {
     caerenicUpdate = () => {
         this.isCaerenic = this.isCaerenic ? false : true;
         this.scene.sound.play("blink", { volume: this.scene.hud.settings.volume / 3 });
-        const enhanced = this.scene.hud.talents.talents.caerenic.enhanced ? 1.5 : 1;
+        const caer = this.scene.hud.talents.talents.caerenic;
+        let enhanced = 1; 
+        enhanced += caer.enhanced ? 0.5 : 0;
+        enhanced += caer.efficient ? 0.5 : 0;
+
         if (this.isCaerenic) {
             screenShake(this.scene, 64);
             this.scene.tweens.add({
@@ -612,6 +620,7 @@ export default class Player extends Entity {
 
     stopCasting = () => {
         this.isCasting = false;
+        this.castingSuccess = false;
         this.spellTarget = "";
         this.spellName = "";
         this.timeElapsed = 0;
@@ -621,16 +630,13 @@ export default class Player extends Entity {
     };
 
     startPraying = () => {
-        // this.spellTarget = target.enemyID;
         this.timeElapsed = 0;
         this.isPraying = true;
         this.setStatic(true);
-        // if (!this.isCaerenic && !this.isGlowing) this.checkCaerenic(true);
         this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isPraying = false;
             this.timeElapsed = 0;
             this.setStatic(false);
-            // if (!this.isCaerenic && this.isGlowing) this.checkCaerenic(false);
         });
     };
 
@@ -1066,8 +1072,14 @@ export default class Player extends Entity {
         if (this.isComputer) return;
         const evasion = cooldown === "rollCooldown" || cooldown === "dodgeCooldown";
         if (evasion === false) (this as any)[cooldown] = limit;
-        const type = cooldown.split("Cooldown")[0];
+        let type = cooldown.split("Cooldown")[0];
         
+        if (type === "luckout") {
+            type = `${type} ${this.luckoutLock}`
+        } else if (type === "persuasion") {
+            type = `${type} ${this.persuasionLock}`
+        };
+
         this.scene.hud.actionBar.setCurrent(0, limit, type);
         const button = this.scene.hud.actionBar.getButton(type);
 
@@ -1591,7 +1603,7 @@ export default class Player extends Entity {
                 this.playerVelocity.y = 0;
             };
         };
-        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed += 0.5; // 1
+        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed -= 0.35; // 1
         if (this.isClimbing || this.inWater) speed *= 0.65;
         this.playerVelocity.limit(speed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);

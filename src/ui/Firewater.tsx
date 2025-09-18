@@ -1,6 +1,6 @@
 import Ascean from "../models/ascean";
 import { Accessor, Setter, Show, createSignal } from "solid-js";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
 import { font } from "../utility/styling";
 
@@ -15,10 +15,10 @@ interface FirewaterProps {
 };
 
 function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewater, showBleed, setShowBleed, repelenishFirewater }: FirewaterProps) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     return <>
         <div class="modal">
-            <button class="border superCenter" style={{ "max-height": dimensions().ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dimensions().ORIENTATION === "landscape" ? "35%" : "70%" }}>
+            <button class="border superCenter" style={{ "max-height": dims.ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dims.ORIENTATION === "landscape" ? "35%" : "70%" }}>
             <div class="creature-heading wrap" style={{ height: "100%" }}>
                 <h1>
                     Firewater ( {ascean().firewater.current} / {ascean().firewater.max} )
@@ -53,7 +53,7 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
         </div>
         <Show when={showBleed()}>
             <div class="modal" onClick={() => setShowFirewater(!showFirewater())}>
-            <button class="button border" style={{ "max-height": dimensions().ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dimensions().ORIENTATION === "landscape" ? "35%" : "70%" }}>
+            <button class="button border" style={{ "max-height": dims.ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dims.ORIENTATION === "landscape" ? "35%" : "70%" }}>
             <div style={{ height: "100%" }}>
                 <h1>
                     Firewater ( {ascean().firewater.current} / {ascean().firewater.max} )

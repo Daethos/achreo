@@ -144,6 +144,7 @@ export interface Combat {
     npcType: string;
     isAggressive: boolean;
     startedAggressive: boolean;
+    isHostile: boolean;
     enemyPersuaded: boolean;
     playerLuckout: boolean;
     persuasionScenario: boolean;
@@ -293,6 +294,7 @@ export const initCombat: Combat = {
     npcType: "",
     isAggressive: false,
     startedAggressive: false,
+    isHostile: false,
     enemyPersuaded: false,
     playerLuckout: false,
     persuasionScenario: false,

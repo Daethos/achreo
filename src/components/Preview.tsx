@@ -1,10 +1,10 @@
 import { Accessor, For, createEffect, createSignal } from "solid-js";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 import { font } from "../utility/styling";
 
 export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const [description, setDescription] = createSignal("");
     const [picture, setPicture] = createSignal("" as string);
     createEffect(() => {
@@ -24,16 +24,16 @@ export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSh
         }).join("");
         setDescription(desc);
     };
-    const photo = { "height": dimensions().ORIENTATION === "landscape" ? "auto" : "auto", "width": dimensions().ORIENTATION === "landscape" ? "7.5vw" : "15vw", "top": dimensions().ORIENTATION === "landscape" ? "3vh" : "0", "left": dimensions().ORIENTATION === "landscape" ? `33vw` : "3vw", "border": "0.15em solid gold", "border-radius": "0.5em",  };
+    const photo = { "height": dims.ORIENTATION === "landscape" ? "auto" : "auto", "width": dims.ORIENTATION === "landscape" ? "7.5vw" : "15vw", "top": dims.ORIENTATION === "landscape" ? "3vh" : "0", "left": dims.ORIENTATION === "landscape" ? `33vw` : "3vw", "border": "0.15em solid gold", "border-radius": "0.5em",  };
     function qualifiers(char: string, idx: number, count: number, splitter: number): boolean {
         if ((char === " " || char === ".") && idx !== 0 && idx !== splitter - 1 && ((idx <= 49 && idx >= 25 && count === 0) || (idx <= 74 && idx >= 50 && count === 1))) {
             return true;
         };
         return false;
     };
-    return <div class={dimensions().ORIENTATION === "landscape" ? "creature-heading cornerTL" : "creature-heading center"} style={dimensions().ORIENTATION === "landscape" ?  { "margin": "-0.5% 1%", } : {}}>
+    return <div class={dims.ORIENTATION === "landscape" ? "creature-heading cornerTL" : "creature-heading center"} style={dims.ORIENTATION === "landscape" ?  { "margin": "-0.5% 1%", } : {}}>
         <h1>{newAscean().name}</h1>
-        <h2 style={{ margin:  dimensions().ORIENTATION === "landscape" ? "-4% 0" : "" }}>
+        <h2 style={{ margin:  dims.ORIENTATION === "landscape" ? "-4% 0" : "" }}>
             <For each={description().split("\n")}>
                 {(line, index) => {
                     if (index() !== 0) return;
@@ -41,7 +41,7 @@ export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSh
                 }}
             </For>
         </h2>
-        { dimensions().ORIENTATION === "landscape" ? (
+        { dims.ORIENTATION === "landscape" ? (
             <div style={font("1em", "gold")}>
                 {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [Faith]
                 <p style={{ "margin-top": "3%" }}>

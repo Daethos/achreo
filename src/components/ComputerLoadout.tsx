@@ -1,6 +1,6 @@
 import { createSignal, For, Accessor } from "solid-js";
 import { InputGroup } from "solid-bootstrap";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import Settings from "../models/settings";
 import { EventBus } from "../game/EventBus";
 
@@ -10,7 +10,7 @@ const validateNumber = (num: number) => Number.isInteger(num) ? num : 0;
 export default function ComputerLoadout({ settings }: { settings: Accessor<Settings> }) {
     const [computerLoadout, setComputerLoadout] = createSignal({ attack: validateNumber(settings()?.computerLoadout?.attack), posture: validateNumber(settings()?.computerLoadout?.posture), roll: validateNumber(settings()?.computerLoadout?.roll), parry: validateNumber(settings()?.computerLoadout?.parry), thrust: validateNumber(settings()?.computerLoadout?.thrust), jump: validateNumber(settings()?.computerLoadout?.jump), special: validateNumber(settings()?.computerLoadout?.special) })
     const [pool, setPool] = createSignal((validateNumber(settings()?.computerLoadout?.attack) + validateNumber(settings()?.computerLoadout?.jump) + validateNumber(settings()?.computerLoadout?.posture) + validateNumber(settings()?.computerLoadout?.roll) + validateNumber(settings()?.computerLoadout?.parry) + validateNumber(settings()?.computerLoadout?.thrust) + validateNumber(settings()?.computerLoadout?.special)) || 0);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const handleChange = (event: any, name: string, value: number): void => {
         event.preventDefault();
         setComputerLoadout({
@@ -34,7 +34,7 @@ export default function ComputerLoadout({ settings }: { settings: Accessor<Setti
         <h1 class="gold" style={{ "margin-bottom" : "5%" }}>Pool: {pool()} / 100</h1>
         <For each={actions}>
             {(action) => (
-                <InputGroup style={{ width: dimensions().ORIENTATION === "landscape" ? `25%` : `40%`, display: "inline-block" }}>
+                <InputGroup style={{ width: dims.ORIENTATION === "landscape" ? `25%` : `40%`, display: "inline-block" }}>
                     <p class="tighten">{action.charAt(0).toUpperCase() + action.slice(1)} {computerLoadout()[action as keyof typeof computerLoadout]}</p>
                     <br />
                     <button class="highlight" onClick={(e) => handleChange(e, action, -1)} style={{ display: floor(action) ? "inline-block" : "none", width: "auto", height: "auto" }}>-</button>

@@ -4,7 +4,7 @@ import { Combat } from "../stores/combat";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore } from "../utility/regions";
-import { LuckoutModal, PersuasionModal, QuestModal, checkTraits } from "../utility/traits";
+import { LUCKOUT, LuckoutModal, PERSUASION, PersuasionModal, QuestModal, checkTraits } from "../utility/traits";
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import Typewriter from "../utility/Typewriter";
 import Currency from "../utility/Currency";
@@ -514,6 +514,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
         if (!enemy) return;
+        console.log({hostile:combat().isHostile});
         setNamedEnemy(namedNameCheck(enemy.name.split("(Converted)")[0].trim()));
         setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
         setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
@@ -531,7 +532,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function checkCondition(conditions: Condition) {
         let { key, operator, value } = conditions;
-        // console.log(key, operator, value, "Key --- Operator --- Value");
+        // console.log({key, operator, value});
         switch (operator) {
             case ">":
                 return ascean()[key] > value;
@@ -669,12 +670,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             enemyPersuasion *= 1.1; 
         };
         if (playerPersuasion >= enemyPersuasion) {
-            EventBus.emit("persuasion", { persuasion, persuaded: true });
+            EventBus.emit(PERSUASION, { persuasion, persuaded: true });
             const num = Math.floor(Math.random() * 2); 
             setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`);
         } else {
             checkingLoot();
-            EventBus.emit("persuasion", { persuasion, persuaded: false });
+            EventBus.emit(PERSUASION, { persuasion, persuaded: false });
             setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
             const timeout = setTimeout(() => {
                 engageCombat(combat()?.enemyID);
@@ -735,11 +736,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             const loot = { enemyID: combat().enemyID, level: combat().computer?.level as number };
             EventBus.emit("gain-experience", newState);
             EventBus.emit("enemy-loot", loot);
-            EventBus.emit("luckout", { luck, luckout: true });
+            EventBus.emit(LUCKOUT, { luck, luckout: true });
             const num = Math.floor(Math.random() * 2);
             setLuckoutString(`${luckoutTrait?.luckout?.success[num].replace("{enemy.name}", enemy.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", ascean().name).replace("{enemy.weaponOne.influences[0]}", enemy.weaponOne.influences?.[0]).replace("{enemy.faith}", enemy.faith).replace("{article}", enemyArticle)}`);
         } else {
-            EventBus.emit("luckout", { luck, luckout: false });
+            EventBus.emit(LUCKOUT, { luck, luckout: false });
             checkingLoot();
             setLuckoutString(`${luckoutTrait?.luckout?.failure.replace("{enemy.name}", enemy.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", ascean().name).replace("{enemy.weaponOne.influences[0]}", enemy.weaponOne.influences?.[0]).replace("{enemy.faith}", enemy.faith).replace("{article}", enemyArticle)} \n\n Prepare for combat, ${ascean().name}, and may your weapon strike surer than your words.`);
             const timeout = setTimeout(() => {
@@ -1316,16 +1317,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
-    function addFunds() {
-        const update = {
-            ...ascean(),
-            currency: {
-                silver: ascean().currency.silver,
-                gold: ascean().currency.gold + 100
-            }
-        };
-        EventBus.emit("update-ascean", update);
-    };
+    // function addFunds() {
+    //     const update = {
+    //         ...ascean(),
+    //         currency: {
+    //             silver: ascean().currency.silver,
+    //             gold: ascean().currency.gold + 100
+    //         }
+    //     };
+    //     EventBus.emit("update-ascean", update);
+    // };
     return (
         <Show when={combat().computer}>
         <Show when={combat().isEnemy}>
@@ -1379,13 +1380,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess.</button>
                     <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry.</button>
                     <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith.</button>
-                `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} />
+                `} styling={{ margin: "0 5%", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"0.9em" }} performAction={performAction} noScroll={true} />
                 <br />
                 {forgeSee() && upgradeItems() ? ( <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%" }}> 
                     {upgradeItems().map((item: any) => {
                         if (item === undefined) return;
                         return (
-                            <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
+                            <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em", width: "auto" }}>
                                 <img src={item?.imgUrl} alt={item?.name} /><br />
                                 Forge
                             </div>
@@ -1399,7 +1400,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
                             if (item === undefined) return;
                             return (
-                                <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%",padding: "0.25em",width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
+                                <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%", padding: "0.25em", width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
                                     <img src={item?.imgUrl} alt={item?.name} style={{ transform: "scale(1.1)" }} />
                                     <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
                                 </div>
@@ -1591,7 +1592,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={typewriterStyling} performAction={hollowClick} />
                                 <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
-                        ) : (
+                        ) : !combat().isHostile ? (
                             <>
                             { namedEnemy() ? ( 
                                 <Typewriter stringText={`"I hope you find what you seek, ${combat()?.player?.name}. Take care in these parts, you may never know when someone wishes to approach out of malice and nothing more. Strange denizens these times."`} styling={typewriterStyling} performAction={hollowClick} />
@@ -1601,6 +1602,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <br />
                                 <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Keep moving.</button>
                             </>
+                        ) : (
+                            <></>
                         ) }
                         { checkTraits("Kyn'gian", game().traits) && !combat().playerWin && !combat().computerWin ? (
                             <button class="highlight" onClick={() => clearDuel()}>You remain at the edges of sight and sound, and before {combat()?.computer?.name} can react, you attempt to flee.</button>
@@ -1622,7 +1625,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter stringText={local} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>    
                     </>
-                ) : game().currentIntent === "persuasion" ? (
+                ) : game().currentIntent === PERSUASION ? (
                     <>
                         <Show when={combat()?.computer?.name?.includes("(Converted)")}>
                             <Typewriter stringText={`"I sure do love being ${combat()?.computer?.faith} now! Thank you so much for showing me the proper path, ${ascean().name}. Don't tell anyone though, my old comrades may not take kind to me if they find out about my new faith."`} styling={{...typewriterStyling, "color":"gold", margin:"0 auto 3%"}} performAction={hollowClick} />

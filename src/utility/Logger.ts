@@ -1,10 +1,10 @@
 import { EventBus } from "../game/EventBus";
 interface Loggers {
-	log: (message: string) => void;
+	log: (playerSpecialDescription: string) => void;
 };
 export class ConsoleLogger implements Loggers {
-    log(message: string) {
-        EventBus.emit("special-combat-text", {playerSpecialDescription:message});
+    log(playerSpecialDescription: string) {
+        EventBus.emit("special-combat-text", { playerSpecialDescription });
     };
 };
 export default class Logger {
@@ -17,9 +17,9 @@ export default class Logger {
 		this.logger.delete(name);
 	};
 
-	log(message: string){
+	log(playerSpecialDescription: string){
 		this.logger.forEach(logger => {
-			logger.log(message);
+			logger.log(playerSpecialDescription);
 		});
 	};
 };

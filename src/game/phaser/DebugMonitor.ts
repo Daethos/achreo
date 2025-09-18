@@ -80,15 +80,23 @@ export class DebugMonitor extends Phaser.GameObjects.Container {
     private target: Enemy;
     private background: Phaser.GameObjects.Graphics;
     private stateText: Phaser.GameObjects.Text;
-    private healthText: Phaser.GameObjects.Text;
-    private positionText: Phaser.GameObjects.Text;
-    private timerText: Phaser.GameObjects.Text;
-    private timerBarBg: Phaser.GameObjects.Graphics;
-    private timerBarFill: Phaser.GameObjects.Graphics;
+    private positiveText: Phaser.GameObjects.Text;
+    private negativeText: Phaser.GameObjects.Text;
+    private stateTimerText: Phaser.GameObjects.Text;
+    private stateTimerBarBg: Phaser.GameObjects.Graphics;
+    private positiveTimerText: Phaser.GameObjects.Text;
+    private positiveTimerBarBg: Phaser.GameObjects.Graphics;
+    private negativeTimerText: Phaser.GameObjects.Text;
+    private negativeTimerBarBg: Phaser.GameObjects.Graphics;
+    private stateTimerBarFill: Phaser.GameObjects.Graphics;
+    private positiveTimerBarFill: Phaser.GameObjects.Graphics;
+    private negativeTimerBarFill: Phaser.GameObjects.Graphics;
     private historyContainer: Phaser.GameObjects.Container;
     private stateHistory: Phaser.GameObjects.Text[] = [];
     private monitorTimer: Phaser.Time.TimerEvent | undefined = undefined;
-    private timeInState: number = 0;
+    private stateTimeInState: number = 0;
+    private positiveTimeInState: number = 0;
+    private negativeTimeInState: number = 0;
 
     constructor(scene: Phaser.Scene) {
         super(scene);
@@ -105,33 +113,50 @@ export class DebugMonitor extends Phaser.GameObjects.Container {
             color: "#00ff00",
             backgroundColor: "transparent"
         });
-        this.healthText = this.scene.add.text(10, 30, "Health: 100", {
+
+        this.positiveText = this.scene.add.text(10, 30, "Positive: CLEAN", {
             fontSize: "12px",
             color: "#00ff00",
             backgroundColor: "transparent"
         });
-        this.positionText = this.scene.add.text(10, 50, "Pos: (0, 0)", {
+        this.negativeText = this.scene.add.text(10, 50, "Negative: CLEAN", {
             fontSize: "12px",
             color: "#00ff00",
             backgroundColor: "transparent"
         });
 
-        this.timerBarBg = this.scene.add.graphics();
-        this.timerBarBg.fillStyle(0x333333, 1);
-        this.timerBarBg.fillRoundedRect(10, 75, 175, 16, 2);
-        this.timerBarFill = this.scene.add.graphics();
-        this.timerText = this.scene.add.text(10, 75, "", {
+        this.stateTimerBarBg = this.scene.add.graphics();
+        this.stateTimerBarBg.fillStyle(0x333333, 1);
+        this.stateTimerBarBg.fillRoundedRect(13, 75, 175, 16, 2);
+        this.stateTimerBarFill = this.scene.add.graphics();
+        this.stateTimerText = this.scene.add.text(13, 75, "", {
+            fontSize: "12px",
+            color: "#000"
+        }).setOrigin(0, 0);
+        this.positiveTimerBarBg = this.scene.add.graphics();
+        this.positiveTimerBarBg.fillStyle(0x333333, 1);
+        this.positiveTimerBarBg.fillRoundedRect(13, 95, 175, 16, 2);
+        this.positiveTimerBarFill = this.scene.add.graphics();
+        this.positiveTimerText = this.scene.add.text(13, 95, "", {
+            fontSize: "12px",
+            color: "#000"
+        }).setOrigin(0, 0);
+        this.negativeTimerBarBg = this.scene.add.graphics();
+        this.negativeTimerBarBg.fillStyle(0x333333, 1);
+        this.negativeTimerBarBg.fillRoundedRect(13, 115, 175, 16, 2);
+        this.negativeTimerBarFill = this.scene.add.graphics();
+        this.negativeTimerText = this.scene.add.text(13, 115, "", {
             fontSize: "12px",
             color: "#000"
         }).setOrigin(0, 0);
 
-        this.add([this.stateText, this.healthText, this.positionText, this.timerBarBg, this.timerBarFill, this.timerText ]); // this.historyContainer
+        this.add([this.stateText, this.positiveText, this.negativeText, this.stateTimerBarBg, this.stateTimerBarFill, this.stateTimerText, this.positiveTimerBarBg, this.positiveTimerBarFill, this.positiveTimerText, this.negativeTimerBarBg, this.negativeTimerBarFill, this.negativeTimerText ]); // this.historyContainer
 
-        const maskWorldX = this.x + 25;   // this.x is world X because this container is parented to the scene
-        const maskWorldY = this.y + 175;  // offset inside the widget
+        const maskWorldX = this.x + 28;   // this.x is world X because this container is parented to the scene
+        const maskWorldY = this.y + 215;  // offset inside the widget
         const maskShape = scene.add.graphics();
         maskShape.fillStyle(0x333333, 1);
-        maskShape.fillRoundedRect(maskWorldX, maskWorldY, 175, 150, 2);
+        maskShape.fillRoundedRect(maskWorldX, maskWorldY, 175, 125, 2);
 
         const mask = maskShape.createGeometryMask();
 
@@ -160,8 +185,8 @@ export class DebugMonitor extends Phaser.GameObjects.Container {
     monitor(target: Enemy) {
         this.target = target;
         this.stateText.setText(`State: ${target.stateMachine.getCurrentState()}`);
-        this.healthText.setText(`Health: ${target.health} / ${target.ascean.health.max}`);
-        this.positionText.setText(`Position: ${target.x} / ${target.y}`);
+        this.positiveText.setText(`Positive: ${target.positiveMachine.getCurrentState()}`);
+        this.negativeText.setText(`Negative: ${target.negativeMachine.getCurrentState()}`);
 
         if (this.monitorTimer) {
             this.monitorTimer.remove(false);
@@ -193,23 +218,63 @@ export class DebugMonitor extends Phaser.GameObjects.Container {
         // console.log({ state, text: txt.text, history: txt });
     };
 
-    updateMonitor() {
-        const currentState = this.target.stateMachine.getCurrentState() as string;
-        const timerState = this.stateText.text.split("State: ")[1];
-        if (currentState === timerState) {
-            this.timeInState += 50;
-        } else {
-            this.recordState(timerState, this.timeInState, STATE_COLORS[timerState]);
-            this.stateText.setText(`State: ${currentState}`);
-            this.timeInState = 0;
+    stopMonitor() {
+        if (this.monitorTimer) {
+            this.monitorTimer.remove(false);
+            this.monitorTimer.destroy();
+            this.monitorTimer = undefined;
         };
-        this.positionText.setText(`Pos: (${Math.round(this.target.x)}, ${Math.round(this.target.y)})`);
-        this.healthText.setText(`Health: ${Math.round(this.target.health)} / ${this.target.ascean.health.max}`);
+    };
 
-        const barWidth = Math.min(175, (this.timeInState / 10000) * 175);
-        this.timerBarFill.clear();
-        this.timerBarFill.fillStyle(STATE_COLORS[currentState], 1);
-        this.timerBarFill.fillRoundedRect(10, 75, barWidth, 16, 2);
-        this.timerText.setText(`${(this.timeInState / 1000).toFixed(2)}s`);
+    updateMonitor() {
+        const state = this.target.stateMachine.getCurrentState() as string;
+        if (state === States.DEFEATED) {
+            this.stopMonitor();
+            return;
+        };
+        const timerState = this.stateText.text.split("State: ")[1];
+        if (state === timerState) {
+            this.stateTimeInState += 50;
+        } else {
+            this.recordState(timerState, this.stateTimeInState, STATE_COLORS[timerState]);
+            this.stateText.setText(`State: ${state}`);
+            this.stateTimeInState = 0;
+        };
+
+        const positiveState = this.target.positiveMachine.getCurrentState() as string;
+        const positiveTimer = this.positiveText.text.split("Positive: ")[1];
+        if (positiveState === positiveTimer) {
+            this.positiveTimeInState += 50;
+        } else {
+            this.recordState(positiveState, this.positiveTimeInState, 0xffc700);
+            this.positiveText.setText(`Positive: ${positiveState}`);
+        };
+
+        const negativeState = this.target.negativeMachine.getCurrentState() as string;
+        const negativeTimer = this.negativeText.text.split("Negative: ")[1];
+        if (negativeState === negativeTimer) {
+            this.negativeTimeInState += 50;
+        } else {
+            this.recordState(negativeState, this.negativeTimeInState, 0x800080);
+            this.negativeText.setText(`Negative: ${negativeState}`);
+        };
+
+        const barWidth = Math.min(175, (this.stateTimeInState / 10000) * 175);
+        this.stateTimerBarFill.clear();
+        this.stateTimerBarFill.fillStyle(STATE_COLORS[state], 1);
+        this.stateTimerBarFill.fillRoundedRect(13, 75, barWidth, 16, 2);
+        this.stateTimerText.setText(`${(this.stateTimeInState / 1000).toFixed(2)}s`);
+        
+        const posBarWidth = Math.min(175, (this.positiveTimeInState / 10000) * 175);
+        this.positiveTimerBarFill.clear();
+        this.positiveTimerBarFill.fillStyle(0xffc700, 1);
+        this.positiveTimerBarFill.fillRoundedRect(13, 95, posBarWidth, 16, 2);
+        this.positiveTimerText.setText(`${(this.positiveTimeInState / 1000).toFixed(2)}s`);
+        
+        const negBarWidth = Math.min(175, (this.negativeTimeInState / 10000) * 175);
+        this.negativeTimerBarFill.clear();
+        this.negativeTimerBarFill.fillStyle(0x800080, 1);
+        this.negativeTimerBarFill.fillRoundedRect(13, 115, negBarWidth, 16, 2);
+        this.negativeTimerText.setText(`${(this.negativeTimeInState / 1000).toFixed(2)}s`);
     };
 };

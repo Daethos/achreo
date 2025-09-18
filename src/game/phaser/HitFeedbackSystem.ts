@@ -3,7 +3,6 @@ import { Combat } from "../../stores/combat";
 import { masteryNumber } from "../../utility/styling";
 import { Play } from "../main";
 import { HitProfile, HitProfiles } from "./HitProfiles";
-import { screenShake } from "./ScreenShake";
 // import ParticlesAlongBounds from 'phaser3-rex-plugins/plugins/particlesalongbounds.js';
 
 type HitFeedbackContext = {
@@ -66,6 +65,8 @@ export class HitFeedbackSystem {
     private heal: Phaser.GameObjects.Particles.ParticleEmitter;
     private parry: Phaser.GameObjects.Particles.ParticleEmitter;
     private trail: Phaser.GameObjects.Particles.ParticleEmitter;
+    private trauma: number = 0;
+    public shakeTimer: Phaser.Time.TimerEvent | undefined = undefined;
     // private trailEvent: Phaser.Time.TimerEvent | undefined;
     // private caerenic : Phaser.GameObjects.Particles.ParticleEmitter;
 
@@ -77,7 +78,6 @@ export class HitFeedbackSystem {
 
     play(context: HitFeedbackContext): void {
         const { damageType, weaponType, critical, glancing, miss, parry, prayer, roll, pos, source } = context;
-        // console.log({damageType, critical, glancing, parry});
         const profile = this.profiles[damageType];
 
         if (!profile) return;
@@ -89,10 +89,7 @@ export class HitFeedbackSystem {
         if (roll) this.scene.sound.play("roll", { volume, rate });
         if (prayer) this.scene.sound.play("righteous", { volume, rate });
         if (parry) {
-            this.scene.sound.play("parry", { volume, rate });
-            this.zoom(profile.zoom, 320, Phaser.Math.Easing.Quintic.Out);
-            this.scene.hud.hitStop(profile.hitStop * 3);
-            this.emitParry(source);
+            this.parrySequence(profile, volume, rate, source);
             return;
         };
 
@@ -102,22 +99,12 @@ export class HitFeedbackSystem {
         };
 
         if (critical) {
-            volume *= randomFloatFromInterval(1.35, 1.5);
-            rate *= randomFloatFromInterval(1, 1.25);
-            this.zoom(profile.zoom, 320, Phaser.Math.Easing.Elastic.Out);
-            this.flashScreen(profile.flashColor, 320);
+            this.criticalSequence(profile, key, volume, rate, pos, damageType);
+        } else if (glancing) {
+            this.glanceSequence(profile, key, volume, rate, pos, damageType);
+        } else {
+            this.hitSequence(profile, key, volume, rate, pos, damageType);
         };
-
-        if (glancing) {
-            volume *= randomFloatFromInterval(0.5, 0.75);
-            rate *= randomFloatFromInterval(0.75, 1);
-        };
-        // this.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.5 : 1));
-        this.scene.hud.hitStop(profile.hitStop * (critical ? 2 : glancing ? 0.75 : 1));
-        this.emitParticles(pos, damageType, critical, glancing, parry);
-        screenShake(this.scene);
-
-        this.scene.sound.play(key, { volume, rate });
     };
 
     private resolveSFXKey(damageType: string, weaponType?: string): string {
@@ -148,6 +135,28 @@ export class HitFeedbackSystem {
         });
     };
 
+    public screenShake(duration = 128, baseIntensity = 0.0025, trauma = 0.32): void {
+        this.trauma = Math.min(this.trauma + trauma, 2.4);
+        const intensity = baseIntensity * Math.pow(this.trauma, 1.16);
+        // console.log({duration, intensity});
+        this.scene.cameras.main.shake(duration, intensity);
+
+        if (this.shakeTimer) this.shakeTimer.destroy();
+    
+        this.shakeTimer = this.scene.time.addEvent({
+            delay: 16,
+            callback: () => {
+                this.trauma = Math.max(0, this.trauma - 0.0064);
+                // console.log({trauma:this.trauma});
+                if (this.trauma <= 0) {
+                    this.shakeTimer?.destroy();
+                    this.shakeTimer = undefined;
+                };
+            },
+            loop: true
+        });
+    };
+
     private zoom(zoom: number, duration = 300, ease: any) {
         if (this.zooming) return;
         this.zooming = true;
@@ -159,6 +168,54 @@ export class HitFeedbackSystem {
             duration,
             yoyo: true,
             onComplete: () => this.zooming = false
+        });
+    };
+
+    private parrySequence = (profile: HitProfile, volume: number, rate: number, source: string) => {
+        this.scene.sound.play("parry", { volume, rate });
+        
+        this.zoom(profile.zoom, 256, Phaser.Math.Easing.Quintic.Out);
+        this.scene.hud.hitStop(profile.hitStop * 3);
+        this.emitParry(source);
+    };
+
+    private criticalSequence = (profile: HitProfile, key: string, volume: number, rate: number, pos: Phaser.Math.Vector2, damageType: string) => {
+        volume *= randomFloatFromInterval(1.35, 1.5);
+        rate *= randomFloatFromInterval(1, 1.25);
+
+        this.scene.sound.play(key, { volume, rate });
+        this.screenShake(256, 0.005, 1.1);
+
+        this.scene.time.delayedCall(48, () => {
+            this.zoom(profile.zoom, 256, Phaser.Math.Easing.Elastic.Out);
+            this.flashScreen(profile.flashColor, 256);
+        });
+    
+        this.scene.time.delayedCall(96, () => {
+            this.emitParticles(pos, damageType, true, false, false);
+            this.scene.hud.hitStop(profile.hitStop * 2);
+        });
+    };
+
+    private glanceSequence = (profile: HitProfile, key: string, volume: number, rate: number, pos: Phaser.Math.Vector2, damageType: string) => {
+        volume *= randomFloatFromInterval(0.5, 0.75);
+        rate *= randomFloatFromInterval(0.75, 1);
+        this.scene.sound.play(key, { volume, rate });
+        this.screenShake(64, 0.0015);
+        
+        this.scene.time.delayedCall(24, () => {
+            this.scene.hud.hitStop(profile.hitStop * 0.75);
+            this.emitParticles(pos, damageType, false, true, false);
+        });
+    };
+
+    private hitSequence = (profile: HitProfile, key: string, volume: number, rate: number, pos: Phaser.Math.Vector2, damageType: string) => {
+        this.scene.sound.play(key, { volume, rate });
+        this.screenShake();
+        
+        this.scene.time.delayedCall(32, () => {
+            this.scene.hud.hitStop(profile.hitStop);
+            this.emitParticles(pos, damageType, false, false, false);
         });
     };
 

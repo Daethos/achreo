@@ -88,7 +88,7 @@ export const SWING_FORCE_ATTRIBUTE: Attribute = {
 };
 type DamageArray = { [key:string]: string[]; };
 const GLOW_INTENSITY = 0.25;
-const SPEED = 1.5
+const SPEED = 1.35
 const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], physical: ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
@@ -280,6 +280,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     glowInstanceShield: any;
     glowShieldTween: any;
     glowTalent: boolean = false;
+    hooking: boolean = false;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -330,8 +331,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     startingSpeed = (entity: Ascean) => {
         let speed = SPEED;
         if (this.name === "player") {
+            const caerenic = this.scene.hud.talents.talents.caerenic;
             speed += this.scene.hud.settings.difficulty.playerSpeed || 0;
-            speed += this.isCaerenic ? this.scene.hud.talents.talents.caerenic.enhanced ? PLAYER.SPEED.CAERENIC * 1.5 : PLAYER.SPEED.CAERENIC : 0;
+            speed += this.isCaerenic
+                ? (caerenic.enhanced && caerenic.efficient)
+                    ? PLAYER.SPEED.CAERENIC * 2
+                    : (caerenic.enahnced || caerenic.efficient)
+                        ? PLAYER.SPEED.CAERENIC * 1.5
+                        : PLAYER.SPEED.CAERENIC 
+                : 0;
         } else {
             speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
         };
@@ -341,8 +349,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         let modifier = 0;
         const addModifier = (item: string) => {
             switch (item) {
-                case "Leather-Cloth":
-                    break;
+                // case "Leather-Cloth":
+                //     break;
                 case "Leather-Mail":
                     modifier -= 0.01; // += 0.025;
                     break;
@@ -526,6 +534,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     adjustSpeed = (speed: number): number => {
         return this.speed += speed;
     };
+
     clearAnimations = () => {if (this.anims.currentAnim) this.anims.stop();};
     checkIfAnimated = () => this.anims.currentAnim ? true : false;
 
@@ -598,14 +607,14 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     
     applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
         if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting)) return;
-        force *= 0.55;
+        force *= 0.35; // 0.55
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
             targets: target,
             ease: Phaser.Math.Easing.Expo.Out,
             x: target.x + Math.cos(angle) * force,
             y: target.y + Math.sin(angle) * force,
-            duration: 320,
+            duration: 128,
         });
     };
 
@@ -626,7 +635,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleIdleAnimations = () => {
-        // if (this.isCasting || this.isPraying) return;
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -847,13 +855,30 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     hook = (target: Enemy, time: number) => {
+        this.hooking = true;
+        if (this.name === "player") {
+            this.scene.hud.cinemaMode = true;
+            const tw = this.scene.tweens.getTweensOf(this.scene.cameras.main);
+            tw.forEach(t => t.stop());
+
+            this.scene.cameras.main.stopFollow();
+            this.scene.cameras.main.startFollow(target);
+        };
         this.scene.tweens.add({
             targets: target,
             x: { from: target.x, to: this.x, duration: time },
             y: { from: target.y, to: this.y, duration: time }, 
             ease: Phaser.Math.Easing.Circular.InOut,
             onStart: () => this.beam.startEmitter(target, time),
-            onComplete: () => this.beam.reset(),
+            onComplete: () => {
+                this.hooking = false; 
+                this.beam.reset();
+                if (this.name === "player" && this.scene.hud.cinemaMode) {
+                    this.scene.hud.cinemaMode = false;
+                    this.scene.cameras.main.stopFollow();
+                    this.scene.cameras.main.startFollow(this, false, 0.1, 0.1);
+                };
+            },
             yoyo: false
         });
     };

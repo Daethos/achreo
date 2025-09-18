@@ -1,7 +1,7 @@
 import { Accessor, Setter, createEffect, createSignal } from "solid-js";
 import Equipment from "../models/equipment";
 import Ascean from "../models/ascean";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
 import { getRarityColor } from "../utility/styling";
 
@@ -60,7 +60,7 @@ interface Props {
 
 export default function Highlight({ ascean, pouch, highlighted, inventoryType, ringCompared, weaponCompared, setInspectItems, setInspectModalShow, setRemoveModalShow, removeModalShow, upgrade, setUpgrade }: Props) {
     const [trueType, setTrueType] = createSignal<string>("");
-    const dimensions = useResizeListener();
+    const dims = dimensions();
 
     createEffect(() => {
         if (inventoryType() === "weaponOne") {
@@ -176,7 +176,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 `Influence: ${highlighted()?.item?.influences?.[0]}` : undefined;
 
         return (
-            <table class="" style={dimensions().ORIENTATION === "landscape" ? { width: `${dimensions().WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none", "--glow-color":"#000" } : { width: `${dimensions().WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
+            <table style={dims.ORIENTATION === "landscape" ? { width: `${dims.WIDTH * 0.32}px`, overflow: "scroll", "scrollbar-width": "none", "--glow-color":"#000" } : { width: `${dims.WIDTH * 0.975}px`, "scrollbar-width": "none" }}>
             <tbody>
                 <tr>
                     <td class="compare-border gold animate-flicker" style={{ "font-size": responsiveSizeStyle(asceanName?.length), "--glow-color":"gold" }}>{asceanName}
@@ -279,21 +279,21 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
         );
     };
     return <>
-        <div style={{ overflow: "scroll", height: `${dimensions().HEIGHT * 0.7}px`, "scrollbar-width": "none" }}>
+        <div style={{ overflow: "scroll", height: `${dims.HEIGHT * 0.7}px`, "scrollbar-width": "none" }}>
             {createTable(trueType)}
         </div>
         <div style={{ width: "100%", "text-align": "center", "margin-top": "3%" }}>
         {canEquip(ascean()?.level, highlighted()?.item?.rarity as string) ? ( <> 
-            <button class="highlight cornerBL" style={{ left: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+            <button class="highlight cornerBL" style={{ left: "0", bottom: dims.ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                 <div style={{ color: "red" }}>Remove</div>
             </button>
             {(inventoryType() === "weaponOne" || inventoryType() === "ringOne" || upgrade() === true) && ( // || upgrade() === true
-                <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setInspector()}>
+                <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dims.ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setInspector()}>
                     <div style={{ color: "#fdf6d8" }}>Inspect</div>
                 </button>
             )}
             {canEquip(ascean()?.level, highlighted()?.item?.rarity as string) && (
-                <button class="highlight cornerBR" style={{ right: "0", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setEquipper()}>
+                <button class="highlight cornerBR" style={{ right: "0", bottom: dims.ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setEquipper()}>
                     <div style={{ color: "green" }}>Equip</div>
                 </button> 
             )}
@@ -302,7 +302,7 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 Unfortunately, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
                 {"\n"}{"\n"}    
             </div>
-            <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dimensions().ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+            <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dims.ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
                     <div style={{ color: "red" }}>Remove</div>
                 </button>
         </> ) }

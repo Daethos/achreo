@@ -3,7 +3,7 @@ import { Form } from "solid-bootstrap";
 import { EventBus } from "../game/EventBus";
 import Settings from "../models/settings";
 import { updateSettings } from "../assets/db/db";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { COLORS, NUMBERS, font } from "../utility/styling";
 import { roundToTwoDecimals } from "../utility/combat";
 import { Collapse } from "solid-collapse";
@@ -22,7 +22,7 @@ interface IPhaserShape {
 };
 
 export default function PhaserShaper({ settings }: IPhaserShape) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const [shaper, setShaper] = createSignal(cleanShape);
 
     function resetShaper(exception: string, change: boolean) {
@@ -437,13 +437,13 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
         EventBus.emit("update-left-hud-position", update);
     };
     {/* <div style={font("0.5em")}>[Aggressive AI Range: 0 - 100%]</div> */}
-    return <div class="center creature-heading" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "0" } : { "margin-top": "50%" }}>
+    return <div class="center creature-heading" style={dims.ORIENTATION === "landscape" ? { "margin-top": "0" } : { "margin-top": "50%" }}>
         <h1 onClick={() => resetShaper("camera", !shaper().camera)} style={font("1.25em")}>Camera</h1>
         <Collapse value={shaper().camera} class="my-transition">
             <div style={font("1em")}>
-            <button class="highlight" onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), (dimensions().WIDTH > 1200 ? 2 : 0.5)))}>-</button>
+            <button class="highlight" onClick={() => handleCamera(Math.max(roundToTwoDecimals(Number(settings().positions.camera?.zoom - 0.05)), (dims.WIDTH > 1200 ? 2 : 0.5)))}>-</button>
             Zoom: ({settings().positions.camera?.zoom})
-            <button class="highlight" onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), (dimensions().WIDTH > 1200 ? 3 : 2)))}>+</button></div>
+            <button class="highlight" onClick={() => handleCamera(Math.min(roundToTwoDecimals(Number(settings().positions.camera?.zoom + 0.05)), (dims.WIDTH > 1200 ? 3 : 2)))}>+</button></div>
         </Collapse>
     
         <h1 onClick={() => resetShaper("castbar", !shaper().castbar)} style={font("1.25em")}>Castbar</h1>

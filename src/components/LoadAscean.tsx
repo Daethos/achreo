@@ -4,13 +4,13 @@ import { AttributeCompiler, AttributeNumberModal } from "./Attributes";
 import { Puff } from "solid-spinner";
 import Equipment from "../models/equipment";
 import { Attributes } from "../utility/attributes";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { masteryColor } from "../utility/styling";
 const AsceanImageCard = lazy(async () => await import("./AsceanImageCard"));
 const ItemModal = lazy(async () => await import("./ItemModal"));
 const AttributeModal = lazy(async () => await import("./Attributes"));
 export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const [show, setShow] = createSignal(false);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
@@ -18,13 +18,13 @@ export default function LoadAscean({ ascean }: { ascean: Accessor<Ascean>; }) {
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const viewMargin = { margin: "4%" };    
     const [positioning, setPositioning] = createSignal({
-            top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1200 ? "30%" : "50%",
-            left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1200 ? "25%" : "50%",
+            top: dims.WIDTH > 1800 ? "33%" : dims.WIDTH > 1200 ? "30%" : "50%",
+            left: dims.WIDTH > 1800 ? "27.5%" : dims.WIDTH > 1200 ? "25%" : "50%",
         });
         createEffect(() => {
             setPositioning({
-                top: dimensions().WIDTH > 1800 ? "33%" : dimensions().WIDTH > 1200 ? "30%" : "50%",
-                left: dimensions().WIDTH > 1800 ? "27.5%" : dimensions().WIDTH > 1200 ? "25%" : "50%",
+                top: dims.WIDTH > 1800 ? "33%" : dims.WIDTH > 1200 ? "30%" : "50%",
+                left: dims.WIDTH > 1800 ? "27.5%" : dims.WIDTH > 1200 ? "25%" : "50%",
             });
         });
     return (

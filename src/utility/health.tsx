@@ -3,11 +3,26 @@ import { GameState } from "../stores/game";
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 export const DISPLAYS = {
-    FULL: {KEY:"FULL", NEXT:"NUMBER"},
-    NUMBER: {KEY:"NUMBER", NEXT:"BARE"},
-    BARE: {KEY:"BARE", NEXT:"PERCENT"},
-    PERCENT: {KEY:"PERCENT", NEXT:"NONE"},
-    NONE: {KEY:"NONE", NEXT:"FULL"},
+    FULL: {
+        KEY:"FULL", 
+        NEXT:"NUMBER"
+    },
+    NUMBER: {
+        KEY:"NUMBER", 
+        NEXT:"BARE"
+    },
+    BARE: {
+        KEY:"BARE", 
+        NEXT:"PERCENT"
+    },
+    PERCENT: {
+        KEY:"PERCENT", 
+        NEXT:"NONE"
+    },
+    NONE: {
+        KEY:"NONE", 
+        NEXT:"FULL"
+    },
 };
 export function createHealthDisplay(combat: Accessor<Combat>, game:Accessor<GameState>, enemy: boolean) {
     const [healthPercentage, setHealthPercentage] = createSignal<number>(0); 

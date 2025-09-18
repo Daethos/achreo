@@ -2,7 +2,7 @@ import { createSignal, createEffect, Accessor } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
 import { EventBus } from "../game/EventBus";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 const DISPLAYS = {
     FULL: {KEY:"FULL", NEXT:"NUMBER"},
     NUMBER: {KEY:"NUMBER", NEXT:"BARE"},
@@ -15,7 +15,7 @@ export default function ExperienceBar({ ascean, game }: {ascean: Accessor<Ascean
     const [experience, setExperience] = createSignal(0);
     const [display, setDisplay] = createSignal<any>(game().experienceDisplay);
     const [experienceDisplay, setExperienceDisplay] = createSignal<any>("");
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     createEffect(() => setDisplay(game().healthDisplay));
     createEffect(() => {
         let newPercentage = Math.round((ascean().experience/(ascean().level * 1000) * 100));
@@ -40,7 +40,7 @@ export default function ExperienceBar({ ascean, game }: {ascean: Accessor<Ascean
         EventBus.emit("insert-settings", { healthViews: nextView });
     };
     return <div class="healthbar" onClick={changeDisplay} style={{ height: "7.5%" }}>
-        <p class="playerPortrait center" style={{ color: "#ffd700", "font-size": dimensions().WIDTH > 850 ? "1.25em" : "1em" }}>{experienceDisplay()}</p>
+        <p class="playerPortrait center" style={{ color: "#ffd700", "font-size": dims.WIDTH > 850 ? "1.25em" : "1em" }}>{experienceDisplay()}</p>
         <div style={{ position: "absolute", bottom: 0, left: 0, top: 0, width: `${experiencePercentage()}%`, "background": "linear-gradient(purple, #080080)" }}></div>
     </div>;
 };

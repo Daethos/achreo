@@ -1,30 +1,9 @@
 import { Haptics } from "@capacitor/haptics";
-var totalTrauma = 0;
-var timeScale = false;
+import { Play } from "../main";
 
-export function hitStop(scene: Phaser.Scene, duration = 32) {
-    if (timeScale) return;
-    timeScale = true;
-    scene.time.timeScale = 0.01;
-    setTimeout(() => { 
-        scene.time.timeScale = 1; 
-        timeScale = false; 
-    }, duration);
-};
-
-export function screenShake(scene: Phaser.Scene, duration = 32, intensity = 0.0025) {
-    totalTrauma += 1.025;
-    intensity *= Math.pow(totalTrauma, 2);
-    vibrate();
-    const delta = scene.sys.game.loop.delta;
-    const decay = setInterval(() => {
-        scene.cameras.main.shake(duration, intensity);
-        totalTrauma -= 1.025 / duration;
-        if (totalTrauma <= 0) {
-            totalTrauma = 0;
-            clearInterval(decay);
-        };
-    }, delta);
+export function screenShake(scene: Play, duration = 128, int = 0.0025) { // 32 / 0.0025
+    scene.combatManager.hitFeedbackSystem.screenShake(duration, int);
+    vibrate(duration);
 };
 export function sprint(scene: Phaser.Scene, duration = 32, intensity = 0.0015) { // 48 || 0.0004
     scene.cameras.main.shake(duration, intensity);
@@ -36,6 +15,7 @@ export function vibrate(duration: number[] | number = 320) {
     if ("vibrate" in navigator && navigator?.vibrate !== undefined) {
         navigator.vibrate(duration);
     } else {
-        Haptics.vibrate({duration:320});
+        const int = Number.isInteger(duration) ? duration as number : 640;
+        Haptics.vibrate({duration:int});
     };
 };

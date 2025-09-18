@@ -1,15 +1,16 @@
 import { Accessor, Setter, createEffect, createSignal } from "solid-js";
 import { asceanCompiler } from "../utility/ascean";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { Attributes } from "../utility/attributes";
 import { CombatAttributes } from "../utility/combat";
 import Ascean from "../models/ascean";
 const font = { "font-size": window.innerWidth > 1200 ? "" : "1em", margin: "0" };
 
+const dims = dimensions();
+
 export default function AttributeModal({ attribute }: { attribute: any }) {
-    const dimensions = useResizeListener();
     const poly = dimensions().WIDTH * 0.55;
-    return <div class="border superCenter" style={dimensions()?.ORIENTATION === "landscape" ? { top: "48%", width: "60%", padding: "1%" } : { width: "75%" }}>
+    return <div class="border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "60%", padding: "1%" } : { width: "75%" }}>
         <div class="creature-heading wrap" style={{ "text-wrap": "balance", "white-space": "pre-wrap" }}>
             <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
             <br />
@@ -28,9 +29,8 @@ export default function AttributeModal({ attribute }: { attribute: any }) {
 };
 
 export function AttributeNumberModal({ attribute }: { attribute: Accessor<any>; }) {
-    const dimensions = useResizeListener();
-    const poly = dimensions().WIDTH * 0.55;
-    return <div class="border superCenter" style={dimensions()?.ORIENTATION === "landscape" ? { top: "48%", width: "50%", padding: "1%", "z-index": 9 } : { width: "75%" }}>
+    const poly = dims.WIDTH * 0.55;
+    return <div class="border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "50%", padding: "1%", "z-index": 9 } : { width: "75%" }}>
         <div class="creature-heading wrap" style={{ "text-wrap": "balance", "white-space": "pre-wrap" }}>
             <h1 style={{ margin: "5% auto" }}>{attribute().attribute}</h1>
             <svg height="5" width="100%" class="tapered-rule">
@@ -49,7 +49,6 @@ export function AttributeNumberModal({ attribute }: { attribute: Accessor<any>; 
 
 export function AttributeCompiler({ ascean, setAttribute, show, setShow, setDisplay }: { ascean: Accessor<Ascean>, setAttribute: Setter<any>, show: Accessor<boolean>, setShow: Setter<boolean>; setDisplay: Setter<any>; }) {
     const [abilities, setAbilities] = createSignal<CombatAttributes | undefined>(undefined);
-    const dimensions = useResizeListener();
     function toggle(attr: string) {
         setAttribute(Attributes.find(a => a.name === attr));
         setShow(!show());
@@ -86,7 +85,7 @@ export function AttributeCompiler({ ascean, setAttribute, show, setShow, setDisp
         };
     };
     createEffect(() => compiler());
-    const inline = { width: dimensions().ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block" };
+    const inline = { width: dims.ORIENTATION === "landscape" ? `28%` : `40%`, display: "inline-block" };
     return <div class="creature-heading attributes" style={{ width: "100%", display: "inline-flex", background: "transparent" }}>
         <div style={inline}>
             <button class="buttonBorderless" onClick={() => toggle("constitution")} style={font}><p style={{ margin: "0 auto" }}>Con</p></button>

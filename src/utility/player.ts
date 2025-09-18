@@ -112,7 +112,7 @@ export const Counters: Record<string, Record<string, Concerns>[]> = {
 export const PHYSICAL_ACTIONS = ["attack", "posture", "thrust"];
 export const PHYSICAL_EVASIONS = ["dodge", "roll"];
 const COST = {LOW: 15, MID: 30, HIGH: 45, HIGHEST: 60}; // Good, Better, Best, Bested. How is that for a declension
-const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
+const DURATION = {BOTTOM: 750, STANDARD: 1500, ONE: 1000, TWO: 2000, THREE: 3000, FIVE: 5000, MODERATE: 6000, HIGH: 8000, TEN: 10000};
 type Cost = {[key:string]: number;};
 export const TALENT_COST: Cost = {
     "-30": -45,
@@ -168,7 +168,7 @@ export const PLAYER = {
         INITIAL: 1.5, // 1.75
         ACCELERATION: 0.5,
         DECELERATION: 0.05,
-        CAERENIC: 0.5,
+        CAERENIC: 0.6,
         SLOW: 1,
         SNARE: 1.5,
         SPRINT: 1.5,
@@ -205,6 +205,23 @@ export const PLAYER = {
         COMPUTER_POSTURE: 10,
         COMPUTER_ROLL: 10,
         COMPUTER_THRUST: 10,
+
+        LUCKOUT: COST.MID,
+        "LUCKOUT (ARBITUOUS)": COST.MID,
+        "LUCKOUT (CHIOMIC)": COST.MID,
+        "LUCKOUT (KYR'NAIC)": COST.MID,
+        "LUCKOUT (LILOSIAN)": COST.MID,
+        "LUCKOUT (TSHAERAL)": COST.MID,
+
+        PERSUASION: 10,
+        "PERSUASION (ARBITUOUS)": 10,
+        "PERSUASION (CHIOMIC)": 10,
+        "PERSUASION (FYERAN)": 10,
+        "PERSUASION (KYR'NAIC)": 10,
+        "PERSUASION (ILIAN)": 10,
+        "PERSUASION (LILOSIAN)": 10,
+        "PERSUASION (SHAORAHI)": 10,
+        "PERSUASION (TSHAERAL)": 10,
 
         // Special Cost
         INVOKE: -COST.MID,
@@ -358,26 +375,30 @@ export const PLAYER = {
         SNARE: DURATION.ONE,
         SPRINT: DURATION.MODERATE,
         STORM: DURATION.THREE,
-        STUNNED: 2500,
+        STUNNED: DURATION.THREE,
         TEXT: DURATION.STANDARD,
-        TSHAERAL: 2000,
+        TSHAERAL: DURATION.TWO,
         WARD: DURATION.HIGH,
         WRITHE: DURATION.ONE,
         // Trait
+        
+        LUCKOUT: DURATION.THREE,
+        PERSUASION: DURATION.THREE,
+
         ASTRICATION: DURATION.HIGH, // -1
         BERSERK: DURATION.HIGH,
         BLIND: DURATION.ONE,
         CAERENESIS: DURATION.ONE,
         CONVICTION: DURATION.HIGH,
-        DEVOUR: 2000,
-        ENDURANCE: 5000,
+        DEVOUR: DURATION.TWO,
+        ENDURANCE: DURATION.FIVE,
         IMPERMANENCE: DURATION.HIGH, // -1
         NEGATION: DURATION.HIGH, // -1
         SEER: DURATION.HIGH, // -1
         STIMULATE: DURATION.STANDARD,
         // Negative Durations
-        SNARED: 5000,
-        SLOWED: 5000,
+        SNARED: DURATION.FIVE,
+        SLOWED: DURATION.FIVE,
     },
     RANGE: {
         SHORT: 200,
@@ -713,6 +734,7 @@ export const staminaCheck = (stamina: number, cost: number): { success: boolean;
 };
 
 export const ENEMY_AGGRESSION = -15;
+export const ENEMY_HOSTILE = -5;
 const ADHERENT = "Adherent";
 const DEVOTED = "Devoted";
 
@@ -839,7 +861,7 @@ export const NAMED_ENEMY = [
     "Jadei Myelle", 
     "King Mathyus Caderyn", 
     "Kreceus", 
-    "Lacheo of the Seyr", // Daethic Inquisitor. Mute
+    "Lacheo of the Seyr",
     "Laetrois Ath'Shaorah", 
     "Leaf", 
     "Lorian", 
@@ -878,6 +900,7 @@ export type FACTION = {
     named: boolean; // Unique enemies
     aggressive: boolean; // Attacks first if true
     betrayed: boolean; // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
+    hostile: boolean; // Will approach and force dialog
     faith: string; // Adherent || Devoted
     deity: string[];
     province: string[];
@@ -890,6 +913,7 @@ export const initFaction = {
     named: false, // Unique enemies
     aggressive: false, // Attacks first if true
     betrayed: false, // Betrayed = went from aggressive = false to true, Permanent = always aggressive, no dialog
+    hostile: false,
     faith: "", // Adherent || Devoted
     province: [""],
     deity: [""],
@@ -1267,7 +1291,7 @@ export class Reputation {
     };
 };
 
-export const initReputation: Reputation = new Reputation('reputation');
+export const initReputation: Reputation = new Reputation("reputation");
 
 export class Inventory {
     public _id: string;
@@ -1278,7 +1302,7 @@ export class Inventory {
     };
 };
 
-export const initInventory: Inventory = new Inventory('inventory');
+export const initInventory: Inventory = new Inventory("inventory");
 
 export class Party<T> {
     public _id: string;
@@ -1289,4 +1313,4 @@ export class Party<T> {
     };
 };
 
-export const initParty: Party<Ascean> = new Party('party');
+export const initParty: Party<Ascean> = new Party("party");

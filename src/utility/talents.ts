@@ -9,6 +9,8 @@ type TalentSchema = {
     caerenic: Talent;
     stalwart: Talent;
     stealth: Talent;
+    luckout: Talent;
+    persuasion: Talent;
     attack: Talent;
     dodge: Talent;
     jump: Talent;
@@ -99,6 +101,8 @@ const initTalentSchema: TalentSchema = {
         caerenic: initTalent,
         stalwart: initTalent,
         stealth: initTalent,
+        luckout: initTalent,
+        persuasion: initTalent,
         attack: initTalent,
         dodge: initTalent,
         jump: initTalent,

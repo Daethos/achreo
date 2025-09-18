@@ -132,16 +132,16 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                             // computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.HIGH;
-                            computerMagicalDamage *= DAMAGE.MID;
+                            computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.HIGH;
-                        computerMagicalDamage *= DAMAGE.MID;
+                        computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (computerWeapon?.attackType === ATTACK_TYPES.MAGIC) {
@@ -152,16 +152,16 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                             // computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.MID;
-                            computerMagicalDamage *= DAMAGE.HIGH;
+                            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.MID;
-                        computerMagicalDamage *= DAMAGE.HIGH;
+                        computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
         };
@@ -174,16 +174,16 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                             // computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else { 
-                            computerPhysicalDamage *= DAMAGE.HIGH;
-                            computerMagicalDamage *= DAMAGE.MID;
+                            computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                         };
                     } else { 
-                        computerPhysicalDamage *= DAMAGE.HIGH;
-                        computerMagicalDamage *= DAMAGE.MID;
+                        computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                        computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (computerWeapon?.attackType === ATTACK_TYPES.MAGIC) {
@@ -194,61 +194,61 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
                             // computerDualWieldCompiler(combat, playerPhysicalDefenseMultiplier, playerMagicalDefenseMultiplier);
                             return combat;
                         } else {
-                            computerPhysicalDamage *= DAMAGE.MID;
-                            computerMagicalDamage *= DAMAGE.HIGH;
+                            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                            computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                         };
                     } else {
-                        computerPhysicalDamage *= DAMAGE.MID;
-                        computerMagicalDamage *= DAMAGE.HIGH;
+                        computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+                        computerMagicalDamage *= DAMAGE.ONE_THIRTY;
                     };
                 } else {
-                    computerPhysicalDamage *= DAMAGE.LOW;
-                    computerMagicalDamage *= DAMAGE.LOW;
+                    computerPhysicalDamage *= DAMAGE.ONE_TEN;
+                    computerMagicalDamage *= DAMAGE.ONE_TEN;
                 };
             };
             if (computerWeapon?.type === WEAPON_TYPES.BOW || computerWeapon?.type === WEAPON_TYPES.GREATBOW) {
-                computerPhysicalDamage *= DAMAGE.HIGH;
-                computerMagicalDamage *= DAMAGE.HIGH; 
+                computerPhysicalDamage *= DAMAGE.ONE_THIRTY;
+                computerMagicalDamage *= DAMAGE.ONE_THIRTY; 
             };
         };
     };
 
     if (computerAction === ACTION_TYPES.ROLL) {
         if (combat.rollSuccess === true) {
-            computerPhysicalDamage *= DAMAGE.MID;
-            computerMagicalDamage *= DAMAGE.MID;
+            computerPhysicalDamage *= DAMAGE.ONE_FIFTEEN;
+            computerMagicalDamage *= DAMAGE.ONE_FIFTEEN;
         } else {
-            computerPhysicalDamage *= DAMAGE.NEG_HIGH;
-            computerMagicalDamage *= DAMAGE.NEG_HIGH;
+            computerPhysicalDamage *= DAMAGE.NINETY;
+            computerMagicalDamage *= DAMAGE.NINETY;
         };
     };
     if (computerAction === ACTION_TYPES.POSTURE) {
-        computerPhysicalDamage *= DAMAGE.NEG_HIGH;
-        computerMagicalDamage *= DAMAGE.NEG_HIGH;
+        computerPhysicalDamage *= DAMAGE.NINETY;
+        computerMagicalDamage *= DAMAGE.NINETY;
     };
     if (computerAction === ACTION_TYPES.ACHIRE) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
     if (computerAction === ACTION_TYPES.LEAP) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
     if (computerAction === ACTION_TYPES.QUOR) {
-        computerPhysicalDamage *= DAMAGE.THREE;
-        computerMagicalDamage *= DAMAGE.THREE;
+        computerPhysicalDamage *= DAMAGE.TWO;
+        computerMagicalDamage *= DAMAGE.TWO;
     };
     if (computerAction === ACTION_TYPES.RUSH) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
     if (computerAction === ACTION_TYPES.THRUST) {
-        computerPhysicalDamage *= DAMAGE.NEG_LOW;
-        computerMagicalDamage *= DAMAGE.NEG_LOW;
+        computerPhysicalDamage *= DAMAGE.SEVENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.SEVENTY_FIVE;
     };
     if (computerAction === ACTION_TYPES.WRITHE) {
-        computerPhysicalDamage *= DAMAGE.ONE_FIFTY;
-        computerMagicalDamage *= DAMAGE.ONE_FIFTY;
+        computerPhysicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
+        computerMagicalDamage *= DAMAGE.ONE_TWENTY_FIVE;
     };
 
     const criticalClearance = Math.floor(Math.random() * 101);
@@ -273,8 +273,8 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     computerTotalDamage = computerPhysicalDamage + computerMagicalDamage;
     if (computerTotalDamage < 0) computerTotalDamage = 0;
     combat.realizedComputerDamage = computerTotalDamage;
-    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.LOW;
-    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NEG_HIGH;
+    if (computerAction === ACTION_TYPES.ATTACK) combat.realizedComputerDamage *= DAMAGE.ONE_TEN;
+    if (computerAction === ACTION_TYPES.POSTURE) combat.realizedComputerDamage *= DAMAGE.NINETY;
     combat.realizedComputerDamage *= (computerCaer.pos * computerEnemyCaer.neg * computerEnemyStal);
     // if (combat.isStalwart) combat.realizedComputerDamage *= DAMAGE.STALWART;
     // if (combat.isCaerenic) combat.realizedComputerDamage *= DAMAGE.CAERENEIC_NEG;

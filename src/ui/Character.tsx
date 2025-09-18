@@ -12,11 +12,11 @@ import { GameState } from "../stores/game";
 import { Combat } from "../stores/combat";
 import { Modal } from "../utility/buttons";
 import { font, getRarityColor, masteryColor } from "../utility/styling";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { Attributes } from "../utility/attributes";
 import { Reputation, FACTION } from "../utility/player";
 import { playerTraits } from "../utility/ascean";
-import { SPECIAL, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
+import { ACTIONS, SPECIAL, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
 import { DEITIES } from "../utility/deities";
 import { Puff } from "solid-spinner";
 import PhaserSettings from "./PhaserSettings";
@@ -137,6 +137,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [inventoryType, setInventoryType] = createSignal<string>("");
     const [highlighted, setHighlighted] = createSignal<{ item: Equipment | undefined; comparing: boolean; type: string }>({ item: undefined, comparing: false, type: "" });
     const [show, setShow] = createSignal<boolean>(false);
+    const [actions, setActions] = createSignal<any[]>([]);
     const [specials, setSpecials] = createSignal<any[]>([]);
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
@@ -159,7 +160,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [deity, setDeity] = createSignal<any>(undefined);
     const [entry, setEntry] = createSignal<any>(undefined);
     const [reputationConcern, setReputationConcern] = createSignal<string>(settings()?.reputationViews || REPUTATION.ENEMY);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const bMargin = {"margin-bottom":"3%"};
  
     createEffect(() => {
@@ -197,15 +198,39 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     function checkSpecials() {
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
         const mastery = SPECIAL[ascean().mastery as keyof typeof SPECIAL];
+        const speaking = playerTraitWrapper();
         // const mastery = SPECIALS; // Everything for testing
         let extra: any[] = [];
-        // let extra: any[] = TRAITS;
-        for (let i = 0; i < 3; i++) {
+        let physical = JSON.parse(JSON.stringify(ACTIONS));
+
+        for (let i = 0; i < 3; ++i) {
             const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
             if (trait && trait.length > 0) {
-                extra = [ ...extra, ...trait ]
+                extra = [ ...extra, ...trait ];
             };
         };
+
+        for (const traitType in speaking) {
+            const trait = speaking[traitType];
+            const { traitOneName, traitTwoName } = trait;
+            if (traitOneName === "Persuasion") {
+                const pTraitOne = `${traitOneName} (${trait.name})`;
+                physical.push(pTraitOne);
+            };
+            if (traitTwoName === "Persuasion") {
+                const pTraitTwo = `${traitTwoName} (${trait.name})`;
+                physical.push(pTraitTwo);
+            };
+            if (traitOneName === "Luckout") {
+                const sTraitOne = `${traitOneName} (${trait.name})`;
+                extra.push(sTraitOne);
+            };
+            if (traitTwoName === "Luckout") {
+                const sTraitTwo = `${traitTwoName} (${trait.name})`;
+                extra.push(sTraitTwo);
+            };
+        };
+
         if (extra.length > 0) {
             let start = [...mastery, ...extra];
             start.sort();
@@ -215,6 +240,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             start.sort();
             setSpecials(start);
         };
+
+        setActions(physical);
     };
 
     const addTalent = (talent: string, type: string) => {
@@ -332,17 +359,24 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const displayedSpecials = createMemo(() => {
-    return ["Caerenic", "Stalwart", "Stealth", "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"]
+    return ["Caerenic", "Stalwart", "Stealth"] // , "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"
+        .concat(actions())
         .concat(specials())
-        .filter((spec) => talents().talents[spec.toLowerCase() as keyof typeof talents]);
+        .filter((spec) => {
+            let low = spec.toLowerCase();
+            if (low.includes("luckout") || low.includes("persuasion")) {
+                low = low.split(" ")[0];
+            };
+            return talents().talents[low as keyof typeof talents];
+        });
     });
     
     const characterInfo = createMemo(() => {
         switch (settings()?.characterViews) {
             case CHARACTERS.CHARACTER:
-                return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
+                return <div class="playerWindow creature-heading" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div>
-                    { dimensions().ORIENTATION === "landscape" ? ( <>
+                    { dims.ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
                     </> ) : ( <>
@@ -351,10 +385,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                             {combat()?.player?.description}
                         </h2>
                     </> ) }
-                    <div style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dimensions().WIDTH > 1200 ? "5%" : dimensions().HEIGHT > 410 ? "1%" : dimensions().WIDTH < 875 ? "1%" : "" }}>
+                    <div style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dims.WIDTH > 1200 ? "5%" : dims.HEIGHT > 410 ? "1%" : dims.WIDTH < 875 ? "1%" : "" }}>
                         <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dimensions().WIDTH > 1200 ? "1.5em" : dimensions().WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dimensions().HEIGHT > 410 ? "2.5%" : "" }}>
+                    <div style={{ "margin-bottom": "0%", "font-size": dims.WIDTH > 1200 ? "1.5em" : dims.WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dims.HEIGHT > 410 ? "2.5%" : "" }}>
                         <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
                         <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
                         <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
@@ -446,7 +480,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         "animate-texty-infinite":talents().points.spent === talents().points.total,
                     }} style={{color:"#fdf6d8", "--glow-color":"#fdf6d8", "margin":"2.5% 0 5%"}}>{talents().points.spent} / {talents().points.total}</h3>
                     <For each={displayedSpecials()}>{(special) => {
-                        const lower = special.toLowerCase();
+                        let lower = special.toLowerCase();
+                        if (lower.includes("luckout") || lower.includes("persuasion")) {
+                            lower = lower.split(" ")[0];
+                        };
                         const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
                         const talent = () => talents().talents[lower as keyof typeof talents] as any;
                         const physical = spec?.special.includes("Physical");
@@ -499,9 +536,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
             case CHARACTERS.CHARACTER:
-                return <div class="playerWindow creature-heading" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
-                    <div class="stat-panel souls" style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
-                    { dimensions().ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
+                return <div class="playerWindow creature-heading" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                    { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
                         <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
                         <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
                     </div> ) : ( <>
@@ -936,7 +973,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "hidden", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "justify-content": "center", "align-items": "center", "text-align": "center" }}>
                             <p style={{ color: "gold", "font-size": "1.25em" }}>Feedback</p>
                             <Form class="verticalCenter" style={{ "text-wrap": "balance" }}>
@@ -961,10 +998,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </Match>    
                 <Match when={settings().asceanViews === VIEWS.INVENTORY && expandedCharacter() === true}>
                     {createCharacterInfo(CHARACTERS.CHARACTER)}
-                    {/* {characterInfo()} */}
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
                         {/* <button class="highlight cornerTL" style={{ "background-color": "blue", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getInventory()}>
                             <p>Get Eqp</p>
                         </button> */}
@@ -974,13 +1010,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {/* <button class="highlight cornerBR" style={{ "background-color": "gold", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
-                        <div class="" style={{ "display": "grid", "margin-top": dimensions().HEIGHT > 420 ? "2.5%" : "" }}>
+                        <div class="" style={{ "display": "grid", "margin-top": dims.HEIGHT > 420 ? "2.5%" : "" }}>
                         <Show when={ascean().experience >= ascean().level * 1000}>
                             <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
                             </button>
                         </Show>
-                        <div class="gold" style={dimensions().ORIENTATION === "landscape" ? { "font-size": dimensions().WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
+                        <div class="gold" style={dims.ORIENTATION === "landscape" ? { "font-size": dims.WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
                             {combat()?.player?.name}
                         </div>
                         <Suspense fallback={<Puff color="gold"/>}>
@@ -988,12 +1024,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 <HealthBar combat={combat} enemy={false} game={game} />
                             </div>
                         </Suspense>
-                        <div style={dimensions().ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "7.5%" : "2.5%", transform: dimensions().WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
+                        <div style={dims.ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "7.5%" : "2.5%", transform: dims.WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                             </Suspense>
                         </div>
-                        <div style={{ "margin-top": dimensions().WIDTH > 1200 ? "35%" : dimensions().HEIGHT > 420 ? "-2%" : "-5%" }}>
+                        <div style={{ "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "-2%" : "-5%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <ExperienceBar ascean={ascean} game={game} />
                             </Suspense>
@@ -1002,7 +1038,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </Match>
                 <Match when={settings().asceanViews === VIEWS.FAITH}>
-                    <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "margin-left": "0", "margin-top": "7.5%", transform: "scale(0.9)" }}>
                             <div class="creature-heading" style={{ "margin-top": "-5%" }}>
                                 <h1>Blessings</h1>
@@ -1029,11 +1065,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
-        <div class="playerWindow" style={{ height: `${dimensions().HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
+        <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none", margin: "auto" }}>
-                    <div class="stat-panel souls" style={{ transform: dimensions().WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
-                    { dimensions().ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
+                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                    { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
                         <img class="stat-" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
                         <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
                     </div> ) : ( <>
@@ -1124,7 +1160,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </Suspense>
                 )
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
-                <PhaserSettings settings={settings} setSettings={setSettings} specials={specials} />
+                <PhaserSettings settings={settings} setSettings={setSettings} actions={actions} specials={specials} />
             ) : ( 
                 <div class="center" style={{ display: "flex", "flex-direction": "row" }}>
                     <div class="center wrap" style={{ "margin-top": "-2.5%" }}> 
@@ -1135,7 +1171,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class="playerWindow" style={{height: `${dimensions().HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
+            <div class="playerWindow" style={{height: `${dims.HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class="center wrap"> 
                         {/* {createCharacterInfo(settings()?.characterViews)} */}
@@ -1149,7 +1185,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     <div style={{ "scrollbar-width": "none", overflow: "scroll" }}> 
                         <div class="center" style={{ padding: "5%", "font-size": "0.75em" }}>
                         <Suspense fallback={<Puff color="gold"/>}>
-                            <SettingSetter setting={settings} specials={specials} />
+                            <SettingSetter actions={actions} setting={settings} specials={specials} />
                         </Suspense>
                         </div>
                     </div>

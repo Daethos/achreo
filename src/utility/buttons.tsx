@@ -2,7 +2,7 @@ import { font } from "./styling";
 import { SCREENS } from "./screens";
 import { Accessor, Setter } from "solid-js";
 import Equipment from "../models/equipment";
-import { useResizeListener } from "./dimensions";
+import { dimensions } from "./dimensions";
 import StatusEffect from "./prayer";
 import { EventBus } from "../game/EventBus";
 const specials = ["Avarice", "Dispel", "Denial", "Insight", "Silence"]; // Slow, Fear, Confuse, Charm
@@ -109,7 +109,7 @@ export function Modal({ items, inventory, callback, show, setShow, forge, setFor
 };
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     // console.log(prayer(), specialDescription[prayer().prayer as keyof typeof specialDescription], "prayer");
 
     function consume() {
@@ -118,7 +118,7 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
     const gold = {color:"gold"}
     return (
         <div class="modal" onClick={() => setShow(!show)}>
-            <button class="border superCenter" onClick={() => setShow(!show)} style={{ "max-height": dimensions().ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dimensions().ORIENTATION === "landscape" ? "35%" : "70%","overflow-y": "scroll", "overflow-x": "hidden", "background-color": "black" }}>
+            <button class="border superCenter" onClick={() => setShow(!show)} style={{ "max-height": dims.ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dims.ORIENTATION === "landscape" ? "35%" : "70%","overflow-y": "scroll", "overflow-x": "hidden", "background-color": "black" }}>
                 <div class="creature-heading" style={{ height: "100%", margin: "5%" }}>
                     <h1>{prayer().name.charAt(0).toUpperCase() + prayer().name.slice(1)}</h1>
                     <h2>{prayer().description}</h2>

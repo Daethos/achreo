@@ -1,16 +1,16 @@
 import { createSignal, createEffect, Accessor, Setter } from "solid-js";
 import createStamina from "../utility/Stamina";
 import Settings from "../models/settings";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 export default function StaminaBubble({ stamina, show, setShow, settings }: {stamina:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings:Accessor<Settings>;}) {
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const { staminaPercentage, usedStamina } = createStamina(stamina);
     const [newStamina, setNewStamina] = createSignal(0);
     createEffect(() => setNewStamina(Math.round((staminaPercentage() * stamina() / 100))));
     function setText(setting: string) {
-        const smol = dimensions().WIDTH < 850;
-        const mobile = dimensions().WIDTH < 1024;
-        const desktop = dimensions().WIDTH > 1600;
+        const smol = dims.WIDTH < 850;
+        const mobile = dims.WIDTH < 1024;
+        const desktop = dims.WIDTH > 1600;
         switch (setting) {
             case "PERCENTAGE":
                 if (smol) {

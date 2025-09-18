@@ -4,7 +4,7 @@ import { Puff } from "solid-spinner";
 import { updateSettings } from "../assets/db/db";
 import { ACTIONS, SPECIALS } from "../utility/abilities";
 import { EventBus } from "../game/EventBus";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { font } from "../utility/styling";
 import { Form } from "solid-bootstrap";
 import { ActionButtonModal } from "../utility/buttons";
@@ -59,14 +59,14 @@ const THIEVERY = {
     Master: "Legendary",
     Legendary: "Easy",
 };
-export default function PhaserSettings({ settings, setSettings, specials }: { settings: Accessor<Settings>; setSettings: Setter<Settings>; specials: Accessor<any[]>; }) {
+export default function PhaserSettings({ settings, setSettings, actions, specials }: { settings: Accessor<Settings>; setSettings: Setter<Settings>; actions: Accessor<any[]>; specials: Accessor<any[]>; }) {
     const [actionShow, setActionShow] = createSignal<boolean>(false);
     const [currentAction, setCurrentAction] = createSignal({action: ACTIONS[0],index: 0});
     const [specialShow, setSpecialShow] = createSignal<boolean>(false);
     const [currentSpecial, setCurrentSpecial] = createSignal({special: SPECIALS[0],index: 0});
     const [showRestart, setShowRestart] = createSignal<boolean>(false);
     const [frame, setFrame] = createSignal(cleanFrame);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const [difficulty, setDifficulty] = createSignal(cleanSettings);
     const [fx, setFx] = createSignal(cleanFx);
     function resetDifficulty(exception: string, change: boolean) {
@@ -300,7 +300,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
-            <div style={dimensions().ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
+            <div style={dims.ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
                 <div style={font("1em", "gold")}>Physicals<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
                     <button class="highlight" onClick={() => actionModal(action, index)} style={{display: "block"}}>
@@ -308,7 +308,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </button>
                 )}
                 </div>
-                <div style={dimensions().ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
+                <div style={dims.ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
                     <div style={font("1em", "gold")}>Specials<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
                         <button  class="highlight" onClick={() => specialModal(special, index)} style={{display: "block"}}>
@@ -318,7 +318,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                 </div>
             </Match>
             <Match when={settings().control === CONTROLS.POST_FX}>
-                <div class="center creature-heading" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
+                <div class="center creature-heading" style={dims.ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
                     <h1 onClick={() => resetFx("postfx", !fx().postfx)} style={font("1.25em")}>PostFx</h1>
                     <Collapse value={fx().postfx} class="my-transition">
                         <div style={font("1em", "#fdf6d8")}>
@@ -409,7 +409,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                     </div>
             </Match>
             <Match when={settings().control === CONTROLS.DIFFICULTY}>
-                <div class="center creature-heading wrap" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
+                <div class="center creature-heading wrap" style={dims.ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
                     <h1 onClick={() => resetFrame("combat", !frame().combat)} style={font("1.25em")}>Combat</h1>
                     <Collapse value={frame().combat} class="my-transition">
                         <h1 onClick={() => resetDifficulty("hudCombatText", !difficulty().hudCombatText)} style={font("0.85em")}>Hud Combat Text</h1>
@@ -586,7 +586,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
                 </div>
             </Match>
             <Match when={settings().control === CONTROLS.PHASER_UI}>
-                <div class="center creature-heading" style={dimensions().ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
+                <div class="center creature-heading" style={dims.ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
                 <Suspense fallback={<Puff color="gold"/>}>
                     <PhaserShaper settings={settings} />
                     <br />
@@ -600,7 +600,7 @@ export default function PhaserSettings({ settings, setSettings, specials }: { se
         </div>
         <Show when={actionShow()}>
             <div class="modal" onClick={() => setActionShow(!actionShow())}>
-                <ActionButtonModal currentAction={currentAction} actions={ACTIONS}  handleAction={handleActionButton} /> 
+                <ActionButtonModal currentAction={currentAction} actions={actions()}  handleAction={handleActionButton} /> 
             </div>
         </Show>
         <Show when={specialShow()}>

@@ -2,7 +2,7 @@ import { Setter, Show, createSignal, lazy, Suspense, onMount } from "solid-js";
 import { Scene } from "phaser";
 import PhaserGame from"./game/PhaserGame";
 import { Game } from "./game/scenes/Game";
-import { useResizeListener } from "./utility/dimensions";
+import { dimensions } from "./utility/dimensions";
 import Settings, { initSettings } from "./models/settings";
 import { initMenu, LANDSCAPE_SCREENS, Menu, SCREENS } from "./utility/screens";
 import Ascean, { createAscean } from "./models/ascean";
@@ -48,7 +48,7 @@ export default function App() {
     const [settings, setSettings] = createSignal<Settings>(initSettings);
     const [show, setShow] = createSignal<boolean>(false);
     const [startGame, setStartGame] = createSignal<boolean>(false);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     var stopLightning: () => void;
     var phaserRef: IRefPhaserGame;
     var tips: string | number | NodeJS.Timeout | undefined =  undefined;
@@ -566,7 +566,7 @@ export default function App() {
         <Show when={startGame()} fallback={<div class="">
         {menu().creatingCharacter ? (
             <div id="overlay" class="superCenter">
-            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dimensions().ORIENTATION === "landscape"}>
+            <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dims.ORIENTATION === "landscape"}>
                 <Suspense fallback={<Puff color="gold"/>}>
                     <Preview newAscean={newAscean} />
                 </Suspense>
@@ -574,7 +574,7 @@ export default function App() {
             <Suspense fallback={<Puff color="gold"/>}>
                 <AsceanBuilder newAscean={newAscean} setNewAscean={setNewAscean} menu={menu} />
             </Suspense>
-            <Show when={dimensions().ORIENTATION === "landscape"} fallback={
+            <Show when={dims.ORIENTATION === "landscape"} fallback={
                 <>{(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV !== SCREENS.COMPLETE.KEY) &&
                     <button class="highlight cornerBL" onClick={() => {click.play(); setScreen(SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV);}}>
                         <div>Back ({SCREENS[SCREENS[menu()?.screen as keyof typeof SCREENS]?.PREV as keyof typeof SCREENS]?.TEXT})</div>

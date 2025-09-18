@@ -1,7 +1,9 @@
 import { Accessor, createSignal, For, Setter, Show } from 'solid-js';
-import { useResizeListener } from '../utility/dimensions';
+import { dimensions } from '../utility/dimensions';
 import { CharacterSheet } from '../utility/ascean';
 import { click } from '../App';
+
+const dims = dimensions();
 
 const ORIGINS = [{
     name: "Ashtre",
@@ -80,12 +82,11 @@ const ORIGINS = [{
 }];
 
 export const OriginModal = ({ origin }: { origin: string }) => {
-    const dimensions = useResizeListener();
     const race = ORIGINS.find((o) => o.name === origin);
     return <div class="border verticalCenter" style={{ position: "absolute",
         top: "48%",
-        width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
-        left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
+        width: dims.ORIENTATION === "landscape" ? "85%" : "", 
+        left: dims.ORIENTATION === "landscape" ? "7.5%" : "",
     }}>
         <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
             <p class="super wrap">
@@ -104,15 +105,14 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
         setShow(!show());
         click.play();
     }; 
-    const dimensions = useResizeListener();
 
     return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ "--glow-color":"gold", color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8", animation: origin.name === newAscean()?.origin ? "texty 1s infinite ease alternate" : "none" }}>{origin.name}</button>}>
         <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance" }}>
         <div class="border verticalCenter" style={{ position: "absolute",
-            width: dimensions().ORIENTATION === "landscape" ? "85%" : "", 
-            left: dimensions().ORIENTATION === "landscape" ? "7.5%" : "",
-            // height: dimensions().ORIENTATION === "landscape" ? "" : "75%",
-            top: dimensions().ORIENTATION === "landscape" ? "48%" : "0%",
+            width: dims.ORIENTATION === "landscape" ? "85%" : "", 
+            left: dims.ORIENTATION === "landscape" ? "7.5%" : "",
+            // height: dims.ORIENTATION === "landscape" ? "" : "75%",
+            top: dims.ORIENTATION === "landscape" ? "48%" : "0%",
         }}>
             <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
                 <p class="super wrap">

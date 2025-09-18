@@ -473,26 +473,21 @@ export default class WeatherManager {
         this.fogOverlay.setVisible(true).setFillStyle(color); // setAlpha(start).
         this.scene.tweens.chain({
             targets: this.fogOverlay,
-            tweens: [
-                {
+            tweens: [{
                     alpha: end,
                     duration: WEATHER_DURATION / OSCILLATE,
                     onUpdate: () => this.updateOverlay(this.fogOverlay, true)
-                },
-                {
+                }, {
                     alpha: start,
                     duration: WEATHER_DURATION / OSCILLATE,
                     onUpdate: () => this.updateOverlay(this.fogOverlay, true)
-                },
-                {
+                }, {
                     alpha: { from: start, to: end },
                     duration: WEATHER_DURATION / OSCILLATE,
                     yoyo: true,
                     repeat: OSCILLATE - 6, // yoyo so lasts 2x
-                    // onRepeat: () => console.log(start, end, "Repeating Again"),
                     onUpdate: () => this.updateOverlay(this.fogOverlay, true)
-                }
-            ]
+            }]
         });
     };
 

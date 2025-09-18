@@ -51,10 +51,9 @@ export class CombatManager {
         } else if (player.health < newPlayerHealth) { // newPlayerHealth - player.health
             this.context.showCombatText(this.context.player, `${Math.round(newPlayerHealth - player.health)}`, PLAYER.DURATIONS.TEXT, HEAL, false, false);
         };
+
+        this.handleHitFeedback(e);
         
-        player.health = newPlayerHealth;
-        player.healthbar.setValue(player.health);
-        if (player.healthbar.getTotal() < e.playerHealth) player.healthbar.setTotal(e.playerHealth);
         
         if (e.parrySuccess) {
             this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, EFFECT, true, false);
@@ -67,6 +66,10 @@ export class CombatManager {
             this.useStamina(-5);
         };
         
+        player.health = newPlayerHealth;
+        player.healthbar.setValue(player.health);
+        if (player.healthbar.getTotal() < e.playerHealth) player.healthbar.setTotal(e.playerHealth);
+        
         if (e.newComputerHealth <= 0 && e.playerWin === true) player.defeatedEnemyCheck(e.enemyID);
 
         if (newPlayerHealth <= 0) {
@@ -77,7 +80,6 @@ export class CombatManager {
     
         if (player.inCombat === false && this.context.combat === true) this.context.combatEngaged(false);
 
-        this.handleHitFeedback(e);
         this.handleEnemyUpdate(e);
         this.resetCombatFlags();
     };
@@ -185,8 +187,7 @@ export class CombatManager {
         const isPlayerHit = e.playerDamaged || e.computerParrySuccess;
         const isEnemyHit = e.computerDamaged || e.parrySuccess;
         const player = this.context.player;
-        const comp = player.currentTarget?.enemyID === e.enemyID ? player.currentTarget : this.context.getEnemy(e.enemyID);
-
+        const comp = player.currentTarget?.enemyID === e.enemyID ? player.currentTarget : this.combatant(e.enemyID);
         if (isEnemyHit && comp?.body) this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(comp.x, comp.y), true));
         if (isPlayerHit) this.hitFeedbackSystem.play(getHitFeedbackContext(e, new Phaser.Math.Vector2(player.x, player.y), false));
     };
@@ -255,12 +256,17 @@ export class CombatManager {
     };
 
     public luckout = (e: {id: string, luck: string, luckout: boolean}) => {
+        console.log({e});
         const enemy = this.combatant(e.id);
         if (e.luckout) {
             enemy.isLuckout = e.luckout;
             enemy.playerTrait = e.luck;
             EventBus.emit("killing-blow", {e:enemy.ascean, enemyID:enemy.enemyID});
             enemy.stateMachine.setState(States.DEFEATED);
+        } else if (!enemy.inCombat) {
+            this.context.time.delayedCall(2000, () => {
+                enemy.jumpIntoCombat();
+            }, undefined, this);
         };
     };
 
@@ -268,6 +274,7 @@ export class CombatManager {
         const enemy = this.combatant(e.id);
         enemy.isPersuaded = e.persuaded;
         enemy.playerTrait = e.persuasion;
+        if (enemy.inCombat && enemy.isPersuaded) enemy.clearPersuasion();
     };
 
     public removeComputerEnemy = (id: string) => {
@@ -700,7 +707,7 @@ export class CombatManager {
     disease = (combatID: string, enemySpecialID?: string): void => {
         if (!combatID) return;
         if (combatID === this.context?.player?.playerID && enemySpecialID) { // Enemy Special is Damaging Player
-            const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
+            const origin = this.combatant(enemySpecialID);
             if (origin.checkPlayerResist()) {
                 origin.chiomic(10, combatID);
             };

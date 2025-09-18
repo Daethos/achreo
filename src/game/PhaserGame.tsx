@@ -18,7 +18,7 @@ import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
 import { STARTING_SPECIALS } from "../utility/abilities";
-import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION } from "../utility/player";
+import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION, ENEMY_HOSTILE } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
 import QuestManager, { Quest } from "../utility/quests";
@@ -527,12 +527,18 @@ export default function PhaserGame (props: IProps) {
         newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {
                 faction.reputation = Math.min(faction.reputation + 1, 50);
+                if (faction.reputation > ENEMY_HOSTILE && faction.hostile) {
+                    faction.hostile = false;
+                };
                 if (faction.reputation > ENEMY_AGGRESSION && faction.aggressive) {
                     faction.aggressive = false;
                 };
             };
             if (faction.name === computer.name) {
                 faction.reputation = Math.max(-100, faction.reputation - 3);
+                if (faction.reputation <= ENEMY_HOSTILE && !faction.hostile) {
+                    faction.hostile = true;
+                };
                 if (faction.reputation <= ENEMY_AGGRESSION && !faction.aggressive) {
                     faction.aggressive = true;
                 };
@@ -548,8 +554,11 @@ export default function PhaserGame (props: IProps) {
             if (faction.name === giver) {
                 faction.reputation = Math.min(faction.reputation + 10, 100);
             };
-            if (faction.aggressive && faction.reputation > 0) {
+            if (faction.aggressive && faction.reputation > ENEMY_AGGRESSION) {
                 faction.aggressive = false;
+            };
+            if (faction.hostile && faction.reputation > ENEMY_HOSTILE) {
+                faction.hostile = false;
             };
         });
         return newReputation;
@@ -1040,6 +1049,7 @@ export default function PhaserGame (props: IProps) {
                 combatEngaged: false,
                 isAggressive: false,
                 startedAggressive: false,
+                isHostile: false,
                 persuasionScenario: false,
                 luckoutScenario: false,
                 playerTrait: "",
@@ -1065,6 +1075,7 @@ export default function PhaserGame (props: IProps) {
                 combatEngaged: false,
                 isAggressive: false,
                 startedAggressive: false,
+                isHostile: false,
                 persuasionScenario: false,
                 luckoutScenario: false,
                 playerTrait: "",
@@ -1102,6 +1113,7 @@ export default function PhaserGame (props: IProps) {
                 npcType: "",
                 isAggressive: e.isAggressive,
                 startedAggressive: e.startedAggressive,
+                isHostile: e.isHostile,
                 persuasionScenario: e.isPersuaded,
                 enemyPersuaded: e.isPersuaded,
                 luckoutScenario: e.isLuckout,
@@ -1132,6 +1144,7 @@ export default function PhaserGame (props: IProps) {
                 isEnemy: false,
                 isAggressive: false,
                 startedAggressive: false,
+                isHostile: false,
                 persuasionScenario: false,
                 luckoutScenario: false,
                 playerLuckout: false,

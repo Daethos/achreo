@@ -344,7 +344,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         computerWeapons: data.weapons,
                         computerAction: data.actionData.action,
                         computerParryGuess: data.actionData.parry,
-                        computerDamageType: data.damageType,
+                        computerDamageType: data.damageType.charAt(0).toUpperCase() + data.damageType.slice(1),
                         computerEffects: [],
                         computerCaerenic: data.caerenic,
                         computerStalwart: data.stalwart,
@@ -353,7 +353,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     res = { ...combat(), ...enemyData };
                     res = weaponActionCompiler(res) as Combat;
                     computerWin = res.computerWin;
-                    playerWin = res.playerWin; 
+                    playerWin = res.playerWin;
                     EventBus.emit("blend-combat", res);
                     break;
                 case "Sacrifice": 
@@ -432,7 +432,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             };
             
             if (affectsStealth && combat().isStealth) EventBus.emit("update-stealth");
-            if (shake) screenShake(instance.scene as Phaser.Scene); // [250, 150, 250]
+            if (shake) screenShake(instance.scene as Play); // [250, 150, 250]
             
             EventBus.emit("add-combat-logs", res);
             EventBus.emit("update-combat", res);

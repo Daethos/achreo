@@ -757,6 +757,7 @@ export class Game extends Scene {
             if (aggression) {
                 for (let i = 0; i < this.enemies.length; i++) {
                     this.enemies[i].isAggressive = this.hud.reputation.factions.find((f: FACTION) => f.name === this.enemies[i].ascean.name)?.aggressive as boolean;
+                    this.enemies[i].isHostile = this.hud.reputation.factions.find((f: FACTION) => f.name === this.enemies[i].ascean.name)?.hostile as boolean ?? false;
                 };
             } else {
                 for (let i = 0; i < this.enemies.length; i++) {
@@ -1112,7 +1113,7 @@ export class Game extends Scene {
     };
 
     setCameraOffset = () => {
-        if (this.frameCount % 4 !== 0) return;
+        if (this.frameCount % 4 !== 0 || this.hud.cinemaMode) return;
         if (this.frameCount % 60 === 0) {
             const { width, height } = this.cameras.main.worldView;
             this.cachedWidthOffset = width / X_OFFSET;

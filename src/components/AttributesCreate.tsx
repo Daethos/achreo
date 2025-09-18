@@ -1,13 +1,13 @@
 import { Attributes, LOADOUT } from "../utility/attributes";  
 import { createSignal, For, createMemo, Accessor, Setter } from "solid-js";
 import { InputGroup } from "solid-bootstrap";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 import { click } from "../App";
 
 export default function AttributesCreate({ newAscean, setNewAscean, prevMastery, setPrevMastery }: { newAscean: Accessor<CharacterSheet>, setNewAscean: Setter<CharacterSheet>, prevMastery: any, setPrevMastery: (e: any) => void }) {
     const [pool, setPool] = createSignal((newAscean().strength + newAscean().agility + newAscean().constitution + newAscean().achre + newAscean().caeren + newAscean().kyosir) - 48);
-    const dimensions = useResizeListener();
+    const dims = dimensions();
     const handleChange = (event: any, name: string, value: number): void => {
         event.preventDefault();
         setNewAscean({
@@ -30,7 +30,7 @@ export default function AttributesCreate({ newAscean, setNewAscean, prevMastery,
         <h1 class="gold" style={{ "margin-bottom" : "5%" }}>Attribute Pool: {pool()} / 25</h1>
         <For each={Attributes}>
             {(attribute) => (
-                <InputGroup style={{ width: dimensions().ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block" }}>
+                <InputGroup style={{ width: dims.ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block" }}>
                     <p class="tighten">{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
                     <span class="gold">{newAscean()[attribute.name as keyof typeof newAscean]} ({Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2) > 0 ? "+" : ""}{Math.floor((newAscean()[attribute.name as keyof typeof newAscean] as number - 10) / 2)})</span>
                     <br />

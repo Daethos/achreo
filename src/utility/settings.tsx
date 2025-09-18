@@ -193,13 +193,13 @@ export const svg = (type: string) => {
     };
 };
 
-const CombatSettings = () => {
+const CombatSettings = ({ actions }: { actions: Accessor<string[]>; }) => {
     return <div>
         <div>
             <p style={pGold}>{svg("CHARACTER")} Combat</p>
             When you wish to attack, choose one of the actions. Certain actions, if successful, may cancel out the opponents or otherwise.
         </div><br />
-        <For each={["ATTACK", "DODGE", "JUMP", "PARRY", "POSTURE", "ROLL", "THRUST"]}>{(physical) => {
+        <For each={actions()}>{(physical) => { // ["ATTACK", "DODGE", "JUMP", "PARRY", "POSTURE", "ROLL", "THRUST"]
             const phys = ACTION_ORIGIN[physical.toUpperCase() as keyof typeof ACTION_ORIGIN];
             return <div>
                 <p style={pGold}>
@@ -219,6 +219,7 @@ const CombatSettings = () => {
 
 const SpecialSettings = ({specials}: { specials: Accessor<string[]>; }) => {
     const [showPersonal, setShowPersonal] = createSignal<string>("all");
+    console.log({specials:specials()});
     return <div>
         <div>
             <p style={pGold}>{svg("SPECIALS")} Specials</p>
@@ -230,6 +231,7 @@ const SpecialSettings = ({specials}: { specials: Accessor<string[]>; }) => {
         <Match when={showPersonal() === "all"}>
             <For each={SPECIALS}>{(special) => {
                 const spec = ACTION_ORIGIN[special.toUpperCase() as keyof typeof ACTION_ORIGIN];
+                console.log({special, spec});
                 return <div>
                     <p style={pGold}>
                         {svg(spec?.svg)} {special} <br />
@@ -462,17 +464,17 @@ const ControlSettings = () => {
     );
 };
 
-export default function SettingSetter({ setting, specials }: { setting: Accessor<Settings>; specials: Accessor<string[]>; }) {
+export default function SettingSetter({ actions, setting, specials }: { actions: Accessor<string[]>; setting: Accessor<Settings>; specials: Accessor<string[]>; }) {
     return (
         <>
         {setting().settingViews === "Actions" ? (
-            <CombatSettings />
+            <CombatSettings actions={actions} />
         ) : setting().settingViews === "Specials" ? (
             <SpecialSettings specials={specials} />
         ) : setting().settingViews === "Control" ? (
             <ControlSettings />
         ) : setting().settingViews === "Combat" ? (
-            <CombatSettings />
+            <CombatSettings actions={actions} />
         ) : setting().settingViews === "General" ? (
             <GeneralSettings />
         ) : setting().settingViews === "Inventory" ? (

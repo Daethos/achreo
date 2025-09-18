@@ -987,7 +987,7 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
             return {
                 name: "Arbituous",
                 traitOneName: "Luckout",
-                traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
+                traitOneDescription: "Convince the enemy through rhetoric to cease.",
                 traitTwoName: "Persuasion",
                 traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
             };

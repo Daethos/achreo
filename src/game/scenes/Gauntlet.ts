@@ -744,7 +744,7 @@ export class Gauntlet extends Phaser.Scene {
     };
 
     setCameraOffset = () => {
-        if (this.frameCount % 4 !== 0) return;
+        if (this.frameCount % 4 !== 0 || this.hud.cinemaMode) return;
         if (this.frameCount % 60 === 0) {
             const { width, height } = this.cameras.main.worldView;
             this.cachedWidthOffset = width / X_OFFSET;

@@ -1,5 +1,4 @@
 import { Accessor, createEffect, createSignal, onMount, Setter, Show } from "solid-js";
-import { creation } from "../App";
 import Ascean from "../models/ascean";
 import { Combat } from "../stores/combat";
 import { EventBus } from "../game/EventBus";

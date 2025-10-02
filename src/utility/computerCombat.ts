@@ -255,7 +255,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     let criticalChance = computerWeapon.criticalChance;
     criticalChance -= (combat.computerEnemyAttributes?.kyosirMod as number / 2);
     // if (combat.weather === "Astralands") criticalChance += 10;
-    const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, computerWeapon, computerPhysicalDamage, computerMagicalDamage, combat.weather, combat.glancingBlow, combat.criticalSuccess);
+    const criticalResult = criticalCompiler(false, combat.computer as Ascean, criticalChance, criticalClearance, computerWeapon, computerPhysicalDamage, computerMagicalDamage, combat.weather);
     combat.glancingBlow = criticalResult.glancingBlow;
     combat.criticalSuccess = criticalResult.criticalSuccess;
     computerPhysicalDamage = criticalResult.physicalDamage;
@@ -264,7 +264,7 @@ function attackCompiler(combat: ComputerCombat): ComputerCombat {
     const magicalPenetration = computerWeapon.magicalPenetration as number;
     computerPhysicalDamage *= penetrationCompiler(playerPhysicalDefenseMultiplier, physicalPenetration);
     computerMagicalDamage *= penetrationCompiler(playerMagicalDefenseMultiplier, magicalPenetration);
-    const damageType = damageTypeCompiler(combat.computerDamageType, combat.computerEnemy as Ascean, computerWeapon, computerPhysicalDamage, computerMagicalDamage);
+    const damageType = damageTypeCompiler(combat.computerDamageType, combat.computerEnemy as Ascean, combat.computerHitLocation, computerPhysicalDamage, computerMagicalDamage);
     computerPhysicalDamage = damageType.physicalDamage;
     computerMagicalDamage = damageType.magicalDamage;
     // const weatherResult = weatherEffectCheck(computerWeapon, computerMagicalDamage, computerPhysicalDamage, combat.weather, combat.computerCriticalSuccess);
@@ -368,6 +368,7 @@ function checkCombatSheetData(computerOne: ComputerCombat, computerTwo: Computer
     computerOne.computerEnemyDefense = computerTwo.computerDefense;
     computerOne.computerEnemyCaerenic = computerTwo.computerCaerenic;
     computerOne.computerEnemyStalwart = computerTwo.computerStalwart;
+    computerOne.computerEnemyHitLocation = computerTwo.computerHitLocation;
     computerOne.enemyID = computerTwo.personalID;
 
     
@@ -383,6 +384,7 @@ function checkCombatSheetData(computerOne: ComputerCombat, computerTwo: Computer
     computerTwo.computerEnemyDefense = computerOne.computerDefense;
     computerTwo.computerEnemyCaerenic = computerOne.computerCaerenic;
     computerTwo.computerEnemyStalwart = computerOne.computerStalwart;
+    computerTwo.computerEnemyHitLocation = computerOne.computerHitLocation;
     computerTwo.enemyID = computerOne.personalID;
 
     return { computerOne, computerTwo };

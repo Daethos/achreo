@@ -13,7 +13,7 @@ export default function GraceModal({ setShow, settings }: { setShow: Setter<bool
             </svg>
             <div class="center">
                 <h2>Your mind's capacity to perform and transcend. An amalgamation of your Achre, Caeren, and Kyosir. Governs the ability to perform a special action.</h2>
-                <p class="gold" style={{ "margin-bottom": "5%", "font-size": window.innerWidth > 1200 ? "" : "0.75em" }}>
+                <p class="gold" style={{ "margin-bottom": "5%", "font-size": window.innerWidth > 1200 ? "" : "1em" }}>
                     Grace recovery is paused, cumulatively, for every action. Increasing your grace also increases the rate of recovery.
                 </p>
             </div> 

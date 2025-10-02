@@ -1,8 +1,9 @@
 import { getRarityColor } from "../utility/styling"
-import { Show } from "solid-js";
+import { Accessor, Show } from "solid-js";
 import { dimensions } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 import { roundToTwoDecimals } from "../utility/combat";
+import { specialDescription } from "../ui/CombatSettings";
 
 export function attrSplitter(string: string, value: number) {
     if (value <= 0) return "";
@@ -13,9 +14,10 @@ interface Props {
     item: Equipment | undefined;
     stalwart: boolean;
     caerenic: boolean;
+    prayer?: Accessor<string>;
 };
 
-export default function ItemModal({ item, stalwart, caerenic }: Props) {
+export default function ItemModal({ item, stalwart, caerenic, prayer }: Props) {
     if (!item) return undefined;
     const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dims = dimensions();
@@ -24,8 +26,8 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
     const empty = item.name.includes("Empty");
     const name = item.name.includes("Starter") ? ( item.name.split(" ")[0] + " " + item.name.split(" ")[1] ) : ( item.name );
     const centerImage = dims.ORIENTATION === "landscape" ? (name.length > 18 ? "45%" : name.length > 10 ? "7.5%" : "15%") : (name.length > 13 ? "40%" : name.length > 10 ? "5%" : "10%");
-    const styling = { "font-size": "1.25em", margin: "3%" };
-    return <div class="border superCenter" style={{ width: dims.ORIENTATION === "landscape" ? "50%" : "75%", "top": "48%", "z-index": 99 }}> 
+    const styling = { "font-size": "1.25em", margin: "2% auto" };
+    return <div class="border superCenter" style={{ width: dims.ORIENTATION === "landscape" ? "50%" : "75%", "top": "48%", "z-index": 99, border: "thick ridge" }}> 
         <div class="wrap" style={{ height: "100%" }}>
             <div class="creature-heading" style={{ width: "100%"}}>
                 <h1 style={ empty ? { "text-align": "center", margin: "24px 0" } : { "justify-content": "space-evenly", margin: "24px 0 16px" }}>{name} 
@@ -42,7 +44,7 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
             </svg>
             <div class="center">
                 <Show when={item?.type && item?.grip}>
-                    <div class="my-2" style={styling}>
+                    <div style={styling}>
                         {item?.type} [<span style={{ "font-style": "italic", color: "gold" }}>{item?.grip}</span>] <br />
                         {item?.attackType} [<span style={{ "font-style": "italic", color: "gold" }}>{item?.damageType?.[0]}{item?.damageType?.[1] ? " / " + item.damageType[1] : "" }{item?.damageType?.[2] ? " / " + item?.damageType?.[2] : "" }</span>] <br />
                     </div>
@@ -50,6 +52,8 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 <Show when={item?.type && !item?.grip}>
                     <div style={styling}>{item.type}</div>
                 </Show>
+                
+
                 {attrSplitter("CON", item?.constitution)}
                 {attrSplitter("STR", item?.strength)}
                 {attrSplitter("AGI", item?.agility)}
@@ -73,24 +77,30 @@ export default function ItemModal({ item, stalwart, caerenic }: Props) {
                 <div style={{ color: getRarityColor(item?.rarity as string), "font-size": "1.5em", "margin": "2% auto 4%" }}>
                     {item?.rarity}
                 </div>
+                <Show when={prayer}>
+                    <p style={{ "font-size": "0.75em", margin: caerenic ? "-2% auto 2%" : "-2% auto 4%" }}>
+                        [<span class="gold">{prayer?.()}</span>]: {specialDescription[prayer?.() as string]}
+                    </p>
+                </Show>
                 <Show when={stalwart}>
-                    <p class="gold" style={{ "font-size": "0.75em" }}>
-                        Stalwart - You are engaged in combat with your shield raised, adding it to your passive defense. 
+                    <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
+                        [<span class="gold">Stalwart</span>]: 
+                        {/* You are engaged in combat with your shield raised, adding it to your passive defense.  */}
                         {/* You receive 50% less poise damage.  */}
-                        You receive 15% less damage (25% if Enhanced). 
-                        You cannot dodge or roll (Capable if Optimized).
+                        Receive -15% Damage (25% Enhanced). 
+                        Cannot Dodge or Roll (Capable if Optimized).
                     </p>
                 </Show>
                 <Show when={caerenic}>
-                    <p class="gold" style={{ "font-size": "0.75em" }}>
-                        Caerenic - You attempt to harness your caer with your achre, increasing your damage by 15% (25% if Enhanced). 
-                        You move significantly faster. 
-                        You receive 25% more damage (15% if Optimized). 
+                    <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
+                        {/* You attempt to harness your caer with your achre.  */}
+                        [<span class="gold">Caerenic</span>]: +15% Damage (25% Enhanced). Increased Speed. Receive +25% Damage (15% Optimized). 
                     </p>
                 </Show>
             </div> 
+            
             </Show>
-            <div class="gold">{item.gameplay}</div>
+            {/* <div class="gold">{item.gameplay}</div> */}
         </div>
     </div>;
 };

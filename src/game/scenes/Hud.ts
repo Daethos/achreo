@@ -165,7 +165,7 @@ export class Hud extends Phaser.Scene {
         //         // Start the scene and configure its camera
         //         this.scene.launch(sceneKey); // Start the scene
         //         const sceneInstance = this.scene.get(sceneKey) as ArenaView;
-        //         // Configure the viewport of the scene"s camera
+        //         // Configure the viewport of the scene's camera
         //         const camera = sceneInstance.cameras.main;
         //         camera.setViewport(x, y, containerWidth - 2, containerHeight - 2);
         //         // Optionally scale the scene within the viewport
@@ -609,6 +609,12 @@ export class Hud extends Phaser.Scene {
                 case "joystick":
                     this.highlightElements("joystick");
                     break;
+                case "joystick-left":
+                    this.highlightElements("joystick-left");
+                    break;
+                case "joystick-right":
+                    this.highlightElements("joystick-right");
+                    break;
                 case "smallhud":
                     this.highlightElements("smallhud");
                     break;
@@ -666,7 +672,7 @@ export class Hud extends Phaser.Scene {
         });
     };
 
-    showCombatHud = (text: string, context?: string, duration: number = 2000) => {
+    showCombatHud = (text: string, context?: string, duration: number = 3300) => {
         if (!this.settings.show?.hudCombatText) return;
         const combatText = this.scrollingTextPool.acquire();
         combatText.write(text, context, duration);
@@ -677,6 +683,10 @@ export class Hud extends Phaser.Scene {
             this.smallHud.highlightAnimation();
         } else if (type === "joystick") {
             this.joystick.highlightAnimation("left");
+            this.rightJoystick.highlightAnimation("right");
+        } else if (type === "joystick-left") {
+            this.joystick.highlightAnimation("left");
+        } else if (type === "joystick-right") {
             this.rightJoystick.highlightAnimation("right");
         } else {
             this.actionBar.highlightAnimation();

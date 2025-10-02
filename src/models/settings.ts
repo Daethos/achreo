@@ -1,4 +1,4 @@
-import { STARTING_MASTERY_UI, STARTING_SPECIALS } from "../utility/abilities";
+import { STARTING_MASTERY_UI } from "../utility/abilities";
 import { initTutorial, Tutorial } from "../utility/tutorial";
 export default class Settings {
     public _id: string;
@@ -173,6 +173,10 @@ export default class Settings {
         };
         // solidHud: { right: number; };
     };
+    stances: {
+        caerenic: boolean;
+        stealth: boolean;
+    };
     public tutorial: Tutorial;
 
     public constructor(id: string, mastery: string) {
@@ -183,11 +187,11 @@ export default class Settings {
         this.volume = 0.3;
         this.joystick = 0.5;
         this.vibration = 100;
-        this.lockpick = {difficulty:"Easy", count:5};
+        this.lockpick = { difficulty:"Easy", count:5 };
         this.pickpocket = { difficulty: "Easy" }
         this.actions = ["Attack", "Posture", "Roll", "Dodge", "Parry"];
-        this.specials = STARTING_SPECIALS[mastery as keyof typeof STARTING_SPECIALS];
-        this.totalSpecials = [];
+        this.specials = []; // STARTING_SPECIALS[mastery];
+        this.totalSpecials = []; // STARTING_SPECIALS[mastery];
         this.prayer = "Buff";
         this.fps = {
             min: 5,
@@ -229,16 +233,16 @@ export default class Settings {
         this.computerFocus = "Balanced";
         this.computerLoadout = {
             attack: 15,
-            posture: 10,
-            roll: 10,
+            posture: 15,
+            roll: 15,
             thrust: 15,
             parry: 15,
-            jump: 10,
+            jump: 0,
             special: 25,
         };
         this.difficulty = {
             arena: true,
-            aggressionImmersion: false,
+            aggressionImmersion: true,
             aggression: 0.25,
             aim: false,
             computer: false,
@@ -322,7 +326,7 @@ export default class Settings {
             leftHud: {
                 offset: 36,
                 scale: 0.085,
-                x: 0.35,
+                x: 0.005,
                 y: 0.9125,
             },
             smallHud: { 
@@ -331,6 +335,10 @@ export default class Settings {
                 x: 0.5,
                 y: 0.9125
             },
+        };
+        this.stances = {
+            caerenic: false,
+            stealth: false,
         };
         this.tutorial = initTutorial;
     };

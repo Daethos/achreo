@@ -16,7 +16,7 @@ import { dimensions } from "../utility/dimensions";
 import { Attributes } from "../utility/attributes";
 import { Reputation, FACTION } from "../utility/player";
 import { playerTraits } from "../utility/ascean";
-import { ACTIONS, SPECIAL, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
+import { ACTIONS, addStance, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
 import { DEITIES } from "../utility/deities";
 import { Puff } from "solid-spinner";
 import PhaserSettings from "./PhaserSettings";
@@ -27,6 +27,7 @@ import { ACTION_ORIGIN } from "../utility/actions";
 import { svg } from "../utility/settings";
 import QuestManager, { Quest, replaceChar } from "../utility/quests";
 import Currency from "../utility/Currency";
+import { usePhaserEvent } from "../utility/hooks";
 const AsceanImageCard = lazy(async () => await import("../components/AsceanImageCard"));
 const ExperienceBar = lazy(async () => await import("./ExperienceBar"));
 const Firewater = lazy(async () => await import("./Firewater"));
@@ -160,6 +161,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [deity, setDeity] = createSignal<any>(undefined);
     const [entry, setEntry] = createSignal<any>(undefined);
     const [reputationConcern, setReputationConcern] = createSignal<string>(settings()?.reputationViews || REPUTATION.ENEMY);
+    const [highlighter, setHighlighter] = createSignal<string>("");
     const dims = dimensions();
     const bMargin = {"margin-bottom":"3%"};
  
@@ -197,22 +199,27 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
 
     function checkSpecials() {
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
-        const mastery = SPECIAL[ascean().mastery as keyof typeof SPECIAL];
+
+        const mastery = settings().totalSpecials;
+        // const mastery = SPECIAL[ascean().mastery];
+        // const mastery = SPECIALS; /* Everything for testing */
+        
         const speaking = playerTraitWrapper();
-        // const mastery = SPECIALS; // Everything for testing
-        let extra: any[] = [];
+        let extra: any[] = []; // ["Lightning"]; // Testing
         let physical = JSON.parse(JSON.stringify(ACTIONS));
 
-        for (let i = 0; i < 3; ++i) {
-            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
-            if (trait && trait.length > 0) {
-                extra = [ ...extra, ...trait ];
+        if (ascean().level >= 4) {
+            for (let i = 0; i < 3; ++i) {
+                const trait = TRAIT_SPECIALS[potential[i]];
+                if (trait && trait.length > 0) {
+                    extra = [ ...extra, ...trait ];
+                };
             };
         };
 
         for (const traitType in speaking) {
             const trait = speaking[traitType];
-            const { traitOneName, traitTwoName } = trait;
+            const { traitOneName, traitTwoName, traitThreeName } = trait;
             if (traitOneName === "Persuasion") {
                 const pTraitOne = `${traitOneName} (${trait.name})`;
                 physical.push(pTraitOne);
@@ -221,6 +228,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 const pTraitTwo = `${traitTwoName} (${trait.name})`;
                 physical.push(pTraitTwo);
             };
+
             if (traitOneName === "Luckout") {
                 const sTraitOne = `${traitOneName} (${trait.name})`;
                 extra.push(sTraitOne);
@@ -228,6 +236,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             if (traitTwoName === "Luckout") {
                 const sTraitTwo = `${traitTwoName} (${trait.name})`;
                 extra.push(sTraitTwo);
+            };
+
+            
+            if (traitOneName === "Stealth" || traitTwoName === "Stealth" || traitThreeName === "Stealth") {
+                if (!settings().stances.stealth && ascean().level >= 2) {
+                    addStance(settings, "stealth");
+                };
             };
         };
 
@@ -359,14 +374,17 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const displayedSpecials = createMemo(() => {
-    return ["Caerenic", "Stalwart", "Stealth"] // , "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"
-        .concat(actions())
-        .concat(specials())
-        .filter((spec) => {
-            let low = spec.toLowerCase();
-            if (low.includes("luckout") || low.includes("persuasion")) {
-                low = low.split(" ")[0];
-            };
+        const stances = ["Stalwart"];
+        if (settings().stances.caerenic) stances.push("Caerenic");
+        if (settings().stances.stealth) stances.push("Stealth");
+        return stances // , "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"
+            .concat(actions())
+            .concat(specials())
+            .filter((spec) => {
+                let low = spec.toLowerCase();
+                if (low.includes("luckout") || low.includes("persuasion")) {
+                    low = low.split(" ")[0];
+                };
             return talents().talents[low as keyof typeof talents];
         });
     });
@@ -377,7 +395,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class="playerWindow creature-heading" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div>
                     { dims.ORIENTATION === "landscape" ? ( <>
-                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "2.5%", "margin-bottom": "2.5%" }} />
+                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "1.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
                     </> ) : ( <>
                         <h2 style={{ "margin-top": "15%" }}>
@@ -473,6 +491,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         Blessings: <span class="gold">{highestDeity[1]}</span>
                 </div>;
             case CHARACTERS.TALENTS:
+                if (ascean().level < 2) {
+                    return <div class="creature-heading">
+                        <h1>Talents Unavailable</h1>
+                        <h2>Reach Level 2 to Unlock Talents</h2>
+                    </div>;
+                };
                 return <div class="creature-heading">
                     <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h3 classList={{
@@ -500,7 +524,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 ? spec?.cooldown 
                                 : COOLDOWN[spec?.cooldown as keyof typeof COOLDOWN]
                             : spec?.cooldown;
-                        // console.log("physical:", physical, "special:", special, "cost:", cost(), "cooldown:", cooldown(), spec?.cost, stance);
                         return <div class="border row juiced" onClick={() => setShowTalent({show:true,talent:spec})} style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                             <div style={{ padding: "1em" }}>
                             <p style={{ color: "gold", "font-size": "1.25em", margin: "3%" }}>
@@ -519,15 +542,20 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>;
             case CHARACTERS.TRAITS:
                 return <div class="creature-heading">
+                    <h1>Traits</h1>
+                    <h2><span class="gold">Dialog's</span> are immediately available. <span class="gold">Stances</span> are available at level 2. <span class="gold">Specials</span> are available at level 4.</h2>
                     <h1>{playerTraitWrapper()?.primary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitThreeName}</span> - {playerTraitWrapper()?.primary?.traitThreeDescription}</h2>
                     <h1>{playerTraitWrapper()?.secondary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitOneName}</span> - {playerTraitWrapper()?.secondary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitTwoName}</span> - {playerTraitWrapper()?.secondary?.traitTwoDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.secondary?.traitThreeName}</span> - {playerTraitWrapper()?.secondary?.traitThreeDescription}</h2>
                     <h1>{playerTraitWrapper()?.tertiary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitOneName}</span> - {playerTraitWrapper()?.tertiary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitTwoName}</span> - {playerTraitWrapper()?.tertiary?.traitTwoDescription}</h2>
+                    <h2> <span class="gold">{playerTraitWrapper()?.tertiary?.traitThreeName}</span> - {playerTraitWrapper()?.tertiary?.traitThreeDescription}</h2>
                 </div>;
             default: return ("");
         };
@@ -536,7 +564,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const createCharacterInfo = (character: string): JSX.Element | "" => {
         switch (character) {
             case CHARACTERS.CHARACTER:
-                return <div class="playerWindow creature-heading" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
+                return <div class="playerWindow creature-heading" classList={{
+                "tutorial-highlight": highlighter() === "character-display",
+            }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
                     { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
                         <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
@@ -671,6 +701,11 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         Blessings: <span class="gold">{highestDeity[1]}</span>
                 </div>;
             case CHARACTERS.TALENTS:
+                if (ascean().level < 2) {
+                    return <div class="creature-heading">
+                        <h1>Talents Are Available Starting at Level 2.</h1>
+                    </div>;
+                };
                 return <div class="creature-heading">
                     <h1>{ascean().mastery.charAt(0).toUpperCase() + ascean().mastery.slice(1)}</h1>
                     <h3 classList={{
@@ -900,59 +935,102 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         setDeity(item?.influences?.[0]);
     };
 
-    return <div class="characterMenu">
+    usePhaserEvent("character", (type: string) => {
+        setHighlighter(type);
+    });
+    console.log({ highlighter: highlighter() })
+    return <div class="characterMenu" classList={{
+                "tutorial-highlight": !settings().tutorial.boot,
+            }}>
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
             <button class="highlight menuHeader" onClick={() => setNextView()}>
                 <div class="playerMenuHeading">Character</div>
             </button>
-            <div class="playerSettingSelect">
+            <div class="playerSettingSelect" classList={{
+                "tutorial-highlight": highlighter() === "character-buttons",
+            }}>
                 { settings().characterViews === CHARACTERS.QUESTS ? (
-                    <button class="highlight menuButton" onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={() => currentCharacterView(CHARACTERS.REPUTATION)}>
                         <div>Quests</div>
                     </button> 
                 ) : settings().characterViews === CHARACTERS.REPUTATION ? (
-                    <button class="highlight menuButton" onClick={() => currentCharacterView(CHARACTERS.SKILLS)}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={() => currentCharacterView(CHARACTERS.SKILLS)}>
                         <div>Reputation</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.SKILLS ? (
-                    <button class="highlight menuButton" onClick={() => currentCharacterView(CHARACTERS.STATISTICS)}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={() => currentCharacterView(CHARACTERS.STATISTICS)}>
                         <div>Skills</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.STATISTICS ? (
-                    <button class="highlight menuButton" onClick={() => currentCharacterView(CHARACTERS.TALENTS)}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={() => currentCharacterView(CHARACTERS.TALENTS)}>
                         <div>Statistics</div>
                     </button>
                 ) : settings().characterViews === CHARACTERS.TALENTS ? (
-                    <button class="highlight menuButton" onClick={(() => currentCharacterView(CHARACTERS.TRAITS))}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={(() => currentCharacterView(CHARACTERS.TRAITS))}>
                         <div>Talents</div>
                     </button>
                 ) : (
-                    <button class="highlight menuButton" onClick={() => currentCharacterView(CHARACTERS.QUESTS)}>
+                    <button class="highlight menuButton" classList={{
+                        "animate": highlighter() === "character-buttons",
+                    }} onClick={() => currentCharacterView(CHARACTERS.QUESTS)}>
                         <div>Traits</div>
                     </button>
                 ) }     
             </div> 
         </> ) : settings().asceanViews === VIEWS.INVENTORY ? ( <>
-            <button class="highlight menuHeader" onClick={() => setNextView()}><div class="playerMenuHeading">Inventory</div></button>
-            <button class="highlight menuButton" onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "-1.25vh", right: "20vw", "z-index": 1, "font-size": "1.15em" }}>
+            <button class="highlight menuHeader" classList={{
+                "tutorial-highlight": highlighter() === "inv-button",
+                "animate": highlighter() === "inv-button",
+            }} onClick={() => setNextView()} style={{ position: "fixed", top: "-5.5%", left: "-3.5%" }}><div class="playerMenuHeading">Inventory</div></button>
+
+            <button class="highlight" classList={{
+                "tutorial-highlight": highlighter() === "stats-display",
+                "animate": highlighter() === "stats-display",
+            }} onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "-1%", right: "20vw", "z-index": 1 }}>
                 <div>{expandedCharacter() === true ? "Player Stats" : "Equipment"}</div>
             </button>
+
             <div class="center" style={{ position: "fixed", top: "-0.25vh", right: "5.5vw", height: "10vh", width: "15vw", background: "#000", "scale": "0.8", border: `1px solid ${masteryColor(ascean().mastery)}` }}>
                 <Currency ascean={ascean} />
             </div>
             <Suspense fallback={<Puff color="gold"/>}>
-                <Firewater ascean={ascean} />
+                <Firewater ascean={ascean} highlighter={highlighter} />
             </Suspense>
         </> ) : settings().asceanViews === VIEWS.SETTINGS ? ( <>
             <button class="highlight menuHeader" onClick={() => setNextView()}><div class="playerMenuHeading">Gameplay</div></button>
             {(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) && (
-                <div class="playerSettingSelect" style={{ right: "0.75vw" }}>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
-                    <button class="highlight menuButton insideMenu" onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
+                <div class="playerSettingSelect" classList={{
+                    "tutorial-highlight": highlighter() === "settings-buttons",
+                    animate: highlighter() === "settings-buttons"
+                }} style={{ right: "0.75vw" }}>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.ACTIONS)}><div>Actions</div></button>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.SPECIALS)}><div>Specials</div></button>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.CONTROL)}><div>Control</div></button>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.GENERAL)}><div>General</div></button>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.INVENTORY)}><div>Inventory</div></button>
+                    <button class="highlight menuButton insideMenu" classList={{
+                    animate: highlighter() === "settings-buttons"
+                }} onClick={() => currentView(SETTINGS.TACTICS)}><div>Tactics</div></button>
                 </div>
             )}
         </> ) : ( <>
@@ -1000,7 +1078,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     {createCharacterInfo(CHARACTERS.CHARACTER)}
                 </Match>
                 <Match when={settings().asceanViews !== VIEWS.SETTINGS && settings().asceanViews !== VIEWS.FAITH && expandedCharacter() !== true}>
-                    <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="playerWindow" classList={{
+                        "tutorial-highlight": highlighter() === "character-display",
+                    }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", "border-color": masteryColor(ascean().mastery) }}>
                         {/* <button class="highlight cornerTL" style={{ "background-color": "blue", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getInventory()}>
                             <p>Get Eqp</p>
                         </button> */}
@@ -1010,26 +1090,26 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {/* <button class="highlight cornerBR" style={{ "background-color": "gold", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
-                        <div class="" style={{ "display": "grid", "margin-top": dims.HEIGHT > 420 ? "2.5%" : "" }}>
+                        <div style={{ "display": "grid", "margin-top": dims.HEIGHT > 420 ? "2.5%" : "" }}>
                         <Show when={ascean().experience >= ascean().level * 1000}>
                             <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
                             </button>
                         </Show>
-                        <div class="gold" style={dims.ORIENTATION === "landscape" ? { "font-size": dims.WIDTH > 1200 ? "2em" : "", margin: "5% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
+                        <div class="gold" style={dims.ORIENTATION === "landscape" ? { "font-size": dims.WIDTH > 1200 ? "2em" : "", margin: "3% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
                             {combat()?.player?.name}
                         </div>
-                        <Suspense fallback={<Puff color="gold"/>}>
-                            <div>
+                        <div style={{ "margin-bottom": "2%" }}>
+                            <Suspense fallback={<Puff color="gold"/>}>
                                 <HealthBar combat={combat} enemy={false} game={game} />
-                            </div>
-                        </Suspense>
+                            </Suspense>
+                        </div>
                         <div style={dims.ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "7.5%" : "2.5%", transform: dims.WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
                             </Suspense>
                         </div>
-                        <div style={{ "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "-2%" : "-5%" }}>
+                        <div style={{ "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "-2%" : "-6%" }}>
                             <Suspense fallback={<Puff color="gold"/>}>
                                 <ExperienceBar ascean={ascean} game={game} />
                             </Suspense>
@@ -1038,7 +1118,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 </Match>
                 <Match when={settings().asceanViews === VIEWS.FAITH}>
-                    <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
+                    <div class="playerWindow" classList={{
+                        "tutorial-highlight": highlighter() === "blessing-display",
+                    }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "border-color": masteryColor(ascean().mastery) }}>
                         <div style={{ "margin-left": "0", "margin-top": "7.5%", transform: "scale(0.9)" }}>
                             <div class="creature-heading" style={{ "margin-top": "-5%" }}>
                                 <h1>Blessings</h1>
@@ -1065,7 +1147,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             </Switch>
         </Show>
         {/* <<----- WINDOW TWO -----> */}
-        <div class="playerWindow" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "33.5vw", "border-color": masteryColor(ascean().mastery) }}>
+        <div class="playerWindow" classList={{
+                "tutorial-highlight": (highlighter() === "deity-concern" || highlighter() === "expanded-info" || highlighter() === "inventory-compare"),
+            }} style={{ height: `${dims.HEIGHT * ((settings().asceanViews === VIEWS.SETTINGS && (settings().control === CONTROLS.POST_FX || settings().control === CONTROLS.PHASER_UI)) ? 0.7 : 0.8)}px`, left: "33.5vw", top: (settings().asceanViews === VIEWS.SETTINGS && (settings().control === CONTROLS.POST_FX || settings().control === CONTROLS.PHASER_UI)) ? "1vh" : "", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none", margin: "auto" }}>
                     <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
@@ -1162,19 +1246,18 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             ) : settings().asceanViews === VIEWS.SETTINGS ? (
                 <PhaserSettings settings={settings} setSettings={setSettings} actions={actions} specials={specials} />
             ) : ( 
-                <div class="center" style={{ display: "flex", "flex-direction": "row" }}>
-                    <div class="center wrap" style={{ "margin-top": "-2.5%" }}> 
-                        {createPrayerInfo()}
-                    </div>
+                <div class="center wrap" style={{ "margin-top": "-2.5%" }}> 
+                    {createPrayerInfo()}
                 </div>
              ) }
         </div>
         {/* <<----- WINDOW THREE ----->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
-            <div class="playerWindow" style={{height: `${dims.HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
+            <div class="playerWindow" classList={{
+                    "tutorial-highlight": (highlighter() === "deity-display" || highlighter() === "character-buttons" || highlighter() === "inventory" || highlighter() === "inventory-compare" || highlighter() === "settings-buttons"),
+                }} style={{height: `${dims.HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class="center wrap"> 
-                        {/* {createCharacterInfo(settings()?.characterViews)} */}
                         {characterInfo()}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 

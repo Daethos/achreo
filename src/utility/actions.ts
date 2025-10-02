@@ -183,6 +183,16 @@ export const ACTION_ORIGIN = {
         svg: "CAST",
         talent: "Optimized: Attempt to hold your ground. Enhanced: Halves the time it takes to attempt."
     },
+    "PERSUASION (SHRYGEIAN)": {
+        name: "Persuasion (Shrygeian)",
+        description: "You can use your love of this world to appeal to their common nature.",
+        cooldown: "1.5s",
+        cost: `${PLAYER.STAMINA.PERSUASION} Stamina`,
+        time: "Channel",
+        special: "(Dialog)",
+        svg: "CAST",
+        talent: "Optimized: Attempt to hold your ground. Enhanced: Halves the time it takes to attempt."
+    },
     "PERSUASION (TSHAERAL)": {
         name: "Persuasion (Tshaeral)",
         description: "Your nature has a way of wilting the caer of your enemies.",
@@ -334,6 +344,26 @@ export const ACTION_ORIGIN = {
         special: "AoE (Target)",
         svg: "AOE",
         talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Activates for 3 Seconds.",
+    },
+    LIGHTNING: {
+        name: "Lightning",
+        description: "Release a bolt of lightning that arcs between multiple enemies, dealing damage to each.",
+        cooldown: `${PLAYER.COOLDOWNS.MODERATE / 1000}s`,
+        cost: `${PLAYER.STAMINA.LIGHTNING} Grace`,
+        time: "1.5s",
+        special: "Cast. Targeted",
+        svg: "CAST",
+        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increases Number of Jumps.",
+    },
+    CHARM : {
+        name: "Charm",
+        description: "You bewitch your opponent, causing them to fight for you for several seconds. Damage may break this effect.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.CHARM} Grace`,
+        time: "1.5s",
+        special: "Cast. Targeted",
+        svg: "CAST",
+        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: May not break from damage.",
     },
     CHIOMIC: {
         name: "Chiomic",

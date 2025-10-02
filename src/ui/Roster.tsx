@@ -15,7 +15,7 @@ import { roundToTwoDecimals } from "../utility/combat";
 import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import Settings from "../models/settings";
 
-export const LEVEL_SELECTOR = {
+export const LEVEL_SELECTOR: {[key:number]: { prev: number; next: number; }} = {
     0.25: { prev: 0.25, next: 0.5 },
     0.5: { prev: 0.25, next: 1 },
     1: { prev: 0.5, next: 2 },
@@ -24,7 +24,7 @@ export const LEVEL_SELECTOR = {
     6: { prev: 4, next: 8 },
     8: { prev: 6, next: 10 },
     10: { prev: 8, next: 10 },
-    12: { prev: 10, next: 10 },
+    12: { prev: 8, next: 10 },
     14: { prev: 10, next: 10 },
     16: { prev: 10, next: 10 },
 };
@@ -153,7 +153,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
     };
 
     function randomizedGauntlet() {
-        const range = [LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev, getLevel(ascean), LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next];
+        const range = [LEVEL_SELECTOR[selector().level].prev, getLevel(ascean)]; // , LEVEL_SELECTOR[selector().level].next
         const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
         const enemies = []
         for (let i = 0; i < opponents(); ++i) {
@@ -270,9 +270,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                             </Match>
                         </Switch>
                         <For each={arena().enemies}>{(enemy) => {
-                            return (
-                                <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
-                            )
+                            return <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
                         }}</For>
                         <Show when={switchScene() === GAUNTLET}>
                             <div>
@@ -303,11 +301,11 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                             <div>
                                 <p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Opponent Level ({selector().level}) <br /> 
                                     <span style={{ color: "#fdf6d8", "font-size": "0.75em" }}>
-                                        Prev ({LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev}) |  Next ({LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next}) 
+                                        Prev ({LEVEL_SELECTOR[selector().level].prev}) |  Next ({LEVEL_SELECTOR[selector().level].next}) 
                                     </span>
                                 </p>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].prev)}>-</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level as keyof typeof LEVEL_SELECTOR].next)}>+</button>
+                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].prev)}>-</button>
+                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].next)}>+</button>
                             </div>
                             <div style={{ "margin-bottom": "8px" }}><p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
                                 <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>

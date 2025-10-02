@@ -134,7 +134,6 @@ export class Underground extends Scene {
         let layer3 = map.createLayer("Stairs", castleInterior as Tilemaps.Tileset, 0, 0);
         let layer4 = map.createLayer("Decorations", castleDecorations as Tilemaps.Tileset, 0, 0);
 
-
         layer1?.setCollisionByProperty({ collides: true });
         [layer1, layer2, layer3, layer4].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
@@ -194,18 +193,6 @@ export class Underground extends Scene {
 
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         
-        this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys("W,UP"),
-            down: this?.input?.keyboard?.addKeys("S,DOWN"),
-            left: this?.input?.keyboard?.addKeys("A,LEFT"),
-            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
-            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
-            strafe: this?.input?.keyboard?.addKeys("E,Q"),
-            shift: this?.input?.keyboard?.addKeys("SHIFT"),
-            firewater: this?.input?.keyboard?.addKeys("T"),
-            tab: this?.input?.keyboard?.addKeys("TAB"),
-            escape: this?.input?.keyboard?.addKeys("ESC"),
-        };
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());

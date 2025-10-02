@@ -10,6 +10,12 @@
     font-weight: bold;
     font-style: normal;
 }
+@font-face {
+    font-family: "Centaur";
+    src: url("/assets/fonts/Centaur.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
 body {
     margin:0; padding:0; overscroll-behavior: none; scrollbar-width: none; overflow: hidden;
     color: rgba(253, 246, 216, 0.87); 

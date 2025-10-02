@@ -9,7 +9,7 @@ function xModifier(x: number, index: number, offset = 43.75) {
 };
 
 function leftXModifier(x: number, index: number, offset = 43.75) {
-    return x * 0.35 - (index * offset);
+    return x * 0.35 + (index * offset);
 };
 
 export default class SmallHud extends Phaser.GameObjects.Container {
@@ -68,6 +68,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.setDepth(6);
         this.createBar();
         this.listener();
+        this.draw();
     };
 
     createBar = () => {
@@ -76,9 +77,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         let pause = this.scene.add.image(this.x, this.y, "pause");
         // let minimap = this.scene.add.image(this.x, this.y, "minimap");
         let cursor = this.scene.add.image(this.x, this.y, "cursor-reset");
-        let stealth = this.scene.add.image(this.x, this.y, "stealth");
         let stalwart = this.scene.add.image(this.x, this.y, "stalwart");
-        let caerenic = this.scene.add.image(this.x, this.y, "caerenic");
         let logs = this.scene.add.image(this.x, this.y, "logs");
         let settings = this.scene.add.image(this.x, this.y, "settings");
         let info = this.scene.add.image(this.x, this.y, "info");
@@ -128,7 +127,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
             if (item.texture.key === "dialog") {
                 const dialog = this.scene.gameState?.dialogTag as boolean;
-                const num = this.closed ? bar.length - 3 : 0;
+                const num = this.closed ? bar.length - 3 : 1;
                 item.setVisible(dialog);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
@@ -138,8 +137,8 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     ? bar.length - 4 
                     : bar.length - 3 
                         : this.scene.gameState?.dialogTag as boolean 
-                            ? 1
-                            : 2;
+                            ? 0
+                            : 1;
                 item.setVisible(loot);
                 item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
             };
@@ -148,11 +147,18 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             });
         });
 
-
+        this.pressButton(closed);
+        
         this.stances.push(strafe);
-        this.stances.push(caerenic);
+        if (this.scene.settings.stances.caerenic) {
+            let caerenic = this.scene.add.image(this.x, this.y, "caerenic");
+            this.stances.push(caerenic);
+        };
         this.stances.push(stalwart);
-        this.stances.push(stealth);
+        if (this.scene.settings.stances.stealth) {
+            let stealth = this.scene.add.image(this.x, this.y, "stealth");
+            this.stances.push(stealth);
+        };
 
         this.stances.forEach((item, index) => {
             item.setScrollFactor(0, 0);
@@ -161,7 +167,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setInteractive();
             item.setScale(this.scene.settings.positions.leftHud.scale); // || 0.095
             item.setVisible(true);
-            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
+            item.x = leftXModifier(this.leftX, Math.min(index, this.stances.length), this.scene.settings.positions.leftHud.offset); // || 43.75
             item.on("pointerdown", () => {
                 this.pressStance(item);
             });
@@ -234,7 +240,7 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         });
 
         this.stances.forEach((item, index) => {
-            item.x = leftXModifier(this.leftX, Math.min(index, 4), this.scene.settings.positions.leftHud.offset); // || 43.75
+            item.x = leftXModifier(this.leftX, Math.min(index, this.stances.length), this.scene.settings.positions.leftHud.offset); // || 43.75
             item.y = this.leftY;
         });
     };
@@ -273,6 +279,35 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         EventBus.on("update-left-hud-offset", (offset: number) => {
             this.stances.forEach((item, index) => {
                 item.x = leftXModifier(this.leftX, Math.min(index, 4), offset);
+            });
+        });
+        EventBus.on("add-stance", (stance: string) => {
+            let button = this.stances.find((b: any) => b.texture.key === stance.toLowerCase());
+            if (button) return;
+            const leftHud = this.scene.settings.positions.leftHud;
+            switch (stance) {
+                case "caerenic":
+                    button = this.scene.add.image(this.leftX, this.leftY, "caerenic");
+                    break;
+                case "stealth":
+                    button = this.scene.add.image(this.leftX, this.leftY, "stealth");
+                    break;
+                default:
+                    break;
+            };
+            if (!button) return;
+            button.setScrollFactor(0, 0);
+            button.setDepth(6);
+            button.setOrigin(0, 0);
+            button.setInteractive();
+            button.setScale(leftHud.scale); // || 0.095
+            button.setVisible(true);
+            button.on("pointerdown", () => {
+                this.pressStance(button);
+            });
+            this.stances.push(button);
+            this.stances.forEach((item, index) => {
+                item.x = leftXModifier(this.leftX, Math.min(index, this.stances.length), leftHud.offset); // || 43.75
             });
         });
     };

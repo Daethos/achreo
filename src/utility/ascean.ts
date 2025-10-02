@@ -659,46 +659,22 @@ function origin(weapon: any, ascean: Ascean): Equipment {
     return weapon;
 };
 
-function grip(weapon: Equipment, attributes: CombatAttributes, _ascean: Ascean): Equipment {
+function grip(weapon: Equipment, attributes: CombatAttributes): Equipment {
     let physicalMultiplier: number = 1;
     let magicalMultiplier: number = 1; 
     if (weapon.grip === ONE_HAND || weapon.type === BOW) {
-        weapon.physicalDamage +=
-            ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
-            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR))
-            * physicalMultiplier;
-        weapon.magicalDamage +=
-            ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
-            + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
-            * magicalMultiplier;
+        weapon.physicalDamage += (attributes.agilityMod + attributes.strengthMod / WEIGHTS.MAJOR) * physicalMultiplier;
+        weapon.magicalDamage += (attributes.achreMod + attributes.caerenMod / WEIGHTS.MAJOR) * magicalMultiplier;
 
-        weapon.physicalDamage *= 1 
-            + ((weapon.agility / WEIGHTS.MODIFIER + attributes.agilityMod) 
-            + (weapon.strength / WEIGHTS.MINOR + attributes.strengthMod / WEIGHTS.MAJOR)) 
-            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
-        weapon.magicalDamage *= 1 
-            + ((weapon.achre / WEIGHTS.MODIFIER + attributes.achreMod) 
-            + (weapon.caeren / WEIGHTS.MINOR + attributes.caerenMod / WEIGHTS.MAJOR)) 
-            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
+        weapon.physicalDamage *= 1 + (attributes.agilityMod + attributes.strengthMod / WEIGHTS.MAJOR) / WEAPON_MULTIPLIER;
+        weapon.magicalDamage *= 1 + (attributes.achreMod + attributes.caerenMod / WEIGHTS.MAJOR) / WEAPON_MULTIPLIER;
     };
     if (weapon.grip === TWO_HAND && weapon.type !== BOW) {
-        weapon.physicalDamage += 
-            ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
-            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR)) 
-            * physicalMultiplier;
-        weapon.magicalDamage += 
-            ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 
-            + (weapon.achre / WEIGHTS.MINOR + attributes.achreMod / WEIGHTS.MAJOR)) 
-            * magicalMultiplier;
+        weapon.physicalDamage += (attributes.strengthMod + attributes.agilityMod / WEIGHTS.MAJOR) * physicalMultiplier;
+        weapon.magicalDamage += (attributes.caerenMod + attributes.achreMod / WEIGHTS.MAJOR) * magicalMultiplier;
 
-        weapon.physicalDamage *= 1 
-            + ((weapon.strength / WEIGHTS.MODIFIER + attributes.strengthMod) 
-            + (weapon.agility / WEIGHTS.MINOR + attributes.agilityMod / WEIGHTS.MAJOR))
-            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));
-        weapon.magicalDamage *= 1 
-            + ((weapon.caeren / WEIGHTS.MODIFIER + attributes.caerenMod) 
-            + (weapon.achre / WEIGHTS.MINOR + attributes.achreMod / WEIGHTS.MAJOR)) 
-            / WEAPON_MULTIPLIER; // + (WEAPON_MODIFIER / ascean.level));    
+        weapon.physicalDamage *= 1 + (attributes.strengthMod + (attributes.agilityMod / WEIGHTS.MAJOR)) / WEAPON_MULTIPLIER;
+        weapon.magicalDamage *= 1 + (attributes.caerenMod + (attributes.achreMod / WEIGHTS.MAJOR)) / WEAPON_MULTIPLIER;    
     };
     return weapon;
 };
@@ -804,7 +780,7 @@ function weaponCompiler(weapon: any, ascean: Ascean, attributes: CombatAttribute
         _id: weapon._id
     };
     origin(newWeapon, ascean);
-    grip(newWeapon, attributes, ascean);
+    grip(newWeapon, attributes);
     penetration(newWeapon, attributes, combatStats);
     crit(newWeapon, attributes, combatStats);
     faith(newWeapon, ascean);
@@ -912,76 +888,82 @@ function setHealth(ascean: Ascean, max: number, current?: number): Ascean {
     return ascean;
 };
 
-function asceanCompiler(ascean: any): Compiler | undefined {
-    try {
-        const rarities = rarityCompiler(ascean);
-        const attributes = attributeCompiler(ascean, rarities);
-        const physicalDamageModifier = ascean.helmet.physicalDamage * ascean.chest.physicalDamage * ascean.legs.physicalDamage * ascean.ringOne.physicalDamage * ascean.ringTwo.physicalDamage * ascean.amulet.physicalDamage * ascean.trinket.physicalDamage;
-        const magicalDamageModifier = ascean.helmet.magicalDamage * ascean.chest.magicalDamage * ascean.legs.magicalDamage * ascean.ringOne.magicalDamage * ascean.ringTwo.magicalDamage * ascean.amulet.magicalDamage * ascean.trinket.magicalDamage;
-        const critChanceModifier = (ascean.helmet.criticalChance * rarities.helmet) + (ascean.chest.criticalChance * rarities.chest) + (ascean.legs.criticalChance * rarities.legs) + 
-            (ascean.ringOne.criticalChance * rarities.ringOne) + (ascean.ringTwo.criticalChance * rarities.ringTwo) + (ascean.amulet.criticalChance * rarities.amulet) + (ascean.trinket.criticalChance * rarities.trinket);
-        const critDamageModifier = (ascean.helmet.criticalDamage * rarities.helmet) * (ascean.chest.criticalDamage * rarities.chest) * (ascean.legs.criticalDamage * rarities.legs) * 
-            (ascean.ringOne.criticalDamage * rarities.ringOne) * (ascean.ringTwo.criticalDamage * rarities.ringTwo) * (ascean.amulet.criticalDamage * rarities.amulet) * (ascean.trinket.criticalDamage * rarities.trinket);
-        const dodgeModifier = Math.round((ascean.shield.dodge * rarities.shield) + (ascean.helmet.dodge * rarities.helmet) + (ascean.chest.dodge * rarities.chest) + (ascean.legs.dodge * rarities.legs) + 
-            (ascean.ringOne.dodge * rarities.ringOne) + (ascean.ringTwo.dodge * rarities.ringTwo) + (ascean.amulet.dodge * rarities.amulet) + (ascean.trinket.dodge * rarities.trinket) - Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
-        const rollModifier = Math.round((ascean.shield.roll * rarities.shield) + (ascean.helmet.roll * rarities.helmet) + (ascean.chest.roll * rarities.chest) + (ascean.legs.roll * rarities.legs) + 
-            (ascean.ringOne.roll * rarities.ringOne) + (ascean.ringTwo.roll * rarities.ringTwo) + (ascean.amulet.roll * rarities.amulet) + (ascean.trinket.roll * rarities.trinket) + 
-            Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
-        const originPhysPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHEO ? 5 : 0)
-        const originMagPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHOS ? 5 : 0)
-        const physicalPenetration = (ascean.ringOne.physicalPenetration * rarities.ringOne) + (ascean.ringTwo.physicalPenetration * rarities.ringTwo) + (ascean.amulet.physicalPenetration * rarities.amulet) + (ascean.trinket.physicalPenetration * rarities.trinket) + originPhysPenMod;
-        const magicalPenetration = (ascean.ringOne.magicalPenetration * rarities.ringOne) + (ascean.ringTwo.magicalPenetration * rarities.ringTwo) + (ascean.amulet.magicalPenetration * rarities.amulet) + (ascean.trinket.magicalPenetration * rarities.trinket) + originMagPenMod;
-        const originPhysDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHOS ? 5 : 0);
-        const originMagDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHEO ? 5 : 0);
-        const physicalDefenseModifier = Math.round((ascean.helmet.physicalResistance * rarities.helmet) + (ascean.chest.physicalResistance * rarities.chest) + (ascean.legs.physicalResistance * rarities.legs) + 
-            (ascean.ringOne.physicalResistance * rarities.ringOne) + (ascean.ringTwo.physicalResistance * rarities.ringTwo) + (ascean.amulet.physicalResistance * rarities.amulet) + (ascean.trinket.physicalResistance * rarities.trinket) + 
-            Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / 8)) + originPhysDefMod);
-        const magicalDefenseModifier = Math.round((ascean.helmet.magicalResistance * rarities.helmet) + (ascean.chest.magicalResistance * rarities.chest) + (ascean.legs.magicalResistance * rarities.legs) + 
-            (ascean.ringOne.magicalResistance * rarities.ringOne) + (ascean.ringTwo.magicalResistance * rarities.ringTwo) + (ascean.amulet.magicalResistance * rarities.amulet) + (ascean.trinket.magicalResistance * rarities.trinket) + 
-            Math.round(((attributes.constitutionMod + attributes.caerenMod + attributes.kyosirMod) / 8)) + originMagDefMod);
-    
-        const combatStats = {
-            combatAttributes: attributes,
-            damagePhysical: physicalDamageModifier,
-            damageMagical: magicalDamageModifier,
-            criticalChance: critChanceModifier,
-            criticalDamage: critDamageModifier,
-            dodgeCombat: dodgeModifier,
-            rollCombat: rollModifier,
-            penetrationPhysical: physicalPenetration,
-            penetrationMagical: magicalPenetration,
-            defensePhysical: physicalDefenseModifier,
-            defenseMagical: magicalDefenseModifier,
-            originPhysDef: originPhysDefMod,
-            originMagDef: originMagDefMod
-        };
+function asceanCompiler(ascean: any): Compiler {
+    const rarities = rarityCompiler(ascean);
+    const attributes = attributeCompiler(ascean, rarities);
+    const physicalDamageModifier = ascean.helmet.physicalDamage * ascean.chest.physicalDamage * ascean.legs.physicalDamage * ascean.ringOne.physicalDamage * ascean.ringTwo.physicalDamage * ascean.amulet.physicalDamage * ascean.trinket.physicalDamage;
+    const magicalDamageModifier = ascean.helmet.magicalDamage * ascean.chest.magicalDamage * ascean.legs.magicalDamage * ascean.ringOne.magicalDamage * ascean.ringTwo.magicalDamage * ascean.amulet.magicalDamage * ascean.trinket.magicalDamage;
+    const critChanceModifier = (ascean.helmet.criticalChance * rarities.helmet) + (ascean.chest.criticalChance * rarities.chest) + (ascean.legs.criticalChance * rarities.legs) + 
+        (ascean.ringOne.criticalChance * rarities.ringOne) + (ascean.ringTwo.criticalChance * rarities.ringTwo) + (ascean.amulet.criticalChance * rarities.amulet) + (ascean.trinket.criticalChance * rarities.trinket);
+    const critDamageModifier = (ascean.helmet.criticalDamage * rarities.helmet) * (ascean.chest.criticalDamage * rarities.chest) * (ascean.legs.criticalDamage * rarities.legs) * 
+        (ascean.ringOne.criticalDamage * rarities.ringOne) * (ascean.ringTwo.criticalDamage * rarities.ringTwo) * (ascean.amulet.criticalDamage * rarities.amulet) * (ascean.trinket.criticalDamage * rarities.trinket);
+    const dodgeModifier = Math.round((ascean.shield.dodge * rarities.shield) + (ascean.helmet.dodge * rarities.helmet) + (ascean.chest.dodge * rarities.chest) + (ascean.legs.dodge * rarities.legs) + 
+        (ascean.ringOne.dodge * rarities.ringOne) + (ascean.ringTwo.dodge * rarities.ringTwo) + (ascean.amulet.dodge * rarities.amulet) + (ascean.trinket.dodge * rarities.trinket) - Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
+    const rollModifier = Math.round((ascean.shield.roll * rarities.shield) + (ascean.helmet.roll * rarities.helmet) + (ascean.chest.roll * rarities.chest) + (ascean.legs.roll * rarities.legs) + 
+        (ascean.ringOne.roll * rarities.ringOne) + (ascean.ringTwo.roll * rarities.ringTwo) + (ascean.amulet.roll * rarities.amulet) + (ascean.trinket.roll * rarities.trinket) + 
+        Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
+    const originPhysPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHEO ? 5 : 0)
+    const originMagPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHOS ? 5 : 0)
+    const physicalPenetration = (ascean.ringOne.physicalPenetration * rarities.ringOne) + (ascean.ringTwo.physicalPenetration * rarities.ringTwo) + (ascean.amulet.physicalPenetration * rarities.amulet) + (ascean.trinket.physicalPenetration * rarities.trinket) + originPhysPenMod;
+    const magicalPenetration = (ascean.ringOne.magicalPenetration * rarities.ringOne) + (ascean.ringTwo.magicalPenetration * rarities.ringTwo) + (ascean.amulet.magicalPenetration * rarities.amulet) + (ascean.trinket.magicalPenetration * rarities.trinket) + originMagPenMod;
+    const originPhysDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHOS ? 5 : 0);
+    const originMagDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHEO ? 5 : 0);
+    const physicalDefenseModifier = Math.round((ascean.helmet.physicalResistance * rarities.helmet) + (ascean.chest.physicalResistance * rarities.chest) + (ascean.legs.physicalResistance * rarities.legs) + 
+        (ascean.ringOne.physicalResistance * rarities.ringOne) + (ascean.ringTwo.physicalResistance * rarities.ringTwo) + (ascean.amulet.physicalResistance * rarities.amulet) + (ascean.trinket.physicalResistance * rarities.trinket) + 
+        Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / 8)) + originPhysDefMod);
+    const magicalDefenseModifier = Math.round((ascean.helmet.magicalResistance * rarities.helmet) + (ascean.chest.magicalResistance * rarities.chest) + (ascean.legs.magicalResistance * rarities.legs) + 
+        (ascean.ringOne.magicalResistance * rarities.ringOne) + (ascean.ringTwo.magicalResistance * rarities.ringTwo) + (ascean.amulet.magicalResistance * rarities.amulet) + (ascean.trinket.magicalResistance * rarities.trinket) + 
+        Math.round(((attributes.constitutionMod + attributes.caerenMod + attributes.kyosirMod) / 8)) + originMagDefMod);
 
-        if (ascean.health.max === 0) {
-            ascean = setHealth(ascean, attributes.healthTotal);
-        } else {
-            ascean = setHealth(ascean, attributes.healthTotal, ascean.health.current);
-        };
-        if (Number.isNaN(ascean.health.current)) {
-            ascean.health.current = ascean.health.max;
-        };
-        if (ascean.health.current <= 0) {
-            ascean.health.current = 0;
-        };
-        if (Number.isNaN(ascean.experience)) {
-            ascean.experience = ascean.level * 1000;
-        };
-
-        const combatWeaponOne = weaponCompiler(ascean.weaponOne, ascean, attributes, combatStats, rarities.weaponOne);
-        const combatWeaponTwo = weaponCompiler(ascean.weaponTwo, ascean, attributes, combatStats, rarities.weaponTwo);
-        const combatWeaponThree = weaponCompiler(ascean.weaponThree, ascean, attributes, combatStats, rarities.weaponThree);
-        const defense = defenseCompiler(ascean, attributes, combatStats, rarities);
-        return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense } as Compiler;
-    } catch (err) {
-        console.warn(err, "Ascean Compiler Error");
+    const combatStats = {
+        combatAttributes: attributes,
+        damagePhysical: physicalDamageModifier,
+        damageMagical: magicalDamageModifier,
+        criticalChance: critChanceModifier,
+        criticalDamage: critDamageModifier,
+        dodgeCombat: dodgeModifier,
+        rollCombat: rollModifier,
+        penetrationPhysical: physicalPenetration,
+        penetrationMagical: magicalPenetration,
+        defensePhysical: physicalDefenseModifier,
+        defenseMagical: magicalDefenseModifier,
+        originPhysDef: originPhysDefMod,
+        originMagDef: originMagDefMod
     };
+
+    if (ascean.health.max === 0) {
+        ascean = setHealth(ascean, attributes.healthTotal);
+    } else {
+        ascean = setHealth(ascean, attributes.healthTotal, ascean.health.current);
+    };
+    if (Number.isNaN(ascean.health.current)) {
+        ascean.health.current = ascean.health.max;
+    };
+    if (ascean.health.current <= 0) {
+        ascean.health.current = 0;
+    };
+    if (Number.isNaN(ascean.experience)) {
+        ascean.experience = ascean.level * 1000;
+    };
+
+    const combatWeaponOne = weaponCompiler(ascean.weaponOne, ascean, attributes, combatStats, rarities.weaponOne);
+    const combatWeaponTwo = weaponCompiler(ascean.weaponTwo, ascean, attributes, combatStats, rarities.weaponTwo);
+    const combatWeaponThree = weaponCompiler(ascean.weaponThree, ascean, attributes, combatStats, rarities.weaponThree);
+    const defense = defenseCompiler(ascean, attributes, combatStats, rarities);
+    return { ascean, attributes, combatWeaponOne, combatWeaponTwo, combatWeaponThree, defense } as Compiler;
 };
 
-function fetchTrait(trait:  string): { name: string; traitOneName: string; traitOneDescription: string; traitTwoName: string; traitTwoDescription: string; } {
+export type AsceanTraits = {
+    name: string; 
+    traitOneName: string; 
+    traitOneDescription: string; 
+    traitTwoName: string; 
+    traitTwoDescription: string; 
+    traitThreeName: string; 
+    traitThreeDescription: string;
+};
+
+function fetchTrait(trait:  string): AsceanTraits {
     switch (trait) {
         case "Arbituous": // Con / Ach
             return {
@@ -989,7 +971,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Luckout",
                 traitOneDescription: "Convince the enemy through rhetoric to cease.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
+                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression.",
+                traitThreeName: "Stealth",
+                traitThreeDescription: "You can use your achre to shimmer and stealth."
             };
         case "Astral": // Ach / Kyo
             return {
@@ -997,23 +981,29 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Astrication",
                 traitOneDescription: "Perform combat maneuvers that are impossible to follow, and thus impossible to counter.",
                 traitTwoName: "Devour",
-                traitTwoDescription: "Your achre is imbued with an astral desire, an avarice to devour the world."
+                traitTwoDescription: "Your achre is imbued with an astral desire, an avarice to devour the world.",
+                traitThreeName: "Stealth",
+                traitThreeDescription: "You can use your achre to shimmer and stealth."
             };
         case "Cambiren": // Agi / Caer
             return {
                 name: "Cambiren",
-                traitOneName: "Caerenicism",
-                traitOneDescription: "Your caer explodes and engulfs you.",
+                traitOneName: "Astrication",
+                traitOneDescription: "Perform combat actions that are ripped from fate, and thus impossible to counter.",
                 traitTwoName: "Caerenesis",
-                traitTwoDescription: "You can fear and evoke your enemy's caer into yours."
+                traitTwoDescription: "You can fear and evoke your enemy's caer into yours.",
+                traitThreeName: "Stealth",
+                traitThreeDescription: "You can use your caeren to shimmer and stealth."
             };
-        case "Chiomic":
+        case "Chiomic": // Ach / Kyo
             return {
                 name: "Chiomic",
                 traitOneName: "Luckout",
                 traitOneDescription: "Invoke the Ancient Chiomyr, reducing the enemy to a broken mind of mockery.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Cause bouts of confusion and disorientation in the enemy."
+                traitTwoDescription: "Cause bouts of confusion and disorientation in the enemy.",
+                traitThreeName: "Devour",
+                traitThreeDescription: "Your kyosir is imbued with curiosity, a fervor to devour this world.",
             };
         case "Fyeran": // Ach / Caer
             return {
@@ -1021,7 +1011,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Persuasion",
                 traitOneDescription: "You can convince those who see this world with peculiarity.",
                 traitTwoName: "Seer",
-                traitTwoDescription: "Your next attack is Fyers."
+                traitTwoDescription: "Your next attack is Fyers.",
+                traitThreeName: "Caerenesis",
+                traitThreeDescription: "You maw reality and tear at the enemy caer.",
             };
         case "Kyn'gian": // Con / Agi
             return {
@@ -1029,7 +1021,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Avoidance",
                 traitOneDescription: "You can avoid most encounters.",
                 traitTwoName: "Endurance",
-                traitTwoDescription: "You are able to dramatically recover your stamina."
+                traitTwoDescription: "You are able to dramatically recover your stamina.",
+                traitThreeName: "Conviction",
+                traitThreeDescription: "You become stronger as you hone your accuracy.",
             };
         case "Kyr'naic": // Con / Kyo
             return {
@@ -1037,7 +1031,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Luckout",
                 traitOneDescription: "Convince the enemy to acquiesce, giving their life to the Aenservaesai.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Cause the enemy to embrace the hush and tendril."
+                traitTwoDescription: "Cause the enemy to embrace the hush and tendril.",
+                traitThreeName: "Stimulate",
+                traitThreeDescription: "You can use your kyosir to turn back time.",
             };
         case "Ilian": // Con / Str
             return {
@@ -1045,7 +1041,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Blind",
                 traitOneDescription: "Your brilliance enraptures all enemies.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "The weight of your words can sway the minds of others."
+                traitTwoDescription: "The weight of your words can sway the minds of others.",
+                traitThreeName: "Devour",
+                traitThreeDescription: "Your strength is imbued with ilio-tshaeral desire, a hunger to devour the world.",
             };
         case "Lilosian": // Con / Caer
             return {
@@ -1053,15 +1051,19 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Luckout",
                 traitOneDescription: "Convince the enemy to profess their follies and willow.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Speak to your enemy's faith and stay their hand."
+                traitTwoDescription: "Speak to your enemy's faith and stay their hand.",
+                traitThreeName: "Charm",
+                traitThreeDescription: "You can bemuse the enemy to your spirituality, even focusing on another foe?"
             };
         case "Ma'anreic": // Agi / Ach
             return {
                 name: "Ma'anreic",
                 traitOneName: "Stealth",
-                traitOneDescription: "You can use your caeren to shimmer and stealth.",
+                traitOneDescription: "You can use your achre to shimmer and stealth.",
                 traitTwoName: "Thievery",
-                traitTwoDescription: "You can steal items from anyone and anywhere."
+                traitTwoDescription: "You can steal items from anyone and anywhere.",
+                traitThreeName: "Blind",
+                traitThreeDescription: "You shriek your caer to blind nearby foes.",
             };
         case "Sedyrist": // Str / Ach
             return {
@@ -1069,15 +1071,19 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Stimulate",
                 traitOneDescription: "You can refresh your ability to tap into your caeren.",
                 traitTwoName: "Tinkerer",
-                traitTwoDescription: "You can deconstruct and reconstruct armor and weapons."
+                traitTwoDescription: "You can deconstruct and reconstruct armor and weapons.",
+                traitThreeName: "Astrication",
+                traitThreeDescription: "Perform combat strategies that are impossible to understand, and thus impossible to counter.",
             };
         case "Se'van": // Str / Agi
             return {
                 name: "Se'van",
                 traitOneName: "Berserk",
                 traitOneDescription: "Your attacks grow stronger for each successive form of damage received.",
-                traitTwoName: "Seer", 
-                traitTwoDescription: "Pin-point your next strike."
+                traitTwoName: "Seer",
+                traitTwoDescription: "Pin-point your next strike.",
+                traitThreeName: "Tinkerer",
+                traitThreeDescription: "You can find the efficiencies in your tools of War."
             };
         case "Shaorahi": // Str / Caer
             return {
@@ -1085,15 +1091,19 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Conviction",
                 traitOneDescription: "Your attacks grow stronger the more you realize them.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "You can put the enemy in awe of your power, and have them cease their assault."
+                traitTwoDescription: "You can put the enemy in awe of your power, and have them cease their assault.",
+                traitThreeName: "Caerenesis",
+                traitThreeDescription: "You strike brutal awe and evoke your enemy's caer into yours.",
             };
         case "Shrygeian": // Agi / Kyo
             return {
                 name: "Shrygeian",
-                traitOneName: "Devour",
-                traitOneDescription: "Your kyosir is imbued with curiosity, a fervor to devour this world.",
+                traitOneName: "Persuasion",
+                traitOneDescription: "Use your love of this world to appeal to their common nature.",
                 traitTwoName: "Impermanence",
-                traitTwoDescription: "You may avoid attacks."
+                traitTwoDescription: "You may avoid attacks.",
+                traitThreeName: "Charm",
+                traitThreeDescription: "You can bewitch the enemy to your side, perhaps against another foe?"
             };
         case "Tshaeral": // Str / Kyo
             return {
@@ -1101,7 +1111,9 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Devour",
                 traitOneDescription: "Your caer is imbued with tshaeral desire, a hunger to devour the world.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Your nature has a way of wilting the caer of your enemies."
+                traitTwoDescription: "Your nature has a way of wilting the caer of your enemies.",
+                traitThreeName: "Berserk",
+                traitThreeDescription: "You further enrage at any form of damage received.",
             };
         default: 
             return {
@@ -1109,12 +1121,14 @@ function fetchTrait(trait:  string): { name: string; traitOneName: string; trait
                 traitOneName: "Luckout",
                 traitOneDescription: "Convince the enemy through rhetoric to cease hostility.",
                 traitTwoName: "Persuasion",
-                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression."
+                traitTwoDescription: "Use knowledge of Ley Law to deter enemies from aggression.",
+                traitThreeName: "Stealth",
+                traitThreeDescription: "You can use your achre to shimmer and stealth."
             };
     };
 };
 
-function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: Setter<any>) {
+function playerTraits(game: Accessor<GameState>, setPlayerTraitWrapper: Setter<{ primary: AsceanTraits; secondary: AsceanTraits; tertiary: AsceanTraits; }>) {
     setPlayerTraitWrapper({
         "primary": fetchTrait(game().traits.primary.name),
         "secondary": fetchTrait(game().traits.secondary.name),

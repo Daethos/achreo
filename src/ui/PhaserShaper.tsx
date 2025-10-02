@@ -8,6 +8,7 @@ import { COLORS, NUMBERS, font } from "../utility/styling";
 import { roundToTwoDecimals } from "../utility/combat";
 import { Collapse } from "solid-collapse";
 const cleanShape = {
+    desktop: false,
     camera: false,
     castbar: false,
     leftJoystick: false,
@@ -30,6 +31,17 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
             ...cleanShape,
             [exception]: change
         });
+    };
+
+    
+    const handleDesktop = async (desktop: boolean) => {
+        try {
+            const newSettings = { ...settings(), desktop };
+            EventBus.emit("save-settings", newSettings);
+            EventBus.emit("update-desktop-cursor", desktop);
+        } catch (err) {
+            console.warn(err, "Error Handling Desktop");
+        };
     };
 
     async function handleCastbar(type: string, value: number) {
@@ -438,6 +450,15 @@ export default function PhaserShaper({ settings }: IPhaserShape) {
     };
     {/* <div style={font("0.5em")}>[Aggressive AI Range: 0 - 100%]</div> */}
     return <div class="center creature-heading" style={dims.ORIENTATION === "landscape" ? { "margin-top": "0" } : { "margin-top": "50%" }}>
+        
+        <h1 onClick={() => resetShaper("desktop", !shaper().desktop)} style={font("1.25em")}>Desktop</h1>
+        <Collapse value={shaper().desktop} class="my-transition">
+            <div style={font("1em", "#fdf6d8")}>
+            <button class="gold highlight" onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? "Enabled" : "Disabled"}</button>
+            </div>
+            <div style={font("0.5em")}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
+        </Collapse>
+
         <h1 onClick={() => resetShaper("camera", !shaper().camera)} style={font("1.25em")}>Camera</h1>
         <Collapse value={shaper().camera} class="my-transition">
             <div style={font("1em")}>

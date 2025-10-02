@@ -223,13 +223,13 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
         this.setAlpha(1);
         this.setAngle(0);
         
-        if (enemy !== undefined) {
+        if (enemy) {
             if (enemy.name === ENEMY) {
                 this.enemyAoe(type, positive, enemy, target, constant);
             } else if (enemy.name === PARTY) {
                 this.partyAoe(type, positive, enemy as Party, target);
             };
-        } else if (particle !== undefined) {
+        } else if (particle) {
             this.particleAoe(particle, positive);
         } else if ((this.scene as Player_Scene).player) {
             this.playerAoe(type, positive, manual, enemy);
@@ -299,7 +299,7 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             SCALE * (this.enhanced ? 1.5 : 1), 
             manual ? 0 : Y_OFFSET, REPEAT);
         this.baseCount(type, positive, this.scene.player, {
-            concern: () => type === "fyerus" && (this.scene as Player_Scene).player.isMoving,
+            concern: () => type === "fyerus" && (this.scene as Player_Scene).player.moving(),
             bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID), 
             hit: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID, this.scene.player.playerID)
         });

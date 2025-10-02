@@ -2,11 +2,13 @@ import { Accessor, For, Setter, Show, createMemo, createSignal, onMount } from "
 import { EventBus } from "../game/EventBus";
 import { Attributes } from "../utility/attributes";
 import { InputGroup } from "solid-bootstrap";
-import { useResizeListener } from "../utility/dimensions";
+import { dimensions } from "../utility/dimensions";
 import AttributeModal from "../components/Attributes";
 import { FAITHS } from "../components/Faith";
 import Ascean from "../models/ascean";
 import { LevelSheet } from "../utility/ascean";
+
+const dims = dimensions();
 
 const Mastery = ({ mastery, state }: { mastery: any; state: Accessor<any>; }) => {
 const [show, setShow] = createSignal<boolean>(false);
@@ -37,7 +39,6 @@ interface Props {
 
 const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
     const [show, setShow] = createSignal(false);
-    const dimensions = useResizeListener();
     const handleShow = () => setShow(!show()); 
     const handleFaith = () => {
         EventBus.emit("update-ascean-state", {
@@ -48,9 +49,9 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
     };
     return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ color: faith.worshipers === state().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === state().faith ? "texty 1s infinite ease alternate" : "", "--glow-color":"gold" }}>{faith.name}</button>}>
         <div class="modal" onClick={handleShow}>
-        <div class="verticalCenter" style={dimensions()?.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%" } : { }}>
+        <div class="verticalCenter" style={dims.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%" } : { }}>
         <div class="creature-heading border borderTalent" style={{ "text-wrap": "balance", "--base-shadow": "#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" }}> 
-            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dimensions().ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
+            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
             <p class="gold small">{faith.origin}</p>
             <h2 class="gold" style={{ "margin-bottom":"5%" }}>{faith.quote}</h2>
         </div>
@@ -61,7 +62,6 @@ const Faith = ({ faith, state }: { faith: any; state: Accessor<any>; }) => {
 
 export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
     const [pool, setPool] = createSignal<number>(0);
-    const dimensions = useResizeListener();
 
     const handleChange = (event: any, name: string, value: number): void => {
         event.preventDefault();
@@ -137,7 +137,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                 <h3 class="gold" style={{ "margin-bottom" : "5%", animation: pool() === 2 ? "texty 1s infinite ease alternate" : "", "--glow-color": "gold" }}>Attribute Pool: {pool()} / 2</h3>
                 <For each={Attributes}>
                     {(attribute) => (
-                        <InputGroup style={{ width: dimensions().ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block", height: "auto" }}>
+                        <InputGroup style={{ width: dims.ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block", height: "auto" }}>
                             <p class="tighten">{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
                             <br />
                             <span class="gold">{asceanState()[attribute.name as keyof typeof asceanState] + asceanState().ascean[attribute.name as keyof typeof asceanState]} ({Math.floor((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState] - 10) / 2) > 0 ? "+" : ""}{(Math.floor(((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState]) - 10) / 2))})</span>

@@ -114,6 +114,7 @@ export default class Player extends Entity {
     buttonPressed: string = "";
     luckoutLock: string = "";
     persuasionLock: string = "";
+    actionHandlers: { key: Phaser.Input.Keyboard.Key, action: string, special: string }[] = [];
 
     constructor(data: any) {
         const { scene } = data;
@@ -168,9 +169,10 @@ export default class Player extends Entity {
         const compoundBody = Body.create({
             parts: [playerSensor, playerColliderLower, playerColliderUpper],
             frictionAir: 0.5,
-            restitution: 0.2,
-            density: 0.75,
-            friction: 0.5
+            restitution: 0.1,
+            density: 0.0025,
+            frictionStatic: 10,    
+            friction: 0.3,
         });
         this.setExistingBody(compoundBody);
         this.sensor = playerSensor;
@@ -178,6 +180,7 @@ export default class Player extends Entity {
         this.setCollisionCategory(ENTITY_FLAGS.PLAYER);
         this.setCollidesWith(ENTITY_FLAGS.ENEMY | ENTITY_FLAGS.LOOT | ENTITY_FLAGS.NPC | ENTITY_FLAGS.PARTICLES | ENTITY_FLAGS.WORLD);
         
+        this.buildActionHandlers();
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
         this.aoeMask = ENTITY_FLAGS.PLAYER;
@@ -221,10 +224,53 @@ export default class Player extends Entity {
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
         });
         this.beam = new Beam(this);
-
+        
         // this.generateCaerenesis();
 
         scene.registry.set("player", this);
+    };
+
+    buildActionHandlers = () => {
+        const { actions, specials } = this.scene.hud.settings;
+        this.inputKeys = {
+            up: this.scene.input.keyboard?.addKeys("W,UP"),
+            down: this.scene.input.keyboard?.addKeys("S,DOWN"),
+            left: this.scene.input.keyboard?.addKeys("A,LEFT"),
+            right: this.scene.input.keyboard?.addKeys("D,RIGHT"),
+            action: this.scene.input.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
+            strafe: this.scene.input.keyboard?.addKeys("E,Q"),
+            shift: this.scene.input.keyboard?.addKeys("SHIFT"),
+            firewater: this.scene.input.keyboard?.addKeys("T"),
+            tab: this.scene.input.keyboard?.addKeys("TAB"),
+            escape: this.scene.input.keyboard?.addKeys("ESC"),
+        };
+        this.actionHandlers = [
+            {
+                key: this.inputKeys.action.ONE,
+                action: actions[0]?.toLowerCase(),
+                special: specials[0]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.TWO,
+                action: actions[1]?.toLowerCase(),
+                special: specials[1]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.THREE,
+                action: actions[2]?.toLowerCase(),
+                special: specials[2]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.FOUR,
+                action: actions[3]?.toLowerCase(),
+                special: specials[3]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.FIVE,
+                action: actions[4]?.toLowerCase(),
+                special: specials[4]?.toLowerCase()
+            }
+        ];
     };
 
     getAscean = () => {
@@ -385,7 +431,7 @@ export default class Player extends Entity {
     };
 
     animateMark = () => {
-        console.log(this.mark, "Adding Tween?");
+        // console.log(this.mark, "Adding Tween?");
         this.scene.tweens.add({
             targets: this.mark,
             tint: 0x00FF00,
@@ -560,11 +606,11 @@ export default class Player extends Entity {
             this.currentShieldSprite = assetSprite(shield);
             this.spriteShield.setTexture(this.currentShieldSprite);
             if (shield.type === "Medium Shield") {
-                staminaModifier += 1;
+                staminaModifier += 0.5;
             } else if (shield.type === "Large Shield") {
-                staminaModifier += 2;
+                staminaModifier += 1;
             } else if (shield.type === "Great Shield") {
-                staminaModifier += 3;
+                staminaModifier += 1.5;
             };
         };
         this.staminaModifier = staminaModifier;
@@ -575,32 +621,32 @@ export default class Player extends Entity {
     resist = () => this.scene.showCombatText(this, "Resisted", PLAYER.DURATIONS.TEXT, EFFECT);
 
     checkTalentCost = (type: string, cost: number) => {
-        const grace = this.scene.hud.talents.talents[type].efficient ? TALENT_COST[cost] : cost;
+        const grace = this.scene.hud.talents.talents[type]?.efficient ? TALENT_COST[cost] : cost;
         this.scene.combatManager.useGrace(grace);
     };
 
     checkTalentCooldown = (type: string, cooldown: number) => {
-        const limit = this.scene.hud.talents.talents[type].efficient ? TALENT_COOLDOWN[cooldown] : cooldown;
+        const limit = this.scene.hud.talents.talents[type]?.efficient ? TALENT_COOLDOWN[cooldown] : cooldown;
         this.setTimeEvent(`${type}Cooldown`, limit);
     };
 
     checkTalentEnhanced = (type: string): boolean => {
-        return this.scene.hud.talents.talents[type].enhanced;
+        return this.scene.hud.talents.talents[type]?.enhanced;
     };
 
     checkTalentOptimized = (type: string): boolean => {
-        return this.scene.hud.talents.talents[type].efficient;
+        return this.scene.hud.talents.talents[type]?.efficient;
     };
 
     checkTalentFrame = (type: string, current: number, potential: number): number => {
         const frame = this.scene.hud.talents.talents[type].enhanced ? potential : current;
-        console.log({frame});
+        // console.log({frame});
         return frame;
     };
 
     damageDistance = (enemy: Enemy) => {
         const distance = enemy.position.subtract(this.position).length();
-        this.playerMachine.chiomism(enemy.enemyID, distance);
+        this.playerMachine.chiomism(enemy.enemyID, distance, "hook");
     };
 
     startCasting = (name: string, duration: number, harm = true, channel = false, beam = true) => {
@@ -714,7 +760,6 @@ export default class Player extends Entity {
             targets: this,
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
-            // alpha: 0.25,
             duration: 550,
             ease: Phaser.Math.Easing.Circular.Out, // "Circ.easeOut",
             onStart: () => {
@@ -1247,7 +1292,6 @@ export default class Player extends Entity {
     };
 
     inputClear = (input: string) => {
-        // if (!input) return;
         const action = PHYSICAL_ACTIONS.includes(input);
         const evasions = PHYSICAL_EVASIONS.includes(input);
         if (action) {
@@ -1320,7 +1364,7 @@ export default class Player extends Entity {
                 if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
-                this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: "action", value: action }});
+                this.scene.combatManager.combatMachine.action({ type: "Weapon", data: { key: "action", value: action, hitLocation: this.lastHitLocation }});
             } else {
                 this.scene.combatManager.combatMachine.action({ type: "Player", data: {
                     playerAction: { action, parry: this.scene.state.parryGuess },  
@@ -1331,6 +1375,7 @@ export default class Player extends Entity {
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
                     actionData: { action: "", parry: "" }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    hitLocation: this.lastHitLocation
                 }});
             };
         } else {
@@ -1356,7 +1401,7 @@ export default class Player extends Entity {
                 if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.playerID);
             };
             if (this.enemyIdMatch()) {
-                this.scene.combatManager.combatMachine.action({ type: "Weapon",  data: { key: "action", value: action } });
+                this.scene.combatManager.combatMachine.action({ type: "Weapon",  data: { key: "action", value: action, hitLocation: this.lastHitLocation } });
             } else {
                 this.scene.combatManager.combatMachine.action({ type: "Player", data: {
                     playerAction: { action, parry: this.scene.state.parryGuess }, 
@@ -1367,6 +1412,7 @@ export default class Player extends Entity {
                     weapons: this.attackedTarget.weapons, 
                     health: this.attackedTarget.health, 
                     actionData: { action: "", parry: "" }, // { action: this.attackedTarget.currentAction, parry: this.attackedTarget.parryAction },
+                    hitLocation: this.lastHitLocation
                 }});
             };
         };
@@ -1442,69 +1488,47 @@ export default class Player extends Entity {
         requestAnimationFrame(rollLoop);
     };
 
-    handleActions = () => {
-        if (this.currentTarget) {
-            this.highlightTarget(this.currentTarget);
-            if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
-                if (this.currentTarget.name === "enemy") this.scene.hud.setupEnemy(this.currentTarget);
-            };
-        } else if (this.highlight.visible) {
-            this.removeHighlight();
+    zeroOutVelocity = (velocityDirection: number, deceleration: number) => {
+        if (velocityDirection > 0) {
+            velocityDirection -= deceleration;
+            if (velocityDirection < 0) velocityDirection = 0;
+        } else if (velocityDirection < 0) {
+            velocityDirection += deceleration;
+            if (velocityDirection > 0) velocityDirection = 0;
         };
-        if (this.isDefeated) return;
-        if (this.scene.hud.settings.desktop) {
-            if (this.isSuffering()) return;
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) {
-                this.tabEnemyNext();
+        return velocityDirection;
+    };
+
+    handleActionsLookup = () => {
+        if (this.scene.frameCount & 1) {
+            if (this.currentTarget) {
+                this.highlightTarget(this.currentTarget);
+                if (this.inCombat && (!this.scene.state.computer || this.scene.state.enemyID !== this.currentTarget.enemyID)) {
+                    if (this.currentTarget.name === "enemy") this.scene.hud.setupEnemy(this.currentTarget);
+                };
+            } else if (this.highlight.visible) {
+                this.removeHighlight();
             };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.escape.ESC) && !this.inCombat) {
-                this.disengage();
-            };
-            const { actions, specials } = this.scene.hud.settings;
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.hud.actionBar.getButton(specials[0].toLowerCase());
-                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
-            };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.hud.actionBar.getButton(specials[1].toLowerCase());
-                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
-            };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.hud.actionBar.getButton(specials[2].toLowerCase());
-                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
-            };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.hud.actionBar.getButton(specials[3].toLowerCase());
-                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
-            };
-            if ((this.inputKeys.shift.SHIFT.isDown) && Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) { 
-                const button = this.scene.hud.actionBar.getButton(specials[4].toLowerCase());
-                if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.ONE)) {
-                const button = this.scene.hud.actionBar.getButton(actions[0].toLowerCase());
-                const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.TWO)) {
-                const button = this.scene.hud.actionBar.getButton(actions[1].toLowerCase());
-                const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.THREE)) {
-                const button = this.scene.hud.actionBar.getButton(actions[2].toLowerCase());
-                const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FOUR)) {
-                const button = this.scene.hud.actionBar.getButton(actions[3].toLowerCase());
-                const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
-            };
-            if (Phaser.Input.Keyboard.JustDown(this.inputKeys.action.FIVE)) {
-                const button = this.scene.hud.actionBar.getButton(actions[4].toLowerCase());
-                const clear = this.inputClear(button?.name.toLowerCase() as string);
-                if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
+        };
+        
+        if (this.isDefeated || !this.scene.hud.settings.desktop || this.isSuffering()) return;
+        
+        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.tab.TAB)) this.tabEnemyNext();
+        if (Phaser.Input.Keyboard.JustDown(this.inputKeys.escape.ESC) && !this.inCombat) this.disengage();
+        
+        const isShiftDown = this.inputKeys.shift.SHIFT.isDown;
+        
+        for (const handler of this.actionHandlers) {
+            if (Phaser.Input.Keyboard.JustDown(handler.key)) {
+                if (isShiftDown && handler.special) {
+                    const button = this.scene.hud.actionBar.getButton(handler.special);
+                    if (button?.isReady) this.scene.hud.actionBar.pressButton(button);
+                } else if (handler.action) {
+                    const button = this.scene.hud.actionBar.getButton(handler.action);
+                    const clear = this.inputClear(button?.name.toLowerCase() as string);
+                    if (button?.isReady && clear) this.scene.hud.actionBar.pressButton(button);
+                };
+                break;
             };
         };
     };
@@ -1517,100 +1541,100 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         if (this.isDefeated) return;
-        let speed = this.speed;
+        
         const suffering = this.isSuffering();
-        const isDesktop = this.scene.hud.settings.desktop === true;
+        const isDesktop = this.scene.hud.settings.desktop;
         const input = isDesktop ? this.inputKeys : this.scene.hud.joystickKeys;
+        
+        let rightPressed, leftPressed, upPressed, downPressed;
+        
         if (isDesktop) {
             const pointer = this.scene.hud.input.activePointer.rightButtonDown();
+            
             if (pointer) {
                 const point = this.scene.getWorldPointer();
-                const direction = point.subtract(this.position);
-                direction.normalize();
-                this.playerVelocity.x = speed;
-                this.playerVelocity.y = speed;
-                this.playerVelocity.x *= direction.x;
-                this.playerVelocity.y *= direction.y;
+                const direction = point.subtract(this.position).normalize();
+                this.playerVelocity.x = this.speed * direction.x;
+                this.playerVelocity.y = this.speed * direction.y;
                 this.flipX = this.playerVelocity.x < 0;
+            } else {
+                rightPressed = input.right.D.isDown || input.right.RIGHT.isDown;
+                leftPressed = input.left.A.isDown || input.left.LEFT.isDown;
+                upPressed = input.up.W.isDown || input.up.UP.isDown;
+                downPressed = input.down.S.isDown || input.down.DOWN.isDown;
+                
+                if (rightPressed) {
+                    this.playerVelocity.x += this.acceleration;
+                    this.flipX = false;
+                } else if (leftPressed) {
+                    this.playerVelocity.x -= this.acceleration;
+                    this.flipX = true;
+                } else if (!suffering) {
+                    this.playerVelocity.x = 0;
+                };
+                
+                if (upPressed) {
+                    this.playerVelocity.y -= this.acceleration;
+                } else if (downPressed) {
+                    this.playerVelocity.y += this.acceleration;
+                } else if (!suffering) {
+                    this.playerVelocity.y = 0;
+                };
             };
-            if (input.right.D.isDown || input.right.RIGHT.isDown) {
-                this.playerVelocity.x += this.acceleration;
+            
+            if (input.strafe.E.isDown || (this.isStrafing && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0)) {
+                this.flipX = true;
+            } else if (input.strafe.Q.isDown || (this.isStrafing && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0)) {
                 this.flipX = false;
             };
-            if (input.left.A.isDown || input.left.LEFT.isDown) {
-                this.playerVelocity.x -= this.acceleration;
-                this.flipX = true;
-            };
-            if ((input.up.W.isDown || input.up.UP.isDown)) {
-                this.playerVelocity.y -= this.acceleration;
-            };
-            if (input.down.S.isDown || input.down.DOWN.isDown) {
-                this.playerVelocity.y += this.acceleration;
-            };
-            if (input.strafe.E.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
-                speed += 0.1;
-                this.flipX = true;
-            };
-            if (input.strafe.Q.isDown || this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
-                speed -= 0.1;    
-                this.flipX = false;
-            };
-            if (!suffering && !pointer && !input.right.D.isDown && !input.right.RIGHT.isDown && this.playerVelocity.x !== 0 && !input.left.A.isDown && !input.left.LEFT.isDown) {
-                this.playerVelocity.x = 0;
-            };
-            if (!suffering && !pointer && !input.left.A.isDown && !input.left.LEFT.isDown && this.playerVelocity.x !== 0 && !input.right.D.isDown && !input.right.RIGHT.isDown) {
-                this.playerVelocity.x = 0;
-            };
-            if (!suffering && !pointer && !input.up.W.isDown && !input.up.UP.isDown && this.playerVelocity.y !== 0 && !input.down.S.isDown && !input.down.DOWN.isDown) {
-                this.playerVelocity.y = 0;
-            };
-            if (!suffering && !pointer && !input.down.S.isDown && !input.down.DOWN.isDown && this.playerVelocity.y !== 0 && !input.up.W.isDown && !input.up.UP.isDown) {
-                this.playerVelocity.y = 0;
-            };
+
         } else {
-            if (input.right.isDown) {
+            rightPressed = input.right.isDown;
+            leftPressed = input.left.isDown;
+            upPressed = input.up.isDown;
+            downPressed = input.down.isDown;
+            
+            if (rightPressed) {
                 this.playerVelocity.x += this.acceleration;
                 this.flipX = false;
-            };
-            if (input.left.isDown) {
+            } else if (leftPressed) {
                 this.playerVelocity.x -= this.acceleration;
                 this.flipX = true;
+            } else if (!suffering) {
+                this.playerVelocity.x = 0;
             };
-            if (input.up.isDown) {
+            
+            if (upPressed) {
                 this.playerVelocity.y -= this.acceleration;
-            }; 
-            if (input.down.isDown) {
+            } else if (downPressed) {
                 this.playerVelocity.y += this.acceleration;
-            };
-            if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x > 0) {
-                speed += 0.1;
-                this.flipX = true;
-            };
-            if (this.isStrafing === true && !this.isRolling && !this.isDodging && this.playerVelocity.x < 0) {
-                speed -= 0.1;    
-                this.flipX = false;
-            };
-            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.horizontal()) {
-                this.playerVelocity.x = 0;
-            };
-            if (!suffering && this.playerVelocity.x !== 0 && !this.scene.hud.horizontal()) {
-                this.playerVelocity.x = 0;
-            };
-            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.vertical()) {
+            } else if (!suffering) {
                 this.playerVelocity.y = 0;
             };
-            if (!suffering && this.playerVelocity.y !== 0 && !this.scene.hud.vertical()) {
-                this.playerVelocity.y = 0;
+            
+            if (this.isStrafing && !this.isRolling && !this.isDodging) {
+                if (this.playerVelocity.x > 0) {
+                    this.flipX = true;
+                } else if (this.playerVelocity.x < 0) {
+                    this.flipX = false;
+                };
             };
         };
-        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) speed -= 0.35; // 1
-        if (this.isClimbing || this.inWater) speed *= 0.65;
-        this.playerVelocity.limit(speed);
+        
+        let finalSpeed = this.speed;
+        if (this.isAttacking || this.isParrying || this.isPosturing || this.isThrusting || this.isJumping) {
+            finalSpeed -= 0.35;
+        };
+        if (this.isClimbing || this.inWater) {
+            finalSpeed *= 0.65;
+        };
+        
+        this.playerVelocity.limit(finalSpeed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     };
 
     update(dt: number) {
-        this.handleActions();
+        this.handleActionsLookup();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

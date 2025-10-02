@@ -24,7 +24,7 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
             <svg height="5" width="100%" class="tapered-rule mt-2"><polyline points="0,0 200,2.5 0,5"></polyline></svg>
             <p class="center toastBody" style={{ "white-space": "pre-wrap" }}>{alert()?.body}</p>
             <Show when={alert()?.extra}>
-                <button class="highlight toastButton" style={{ "margin-left": "50%", transform: "translateX(-50%)" }} onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
+                <button class="highlight toastButton" style={{ "margin-left": "50%", transform: "translateX(-50%)", "margin-bottom": alert()?.key ? "5%" : "2%" }} onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
             </Show>
             <Show when={alert()?.key}>
                 <button class="highlight toastButton" style={{ "margin-left": "50%", transform: "translateX(-50%)" }} onClick={() => performAction(alert()?.key as string)}>{alert()?.key}</button>

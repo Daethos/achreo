@@ -205,18 +205,6 @@ export class Gauntlet extends Phaser.Scene {
         this.countdown.setOrigin(0.5);
         this.countdown.setVisible(false);
 
-        this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys("W,UP"),
-            down: this?.input?.keyboard?.addKeys("S,DOWN"),
-            left: this?.input?.keyboard?.addKeys("A,LEFT"),
-            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
-            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
-            strafe: this?.input?.keyboard?.addKeys("E,Q"),
-            shift: this?.input?.keyboard?.addKeys("SHIFT"),
-            firewater: this?.input?.keyboard?.addKeys("T"),
-            tab: this?.input?.keyboard?.addKeys("TAB"),
-            escape: this?.input?.keyboard?.addKeys("ESC"),
-        };
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -588,7 +576,7 @@ export class Gauntlet extends Phaser.Scene {
         const level = Math.min((this.player.ascean.level % 2 === 0 
             ? this.player.ascean.level 
             : this.player.ascean.level + 1), 10);
-        const range = [LEVEL_SELECTOR[level as keyof typeof LEVEL_SELECTOR].prev, level, LEVEL_SELECTOR[level as keyof typeof LEVEL_SELECTOR].next];
+        const range = [LEVEL_SELECTOR[level].prev, level]; // , LEVEL_SELECTOR[level].next
         const masteries = ["constitution", "strength", "agility", "achre", "caeren", "kyosir"];
         const enemies = [];
         for (let i = 0; i < this.gauntlet.opponents; ++i) {

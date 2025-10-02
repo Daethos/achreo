@@ -14,18 +14,18 @@ const PLAYING = "PLAYING";
 const SUCCESS = "SUCCESS";
 const FAILURE = "FAILURE";
 
-const LOCKPICK = {
-    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 480, PLAYER: 2, DURATION: 32, INTENSITY: 0.002, NEXT: "Medium" },
-    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 420, PLAYER: 3, DURATION: 32, INTENSITY: 0.00175, NEXT: "Hard" },
-    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, PLAYER: 4, DURATION: 32, INTENSITY: 0.0015, NEXT: "Master" },
-    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, PLAYER: 5, DURATION: 32, INTENSITY: 0.00125, NEXT: "Legendary" },
-    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, PLAYER: 10, DURATION: 32, INTENSITY: 0.001, NEXT: "Easy" },
+const LOCKPICK: {[key:string]: any} = {
+    Easy: { DIFFICULTY: "Easy", HEALTH: 10, SIZE: 40, DURABILITY: 0.05, ROTATION: 480, TUMBLERS: 2, PLAYER: 2, DURATION: 32, RESET_ALL: false, INTENSITY: 0.002, NEXT: "Medium" },
+    Medium: { DIFFICULTY: "Medium", HEALTH: 20, SIZE: 25, DURABILITY: 0.1, ROTATION: 420, TUMBLERS: 3, PLAYER: 3, DURATION: 32, RESET_ALL: false, INTENSITY: 0.00175, NEXT: "Hard" },
+    Hard: { DIFFICULTY: "Hard", HEALTH: 30, SIZE: 15, DURABILITY: 0.15, ROTATION: 360, TUMBLERS: 4, PLAYER: 4, DURATION: 32, RESET_ALL: true, INTENSITY: 0.0015, NEXT: "Master" },
+    Master: { DIFFICULTY: "Master", HEALTH: 50, SIZE: 10, DURABILITY: 0.2, ROTATION: 300, TUMBLERS: 4, PLAYER: 5, DURATION: 32, RESET_ALL: true, INTENSITY: 0.00125, NEXT: "Legendary" },
+    Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, TUMBLERS: 5, PLAYER: 10, DURATION: 32, RESET_ALL: true, INTENSITY: 0.001, NEXT: "Easy" },
 };
 
 export default function Lockpicking({ ascean, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; lockpick: Accessor<{id: string; interacting: boolean; type: string;}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
     const [angle, setAngle] = createSignal(0); // Lockpick rotation (0-360°)
     const [tension, setTension] = createSignal(115); // Wrench rotation (0-360°)
-    const [lockDifficulty, setLockDifficulty] = createSignal(LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK] || LOCKPICK["Easy"]); // Easy/medium/hard
+    const [lockDifficulty, setLockDifficulty] = createSignal(LOCKPICK[settings()?.lockpick?.difficulty] || LOCKPICK["Easy"]); // Easy/medium/hard
     const [gameStatus, setGameStatus] = createSignal(PLAYING);
     const [sweetSpotStart, setSweetSpotStart] = createSignal<number>(0);
     const [sweetSpotEnd, setSweetSpotEnd] = createSignal<number>(0);
@@ -37,12 +37,16 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     const [totalRotation, setTotalRotation] = createSignal(0); // Tracks cumulative rotation
     const [pickDurability, setPickDurability] = createSignal(100); // 100% = new pick
     const [activeTouch, setActiveTouch] = createSignal<"pick" | "wrench" | undefined>(undefined);
+    const [tumblers, setTumblers] = createSignal<{ current: number; total: number; }>({ current: 0, total: lockDifficulty().TUMBLERS });
+    const [currentTumblerIndex, setCurrentTumblerIndex] = createSignal(0);
+    const [setTumblerPositions, setSetTumblerPositions] = createSignal<number[]>([]);
+    const [tumblerDown, setTumblerDown] = createSignal<boolean>(false);
 
-    createEffect(() => setLockDifficulty(LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK] || LOCKPICK["Easy"]));
+    createEffect(() => setLockDifficulty(LOCKPICK[settings()?.lockpick?.difficulty] || LOCKPICK["Easy"]));
 
     async function changeDifficulty() {
         try {
-            const difficulty = LOCKPICK[settings()?.lockpick?.difficulty as keyof typeof LOCKPICK || "Easy"].NEXT;
+            const difficulty = LOCKPICK[settings()?.lockpick?.difficulty || "Easy"].NEXT;
             const newSettings = { ...settings(), lockpick: { ...settings()?.lockpick, difficulty } };
             EventBus.emit("save-settings", newSettings);
             setTimeout(() => resetLock(), 500);
@@ -61,6 +65,9 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         if (pick) setPickDurability(100);
         setTotalRotation(0);
         setGameStatus(PLAYING);
+        setTumblers({current:0, total:lockDifficulty().TUMBLERS});
+        setSetTumblerPositions([]);
+        setCurrentTumblerIndex(0);
     };
 
     const breakPick = () => {
@@ -83,36 +90,103 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         }, 1000);
     };
 
+    // const checkSweetSpot = () => {
+    //     const currentAngle = angle();
+    //     if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
+
+    //         setTumblers((prev) => {
+    //             prev.current = prev.current + 1;
+    //             return prev;
+    //         });
+
+    //         if (tumblers().current < tumblers().total) {
+    //             // Set new Tumbler
+    //         };
+
+    //         success.play();
+    //         vibrate([500, 250, 500]);
+    //         setGameStatus(SUCCESS); // Lock opened!
+    //         setTimeout(() => {
+    //             if (lockpick().type === "treasure") {
+    //                 EventBus.emit("open-chest", lockpick().id);
+    //             } else if (lockpick().type === "door") {
+    //                 EventBus.emit("open-door", lockpick().id);
+    //             };
+    //             setLockpicking(false);
+    //         }, 1000);
+    //     } else {
+    //         setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
+    //         load.play();
+    //         vibrate(1000);
+    //         setTension(115);
+    //         if (pickDurability() <= 0) {
+    //             setBroke(true);
+    //             setTimeout(() => {
+    //                 setBroke(false);
+    //                 setLockpicks(prev => Math.max(prev - 1, 0));
+    //                 if (lockpicks() > 0) {
+    //                     setPickDurability(100);
+    //                     return;
+    //                 };
+    //                 setGameStatus(FAILURE);
+    //             }, 1000)
+    //         };
+    //     };
+    // };
+
     const checkSweetSpot = () => {
         const currentAngle = angle();
+        const currentTumbler = currentTumblerIndex();
+        
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
+            // Successfully set this tumbler
             success.play();
-            vibrate([500, 250, 500]);
-            setGameStatus(SUCCESS); // Lock opened!
-            setTimeout(() => {
-                if (lockpick().type === "treasure") {
-                    EventBus.emit("open-chest", lockpick().id);
-                } else if (lockpick().type === "door") {
-                    EventBus.emit("open-door", lockpick().id);
-                };
-                setLockpicking(false);
-            }, 1000);
+            vibrate([200, 100, 200]);
+            
+            // Store the position of this tumbler
+            setSetTumblerPositions(prev => [...prev, currentAngle]);
+            
+            const nextTumbler = currentTumbler + 1;
+            
+            if (nextTumbler < tumblers().total) {
+                // More tumblers to go - generate new sweet spot
+                setCurrentTumblerIndex(nextTumbler);
+                generateNewSweetSpot();
+                
+                // Partial wrench turn (10-20 degrees) to show progress
+                // setTension(prev => Math.min(prev + 20, 115));
+                
+                // Reset pick to neutral position
+                setTotalRotation(0);
+                setTumblerDown(true);
+                setTimeout(() => setTumblerDown(false), 2000);
+            } else {
+                setGameStatus(SUCCESS);
+                setTimeout(() => {
+                    if (lockpick().type === "treasure") {
+                        EventBus.emit("open-chest", lockpick().id);
+                    } else if (lockpick().type === "door") {
+                        EventBus.emit("open-door", lockpick().id);
+                    }
+                    setLockpicking(false);
+                }, 1000);
+            };
         } else {
+            // Failed - reset ALL tumblers or just current one depending on difficulty
+            if (lockDifficulty().RESET_ALL) {
+                // Hard mode: reset everything
+                setCurrentTumblerIndex(0);
+                setSetTumblerPositions([]);
+                setTension(115);
+                setAngle(0);
+            };
+            
             setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
             load.play();
             vibrate(1000);
-            setTension(115);
+            
             if (pickDurability() <= 0) {
-                setBroke(true);
-                setTimeout(() => {
-                    setBroke(false);
-                    setLockpicks(prev => Math.max(prev - 1, 0));
-                    if (lockpicks() > 0) {
-                        setPickDurability(100);
-                        return;
-                    };
-                    setGameStatus(FAILURE);
-                }, 1000)
+                breakPick();
             };
         };
     };
@@ -127,12 +201,12 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
 
         const normalizedDistance = Math.min(distance / (sweetSpotWidth / 2), 1); // Normalize distance to 0-1 range (0 = center, 1 = edge of sweet spot)
 
-        if (distance * 1.8 < sweetSpotWidth) {
+        if (distance * 2 < sweetSpotWidth) {
             const duration = Math.max(24, (1 - normalizedDistance) * lockDifficulty().DURATION);
-            console.log({ distance, sweetSpotWidth, duration, intensity: lockDifficulty().INTENSITY });
             screenShake(instance?.scene as Play, duration, lockDifficulty().INTENSITY); // Tweak multipliers
         };
     };
+
     function isInSweetSpot(): boolean {
         const currentAngle = angle();
         const isBetween = (angle: number, start: number, end: number) => 
@@ -140,6 +214,28 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             ? angle >= start && angle <= end
             : angle >= start || angle <= end;
         return isBetween(currentAngle, sweetSpotStart(), sweetSpotEnd());
+    };
+
+    function generateNewSweetSpot() {
+        // Make sure new sweet spot doesn't overlap with already-set tumblers
+        const size = lockDifficulty().SIZE + ((ascean().achre + ascean().agility) / lockDifficulty().PLAYER);
+        let newStart, newEnd;
+        let attempts = 0;
+        
+        do {
+            newStart = Math.floor(Math.random() * (360 - size)); // Math.random() * 360;
+            newEnd = newStart + size;
+            attempts++;
+        } while (overlapsWithSetTumblers(newStart, newEnd) && attempts < 20);
+        
+        setSweetSpotStart(newStart);
+        setSweetSpotEnd(newEnd);
+    };
+
+    function overlapsWithSetTumblers(start: number, end: number): boolean {
+        return setTumblerPositions().some(pos => {
+            return pos >= start && pos <= end;
+        });
     };
 
     const handlePickTouch = (e: TouchEvent) => {
@@ -174,9 +270,8 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         const touchY = e.touches[0].clientY;
         const ang = Math.atan2(touchY - centerY, touchX - centerX) * (180 / Math.PI);
         const newAngle = (ang + 360) % 360;
-
+        // console.log({ newAngle });
         if (activeTouch() === "pick") {
-            // if (!isInSweetSpot() && startTouchX() !== touchX && startTouchY() !== touchY) setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY, 0));
             setAngle(newAngle);
             setTotalRotation(prev => prev + 1);
             checkDistance();
@@ -185,46 +280,60 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             };
         } else if (activeTouch() === "wrench") {
             if (!isInSweetSpot()) {
-                setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY, 0));
+                setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY * 2, 0)); // Penalty for forcing wrench
+                vibrate(32);
+                setTension(115 + (Math.random() * 2) * (Math.random() > 0.5 ? 1 : -1));
+                if (pickDurability() === 0) {
+                    breakPick();
+                };
+                return; // Don't allow wrench movement
             };
-            setTension(newAngle);
-            vibrate(16); // totalRotation() > lockDifficulty().ROTATION * 0.5 && 
-
+            
+            const maxTension = 115 + (currentTumblerIndex() * 20 + 20); // Wrench turns further with each tumbler
+            // console.log({ maxTension });
+            setTension(Math.max(newAngle, 110));
+            vibrate(16);
+            
             if (pickDurability() === 0) {
                 breakPick();
             };
-
-            if (tension() >= 205 || tension() <= 25) {
+            
+            // Check if wrench turned far enough to lock this tumbler
+            if (tension() >= maxTension) {
                 checkSweetSpot();
                 handleTouchEnd();
-                return;
             };
         };
     };
 
     const handleTouchEnd = () => {
         setRumble(false);
-        setTension(115);
+        // setTension(115);
         picking.pause();
         setActiveTouch(undefined);
     };
 
     const getDifficultyColor = (difficulty: string) => {
-        const colors = {
+        const colors: {[key:string]: string} = {
             Easy: "#4CAF50",
             Medium: "#FFC107",
             Hard: "#FF9800",
             Master: "#F44336",
             Legendary: "#9C27B0",
         };
-        return colors[difficulty as keyof typeof colors];
+        return colors[difficulty];
     };
     
     onMount(() => resetLock());
 
     return (
-        <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "25vw", top: "1vh", height: "95vh", width: "50vw", "--glow-color": "teal", "z-index": 99 }}>
+        <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "20vw", top: "1vh", height: "95vh", width: "60vw", "--glow-color": "teal", "z-index": 99 }}>
         <h1 onClick={changeDifficulty} style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
+        <Show when={tumblerDown()}>
+            <div class="modal" style={{ background: "rgba(0,0,0,0.75)" }}>
+                <h1 class="superCenter animate" style={{ top: "20%", "font-size":"4rem", "font-family":"Centaur" }}>Tumbler Set</h1>
+            </div>
+        </Show>
         <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>
@@ -255,14 +364,13 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p>
         </div> */}
         <p style={{ margin: "0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
+        <p style={{ margin: "0" }}>Tumblers: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{currentTumblerIndex() + 1} / {tumblers().total}</span></p>
         <Show when={gameStatus() !== PLAYING}>
             <div class="result modal">
                 <div class="border superCenter" style={{ height: "50vh", width: "40vw", "z-index": 2 }}>
                     <div class="center creature-heading wrap">
                     <h1 style={{ "margin-top": "10%" }}>{gameStatus() === SUCCESS ? "The Lock Opened!" : "Your Lockpick(s) Broke!"}</h1><br />
                     {/* <p>A door would now be open, or perhaps your spoils of treasure if you were successful at lockpicking. Still a work in progress!</p> */}
-                    {/* <p class="gold">"[Item] [Item] [Item] 1g 50s"</p> */}
-                    {/* <div style={font("0.5em")}>[This is automatically saved to your character.]</div> */}
                     <Show when={gameStatus() === FAILURE}>
                         <p>Nice try {ascean().name}, but not everyone is capable of such deft precision.</p>
                         <button class="highlight verticalBottom" onClick={() => resetLock(true)}>Try Again</button> <br />
@@ -292,7 +400,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         {/* <Show when={lockpicks() > 0}>
             <button class="highlight cornerBL" onClick={checkSweetSpot} style={{ color: "green" }}>Tap</button>
         </Show> */}
-        <button class="highlight cornerTL" onClick={() => setShowManual(true)} style={{ color: "green" }}>Manual</button>
+        <button class="highlight cornerTL" onClick={() => setShowManual(true)}>Manual</button>
         <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>X</button>
         <button class="highlight cornerTR" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>
         </div>

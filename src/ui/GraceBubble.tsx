@@ -61,6 +61,6 @@ export default function GraceBubble({ grace, show, setShow, settings }: {grace:A
     return <div class="graceBubble" onClick={() => setShow(!show())}>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, "z-index": -1, "background": "conic-gradient(#000, purple, #000)", height: `${usedGrace() + gracePercentage()}%` }}></div>
         <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, "z-index": -1, "background": "conic-gradient(blue, aqua, blue)", height: `${gracePercentage()}%` }}></div>
-        <p class="grace" style={{ "color": "#fdf6d8","font-weight": "bold", "text-shadow": "0.1em 0.1em 0.1em #000",animation: "flicker 1s ease", "--glow-color": "#fdf6d8", ...setText(settings().grace) }}>{settings().grace === "NUMBER" ? newGrace() : settings().grace === "PERCENTAGE" ? `${Math.round(gracePercentage())}` : ""}{ settings().grace === "PERCENTAGE" && <span class="super" style={{ "font-size": "0.5em" }}>%</span>}</p>
+        <p class="grace" style={{ "color": "#fdf6d8","font-weight": "bold", "text-shadow": "0.1em 0.1em 0.1em #000",animation: "flicker 1s ease", "--glow-color": "#fdf6d8", ...setText(settings().grace), "font-family":"Centaur" }}>{settings().grace === "NUMBER" ? newGrace() : settings().grace === "PERCENTAGE" ? `${Math.round(gracePercentage())}` : ""}{ settings().grace === "PERCENTAGE" && <span class="super" style={{ "font-size": "0.5em" }}>%</span>}</p>
     </div>;
 };

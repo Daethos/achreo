@@ -28,6 +28,7 @@ type TalentSchema = {
     berserk: Talent;
     blind: Talent;
     blink: Talent;
+    charm: Talent;
     chiomic: Talent;
     caerenesis: Talent;
     chiomism: Talent;
@@ -52,6 +53,7 @@ type TalentSchema = {
     kyrisian: Talent;
     kyrnaicism: Talent;
     leap: Talent;
+    lightning: Talent;
     likyr: Talent;
     maiereth: Talent;
     malice: Talent;
@@ -120,6 +122,7 @@ const initTalentSchema: TalentSchema = {
         berserk: initTalent,
         blind: initTalent,
         blink: initTalent,
+        charm: initTalent,
         chiomic: initTalent,
         caerenesis: initTalent,
         chiomism: initTalent,
@@ -144,6 +147,7 @@ const initTalentSchema: TalentSchema = {
         kyrisian: initTalent,
         kyrnaicism: initTalent,
         leap: initTalent,
+        lightning: initTalent,
         likyr: initTalent,
         maiereth: initTalent,
         malice: initTalent,

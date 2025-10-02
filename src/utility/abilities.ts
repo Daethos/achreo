@@ -1,3 +1,35 @@
+import { Accessor } from "solid-js";
+import Settings from "../models/settings";
+import { EventBus } from "../game/EventBus";
+import Ascean from "../models/ascean";
+
+export function addStance(settings: Accessor<Settings>, stance: "caerenic" | "stealth") {
+    let newSettings = JSON.parse(JSON.stringify(settings()));
+    if (newSettings.stances[stance]) return;
+
+    newSettings.stances[stance] = true;
+
+    setTimeout(() => {
+        EventBus.emit("save-this-setting", { stances: newSettings.stances });
+        EventBus.emit("add-stance", stance);    
+    }, 1000);
+};
+
+export function addSpecial(ascean: Accessor<Ascean>, settings: Accessor<Settings>, newSpecial: string) {
+    let totalSpecials = JSON.parse(JSON.stringify(settings().totalSpecials));
+    if (totalSpecials.includes(newSpecial)) return;
+
+    totalSpecials.push(newSpecial);
+
+    let specials = JSON.parse(JSON.stringify(settings().specials));
+    if (specials.length < 5 && specials.length < ascean().level) specials.push(newSpecial);
+
+    setTimeout(() => {
+        EventBus.emit("save-this-setting", { totalSpecials, specials });
+        EventBus.emit("reorder-buttons", { list: specials, type: "special" }); 
+    }, 1000);
+};
+
 export const ACTIONS = Object.freeze(["Attack", "Posture", "Roll", "Dodge", "Jump", "Parry", "Thrust"]);
 export const SPECIALS = [
     "Invoke",
@@ -5,21 +37,21 @@ export const SPECIALS = [
     "Absorb",
     "Achire",
     "Astrave",
-    "Astrication",
+    "Astrication", // Trait
     "Arc",
-    "Berserk", 
-    "Blind", 
+    "Berserk", // Trait
+    "Blind", // Trait
     "Blink",
     "Chiomic",
     "Chiomism",
-    "Caerenesis",
+    "Caerenesis", // Trait
     "Confuse",
-    "Conviction",
+    "Conviction", // Trait
     "Desperation",
-    "Devour",
+    "Devour", // Trait
     "Disease",
     "Dispel",
-    "Endurance",
+    "Endurance", // Trait
     "Envelop",
     "Fear",
     "Freeze",
@@ -29,19 +61,13 @@ export const SPECIALS = [
     "Hook",
     "Howl",
     "Ilirech",
-    "Impermanence",
+    "Impermanence", // Trait
     "Kynisos",
     "Kyrisian",
     "Kyrnaicism",
     "Leap",
+    "Lightning",
     "Likyr",
-
-    // "Luckout (Arbituous)",
-    // "Luckout (Chiomic)",
-    // "Luckout (Kyr'naic)",
-    // "Luckout (Lilosian)",
-    // "Luckout (Tshaeral)",
-
     "Maiereth",
     "Malice",
     "Mark",
@@ -52,16 +78,6 @@ export const SPECIALS = [
     "Mystify",
     "Netherswap",
     "Paralyze",
-
-    // "Persuasion (Arbituous)",
-    // "Persuasion (Chiomic)",
-    // "Persuasion (Fyeran)",
-    // "Persuasion (Kyr'naic)",
-    // "Persuasion (Ilian)",
-    // "Persuasion (Lilosian)",
-    // "Persuasion (Shaorahi)",
-    // "Persuasion (Tshaeral)",
-    
     "Polymorph",
     "Protect",
     "Pursuit",
@@ -75,7 +91,7 @@ export const SPECIALS = [
     "Rush",
     "Sacrifice",
     "Scream",
-    "Seer",
+    "Seer", // Trait
     "Shadow",
     "Shield",
     "Shimmer",
@@ -83,14 +99,14 @@ export const SPECIALS = [
     "Slow",
     "Snare",
     "Sprint",
-    "Stimulate",
+    "Stimulate", // Trait
     "Storm",
     "Suture",
     "Tether",
     "Ward",
     "Writhe",
 ]; // "Charm", "Shroud"
-export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
+export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume, Mark, Recall
     "constitution": [
         "Invoke",
         "Consume",
@@ -103,9 +119,10 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         "Dispel",
         "Healing",
         "Ilirech",
-        "Kyrnaicism", 
+        "Kyrnaicism",
         "Kynisos",
         "Kyrisian",
+        "Lightning",
         "Likyr",
         "Mend",
         "Paralyze",
@@ -181,6 +198,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         "Frost",
         "Fyerus",
         "Healing",
+        "Lightning",
         "Moderate",
         "Multifarious",
         "Netherswap",
@@ -234,6 +252,7 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         "Ilirech",
         "Kynisos",
         "Kyrnaicism",
+        "Lightning",
         "Malice",
         "Mystify",
         "Netherswap",
@@ -243,14 +262,22 @@ export const SPECIAL = { // 14 Each + Invoke, Consume, Mark, Recall
         "Suture"
     ],
 };
-export const STARTING_SPECIALS = {
-    "constitution": ["Healing", "Kyrnaicism", "Likyr", "Renewal", "Shield"],
-    "strength": ["Arc", "Desperation", "Howl", "Leap", "Storm"],
-    "agility": ["Pursuit", "Recover", "Rush", "Shimmer", "Sprint"],
-    "achre": ["Absorb", "Achire", "Blink", "Frost", "Polymorph"],
-    "caeren": ["Fear", "Maiereth", "Mend", "Scream", "Suture"],
-    "kyosir": ["Chiomism", "Confuse", "Malice", "Reconstitute", "Sacrifice"],
+
+export const STARTING_SPECIALS: {[key:string]: string[]} = {
+    "constitution": ["Healing"],
+    // "constitution": ["Healing", "Kyrnaicism", "Likyr", "Renewal", "Shield"],
+    "strength": ["Desperation"],
+    // "strength": ["Arc", "Desperation", "Howl", "Leap", "Storm"],
+    "agility": ["Recover"],
+    // "agility": ["Pursuit", "Recover", "Rush", "Shimmer", "Sprint"],
+    "achre": ["Absorb"],
+    // "achre": ["Absorb", "Achire", "Blink", "Frost", "Polymorph"],
+    "caeren": ["Mend"],
+    // "caeren": ["Fear", "Maiereth", "Mend", "Scream", "Suture"],
+    "kyosir": ["Reconstitute"],
+    // "kyosir": ["Chiomism", "Confuse", "Malice", "Reconstitute", "Sacrifice"],
 };
+
 export const STARTING_MASTERY_UI = {
     "constitution": {
         "leftJoystick": {
@@ -361,19 +388,24 @@ export const STARTING_MASTERY_UI = {
         }
     },
 };
-export const TRAIT_SPECIALS = {
+
+export const TRAIT_SPECIALS: {[key:string]: string[]} = {
     "Astral": ["Astrication", "Devour"],
-    "Cambiren": ["Caerenesis"],
+    "Cambiren": ["Astrication", "Caerenesis"],
+    "Chiomic": ["Devour"],
     "Fyeran": ["Caerenesis", "Seer"],
-    "Ilian": ["Blind"],
-    "Kyn'gian": ["Endurance"],
-    "Sedyrist" : ["Stimulate"],
+    "Ilian": ["Blind", "Devour"],
+    "Kyn'gian": ["Conviction", "Endurance"],
+    "Kyr'naic": ["Stimulate"],
+    "Ma'anreic": ["Blind"],
+    "Sedyrist" : ["Astrication", "Stimulate"],
     "Se'van": ["Berserk", "Seer"],
     "Shaorahi": ["Caerenesis", "Conviction"],
-    "Shrygeian": ["Impermanence", "Devour"],
-    "Tshaeral": ["Devour"],
+    "Shrygeian": ["Impermanence", "Charm"],
+    "Tshaeral": ["Berserk", "Devour"],
 };
-export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour"];
+
+export const TRAITS = ["Astrication", "Caerenesis", "Seer", "Blind", "Endurance", "Stimulate", "Berserk", "Conviction", "Impermanence", "Devour", "Charm"];
 
 export const BOW = "bow";
 export const NOBOW = "noBow";
@@ -396,6 +428,7 @@ export const ARC = "Arc";
 export const BERSERK = "Berserk";
 export const BLIND = "Blind";
 export const BLINK = "Blink";
+export const CHARM = "Charm";
 export const CHIOMIC = "Chiomic";
 export const CHIOMISM = "Chiomism";
 export const CAERENESIS = "Caerenesis";
@@ -420,6 +453,7 @@ export const KYNISOS = "Kynisos";
 export const KYRISIAN = "Kyrisian";
 export const KYRNAICISM = "Kyrnaicism";
 export const LEAP = "Leap";
+export const LIGHTNING = "Lightning";
 export const LIKYR = "Likyr";
 export const MAIERETH = "Maiereth";
 export const MALICE = "Malice";

@@ -1363,7 +1363,7 @@ export default class PlayerMachine {
             EventBus.emit(PARTY_COMBAT_TEXT, {
                 text: `${this.player.ascean.name} rips into this world with Ilian tendrils entwining.`
             });
-            this.chiomism(this.player.spellTarget, (100 + this.player.computerCombatSheet.computer?.[this.player.ascean.mastery]));
+            this.chiomism(this.player.spellTarget, (25 + this.player.computerCombatSheet.computer?.[this.player.ascean.mastery]));
             this.player.castingSuccess = false;
             this.player.enemySound("fire", true);
         };

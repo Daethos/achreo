@@ -10,6 +10,32 @@ import { DialogTree } from "./Dialog";
 import { evaluateDeity } from "../utility/deities";
 import Statistics from "../utility/statistics";
 import { Reputation } from "../utility/player";
+import { addSpecial, addStance } from "../utility/abilities";
+import Settings from "../models/settings";
+
+// enum DEITIES {
+//     DAETHOS,
+//     ACHREO,
+//     "AHN'VE",
+//     ASTRA,
+//     CAMBIRE,
+//     CHIOMYR,
+//     FYER,
+//     ILIOS,
+//     "KYN'GI",
+//     KYRISOS,
+//     "KYR'NA",
+//     LILOS,
+//     "MA'ANRE",
+//     NYROLUS,
+//     "QUOR'EI",
+//     RAHVRE,
+//     "SE'DYRO",
+//     "SE'VAS",
+//     SENARI,
+//     SHRYGEI,
+//     TSHAER
+// };
 
 const colors = {
     constitution: "#fdf6d8",
@@ -59,10 +85,11 @@ interface DeityProps {
     combat: Accessor<Combat>;
     game: Accessor<GameState>;
     reputation: Accessor<Reputation>;
+    settings: Accessor<Settings>;
     statistics: Accessor<Statistics>;
 };
 
-export default function Deity({ ascean, combat, game, reputation, statistics }: DeityProps) {
+export default function Deity({ ascean, combat, game, reputation, settings, statistics }: DeityProps) {
     const [playerResponses, setPlayerResponses] = createSignal<string[]>([]);
     const [keywordResponses, setKeywordResponses] = createSignal<string[]>([]);
     const [dialogNodes, setDialogNodes] = createSignal<DialogNode[]>([]);
@@ -116,6 +143,8 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
                 EventBus.emit("update-pause", false);
                 EventBus.emit("update-small-hud");
             };
+            addStance(settings, "caerenic");
+            addSpecial(ascean, settings, "Consume");
         } catch (err: any) {
             console.log(err, "Error Resolving Deity Encounter");
         };
@@ -134,7 +163,7 @@ export default function Deity({ ascean, combat, game, reputation, statistics }: 
         return highestFaith[0];
     };
     return <div class="modal" style={{ background: "rgba(0, 0, 0, 1)" }}>
-        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? "superfade-in" : "fade-out"} src={ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.jpg" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.jpg" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt={ascean().faith} id={"godBorder-"+ascean().mastery} />
+        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? "superfade-in" : "fade-out"} src={ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.png" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.png" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt={ascean().faith} id={"godBorder-"+ascean().mastery} />
         <div class="deity-box deity-type">
             <div class="wrap" style={{ width: "100%" }}>
             <br />

@@ -2,6 +2,7 @@ import { randomFloatFromInterval } from "../../models/equipment";
 import { Combat } from "../../stores/combat";
 import { masteryNumber } from "../../utility/styling";
 import { Play } from "../main";
+import ChainLightning from "./ChainLightning";
 import { HitProfile, HitProfiles } from "./HitProfiles";
 // import ParticlesAlongBounds from 'phaser3-rex-plugins/plugins/particlesalongbounds.js';
 
@@ -67,6 +68,7 @@ export class HitFeedbackSystem {
     private trail: Phaser.GameObjects.Particles.ParticleEmitter;
     private trauma: number = 0;
     public shakeTimer: Phaser.Time.TimerEvent | undefined = undefined;
+    public chainlightning: ChainLightning;
     // private trailEvent: Phaser.Time.TimerEvent | undefined;
     // private caerenic : Phaser.GameObjects.Particles.ParticleEmitter;
 
@@ -74,6 +76,7 @@ export class HitFeedbackSystem {
         this.scene = scene;
         this.profiles = HitProfiles;
         this.createParticles();
+        this.chainlightning = new ChainLightning(scene);
     };
 
     play(context: HitFeedbackContext): void {

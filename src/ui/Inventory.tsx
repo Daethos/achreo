@@ -131,7 +131,7 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
 
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
-            "border": `0.15em solid ${getRarityColor(rarity)}`,
+            "border": `thick ridge ${getRarityColor(rarity)}`,
             "background-color": getBackgroundStyle(), 
         };
     };
@@ -149,6 +149,6 @@ export default function Inventory({ ascean, inventory, setInventoryType, setRing
         ontouchend={(e) => touchEnd(e)}
         ontouchmove={(e) => touchMove(e, inventory, index())}
         >
-        <img src={inventory?.imgUrl} alt={inventory?.name} style={{ "pointer-events":"none" }} />
+        <img src={inventory?.imgUrl} alt={inventory?.name} style={{ "pointer-events":"none", "padding-top": "5%" }} />
     </div>;
 };

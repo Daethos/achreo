@@ -184,6 +184,32 @@ export default class Equipment {
     [key: string]: any;
 };
 
+export const initEquipment: Equipment = new Equipment({
+    _id: "",
+    name: "Moontear",
+    type: "Dagger",
+    rarity: "Common",
+    grip: "One Hand",
+    attackType: "Physical",
+    damageType: ["Pierce"],
+    physicalDamage: 1,
+    magicalDamage: 1,
+    physicalPenetration: 0,
+    magicalPenetration: 1,
+    criticalChance: 1,
+    criticalDamage: 1,
+    dodge: 0,
+    roll: 3,
+    constitution: 0,
+    strength: 0,
+    agility: 2,
+    achre: 2,
+    caeren: 0,
+    kyosir: 2,
+    influences: ["Ma'anre"],
+    imgUrl: "../assets/images/maanre-dagger.png"
+});
+
 async function create(data: any): Promise<Equipment> {
     const equipment = new Equipment(data);
     await mutate([equipment], equipment?.rarity);

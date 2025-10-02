@@ -1,3 +1,4 @@
+import { HitLocation, HitLocationResult } from "../game/phaser/HitDetection";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { CombatAttributes, Defense } from "../utility/combat";
@@ -24,6 +25,7 @@ export interface ComputerCombat {
     potentialComputerDamage: number;
     realizedComputerDamage: number;
     computerDamaged: boolean;
+    computerHitLocation: HitLocationResult;
 
     criticalSuccess: boolean;
     parrySuccess: boolean;
@@ -56,6 +58,7 @@ export interface ComputerCombat {
     potentialComputerEnemyDamage: number;
     realizedComputerEnemyDamage: number;
     computerEnemyDamaged: boolean;
+    computerEnemyHitLocation: HitLocationResult;
 
     computerEnemyCriticalSuccess: boolean;
     computerEnemyParrySuccess: boolean;
@@ -106,6 +109,7 @@ export const initComputerCombat: ComputerCombat = {
     potentialComputerDamage: 0,
     realizedComputerDamage: 0,
     computerDamaged: false,
+    computerHitLocation: { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } },
 
     criticalSuccess: false,
     parrySuccess: false,
@@ -138,6 +142,7 @@ export const initComputerCombat: ComputerCombat = {
     potentialComputerEnemyDamage: 0,
     realizedComputerEnemyDamage: 0,
     computerEnemyDamaged: false,
+    computerEnemyHitLocation: { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } },
 
     computerEnemyCriticalSuccess: false,
     computerEnemyParrySuccess: false,

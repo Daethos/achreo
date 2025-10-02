@@ -9,6 +9,7 @@ import { Play } from "../main";
 import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { COLORS } from "../phaser/AoE";
+import { hitLocationDetector } from "../phaser/HitDetection";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
@@ -147,6 +148,9 @@ export class Particle {
                             if (!isEnemy) return;
                         };
                         
+                        const hitResult = hitLocationDetector.detectParticleLocation(sensor, target);
+                        // console.log(`${attacker.ascean.name} hit ${target.ascean.name} in the ${hitResult.location}`);
+                        attacker.lastHitLocation = hitResult;
                         attacker.attackedTarget = target;
                         attacker.particleEffect.success = true;
                         return;

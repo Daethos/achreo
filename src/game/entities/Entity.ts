@@ -22,6 +22,7 @@ import { ENTITY_FLAGS, EntityFlag } from "../phaser/Collision";
 import { Gauntlet } from "../scenes/Gauntlet";
 import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abilities";
 import { PLAYER } from "../../utility/player";
+import { hitLocationDetector, HitLocationResult } from "../phaser/HitDetection";
 
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
@@ -62,7 +63,7 @@ export const FRAMES = {
 export type ENEMY = {id:string; threat:number};
 const ACTION = "action";
 const COMPUTER_ACTION = "computerAction";
-const DISTANCE_CLEAR = 51;
+// const DISTANCE_CLEAR = 51;
 export const ENEMY_SWING_TIME = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
 export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
 type Force = {[key:string]:number;};
@@ -93,6 +94,7 @@ const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
+var entityCount = 0;
 export default class Entity extends Phaser.Physics.Matter.Sprite {
     declare scene: Play;
     ascean: Ascean;
@@ -281,6 +283,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     glowShieldTween: any;
     glowTalent: boolean = false;
     hooking: boolean = false;
+    lastHitLocation: HitLocationResult;
+    id: number;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -304,6 +308,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     constructor (data: any) {
         let { scene, x, y, texture, frame, depth, name, ascean, health } = data;
         super (scene.matter.world, x, y, texture, frame);
+        this.id = entityCount++;
         this.x += this.width / 2;
         this.y -= this.height / 2;
         this.depth = depth || 2;
@@ -340,9 +345,36 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         ? PLAYER.SPEED.CAERENIC * 1.5
                         : PLAYER.SPEED.CAERENIC 
                 : 0;
+            
+            let stamina = 0;
+            const stamModifier = (item: string) => {
+                switch (item) {
+                    // case "Leather-Cloth":
+                    //     break;
+                    case "Leather-Mail":
+                        stamina += 0.5;
+                        // modifier -= 0.01; // += 0.025;
+                        break;
+                    case "Chain-Mail":
+                        stamina + 1;
+                        // modifier -= 0.02; // += 0.0;
+                        break;
+                    case "Plate-Mail":
+                        stamina += 1.5;
+                        // modifier -= 0.03; // -= 0.025;
+                        break;
+                    default:
+                        break;
+                };
+            };
+            stamModifier(entity.helmet.type);
+            stamModifier(entity.chest.type);
+            stamModifier(entity.legs.type);
+            (this as unknown as Player).staminaModifier += stamina;    
         } else {
             speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
         };
+
         const helmet = entity.helmet.type;
         const chest = entity.chest.type;
         const legs = entity.legs.type;
@@ -352,13 +384,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 // case "Leather-Cloth":
                 //     break;
                 case "Leather-Mail":
-                    modifier -= 0.01; // += 0.025;
+                    modifier -= 0.005; // 0.01; // += 0.025;
                     break;
                 case "Chain-Mail":
-                    modifier -= 0.02; // += 0.0;
+                    modifier -= 0.01; // 0.02; // += 0.0;
                     break;
                 case "Plate-Mail":
-                    modifier -= 0.03; // -= 0.025;
+                    modifier -= 0.015; // 0.03; // -= 0.025;
                     break;
                 default:
                     break;
@@ -619,7 +651,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     getDirection = () => {
-        if (this.scene.frameCount % 6 !== 0) return;
+        if (this.scene.frameCount & 1) return; // % 6 !== 0
         if (this.velocity?.x as number < 0) {
             this.setFlipX(true);
         } else if (this.velocity?.x as number > 0) {
@@ -635,6 +667,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleIdleAnimations = () => {
+        if (this.isCasting || this.isPraying) return;
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -659,6 +692,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     handleTerrain = (): number => (this.isClimbing || this.inWater) ? 0.65 : 1;
 
+    idle = () => this.body?.velocity.x === 0 && this.body?.velocity.y === 0;
     moving = (): boolean => {
         if (!this.body) return false;
         const moved = this.x !== this.lastX || this.y !== this.lastY;
@@ -678,14 +712,13 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.lastY = this.y;
     };
     syncPositions = () => {
-        if (!this.moving() || !(this.scene.frameCount & 1)) return;
+        if (!this.moving()) return; // this.scene.frameCount & 1
         const { x, y } = this;
         if (this.spriteWeapon) this.spriteWeapon.setPosition(x, y);
         if (this.spriteShield) this.spriteShield.setPosition(x, y);
         if (this.healthbar) this.healthbar.update(this);
         if (this.reactiveBubble) this.reactiveBubble.update(x, y);
         if (this.negationBubble) this.negationBubble.update(x, y);
-        // if (this.glowTalent) (this as unknown as Player).caerenesis.setPosition(x, y + 4);
     };
 
     xCheck = () => this.velocity?.x !== 0;
@@ -713,7 +746,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         return total;    
     };
     isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
-    isSuffering = (): boolean => this.isConfused || this.isFeared || this.isParalyzed || this.isPolymorphed || this.isStunned;
+    isSuffering = (): boolean => this.isConfused || this.isFeared || this.isFrozen || this.isParalyzed || this.isPolymorphed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {
         switch (ailment) {
             case "isConfused":
@@ -733,46 +766,56 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     bowDamageType = () => this.currentDamageType === "pierce" || this.currentDamageType === "blunt" ? "arrow" : this.currentDamageType;
 
+    setWeaponHitbox = () => {
+        if (this.flipX) {
+            this.weaponHitbox.setAngle(270);
+        } else {
+            this.weaponHitbox.setAngle(0);
+        };
+        if (this.isRolling) {
+            this.weaponHitbox.x = this.x;
+            this.weaponHitbox.y = this.y + 8;
+        } else {
+            this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
+            this.weaponHitbox.y = this.y;
+        };
+        if (this.velocity?.x as number > 0) {
+            this.weaponHitbox.x += 16;
+        } else if (this.velocity?.x as number < 0) {
+            this.weaponHitbox.x -= 16;
+        };
+        if (this.velocity?.y as number > 0) {
+            this.weaponHitbox.y += 16;
+        } else if (this.velocity?.y as number < 0) {
+            this.weaponHitbox.y -= 16;
+        };
+    };
+
     checkActionSuccess = () => {
-        if (this.name === "player" && !this.isStorming) {
-            if (this.flipX) {
-                this.weaponHitbox.setAngle(270);
-            } else {
-                this.weaponHitbox.setAngle(0);
-            };
-            if (this.isRolling) {
-                this.weaponHitbox.x = this.x;
-                this.weaponHitbox.y = this.y + 8;
-            } else {
-                this.weaponHitbox.x = this.x + (this.flipX ? -16 : 16);
-                this.weaponHitbox.y = this.y;
-            };
-            if (this.velocity?.x as number > 0) {
-                this.weaponHitbox.x += 16;
-            } else if (this.velocity?.x as number < 0) {
-                this.weaponHitbox.x -= 16;
-            };
-            if (this.velocity?.y as number > 0) {
-                this.weaponHitbox.y += 16;
-            } else if (this.velocity?.y as number < 0) {
-                this.weaponHitbox.y -= 16;
-            };
-            if (this.touching.length > 0) {
-                for (let i = 0; i < this.touching.length; i++) {
-                    if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
-                };
-            };
+        if (this.isStorming || !this.touching.length) return;
+        this.setWeaponHitbox();
+        for (let i = 0; i < this.touching.length; i++) {
+            if (this.touching[i].health > 0) this.enhancedHitBoxCheck(this.touching[i]);
+            // if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
         };
-        if ((this.name === "enemy" || this.name === "party") && this.currentTarget && this.currentTarget.body) {
-            const direction = this.currentTarget.position.subtract(this.position);
-            const distance = direction.length();
-            if (distance < DISTANCE_CLEAR && !this.currentTarget.isProtecting && this.currentTarget.health > 0) {
-                this.attackedTarget = this.currentTarget;
-                (this as unknown as Enemy | Party).weaponActionSuccess();
-            } else {
-                this.currentAction = "";
-            };
-        };
+        // if (this.name === "player" && !this.isStorming) {
+        //     if (this.touching.length > 0) {
+        //         for (let i = 0; i < this.touching.length; i++) {
+        //             if (this.touching[i].health > 0) this.enhancedHitBoxCheck(this.touching[i]);
+        //             // if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
+        //         };
+        //     };
+        // };
+        // if ((this.name === "enemy" || this.name === "party") && this.currentTarget && this.currentTarget.body) {
+        //     const direction = this.currentTarget.position.subtract(this.position);
+        //     const distance = direction.length();
+        //     if (distance < DISTANCE_CLEAR && !this.currentTarget.isProtecting && this.currentTarget.health > 0) {
+        //         this.attackedTarget = this.currentTarget;
+        //         (this as unknown as Enemy | Party).weaponActionSuccess();
+        //     } else {
+        //         this.currentAction = "";
+        //     };
+        // };
     };
 
     checkBow = (type: string) => type === "Bow" || type === "Greatbow";
@@ -791,6 +834,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
         } else {
             this.swingTimer = ENEMY_SWING_TIME[weapon?.grip as keyof typeof ENEMY_SWING_TIME] || 1000;
+            if (weapon?.grip === "One Hand") {
+                this.weaponHitbox.radius = 24;
+            } else {
+                this.weaponHitbox.radius = 28;
+            };    
         };
         this.hasBow = this.checkBow(weapon.type);
     };
@@ -834,6 +882,24 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     imgSprite = (item: Equipment) => item.imgUrl.split("/")[3].split(".")[0];
+
+    enhancedHitBoxCheck(target: Enemy | Party | Player): void {
+        if (!target || !target.body || !target.body.position || target.health <= 0) return;
+        
+        const weaponBounds = this.weaponHitbox.getBounds();
+        const targetBounds = target.getBounds();
+        
+        if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, targetBounds)) {
+            const hitResult = hitLocationDetector.detectHitLocation(this.weaponHitbox, target);
+            
+            this.lastHitLocation = hitResult;
+            this.attackedTarget = target;
+            
+            // console.log(`${this.ascean.name} hit ${target.name} in the ${hitResult.location} at position (${hitResult.relativePosition.x.toFixed(2)}, ${hitResult.relativePosition.y.toFixed(2)})`);
+            
+            (this as any).weaponActionSuccess();
+        };
+    };
 
     hitBoxCheck = (enemy: Enemy) => {
         if (!enemy || !enemy.body || !enemy.body.position || enemy.health <= 0) return; // enemy.isDefeated === true

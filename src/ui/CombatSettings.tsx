@@ -5,12 +5,14 @@ import { GameState } from "../stores/game";
 import { Combat } from "../stores/combat";
 import Settings from "../models/settings";
 import { svg } from "../utility/settings";
+
 const BUTTONS = [
     {direction: "left", symbol: "<-"}, 
     {direction:"up", symbol: "^"}, 
     {direction:"down", symbol:"v"},
     {direction:"right", symbol:"->"}, 
 ];
+
 const highlightCycle = { 
     Weapon: {
         next: "Damage",
@@ -25,7 +27,21 @@ const highlightCycle = {
         prev: "Damage"
     }
 };
-const PRAYERS = ["Buff", "Heal", "Debuff", "Damage", "Avarice", "Denial", "Dispel", "Insight", "Quicken", "Silence"];
+
+export const PRAYERS = ["Buff", "Heal", "Debuff", "Damage", "Avarice", "Denial", "Dispel", "Insight", "Quicken", "Silence"];
+
+export const specialDescription: {[key: string]: string} = {
+    Buff: "Increases the strength of their weapon.",
+    Heal: "Heals the player over time.",
+    Debuff: "Decreases the strength of the enemy's weapon.",
+    Damage: "Damages the enemy over time.",
+    Avarice: "Increases the amount of experience and gold gained.",
+    Dispel: "Removes the last prayer affecting the enemy.",
+    Denial: "Prevents the enemy from killing you.",
+    Insight: "The grace required for your next special action is reduced to 0 if above 0.",
+    Quicken: "The stamina required for your next physical action is reduced to 0.",
+    Silence: "Prevents the enemy from praying."
+};
 
 export default function CombatSettings({ combat, game, settings, editShow, setEditShow }: { combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; editShow: Accessor<boolean>; setEditShow: Setter<boolean>; }) {
     const [edit, setEdit] = createSignal({
@@ -35,6 +51,7 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         height: settings()?.combatSettings?.height || "50%",
         width: settings()?.combatSettings?.width || "50%",
     });
+    const [prayerModal, setPrayerModal] = createSignal({ show: false, prayer: PRAYERS[game().selectedPrayerIndex], description: specialDescription[PRAYERS[game().selectedPrayerIndex]] });
     const poly = window.innerWidth * Number(`0.${settings()?.combatSettings?.width.split("%")[0]}`) * 0.9;
     createEffect(() => {
         if (!settings().combatSettings) return;
@@ -52,11 +69,11 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
     };
     const prayer = (el: string) => el === combat().playerBlessing ?  true : false;
     onMount(() => EventBus.emit("selectPrayer", { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight }));
-    const mapTypes = (types: any) => {
+    const mapTypes = (types: any, prayer: boolean) => {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
             newTypes.push(
-                <p style={{ color: borderColor(types[i]), display: "inline-block", margin: "0%", "text-shadow": "0.025em 0.025em 0.025em #fdf6d8", "font-size": "1.25em" }}>
+                <p onClick={prayer ? () => setPrayerModal({ show: true, prayer: types[i], description: specialDescription[types[i]] }) : () => {}} style={{ color: borderColor(types[i]), display: "inline-block", margin: "0%", "text-shadow": "0.025em 0.025em 0.025em #fdf6d8", "font-size": "1.25em" }}>
                     {`-> ${types[i]} <- ${(i + 1) % 4 === 0 ? "\n\n" : ""}`}    
                 </p>
             );
@@ -125,13 +142,13 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                 <Match when={game().selectedHighlight === "Damage"}>
                     <div class="animate-flicker">
                         <p class="shadow" style={highlightStyle}>Damage Style: <span style={{ color: borderColor(combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex] as string) }}>{combat()?.weapons?.[0]?.damageType?.[game().selectedDamageTypeIndex]}</span></p>
-                        <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType)}</p>
+                        <p style={optionStyle}>{mapTypes(combat()?.weapons?.[0]?.damageType, false)}</p>
                     </div>
                 </Match>
                 <Match when={game().selectedHighlight === "Prayer"}>
                     <div class="center animate-flicker">
-                        <p class="shadow" style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(PRAYERS[game().selectedPrayerIndex]), "text-shadow": "0.025em 0.025em 0.025em #fdf6d8" }}>{PRAYERS[game().selectedPrayerIndex]}</span></p>
-                        <div style={optionStyle}>{mapTypes(PRAYERS)}</div>
+                        <p class="shadow" onClick={() => setPrayerModal({ show: true, prayer: PRAYERS[game().selectedPrayerIndex], description: specialDescription[PRAYERS[game().selectedPrayerIndex]] })} style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(PRAYERS[game().selectedPrayerIndex]), "text-shadow": "0.025em 0.025em 0.025em #fdf6d8" }}>{PRAYERS[game().selectedPrayerIndex]}</span></p>
+                        <div style={optionStyle}>{mapTypes(PRAYERS, true)}</div>
                     </div>
                 </Match>
                 </Switch>
@@ -139,7 +156,7 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         </div>
         <Show when={editShow()}>
             <div class="modal">
-            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em" }}>
+            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
                 <h1>Size</h1>
                 <button class="highlight" onClick={() => editCombatText("size", 
                     `${Math.max(Number(edit().size.split("em")[0]) - 0.25, 0.25)}em`)}>-</button>
@@ -189,6 +206,19 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                     `${Math.min(Number(edit().width.split("%")[0]) + 1, 100)}%`
                 )}>+</button>
             <button class="highlight cornerTR" style={{ color: "red" }} onClick={() => setEditShow(false)}>X</button>
+            </div>
+            </div>
+        </Show>
+        <Show when={prayerModal().show}>
+            <div class="modal" onClick={() => setPrayerModal({ show: false, prayer: "", description: "" })}>
+            <div class="border superCenter" style={{ width: "50%", "top": "48%", "z-index": 99 }}>
+                <div class="center creature-heading" style={{ padding: "1em" }}>
+                    <h1>{prayerModal().prayer}</h1>
+                    <svg height="5" width="100%" class="tapered-rule mt-2" style={{ "margin-left": "5%" }}>
+                        <polyline points={`0,0 ${poly * 0.8},2.5 0,5`}></polyline>
+                    </svg>
+                    <h2>{prayerModal().description}</h2>
+                </div>
             </div>
             </div>
         </Show>

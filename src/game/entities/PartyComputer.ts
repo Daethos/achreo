@@ -918,8 +918,9 @@ export default class Party extends Entity {
         this.clearAnimations();
         this.timeElapsed = 0;
         this.isStorming = true;
-        this.scene.showCombatText(this, "Storming", 800, DAMAGE); 
         this.isAttacking = true;
+        this.scene.showCombatText(this, "Storming", 800, DAMAGE); 
+        this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
         this.adjustSpeed(0.5);
         this.scene.tweens.add({
             targets: this,
@@ -931,6 +932,7 @@ export default class Party extends Entity {
                 this.clearAnimations();
                 if (this.isSuffering()) return;
                 this.isAttacking = true;
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
                 this.scene.showCombatText(this, "Storming", 800, DAMAGE);
                 if (this.touching.length > 0) {
                     for (let i = 0; i < this.touching.length; ++i) {
@@ -1640,6 +1642,14 @@ export default class Party extends Entity {
         this.particleCheck();
     };
 
+    handleStealth = () => {
+        this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
+        this.scene.combatEngaged(true);
+        this.inComputerCombat = true;
+        this.attackedTarget.jumpIntoCombat();
+        this.stealthUpdate();
+    };
+
     weaponActionSuccess = () => {
         if (!this.attackedTarget) return;
         let action = "";
@@ -1695,11 +1705,7 @@ export default class Party extends Entity {
             this.scene.combatManager.partyAction({ action: this.currentAction, origin: this.enemyID, enemyID: this.attackedTarget.enemyID } );
         };
         if (this.isStealthing) {
-            this.scene.combatManager.paralyze(this.attackedTarget.enemyID);
-            this.scene.combatEngaged(true);
-            this.inComputerCombat = true;
-            this.attackedTarget.jumpIntoCombat();
-            this.stealthUpdate();
+            this.handleStealth();
         } else {
             this.applyKnockback(this.attackedTarget, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
         };

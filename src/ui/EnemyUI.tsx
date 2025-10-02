@@ -5,7 +5,7 @@ import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
 import AttributeModal, { AttributeCompiler, AttributeNumberModal } from "../components/Attributes";
 import AsceanImageCard from "../components/AsceanImageCard";
-import { itemStyle } from "../utility/styling";
+import { getRarityColor, itemStyle } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
 import PrayerEffects from "./PrayerEffects";
 import { dimensions } from "../utility/dimensions";
@@ -102,14 +102,10 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
                     <div class="" style={{ transform: "scale(0.875)", "margin-top": dims.WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dims.WIDTH > 1200 ? "7.5%" : "3%" }}>
                         <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                     </div>
-                    <div style={{ "margin-left": "0", 
-                        "margin-top": dims.WIDTH > 1200 
-                            ? "" 
-                            : dims.HEIGHT > 420 
-                            ? "-5%" 
-                            : dims.WIDTH < 875 
-                            ? "-10%" 
-                            : "-7.5%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
+                    <div style={{ "margin-top": dims.WIDTH > 1200 ? "" 
+                            : dims.HEIGHT > 420 ? "-5%" 
+                            : dims.WIDTH < 875 ? "-10%" 
+                            : "-9%", transform: `scale(${transformScale()})`, "z-index": 1 }}>
                         <AsceanImageCard ascean={enemy as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
                     </div>
                     <Show when={itemShow()}>
@@ -214,17 +210,17 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} style={{ position: "fixed", "z-index": 1, "font-size": size(state().computer?.name.length as number), "right": "4.5vw", "top": top(state().computer?.name.length as number) }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
+            }} style={{ position: "fixed", "z-index": 1, "font-size": size(state().computer?.name.length as number), "right": "4.5vw", "top": top(state().computer?.name.length as number), "font-family":"Centaur" }} onClick={() => setShowModal(!showModal())}>{state().computer?.name}</div>
         <div class="center enemyHealthBar" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} onClick={changeDisplay} style={{ "right":"2%", width:"20.75vw" }}>
+            }} onClick={changeDisplay} style={{ "right":"2%", width:"20.75vw", border: "0.5mm ridge red" }}>
             <div class="enemyPortrait" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show
-            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
+            }} style={{ "--glow-color": healthPercentage() >= 50 ? "violet" : "red", color: "#fdf6d8", top: "-0.5%", "font-size": dimensions().WIDTH > 875 ? "1.25em" : "1.05em", "font-family":"Centaur" }}>{healthDisplay()}</div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div style={{ position: "absolute", bottom: 0, right: 0, top: 0, "z-index": -1, width: `${healthPercentage()}%`, 
             "background": state().isEnemy ? "linear-gradient(purple, #191970)" : "linear-gradient(#00AA00, green)", 
@@ -233,7 +229,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
         }}></div>
         </div>
         <img id="enemyHealthbarBorder" src={"../assets/gui/enemy-healthbar-bold.png"} alt="Health Bar" style={{ "z-index": -1 }} />
-        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), "height": "7.5vh"}}>
+        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), "height": "7.5vh", border: `1mm groove ${getRarityColor(state()?.computerWeapons?.[0]?.rarity as string)}`}}>
             <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
         </div>
         {/* <button class="highlight center" onClick={() => createPrayer()}>

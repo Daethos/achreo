@@ -5,14 +5,8 @@ import Equipment from "../models/equipment";
 import { dimensions } from "./dimensions";
 import StatusEffect from "./prayer";
 import { EventBus } from "../game/EventBus";
-const specials = ["Avarice", "Dispel", "Denial", "Insight", "Silence"]; // Slow, Fear, Confuse, Charm
-const specialDescription = {
-    "Avarice": "Increases the amount of experience and gold gained.",
-    "Dispel": "Removes the last prayer affecting the enemy.",
-    "Denial": "Prevents the enemy from killing you.",
-    "Insight": "The grace required for your next special action is reduced to 0 if above 0.",
-    "Silence": "Prevents the enemy from praying."
-};
+import { specialDescription } from "../ui/CombatSettings";
+const specials = ["Avarice", "Dispel", "Denial", "Insight", "Quicken", "Silence"]; // Slow, Fear, Confuse, Charm
 
 export function BackForth({ id, left, right, menu, setMenu, createCharacter, newAscean }: { id: string, left: { screen: string, text: string }, right: { screen: string, text: string }, menu: () => any, setMenu: (menu: any) => void, createCharacter: (newAscean: any) => void, newAscean: any }) {
     return (
@@ -110,7 +104,6 @@ export function Modal({ items, inventory, callback, show, setShow, forge, setFor
 
 export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<StatusEffect>, show: Accessor<boolean>, setShow: Setter<boolean> }) {
     const dims = dimensions();
-    // console.log(prayer(), specialDescription[prayer().prayer as keyof typeof specialDescription], "prayer");
 
     function consume() {
         EventBus.emit("initiate-combat", { data: { prayerSacrificeId: prayer().id }, type: "Consume" });
@@ -135,7 +128,7 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
                 <br />
                 </div>
                 {specials.includes(prayer().prayer) && ( <>
-                    {specialDescription[prayer().prayer as keyof typeof specialDescription]}
+                    {specialDescription[prayer().prayer]}
                 </> )}
                 {prayer()?.effect?.physicalDamage && 
                     <div>Physical Damage: <span style={gold}>{prayer()?.effect?.physicalDamage}</span><br /> </div>

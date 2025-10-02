@@ -253,6 +253,46 @@
         ],
         "npcIds": ["Deity"],
         "rootId": "0001"
+      },
+      {
+        "id": "1001",
+        "text": ".",
+        "options": [
+          {
+            "text": "Perhaps anticipation to raise it in your name. I, ${ascean.name}, serve my life for yours, ${enemy.name}.",
+            "next": "1002",
+            "npcIds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+            "conditions": [],
+            "action": "",
+            "keywords": ["Faithful"]
+          },
+          {
+            "text": "I am ${ascean.name}, and well, I'm not certain of whom I witness. And yet, you evoke the feeling of... ${enemy.name}?",
+            "next": "1002",
+            "npcIds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Compliant"]
+          },
+          {
+            "text": "That's not how this works, 'friend.' I do not answer to vague apparitions of my mind. Who are you?",
+            "next": "1003",
+            "npcIds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+            "conditions": [],
+            "action": null,
+            "keywords": ["Disobedient"]
+          },
+          {
+            "text": "I haven't moved a flicker, seems though you sense some thing sure about myself. And I am to believe you know not what you are?",
+            "next": "1003",
+            "npcIds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+            "conditions": [{ "key": "mastery", "operator": ">=", "value": "20" }],
+            "action": null,
+            "keywords": ["Unfaithful"]
+          }
+        ],
+        "npcIds": [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],
+        "rootId": "1001"
       }
     ]
   }

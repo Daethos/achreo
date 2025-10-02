@@ -13,6 +13,7 @@ import { getHitFeedbackContext, HitFeedbackSystem } from "./HitFeedbackSystem";
 import { Combat } from "../../stores/combat";
 import { calculateThreat, ENEMY } from "../entities/Entity";
 import { fetchArena } from "../../utility/enemy";
+import { hitLocationDetector } from "./HitDetection";
 
 export class CombatManager {
     combatMachine: CombatMachine;
@@ -36,6 +37,12 @@ export class CombatManager {
             const party = this.context.party.find(p => p.enemyID === id);
             return enemy || party;
         };
+    };
+
+    public combatantByIdNo(id: number): Enemy | Party | undefined {
+        const enemy = this.context.enemies.find(e => e.id === id);
+        const party = this.context.party.find(p => p.id === id);
+        return enemy || party;    
     };
 
     private updateCombat = (e: Combat) => {
@@ -256,11 +263,11 @@ export class CombatManager {
     };
 
     public luckout = (e: {id: string, luck: string, luckout: boolean}) => {
-        console.log({e});
         const enemy = this.combatant(e.id);
         if (e.luckout) {
             enemy.isLuckout = e.luckout;
             enemy.playerTrait = e.luck;
+            enemy.isHostile = false;
             EventBus.emit("killing-blow", {e:enemy.ascean, enemyID:enemy.enemyID});
             enemy.stateMachine.setState(States.DEFEATED);
         } else if (!enemy.inCombat) {
@@ -390,17 +397,17 @@ export class CombatManager {
 
     public computerCaerenicNegID = (id: string) =>{
         const entity = this.combatant(id);
-        return entity.isCaerenic ? 1.25 : 1;
+        return entity?.isCaerenic ? 1.25 : 1;
     };
 
     public computerCaerenicProID = (id: string) => {
         const entity = this.combatant(id);
-        return entity.isCaerenic ? 1.15 : 1;
+        return entity?.isCaerenic ? 1.15 : 1;
     };
 
     public computerStalwartID = (id: string) => {
         const entity = this.combatant(id);
-        return entity.isStalwart ? 0.85 : 1;
+        return entity?.isStalwart ? 0.85 : 1;
     }; 
 
     // ============================ Computer Combat ============================= \\
@@ -428,6 +435,13 @@ export class CombatManager {
         computerOne.computerAction = action;
         computerOne.computerEnemyAction = computerTwo.computerAction;
         computerTwo.computerEnemyAction = action;
+
+        computerOne.computerHitLocation = computerOneEntity.lastHitLocation;
+
+        if (computerTwo.computerAction) {
+            const hitResult = hitLocationDetector.detectHitLocation(computerTwoEntity.weaponHitbox, computerOneEntity);
+            computerTwo.computerHitLocation = hitResult;
+        };
 
         computerOne.enemyID = computerTwo.personalID;
         computerTwo.enemyID = computerOne.personalID;
@@ -464,13 +478,24 @@ export class CombatManager {
         const { action, origin, enemyID } = payload;
         let computerOneEntity = this.context.party.find((e: Party) => e.enemyID === origin)!;
         let computerTwoEntity = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
+
         let computerOne = computerOneEntity.computerCombatSheet;
         let computerTwo = computerTwoEntity.computerCombatSheet;
+
         computerOne.computerAction = action;
         computerOne.computerEnemyAction = computerTwo.computerAction;
         computerTwo.computerEnemyAction = action;
+
+        computerOne.computerHitLocation = computerOneEntity.lastHitLocation;
+
+        if (computerTwo.computerAction) {
+            const hitResult = hitLocationDetector.detectHitLocation(computerTwoEntity.weaponHitbox, computerOneEntity);
+            computerTwo.computerHitLocation = hitResult;
+        };
+        
         computerOne.enemyID = computerTwo.personalID;
         computerTwo.enemyID = computerOne.personalID;
+
         const result = computerCombatCompiler({computerOne, computerTwo});
         computerOneEntity.computerCombatUpdate(result.computerOne);
         computerTwoEntity.computerCombatUpdate(result.computerTwo);
@@ -506,7 +531,6 @@ export class CombatManager {
         const talented = this.context.hud.talents.talents.parry.enhanced;
         if (!counters || !talented) return;
         for (const key of counters) {
-            // console.log({key});
             if (key["enemy"]) {
                 const record = key["enemy"];
                 for (const status of record.status) {
@@ -658,6 +682,19 @@ export class CombatManager {
             };
         };
     };
+    charm = (id: string, _special: boolean = false) => {
+        if (!id) return;
+        if (id === this.context.player.playerID) {
+            this.useGrace(10);
+            this.context.player.isCharmed = true;
+            this.context.player.playerMachine.stateMachine.setState(States.CHARMED);
+            return;
+        };
+        let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
+        if (enemy) {
+            enemy.charmed();
+        };
+    };
     chiomic = (id: string, origin: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
@@ -714,14 +751,9 @@ export class CombatManager {
             return;
         };
         const enemy = this.context.enemies.find((e: Enemy) => e.enemyID === combatID);
-        if (enemy) { // Enemy Taking Damage
+        if (enemy && enemy.health > 0) { // Enemy Taking Damage
             if (enemySpecialID === this.context.player.playerID) {
-                if (enemy.enemyID === this.context.player.getEnemyId()) {
-                    this.combatMachine.action({ type: "Chiomic", data: this.context.player.entropicMultiplier(20) }); 
-                } else {
-                    if (enemy.health <= 0) return;
-                    this.context.player.playerMachine.chiomism(enemy.enemyID, 10)
-                };
+                this.context.player.playerMachine.chiomism(enemy.enemyID, 10, "disease");
             } else {
                 const origin = this.context.enemies.find((e: Enemy) => e.enemyID === enemySpecialID);
                 if (origin) { // CvC
@@ -831,6 +863,10 @@ export class CombatManager {
             this.updateComputerDamage(damage, id, origin);
         };
     };
+    lightning = (id: string, power: number): void => {
+        this.context.player.playerMachine.chiomism(id, power, "lightning");
+    };
+
     paralyze = (id: string): void => {
         if (!id) return;
         if (id === this.context.player.playerID) {
@@ -876,7 +912,6 @@ export class CombatManager {
         };
     };
     renewal = (id: string) => {
-        // this.combatMachine.action({ data: { key: "player", value: 10, id: this.context?.player?.playerID }, type: "Health" });
         if (!id) return;
         
         let enemy = this.context.enemies.find((e: Enemy) => e.enemyID === id);
@@ -1071,12 +1106,13 @@ export class CombatManager {
         if (id === this.context.player.playerID) {
             let en = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (!en) return;
+            const hitLocation = hitLocationDetector.detectHitLocation(en.weaponHitbox, this.context.player);
             if (en.isCurrentTarget) {
-                this.combatMachine.action({ type: "Weapon", data: { key: "computerAction", value: type, id: en.enemyID } });
+                this.combatMachine.action({ type: "Weapon", data: { key: "computerAction", value: type, id: en.enemyID, hitLocation } });
             } else {
                 this.combatMachine.action({ type: "Enemy", data: { 
                     enemyID: en.enemyID, ascean: en.ascean, damageType: en.currentDamageType, combatStats: en.combatStats, weapons: en.weapons, health: en.health, 
-                    actionData: { action: type, parry: en.parryAction, id: enemyID }}});
+                    actionData: { action: type, parry: en.parryAction, id: enemyID }, hitLocation }});
             };
             this.useGrace(10);
             return;    
@@ -1085,8 +1121,9 @@ export class CombatManager {
         if (enemy) { // Enemy Taking Damage
             if (enemyID === this.context.player.playerID) { // Player Combat
                 const match = this.context.isStateEnemy(id);
+                const hitLocation = hitLocationDetector.detectHitLocation(this.context.player.weaponHitbox, enemy);
                 if (match) { // Target Player Attack
-                    this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type } });
+                    this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type, hitLocation } });
                 } else { // Blind Player Attack
                     this.combatMachine.action({ type: "Player", data: { 
                         playerAction: { action: type, parry: this.context.state.parryGuess }, 
@@ -1096,7 +1133,8 @@ export class CombatManager {
                         combatStats: enemy.combatStats, 
                         weapons: enemy.weapons, 
                         health: enemy.health, 
-                        actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+                        actionData: { action: enemy.currentAction, parry: enemy.parryAction },
+                        hitLocation
                     }});
                 };
             } else { // Computer Combat

@@ -1,10 +1,11 @@
-import Ascean from "../models/ascean";
-import Equipment from "../models/equipment";
-import { CombatAttributes, Defense } from "../utility/combat";
+import { HitLocation, HitLocationResult } from "../game/phaser/HitDetection";
+import Ascean, { initAscean } from "../models/ascean";
+import Equipment, { initEquipment } from "../models/equipment";
+import { CombatAttributes, Defense, initCombatAttributes, initDefense } from "../utility/combat";
 import StatusEffect from "../utility/prayer";
 
 export interface Combat {
-    player: Ascean | undefined;
+    player: Ascean;
     action: string;
     playerAction: string;
     parryGuess: string;
@@ -16,20 +17,21 @@ export interface Combat {
     newPlayerHealth: number;
     
     weapons: Equipment[];
-    weaponOne: Equipment | undefined;
-    weaponTwo: Equipment | undefined;
-    weaponThree: Equipment | undefined;
+    weaponOne: Equipment;
+    weaponTwo: Equipment;
+    weaponThree: Equipment;
 
-    playerAttributes: CombatAttributes | undefined;
+    playerAttributes: CombatAttributes;
     playerDamageType: string;
     playerDamagedType: string;
-    playerDefense: Defense | undefined;
-    playerDefenseDefault: Defense | undefined;
+    playerDefense: Defense;
+    playerDefenseDefault: Defense;
     playerEffects: StatusEffect[];
     potentialPlayerDamage: number;
     realizedPlayerDamage: number;
     playerDamaged: boolean;
     enemyPrayerConsumed: boolean;
+    hitLocation: HitLocationResult;
 
     playerStartDescription: string;
     playerSpecialDescription: string;
@@ -68,6 +70,7 @@ export interface Combat {
     potentialComputerDamage: number;
     realizedComputerDamage: number;
     computerDamaged: boolean;
+    computerHitLocation: HitLocationResult;
 
     // attackWeight: number;
     // parryWeight: number;
@@ -153,7 +156,7 @@ export interface Combat {
 };
 
 export const initCombat: Combat = {
-    player: undefined,
+    player: initAscean,
     action: "",
     playerAction: "",
     parryGuess: "",
@@ -166,20 +169,21 @@ export const initCombat: Combat = {
     
     weapons: [],
 
-    weaponOne: undefined,
-    weaponTwo: undefined,
-    weaponThree: undefined,
+    weaponOne: initEquipment,
+    weaponTwo: initEquipment,
+    weaponThree: initEquipment,
 
     playerEffects: [],
     playerDamageType: "",
     playerDamagedType: "",
-    playerDefense: undefined,
-    playerAttributes: undefined,
-    playerDefenseDefault: undefined,
+    playerDefense: initDefense,
+    playerAttributes: initCombatAttributes,
+    playerDefenseDefault: initDefense,
     potentialPlayerDamage: 0,
     realizedPlayerDamage: 0,
     playerDamaged: false,
     enemyPrayerConsumed: false,
+    hitLocation: { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } },
 
     playerStartDescription: "",
     playerSpecialDescription: "",
@@ -205,9 +209,9 @@ export const initCombat: Combat = {
 
     computerWeapons: [],
     
-    computerWeaponOne: undefined,
-    computerWeaponTwo: undefined,
-    computerWeaponThree: undefined,
+    computerWeaponOne: initEquipment,
+    computerWeaponTwo: initEquipment,
+    computerWeaponThree: initEquipment,
     
     computerEffects: [],
     computerDamageType: "",
@@ -218,6 +222,7 @@ export const initCombat: Combat = {
     potentialComputerDamage: 0,
     realizedComputerDamage: 0,
     computerDamaged: false,
+    computerHitLocation: { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } },
 
     // attackWeight: 0,
     // parryWeight: 0,

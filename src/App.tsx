@@ -9,7 +9,7 @@ import Ascean, { createAscean } from "./models/ascean";
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from "./utility/ascean";
 import { usePhaserEvent } from "./utility/hooks";
 import { EventBus } from "./game/EventBus";
-import { deadEquipment, deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
+import { blessAscean, curseAscean, deadEquipment, deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
 import { TIPS } from "./utility/tips";
 import { Inventory, Reputation, initInventory, initReputation } from "./utility/player";
 import { Puff } from "solid-spinner";
@@ -22,6 +22,7 @@ import QuestManager, { getQuest, initQuests, Quest } from "./utility/quests";
 import { v4 as uuidv4 } from "uuid";
 import { lightning } from "./utility/lightning";
 import { Button } from "./utility/buttons";
+import { addSpecial } from "./utility/abilities";
 const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
 const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
@@ -158,6 +159,11 @@ export default function App() {
                 await updateTal(newTalent);
             } else {
                 setTalents(tal);
+            };
+            if (set.stances === undefined) {
+                let newSet = JSON.parse(JSON.stringify(set));
+                newSet.stances = { caerenic: false, stealth: false };
+                await updateSettings(newSet);
             };
             setInventory(inv);
             setReputation(rep);
@@ -319,7 +325,6 @@ export default function App() {
 
     async function removeParty(party: Ascean) {
         try {
-            console.log(party, "removeParty");
             let newParty = await getParty(ascean()._id);
             newParty.party = newParty.party.filter((e: Ascean) => {
                 return e._id !== party._id;
@@ -342,7 +347,7 @@ export default function App() {
     const addQuest = async (quest:{title: string, enemy: Ascean}): Promise<void> => {
         try {
             const { title, enemy } = quest;
-            const newQuest = getQuest(title, enemy, ascean());
+            const newQuest = getQuest(title, enemy, ascean(), settings());
             const newQuestManager: QuestManager = { 
                 ...quests(),
                 quests: quests().quests.length > 0 
@@ -461,6 +466,44 @@ export default function App() {
         setMenu({ ...menu(), screen });
     };
 
+    async function blessPlayer(faith: string): Promise<void> {
+        try {
+            const entry = {
+                title: "Who am I?",
+                body: `You felt the presence of... ${faith}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
+                footnote: `Seems you've been blessed by ${faith}, or some greater mimicry of them. It asked who you were, how would it not know?`,
+                date: Date.now(),
+                location: "Unknown",
+            };
+            const res = await blessAscean(ascean()._id, entry);
+            EventBus.emit("fetch-ascean", res.data._id);
+            EventBus.emit("update-pause", false);
+            EventBus.emit("update-small-hud");
+            addSpecial(ascean, settings, "Invoke");
+            // await exitTutorial();
+        } catch (err: any) {
+            console.warn(err, "%c <- You have an error in blessing a player", "color: red");
+        };
+    };
+    async function rebukePlayer(faith: string): Promise<void> {
+        try {
+            const entry = {
+                title: "Who am I?",
+                body: `You felt the presence of... ${faith}? \n\n You become attuned to a halt and paltry whisper, ringing, it stretches your soft edges, serenity begging you hither. \n\n "Who are you?"`,
+                footnote: `Some mimicry of ${faith} asked who you were, as though the true incarnation would not know? Careful of what you rebuke, ${ascean().name}.`,
+                date: Date.now(),
+                location: "Unknown",
+            };
+            const res = await curseAscean(ascean()._id, entry);
+            EventBus.emit("fetch-ascean", res.data._id);
+            EventBus.emit("update-pause", false);
+            EventBus.emit("update-small-hud");
+            // await exitTutorial();
+            addSpecial(ascean, settings, "Invoke");
+        } catch (err: any) {
+            console.warn(err, "%c <- You have an error in rebuking a player", "color: red");
+        };
+    };
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -491,6 +534,9 @@ export default function App() {
     usePhaserEvent("set-tips", setTips);
     usePhaserEvent("scene-switch", (data:{current:string,next:string}) => switchScene(data.current,data.next));
     usePhaserEvent("enter-menu", enterMenu);
+
+    usePhaserEvent("bless-player", blessPlayer);
+    usePhaserEvent("rebuke-player", rebukePlayer);
     
     usePhaserEvent("silent-save", silentSave);
     usePhaserEvent("fetch-ascean", fetchAscean);

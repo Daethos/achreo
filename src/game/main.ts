@@ -47,7 +47,7 @@ const config: Phaser.Types.Core.GameConfig = {
         }, 
     },
     fps: {target: 60,limit: 90},
-    fullscreenTarget: "base-ui",
+    fullscreenTarget: "game-container",
     // render: {
     //     clearBeforeRender: false,
     //     antialias: false

@@ -13,17 +13,18 @@ import { GameState, initGame } from "../stores/game";
 import { Compiler, LevelSheet, asceanCompiler } from "../utility/ascean";
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from "../assets/db/db";
 import { getNpcDialog } from "../utility/dialog";
-import { getAsceanTraits } from "../utility/traits";
+import { getAsceanTraits, Traits } from "../utility/traits";
 import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
-import { STARTING_SPECIALS } from "../utility/abilities";
+// import { STARTING_SPECIALS } from "../utility/abilities";
 import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION, ENEMY_HOSTILE } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
 import QuestManager, { Quest } from "../utility/quests";
 const BaseUI = lazy(async () => await import("../ui/BaseUI"));
-const rarityGoldMap = {
+
+const RARITY_GOLD_MAP: {[key:string]: number} = {
     "Uncommon": 1,
     "Rare": 3,
     "Epic": 12,
@@ -112,6 +113,14 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    /*
+        Increases Level
+        Increases stats if necessary,
+        Changes mastery / faith is applicable
+        Checks to increase limit on specials
+        Updates statistics recording mastery
+        Updates talents to increase total
+    */
     async function levelUp(state: Accessor<any>) {
         let constitution = Number(state().constitution);
         let strength = Number(state().strength);
@@ -143,12 +152,23 @@ export default function PhaserGame (props: IProps) {
                     max: hyd?.ascean.health.max as number
                 },
             } as Ascean;
-            if (props.ascean().mastery !== newMastery) {
-                const settings = { ...props.settings(), specials: STARTING_SPECIALS[newMastery as keyof typeof STARTING_SPECIALS] };
-                props.setSettings(settings);
-                await updateSettings(settings);
-                EventBus.emit("fetch-button-reorder");
+            const currentSpecials = props.settings().specials;
+            if (currentSpecials.length < 5 && currentSpecials.length < update.level) {
+                let newSettings = JSON.parse(JSON.stringify(props.settings()));
+                const increase = newSettings.totalSpecials.find((special: string) => !currentSpecials.includes(special));
+                if (increase) {
+                    newSettings.specials.push(increase);
+                    props.setSettings(newSettings);
+                    await updateSettings(newSettings);
+                    EventBus.emit("fetch-button-reorder");
+                }; 
             };
+            // if (props.ascean().mastery !== newMastery) {
+            //     const settings = { ...props.settings(), specials: STARTING_SPECIALS[newMastery as keyof typeof STARTING_SPECIALS] };
+            //     props.setSettings(settings);
+            //     await updateSettings(settings);
+            //     EventBus.emit("fetch-button-reorder");
+            // };
             EventBus.emit("update-ascean-state", {
                 ...state(),
                 ascean: save,
@@ -861,6 +881,20 @@ export default function PhaserGame (props: IProps) {
         return ascean.interactions.deity <= ascean.level - 1 && ascean.level === 2  && ascean.level * 500 <= ascean.experience;
     };
 
+    function getStances(traits: Traits) {
+        if (props.ascean().level < 3) return;
+        const stealth = ["Arbituous", "Astral", "Ma'anreic"];
+        for (let i = 0; i < 3; ++i) {
+            if ((stealth.includes(traits.primary.name) || stealth.includes(traits.secondary.name) || stealth.includes(traits.tertiary.name) && !props.settings().stances.stealth)) {
+                let newSettings = JSON.parse(JSON.stringify(props.settings()));
+                newSettings.stances.stealth = true;
+                EventBus.emit("update-settings", newSettings);
+                EventBus.emit("add-stance", "stealth");
+                // return ["Stealth", "Balanced", "Aggressive"];
+            };
+        };
+    };
+
     async function swapEquipment(e: { type: string; item: Equipment }) {
         const {type,item} = e;
         const oldEquipment = props.ascean()[type as keyof Ascean] as Equipment;
@@ -913,7 +947,8 @@ export default function PhaserGame (props: IProps) {
         instance.game?.registry.set("combat", combat());
         instance.game?.registry.set("game", game());
         EventBus.emit("update-total-stamina", stats.attributes.stamina as number);    
-        EventBus.emit("update-total-grace", stats.attributes.grace as number);    
+        EventBus.emit("update-total-grace", stats.attributes.grace as number);
+        getStances(traits);
     };
 
     async function upgradeItem(data: any): Promise<void> {
@@ -931,7 +966,7 @@ export default function PhaserGame (props: IProps) {
                 inventory.splice(itemIndex, 1);
                 await deleteEquipment(itemID);
             });
-            let gold = rarityGoldMap[item?.[0].rarity as keyof typeof rarityGoldMap] || 0;
+            let gold = RARITY_GOLD_MAP[item[0].rarity as string] || 0;
             const update = { ...props.ascean(), currency: { ...props.ascean().currency, gold: props.ascean().currency.gold - gold }, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
             const clean = { ...game().inventory, inventory };
             setGame({ ...game(), inventory: clean });
@@ -988,7 +1023,8 @@ export default function PhaserGame (props: IProps) {
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
         setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
-        EventBus.emit("update-total-stamina", res?.attributes.stamina as number);    
+        EventBus.emit("update-total-stamina", res?.attributes.stamina as number);
+        getStances(traits);
     };
 
     function bootTutorial(): void {
@@ -1172,6 +1208,17 @@ export default function PhaserGame (props: IProps) {
         });
         EventBus.on("combat-engaged", (e: boolean) => setCombat({ ...combat(), combatEngaged: e }));
         EventBus.on("delete-merchant-equipment", deleteMerchantEquipment);
+        EventBus.on("bleed-firewater", () => {
+            const newCharges = props.ascean().firewater.max;
+            setCombat({...combat(), newPlayerHealth: props.ascean().health.max, player: {...combat().player as Ascean, health: {...props.ascean().health, current: props.ascean().health.max}}});
+            const newAscean = {
+                ...props.ascean(), 
+                firewater: {...props.ascean().firewater, current: newCharges}, 
+                health: {...props.ascean().health, current: props.ascean().health.max},
+                experience: Math.max(0, props.ascean().experience - Math.floor(props.ascean().experience * 0.3))
+            };
+            EventBus.emit("update-ascean", newAscean);
+        });
         EventBus.on("drink-firewater", () => {
             const newCharges = props.ascean().firewater.current > 0 ? props.ascean().firewater.current - 1 : 0;
             setCombat({...combat(), newPlayerHealth: props.ascean().health.max, player: {...combat().player as Ascean, health: {...props.ascean().health, current: props.ascean().health.max}}});
@@ -1375,6 +1422,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("create-enemy-prayer");
             
             EventBus.removeListener("delete-merchant-equipment");
+            EventBus.removeListener("bleed-firewater"); 
             EventBus.removeListener("drink-firewater"); 
             EventBus.removeListener("enemy-loot");
             EventBus.removeListener("fetch-enemy");

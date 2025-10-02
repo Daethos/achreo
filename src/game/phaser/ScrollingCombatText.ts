@@ -77,7 +77,7 @@ export default class ScrollingCombatText extends Phaser.GameObjects.Container {
         this.text.setActive(true).setVisible(true).setWordWrapWidth((this.scene as Play).cameras.main.width / 1.5, true);
 
         this.scene.tweens.add({
-            delay: 128,
+            delay: 64,
             targets: tweenObj,
             t: 1,
             duration: this.duration,

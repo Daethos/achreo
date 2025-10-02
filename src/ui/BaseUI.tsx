@@ -117,7 +117,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             switch (type) {
                 case "Weapon": // Targeted Weapon Action by Enemy or Player
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const weapon = { ...combat(), [data.key]: data.value };
+                    const weapon = { ...combat(), [data.key]: data.value, hitLocation: data.hitLocation };
                     res = weaponActionCompiler(weapon) as Combat;
                     playerWin = res.playerWin;
                     computerWin = res.computerWin;
@@ -172,7 +172,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     affectsStealth = false;
                     break;
                 case "Player": // Blind Player Attack i.e. hitting a non targeted enemy
-                    const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData } = data;
+                    const { playerAction, enemyID, ascean, damageType, combatStats, weapons, health, actionData, hitLocation } = data;
                     if (ascean === undefined || health === 0) return;
                     let playerData = {
                         action: playerAction.action,
@@ -192,6 +192,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         computerDamageType: damageType,
                         computerEffects: [],
                         enemyID: enemyID, // Was ""
+                        hitLocation
                     };
                     res = { ...combat(), ...playerData };
                     res = weaponActionCompiler(res) as Combat;
@@ -225,16 +226,16 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         playerEffects: res.playerEffects,
                     });
                     (instance.scene as Play).combatManager.enemyHealthUpdate(res.enemyID, res.newComputerHealth, res.criticalSuccess);
-                    // EventBus.emit("update-enemy-health", { id: res.enemyID, health: res.newComputerHealth, glancing: res.glancingBlow, critical: res.criticalSuccess });
                     computerWin = res.computerWin;
                     playerWin = res.playerWin;
                     break;
                 case "Chiomic": // Mindflay
+                    console.log({ data });
                     if (combat().computer === undefined || newComputerHealth === 0) return;
-                    const chiomic = Math.round(playerMastery * (1 + data / CHIOMISM) * caerenicPos * computerCaer.neg * computerStal * (playerLevel * playerLevel));
+                    const chiomic = Math.round(playerMastery * (1 + data.power / CHIOMISM) * caerenicPos * computerCaer.neg * computerStal * (playerLevel * playerLevel));
                     newComputerHealth = newComputerHealth - chiomic < 0 ? 0 : newComputerHealth - chiomic;
                     playerWin = newComputerHealth === 0;
-                    playerActionDescription = `Your hush flays ${chiomic} health from ${combat().computer?.name}.`;
+                    playerActionDescription = `Your ${data.type} flays ${chiomic} health from ${combat().computer?.name}.`;
                     realizedPlayerDamage = chiomic;
                     res = { ...combat(), newComputerHealth, playerWin, playerActionDescription, realizedPlayerDamage };
                     EventBus.emit("blend-combat", { newComputerHealth, playerWin });
@@ -307,8 +308,16 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                                 res = { ...combat(), newComputerHealth, playerWin, computerSpecialDescription, realizedPlayerDamage };
                                 EventBus.emit("blend-combat", { newComputerHealth, playerWin });
                             } else {
+                                // console.log("Updating non-targeted enemy health", id, value);
                                 res = { ...combat(), playerWin };
-                                EventBus.emit("update-enemy-health", { id, health: newComputerHealth, glancing: false, critical: false });
+                                if (playerWin) {
+                                    const enemy = (instance.scene as Play).combatManager.combatant(id);
+                                    if (enemy) {
+                                        res.computer = enemy.ascean;
+                                        res.enemyID = id;
+                                    };
+                                };
+                                (instance.scene as Play).combatManager.enemyHealthUpdate(id, newComputerHealth, false);
                             };
                             affectsHealth = false;
                             affectsStealth = false;
@@ -349,6 +358,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         computerCaerenic: data.caerenic,
                         computerStalwart: data.stalwart,
                         enemyID: data.enemyID,
+                        
                     };
                     res = { ...combat(), ...enemyData };
                     res = weaponActionCompiler(res) as Combat;
@@ -461,7 +471,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 setAsceanState({ ...asceanState(), avarice: false });
                 setTimeout(() => {
                     EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
-                    (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "heal");
+                    (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "effect");
                 }, 500);
             } else {
                 EventBus.emit("record-loss", res);
@@ -547,8 +557,15 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         setArena({ ...arena(), wager, result: true, show: true, win });
     });
     return <div id="base-ui">
+        <Show when={showTutorial()}>
+            <Suspense fallback={<Puff color="gold" />}>
+                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
+            </Suspense>
+        </Show>
+        
         <Show when={game().showPlayer} fallback={
-            <div style={{ position: "absolute", "z-index": 1 }}>
+            <div style={{ position: "absolute" }}> 
+            {/* , "z-index": 1 */}
                 <Suspense fallback={<Puff color="gold" />}>
                     <CombatUI ascean={ascean} state={combat} game={game} settings={settings} stamina={stamina} grace={grace} touching={touching} instance={instance} />
                 </Suspense>
@@ -563,19 +580,17 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                 <Character quests={quests} reputation={reputation} settings={settings} setSettings={setSettings} statistics={statistics} talents={talents} ascean={ascean} asceanState={asceanState} game={game} combat={combat} />
             </Suspense>
         </Show>
+        
         <Suspense fallback={<Puff color="gold" />}>
             <SmallHud ascean={ascean} asceanState={asceanState} combat={combat} game={game} reputation={reputation} settings={settings} quests={quests} instance={instance} /> 
         </Suspense>
-        <Show when={showTutorial()}>
-            <Suspense fallback={<Puff color="gold" />}>
-                <TutorialOverlay ascean={ascean} settings={settings} tutorial={tutorial} show={showTutorial} setShow={setShowTutorial} />
-            </Suspense>
-        </Show>
+
         <Show when={showDeity()}>
             <Suspense fallback={<Puff color="gold" />}>
-                <Deity ascean={ascean} combat={combat} game={game} reputation={reputation} statistics={statistics} />
+                <Deity ascean={ascean} combat={combat} game={game} reputation={reputation} settings={settings} statistics={statistics} />
             </Suspense>
         </Show>    
+        
         <Suspense fallback={<Puff color="gold" />}>
             <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} instance={instance} />
         </Suspense>

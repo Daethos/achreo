@@ -108,7 +108,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                 <div class="sunburst" style={{ "--glow-color":masteryColor(newAscean().mastery) }}></div>
                 <Switch>
                 <Match when={menu().screen === SCREENS.PREMADE.KEY}>
-                    <div class="drop-25 left menu-3d-container" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", overflow: "scroll", "scrollbar-width": "none" }}>
+                    <div class="drop-25 left" style={{ height: "60%", width: "48%", display: "inline-block", "margin-top": "4%", "overflow-y": "scroll", "scrollbar-width": "none" }}>
                         <Suspense fallback={<Puff color="gold" />}>
                         <div class="menu-3d">
                         <For each={STARTING_CHARACTERS}>

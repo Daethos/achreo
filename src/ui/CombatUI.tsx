@@ -1,7 +1,7 @@
 import { Accessor, JSX, Match, Setter, Switch, createEffect, createSignal } from "solid-js"
 import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
-import { border, borderColor, itemStyle, masteryColor } from "../utility/styling";
+import { border, borderColor, getRarityColor, itemStyle, masteryColor } from "../utility/styling";
 import PrayerEffects from "./PrayerEffects";
 import { EventBus } from "../game/EventBus";
 import { For, Show } from "solid-js";
@@ -24,6 +24,8 @@ import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
 import Steal from "./Steal";
 import { usePhaserEvent } from "../utility/hooks";
+// import { PRAYERS } from "./CombatSettings";
+// import { addSpecial, addStance } from "../utility/abilities";
 // import { CombatAttributes } from "../utility/combat";
 // import Equipment from "../models/equipment";
 // import Ascean, { initAscean } from "../models/ascean";
@@ -54,6 +56,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
     const [showPickpocketItems, setShowPickpocketItems] = createSignal<boolean>(false); // setShowPickpocketItems
+    const [prayer, setPrayer] = createSignal<string>("");
+    const [exception, setException] = createSignal<boolean>(false);
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const [stealAnimation, setStealAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:"", name:""},
@@ -65,6 +69,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         rolling: false,
         step: 0,
     });
+
     createEffect(() => {
         if (stealAnimation().on && stealAnimation().rolling) {
             let dialog: JSX.Element | string = "";
@@ -92,6 +97,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             });
         };
     });
+
     createEffect(() => {
         const currentHealth = state().newPlayerHealth;
         const prevHealth = previousHealth().health;
@@ -109,13 +115,15 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                     positive:false
                 });
             }, 1000);
-        }
+        };
     });
+
+    createEffect(() => setPrayer(settings().prayer));
+
     function checkLockpick(e: { id: string; interacting: boolean; type: string; }) {
         setLockpick(e);
     };
     function checkPickpocket() {
-        // console.log(state().computer?.name, pickpocketEnemy());
         if (pickpocketItems().length === 0 || state().computer?.name !== pickpocketEnemy()) {
             let equipment: any[] = [];
             for (let i = 0; i < 3; ++i) {
@@ -144,11 +152,13 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             </Match>
         </Switch>
     };
+
     const showPlayer = () => {
         EventBus.emit("action-button-sound");
         EventBus.emit("update-small-hud");
         EventBus.emit("outside-press", "info");
     };
+
     function caerenic(caerenic: boolean, stealth: boolean) {
         return {
             "background": caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? "linear-gradient(#000, #444)" : "black",
@@ -159,12 +169,14 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             transition: "background 0.5s ease-out",
         };
     };
+
     function stalwart(caerenic: boolean, stealth: boolean) {
         return {
             "background": caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? "linear-gradient(#000, #444)" : "black",
             transition: "background 0.5s ease-out",
         };
     };
+
     const size = (len: number) => {
         switch (true) {
             case len < 10 && dims.WIDTH > 1200: return "1.5em"; // 1.15em
@@ -179,6 +191,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             default:  return "0.85em"; // 0.6em
         };
     };
+
     const top = (len: number) => {
         switch (true) {
             case len < 10 && dims.WIDTH > 1200: return "3vh"; // 1.15em
@@ -193,9 +206,11 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             default: return "3vh";
         };
     };
+
     function steal(item: Equipment): void {
         setStealing({ stealing: true, item });
     };
+
     // function createPrayer() {
     //     const computer = initAscean;
     //     const exists = new StatusEffect(
@@ -210,23 +225,28 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     // };
 
     usePhaserEvent("lockpick", checkLockpick);
-
+    usePhaserEvent("combatHud", () => {
+        setException(!exception());
+    });
     return <div class="playerCombatUi" classList={{
         "animate-texty": previousHealth().show && previousHealth().positive,
         "animate-flicker": previousHealth().show && !previousHealth().positive,
-        "reset-animation": !previousHealth().show
+        "reset-animation": !previousHealth().show,
+        "tutorial-highlight": exception(),
       }} style={{ "--glow-color": "violet", transition: "all 0.75s ease" }}>
             <div class={`playerHealthBar`} classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show
+                "reset-animation": !previousHealth().show,
+                "tutorial-highlight": exception(),
             }}>
             <div class="playerPortrait" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show
+                "reset-animation": !previousHealth().show,
+                "tutorial-highlight": exception(),
             }} onClick={changeDisplay} style={{ color: state().isStealth ? "#fdf6d8" : "#000", "text-shadow": `0.025em 0.025em 0.025em ${state().isStealth ? "#000" : "#fdf6d8"}`, 
-            "--glow-color": "violet", "font-size": dims.WIDTH > 875 ? "1.25em" : "1.05em" }}>{healthDisplay()}</div>
+            "--glow-color": "violet", "font-size": dims.WIDTH > 875 ? "1.25em" : "1.05em", "font-family":"Centaur" }}>{healthDisplay()}</div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `100%`, "background": "linear-gradient(#aa0000, red)" }}></div>
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>
@@ -234,24 +254,31 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <p class="playerName" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show
+                "reset-animation": !previousHealth().show,
+                "tutorial-highlight": exception(),
             }} style={{
                 top: top(state().player?.name.length as number), 
                 "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
                 "--glow-color": state().isStealth ? "#fdf6d8" : "gold",
-                "font-size": size(state().player?.name.length as number), "z-index": 0 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+                "font-size": size(state().player?.name.length as number), "font-family":"Centaur", "z-index": 0 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} style={{ "z-index": -1 }} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
-        <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
+        <Show when={settings().specials.length}>
+            <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
+        </Show>
+        {/* left: "30.5vw" : "37.25vw" */}
         <div class="combatUiWeapon" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show
-            }} onClick={() => setShow(show => !show)} style={caerenic(state().caerenic.active, state().isStealth) as any}>
+                "reset-animation": !previousHealth().show,
+                // "tutorial-highlight": exception(),
+            }} onClick={() => setShow(show => !show)} style={{...caerenic(state().caerenic.active, state().isStealth) as any, left: settings().specials.length ? "37.25vw" : "31.5vw", border: `1mm groove ${borderColor(state()?.playerBlessing)}`}}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
         <Show when={state().stalwart.active}>
-        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth) }}>
+        {/* left: "43vw" */}
+        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} 
+        style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), left: settings().specials.length ? "43vw" : "37.25vw", border: `1mm groove ${getRarityColor(ascean().shield?.rarity as string)}` }}>
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
@@ -278,6 +305,12 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
             </button>
         </Show>
+        {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0.5vw" }}>
+            <div style={{ "font-size": "0.75em" }} onClick={() => addSpecial(settings, "Consume")}>Add Special</div>
+        </button>
+        <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "12.5vw" }}>
+            <div style={{ "font-size": "0.75em" }} onClick={() => addStance(settings, "caerenic")}>Add Stance</div>
+        </button> */}
         {/* <Show when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer}>
             <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>
                 Engage
@@ -286,12 +319,16 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         {arenas()}
         <Portal>
             <Show when={show()}>
-            <div class="modal" onClick={() => setShow(!show())}>
-                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().caerenic.active} />
+            <div class="modal" classList={{
+                "tutorial-highlight": exception(),
+            }} onClick={() => setShow(!show())}>
+                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().caerenic.active} prayer={prayer} />
             </div>
             </Show>
             <Show when={shieldShow()}>
-            <div class="modal" onClick={() => setShieldShow(!shieldShow())}>
+            <div class="modal" classList={{
+                "tutorial-highlight": exception(),
+            }} onClick={() => setShieldShow(!shieldShow())}>
                 <ItemModal item={state()?.player?.shield} stalwart={state().stalwart.active} caerenic={false} />
             </div>
             </Show>
@@ -299,12 +336,16 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <PrayerModal prayer={effect as Accessor<StatusEffect>} show={prayerShow} setShow={setPrayerShow} />
             </Show>
             <Show when={staminaShow()}>
-            <div class="modal" onClick={() => setStaminaShow(!staminaShow())}>
+            <div class="modal" classList={{
+                "tutorial-highlight": exception(),
+            }} onClick={() => setStaminaShow(!staminaShow())}>
                 <StaminaModal setShow={setStaminaShow} settings={settings} />
             </div>
             </Show>
             <Show when={graceShow()}>
-            <div class="modal" onClick={() => setGraceShow(!graceShow())}>
+            <div class="modal" classList={{
+                "tutorial-highlight": exception(),
+            }} onClick={() => setGraceShow(!graceShow())}>
                 <GraceModal setShow={setGraceShow} settings={settings} />
             </div>
             </Show>
@@ -330,7 +371,9 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <Steal ascean={ascean} combat={state} game={game} settings={settings} stealing={stealing} setStealing={setStealing} setItems={setPickpocketItems} setShowPickpocket={setShowPickpocketItems} />
             </Show>
             <Show when={showPickpocket() && highlight()}>
-                <div class="modal" onClick={() => setHighlight(undefined)}>
+                <div class="modal" classList={{
+                    "tutorial-highlight": exception(),
+                }} onClick={() => setHighlight(undefined)}>
                     <ItemModal item={highlight()} caerenic={false} stalwart={false} /> 
                 </div>
             </Show>

@@ -269,7 +269,7 @@ export const ENEMY_RANGED: MasteryAbility = {
 export const DISTANCE = {
     MIN: 0,
     ATTACK: 50,
-    MOMENTUM: -0.35,
+    MOMENTUM: 0.75,
     THRESHOLD: 75,
     CHASE: 125,
     COMBAT: 60,
@@ -511,6 +511,15 @@ function getEnemyLevels(level: number): { min: number, max: number } {
     };
     return { min, max };
 };
+
+export function getAnEnemy(level: number): Compiler {
+    const { min, max } = getEnemyLevels(level);
+    let enemy = randomEnemy(min, max);
+    enemy = populateEnemy(enemy); 
+    const res  = asceanCompiler(enemy);
+    return res;
+};
+
 export function fetchEnemy(e: { enemyID: string; level: number; }): void {
     try { 
         const { min, max } = getEnemyLevels(e.level); 
@@ -523,18 +532,14 @@ export function fetchEnemy(e: { enemyID: string; level: number; }): void {
     };
 };
 export function fetchArena(enemies: ARENA_ENEMY[]): Compiler[] {
-    // try {
-        let complete: any[] = [];
-        for (let i = 0; i < enemies.length; i++) {
-            let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
-            enemy = populateEnemy(enemy);
-            const res = asceanCompiler(enemy);
-            complete.push(res);
-        };
-        return complete;
-    // } catch (err) {
-    //     console.warn(err, "Error Retrieving Enemies");
-    // };
+    let complete: any[] = [];
+    for (let i = 0; i < enemies.length; i++) {
+        let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
+        enemy = populateEnemy(enemy);
+        const res = asceanCompiler(enemy);
+        complete.push(res);
+    };
+    return complete;
 };
 export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.25, mastery: ["constitution", "strength", "agility", "achre", "caeren", "kyosir"][Math.floor(Math.random() * 6)], id: "0"}]) {
     try {

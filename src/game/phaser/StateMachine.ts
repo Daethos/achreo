@@ -45,6 +45,8 @@ export const States = {
 
     ARC: "arc",
     BLINK: "blink",
+    LIGHTNING: "lightning",
+    CHARM: "charm",
     CHIOMISM: "chiomism",
     CONFUSE: "confuse",
     CONSUME: "consume",
@@ -155,9 +157,12 @@ export const States = {
     WRITHE: "writhe",
     
     // Negative States
+    BURNED: "burned",
+    CHARMED: "charmed",
     CONFUSED: "confused",
     CONSUMED: "consumed",
     COUNTERSPELLED: "counterspelled",
+    DISEASED: "diseased",
     FEARED: "feared",
     FROZEN: "frozen",
     PARALYZED: "paralyzed",

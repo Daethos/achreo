@@ -26,9 +26,10 @@ import { IRefPhaserGame, rebalanceCurrency } from "../game/PhaserGame";
 import { Weapons } from "../assets/db/weaponry";
 import { Amulets, Trinkets } from "../assets/db/jewelry";
 import { roundToTwoDecimals } from "../utility/combat";
-import MerchantLoot from "./MerchantLoot";
+import MerchantLoot, { MassSell, QuickSell } from "./MerchantLoot";
 import Registry from "./Registry";
 import { Play } from "../game/main";
+import { addSpecial } from "../utility/abilities";
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
 const GET_ETCH_COST = {
@@ -380,7 +381,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
-            border: `0.2em solid ${getRarityColor(rarity)}`,
+            border: `thick ridge ${getRarityColor(rarity)}`,
             "background-color": "#000",
         };
     };
@@ -514,7 +515,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     const checkEnemy = (enemy: Ascean, manager: Accessor<QuestManager>) => {
         if (!enemy) return;
-        console.log({hostile:combat().isHostile});
         setNamedEnemy(namedNameCheck(enemy.name.split("(Converted)")[0].trim()));
         setEnemyArticle(() => ["a", "e", "i", "o", "u"].includes(enemy.name.charAt(0).toLowerCase()) ? "an" : "a");
         setEnemyDescriptionArticle(() => combat().computer?.description.split(" ")[0].toLowerCase() === "the" ? "the" : ["a", "e", "i", "o", "u"].includes((combat().computer?.description as string).charAt(0).toLowerCase()) ? "an" : "a");
@@ -618,6 +618,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             setShowQuestSave(true);
             EventBus.emit("complete-quest", quest);
             EventBus.emit("save-quest-to-player", complete);
+            addSpecial(ascean, settings, quest.special)
         } catch (err) {
             console.warn(err, "Error Completing Quest");
         };
@@ -672,11 +673,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         if (playerPersuasion >= enemyPersuasion) {
             EventBus.emit(PERSUASION, { persuasion, persuaded: true });
             const num = Math.floor(Math.random() * 2); 
-            setPersuasionString(`${persuasionTrait?.persuasion.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`);
+            const str = `${persuasionTrait?.persuasion.success[num].replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computerWeapons[0]?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)}`;
+            setPersuasionString(str);
         } else {
             checkingLoot();
             EventBus.emit(PERSUASION, { persuasion, persuaded: false });
-            setPersuasionString(`Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computer?.weaponOne?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`);
+            const str = `Failure. ${persuasionTrait?.persuasion?.failure.replace("{enemy.name}", combat()?.computer?.name).replace("{ascean.weaponOne.influences[0]}", influence()).replace("{ascean.name}", combat()?.player?.name).replace("{enemy.weaponOne.influences[0]}", combat()?.computerWeapons[0]?.influences?.[0]).replace("{enemy.faith}", combat()?.computer?.faith)} \n\n Nevertheless, prepare for some chincanery, ${combat().player?.name}, and perhaps leave the pleasantries for warmer company.`;
+            setPersuasionString(str);
             const timeout = setTimeout(() => {
                 engageCombat(combat()?.enemyID);
                 return () => clearTimeout(timeout);    
@@ -1165,7 +1168,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             currency.gold -= reforge().cost;
         };
         currency = rebalanceCurrency(currency);
-        EventBus.emit("alert", {header:"Reforging Item",body:`You have reforged your ${reforge().item?.name}! Hopefully it is more to your liking, ${ascean().name}.`});
+        // EventBus.emit("alert", {header:"Reforging Item",body:`You have reforged your ${reforge().item?.name}! Hopefully it is more to your liking, ${ascean().name}.`});
         const equipment = determineMutation(reforge().item as Equipment, sans());
         await updateItem(equipment as Equipment);
         const inventoryIndex = game().inventory.inventory.findIndex((inv: Equipment) => inv._id === equipment?._id);
@@ -1281,11 +1284,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         EventBus.emit("update-pause", false);
         EventBus.emit("show-dialog-false");
     };
+
     function checkConditions() {
         const name = combat().computer?.name.split(" (Converted)")[0];
         const enemies = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].map((e: any, i: number) => {const length = ENEMY_ENEMIES[name as keyof typeof ENEMY_ENEMIES].length; return `${length - 1 === i ? " and " : " "}${e}s`})
         return enemies;
     };
+
     function checkReward(item: string | Equipment) {
         if (typeof item === "string") {
             return item;
@@ -1765,7 +1770,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 />
             ) : ( "" ) } 
             <Show when={merchantTable()?.length > 0}> 
-                <button class="highlight" style={{ "color": "green" }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
+                <button class="highlight" style={{ "color": "gold" }} onClick={() => setShowBuy(true)}>See the merchant's current set of items</button>
             </Show>
             </div>
         </div>
@@ -1898,11 +1903,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Show when={showSell() || showBuy()}>
             <div class="modal" style={{ background: "rgba(0, 0, 0, 0.5)" }}>
                 <div class="creature-heading " style={{  position: "absolute","left": "12.5%",top: "2.5%",height: "95%",width: "75%",background: "#000",
-                    "border":"0.1rem solid #fdf6d8", "box-shadow":"inset #000 0 0 0 0.2em, inset #fdf6d8 0 0 0 0.3em"
+                    "border":"thick ridge #fdf6d8",
+                    // "border":"0.1rem solid #fdf6d8", "box-shadow":"inset #000 0 0 0 0.2em, inset #fdf6d8 0 0 0 0.3em",
                 }}>
                     <h1 class="center" style={{ "margin-bottom": "0%" }}>Merchant Menu</h1>
                     <div class="center">
-                    <Currency ascean={ascean} />
+                        <Currency ascean={ascean} />
                     </div>
                     <span onClick={() => setMerchantSell(!merchantSell())} style={{ float: "left", "margin-left": "2%", "margin-top":"-4%", color:"gold" }}>{merchantSell() ? "Merchant - Focus Buy" : toggleInventorySell() ? "Merchant - Focus Sell" : "Merchant - Split View"} <span style={{color:"#fdf6d8"}}></span></span>
                     <Show when={merchantSell()} fallback={
@@ -1910,41 +1916,31 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     }>
                         <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span style={{color:"green"}}>Quick Buy</span> | <span onClick={buyMassLoot} style={{color:"red"}}>Mass Buy <span style={{color:"red"}}>{massLootBuy().length > 0 && `(${massLootBuy().length})`}</span></span> | <span onClick={buyMassLoot} style={{color:"gold"}}>({totalBuyLoot().gold}g {totalBuyLoot().silver}s)</span></span>
                     </Show>
-                
                 <Switch>
                     <Match when={merchantSell()}>
                         <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
-                            <div class="center" style={{margin:"1%", height: "98%"}}>
-                            <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(6, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
-                            <For each={merchantTable()}>
-                                {(item: any, _index: Accessor<number>) => {
-                                    const cost = getItemCost(item);
-                                    return <div>
-                                        <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />
-                                        <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "▢"}</button>
-                                    </div>;
-                                }}
-                            </For>
-                            </div>
+                            <div class="center" style={{ margin:"1%", height: "96%", overflow: "scroll", "scrollbar-width": "none" }}>
+                                <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
+                                <For each={merchantTable()}>
+                                    {(item: any, _index: Accessor<number>) => {
+                                        const cost = getItemCost(item);
+                                        return <div style={{ margin: "5%", border: "thick ridge #fdf6d8", padding: "5%" }}>
+                                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={true} />
+                                        </div>;
+                                    }}
+                                </For>
+                                </div>
                             </div>
                         </div>
                     </Match>
                     
                     <Match when={!merchantSell() && toggleInventorySell()}>
-                        <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
-                            <div style={{ margin: "2%", height:"96%", overflow: "scroll", "scrollbar-width": "none" }}>
-                                <div class="playerInventoryBag center" style={{ "margin-bottom": "5%", "grid-template-columns": "repeat(8, 1fr)" }}> 
+                        <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
+                            <div class="center" style={{ margin:"1%", height: "96%", overflow: "scroll", "scrollbar-width": "none" }}>
+                                <div style={{ display: "grid", "margin-bottom": "5%", "grid-template-columns": "repeat(6, 1fr)" }}> 
                                     <For each={game()?.inventory.inventory}>{(item, _index) => {
                                         if (item === undefined || item === undefined) return;
-                                        return (
-                                            <div>
-                                                <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
-                                                    <img src={item?.imgUrl} alt={item?.name} />
-                                                </div>
-                                                <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>
-                                                <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
-                                            </div>
-                                        );
+                                        return <MassSell item={item} setItem={setItem} sellIitem={sellIitem} checkMassSell={checkMassSell} getCheckmark={getCheckmark} />
                                     }}</For>
                                 </div>
                             </div>
@@ -1954,114 +1950,39 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Match when={!merchantSell()}>
                         <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "48%", "margin-bottom": "5%" }}>
                             <div class="center" style={{margin:"2%", height: "98%"}}>
-                            <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(4, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
-                            <For each={merchantTable()}>
-                                {(item: any, _index: Accessor<number>) => {
-                                    const cost = getItemCost(item);
-                                    return <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />;
-                                }}
-                            </For>
-                            </div>
+                                <div style={{ display: "grid", "max-height": "97.5%", width: "100%", "grid-template-columns": "repeat(3, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
+                                <For each={merchantTable()}>
+                                    {(item: any, _index: Accessor<number>) => {
+                                        const cost = getItemCost(item);
+                                        return <div style={{ margin: "5%", border: "thick ridge #fdf6d8", padding: "5%" }}>
+                                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={false} />
+                                        </div>; 
+                                    }}
+                                </For>
+                                </div>
                             </div>
                         </div>
                         <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"50%", width: "48%", "margin-bottom": "5%" }}>
                             <div style={{ margin: "2%", height:"96%", overflow: "scroll", "scrollbar-width": "none" }}>
                                 <For each={game()?.inventory.inventory}>{(item, _index) => {
-                                if (item === undefined || item === undefined) return;
-                                return (
-                                    <div class="row menu-item-3d center" style={{ width: "100%", height: "25%" }}>
-                                        <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "0 5%", padding: "0.5em",width: "12.5%", height: "50%" }}>
-                                            <img src={item?.imgUrl} alt={item?.name} />
-                                        </div>
-                                        <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
-                                        <span style={{width:"50%"}}>
-                                        <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>
-                                        <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
-                                        </span>
-                                    </div>
-                                );
+                                    if (item === undefined || item === undefined) return;
+                                    return <QuickSell item={item} setItem={setItem} sellIitem={sellIitem} checkMassSell={checkMassSell} getCheckmark={getCheckmark} />
                                 }}</For>
                             </div>
                         </div>
                     </Match>
                 </Switch>
-               
-                {/* <Show when={merchantSell()} fallback={<>
-                    <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "48%", "margin-bottom": "5%" }}>
-                        <div class="center" style={{margin:"2%", height: "98%"}}>
-                        <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(4, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
-                        <For each={merchantTable()}>
-                            {(item: any, _index: Accessor<number>) => {
-                                const cost = getItemCost(item);
-                                return <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />;
-                            }}
-                        </For>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"50%", width: "48%", "margin-bottom": "5%" }}>
-                        <div style={{ margin: "2%", height:"96%", overflow: "scroll", "scrollbar-width": "none" }}>
-                        <Show when={toggleInventorySell()} fallback={
-                            <For each={game()?.inventory.inventory}>{(item, _index) => {
-                            if (item === undefined || item === undefined) return;
-                            return (
-                                <div class="row menu-item-3d center" style={{ width: "100%", height: "25%" }}>
-                                    <div onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "0 5%", padding: "0.5em",width: "12.5%", height: "50%" }}>
-                                        <img src={item?.imgUrl} alt={item?.name} />
-                                    </div>
-                                    <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
-                                    <span style={{width:"50%"}}>
-                                    <button class="highlight" onClick={() => sellIitem(item)} style={{ color: "green" }}>{sellRarity(item?.rarity as string)}</button>
-                                    <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
-                                    </span>
-                                </div>
-                            );
-                            }}</For>
-                        }>
-                            <div class="playerInventoryBag center" style={{ "margin-bottom": "5%" }}> 
-                                <For each={game()?.inventory.inventory}>{(item, _index) => {
-                                    if (item === undefined || item === undefined) return;
-                                    return (
-                                        <div>
-                                        <div class="center" onClick={() => setItem(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5.5%",padding: "0.25em",width: "auto" }}>
-                                            <img src={item?.imgUrl} alt={item?.name} />
-                                        </div>
-                                        <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
-                                        </div>
-                                    );
-                                }}</For>
-                            </div>
-                        </Show>
-                        </div>
-                    </div>
-                </>}>
-                    <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
-                        <div class="center" style={{margin:"1%", height: "98%"}}>
-                        <div style={{ display: "grid", height: "97.5%", width: "100%", "grid-template-columns": "repeat(6, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
-                        <For each={merchantTable()}>
-                            {(item: any, _index: Accessor<number>) => {
-                                const cost = getItemCost(item);
-                                return <div>
-                                    <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} />
-                                    <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red" }}>{getBuyMark(item._id) ? "✓" : "▢"}</button>
-                                </div>;
-                            }}
-                        </For>
-                        </div>
-                        </div>
-                    </div>
-                </Show> */}
                 <br /><br />
                 </div>
                 <Show when={combat().npcType !== "Merchant-Smith"}>
                     <button class="cornerTL highlight" style={{color:"green"}} onClick={() => refreshLoot()}>Refresh</button>
                 </Show>
                 <Show when={merchantSell()} fallback={
-                    <button class="highlight cornerTR" classList={{ "animate": massLootSell().length > 0}} style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={sellMassLoot}>Mass Sell</button>
+                    <button class="highlight cornerTR" classList={{ "animate": massLootSell().length > 0}} style={{ "font-weight": 700 }} onClick={sellMassLoot}>Sell {massLootSell().length > 0 ? `(${massLootSell().length})` : ""}</button>
                 }>
-                    <button class="highlight cornerTR" classList={{ "animate": massLootBuy().length > 0}} style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={buyMassLoot}>Mass Buy</button>
+                    <button class="highlight cornerTR" classList={{ "animate": massLootBuy().length > 0}} style={{ "font-weight": 700 }} onClick={buyMassLoot}>Buy {massLootBuy().length > 0 ? `(${massLootBuy().length})` : ""}</button>
                 </Show>
-                <button class="cornerBR highlight" onClick={() => {setShowBuy(false); setShowSell(false)}} style={{ "background-color": "red" }}>X</button>
+                <button class="cornerBR highlight" onClick={() => {setShowBuy(false); setShowSell(false)}} style={{ color: "red" }}>X</button>
                 {/* <button class="cornerBL highlight" onClick={addFunds} style={{ "background-color": "green" }}>Add</button> */}
             </div>
         </Show>

@@ -7,6 +7,7 @@ import { EventBus } from "../game/EventBus";
 
 export const LUCKOUT = "luckout";
 export const PERSUASION = "persuasion";
+
 type TRAIT = {
     [key: string]: {
         [key: string]: {
@@ -232,6 +233,16 @@ export const TRAIT_DESCRIPTIONS: TRAIT = {
         }
     },
     "Shrygeian": {
+        persuasion: {
+            description: "you can convince those who see this world with verve.",
+            action: "Speak to {enemy.name}'s curiosity.",
+            modal: "Knave (Affects all enemies who are more explorer than obstinate)",
+            success: [
+                "Wonderful, {ascean.name}. Let us see where we end up next, aye?", 
+                "Hush of hale sweeps through as crisp mountain air, revitalizing a healthy hallow."
+            ],
+            failure: "It appears {enemy.name} did not appreciate your high minded curiosity nor your haughty tone. They seem more resolved to vanquish you now."
+        },
         knavery: {
             description: "your exploratory abilities are heightened.",
             action: "The blood of Shrygei runs through your veins, you are able to sing life into the land.",
@@ -278,7 +289,7 @@ export const TRAIT_DESCRIPTIONS: TRAIT = {
                 "A stillness hollows {enemy.name}, the chant of a dead language stirs their blood without design.", 
                 "An unsure unease stifles the ascent of the {enemy.name}, their eyes a haze of murk."
             ],
-            failure: "Failure!"
+            failure: "Despite legends of the Shaorahi, {enemy.name} is perhaps either a non believer, or far too fickle in their judgment of you.",
         }
     },
     "Tshaeral": {
@@ -332,8 +343,18 @@ export const TRAIT_DESCRIPTIONS: TRAIT = {
         }
     },
 };
-
-export const getAsceanTraits = (ascean: Ascean) => {
+export type Traits = {
+    primary: {
+        name: string;
+    };
+    secondary: {
+        name: string;
+    };
+    tertiary: {
+        name: string;
+    };
+};
+export const getAsceanTraits = (ascean: Ascean): Traits => {
     let traits = {
         primary: { name: "" },
         secondary: { name: "" },

@@ -13,7 +13,7 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow, f
     function item(rarity: string) {
         return { 
             "background-color": "#000", 
-            border: "0.2em solid " + getRarityColor(rarity), 
+            border: "thick ridge " + getRarityColor(rarity), 
             margin: "0.25em",
             "padding-bottom": "-0.25em",
             transform: "scale(1.1)",
@@ -28,20 +28,20 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow, f
     function info(item: Equipment): void {
         setEquipment(item);
         setShow(!show());
-    }; 
+    };
     return <div class="imageCardGrid" style={{ width: full ? "100%" : "90%", margin: "auto" }}>
-        <div class="imageCardLeft menu" style={{ background: "transparent" }}>
+        <div class="imageCardLeft menu">
             {div(ascean().weaponOne)}
             {div(ascean().weaponTwo)}
             {div(ascean().weaponThree)}
             {div(ascean().shield)}
         </div>
-        <div class="imageCardMiddle menu" style={{ background: "transparent" }}>
+        <div class="imageCardMiddle menu">
             {div(ascean().helmet)}
             {div(ascean().chest)}
             {div(ascean().legs)}
         </div>
-        <div class="imageCardRight menu" style={{ background: "transparent" }}>
+        <div class="imageCardRight menu">
             {div(ascean().amulet)}
             {div(ascean().ringOne)}
             {div(ascean().ringTwo)}

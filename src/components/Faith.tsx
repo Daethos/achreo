@@ -11,14 +11,14 @@ export const FAITHS = [{
     quote: "A tendril swirls soothing about your senses, \n It's sweetness teasing as hush soon possesses.",
     worshipers: "Adherent",
     character: "Adherence holds fyers to true form, and may invoke this comfort.",
-    iconography: "../assets/images/achreo-rising.jpg"
+    iconography: "../assets/images/achreo-rising.png"
 }, {
     name: "Daethos",
     origin: "Founded by mythic general, Laetrois Ath'Shaorah, chosen during the War of the Ancients. Of unknown origin, Laetrois and his soliders are believed to have descended from obscure lands in the nothren'eas; seen as a force entering in the later stages of the war against both armies led by Ilios and Ma'anre, respectively. \n\n Saving humanity, the death of the general during the aftermath of the war led to his faithful companion, the Good Lorian, to establish the Seyr in the City of Lor, later codifying the oratory nature of its principles and providence into the Daethica, or, the 'Good Books.'",
     quote: "Writhing, it warps to wrap round you, seething, \n Forms of shade simmer to dance upon your being",
     worshipers: "Devoted",
     character: "To be Daethic is to become Atshaer Ascean, the va'Esai, Laetrois Ath'Shaorah.",
-    iconography: "../assets/images/daethos-forming.jpg"
+    iconography: "../assets/images/daethos-forming.png"
 }, {
     name: "None",
     origin: "You have no faith and seek other means to hold yourself together.",
@@ -30,10 +30,10 @@ export const FAITHS = [{
 
 export const FaithModal = ({ faith }: { faith: string }) => {
     const religion = FAITHS.find((f) => f.worshipers === faith);
-    return <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ? { position: "absolute", left: "15%", top: "48%", width: "70%", 
+    return <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ? { position: "absolute", left: "15%", top: "48%", width: "70%",
         "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : {}}>
         <div class="creature-heading" style={{ "text-wrap": "balance" }}> 
-            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
+            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%", border: "thick ridge" }} />
             <p class="gold small wrap" style={{ margin: "3%" }}>{religion?.origin}</p>
             <h2 class="gold wrap" style={{ margin: "3%" }}>{religion?.character}</h2>
         </div>

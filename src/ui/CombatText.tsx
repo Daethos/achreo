@@ -54,7 +54,7 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
         </div>
         <Show when={editShow()}>
             <div class="modal">
-            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em" }}>
+            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
                 <h1>Size</h1>
                 <button class="highlight" onClick={() => editCombatText("size", 
                     `${Math.max(Number(edit().size.split("em")[0]) - 0.25, 0.25)}em`)}>-</button>

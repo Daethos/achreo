@@ -53,10 +53,10 @@ interface ChunkData {
         npcs: NPC[];
     };
     layers: {
-        base: Phaser.Tilemaps.TilemapLayer | null;
-        climbing: Phaser.Tilemaps.TilemapLayer | null;
-        flowers: Phaser.Tilemaps.TilemapLayer | null;
-        plants: Phaser.Tilemaps.TilemapLayer | null;
+        base: Phaser.Tilemaps.TilemapLayer;
+        climbing: Phaser.Tilemaps.TilemapLayer;
+        flowers: Phaser.Tilemaps.TilemapLayer;
+        plants: Phaser.Tilemaps.TilemapLayer;
     };
     navMesh: any;
 };
@@ -112,7 +112,7 @@ export class Game extends Scene {
     frameCount: number = 0;
     cachedWidthOffset: number = 0;
     cachedHeightOffset: number = 0;
-    tileCache = new Map<string, {climb:boolean, water:boolean}>();
+    tileCache = new Map<string, {climb:boolean, water:boolean, flora:boolean, y:number}>();
     chunkSet: number = 0;
     currentChunkX: number = 0;
     currentChunkY: number = 0;
@@ -161,18 +161,6 @@ export class Game extends Scene {
         this.weather = new WeatherManager(this);
 
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
-        this.player.inputKeys = {
-            up: this?.input?.keyboard?.addKeys("W,UP"),
-            down: this?.input?.keyboard?.addKeys("S,DOWN"),
-            left: this?.input?.keyboard?.addKeys("A,LEFT"),
-            right: this?.input?.keyboard?.addKeys("D,RIGHT"),
-            action: this?.input?.keyboard?.addKeys("ONE,TWO,THREE,FOUR,FIVE"),
-            strafe: this?.input?.keyboard?.addKeys("E,Q"),
-            shift: this?.input?.keyboard?.addKeys("SHIFT"),
-            firewater: this?.input?.keyboard?.addKeys("T"),
-            tab: this?.input?.keyboard?.addKeys("TAB"),
-            escape: this?.input?.keyboard?.addKeys("ESC"),
-        }; 
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
         this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -341,10 +329,10 @@ export class Game extends Scene {
         map.createLayer("Tile Layer - Lights", tilesets.light, offsetX, offsetY);
         return {
             refLayers: {
-                base: layer0,
-                climbing: layer1,
-                flowers: layer2,
-                plants: layer3
+                base: layer0 as Phaser.Tilemaps.TilemapLayer,
+                climbing: layer1 as Phaser.Tilemaps.TilemapLayer,
+                flowers: layer2 as Phaser.Tilemaps.TilemapLayer,
+                plants: layer3 as Phaser.Tilemaps.TilemapLayer
             },
             collisionLayers: [layer0, layer1, layerB, layerC, layerT, layer4, layer5, layer6],
             decorationLayers: [layer2, layer3]
@@ -1048,44 +1036,43 @@ export class Game extends Scene {
         }, undefined, this);
     };
 
+    private coordCache = { chunk: '', tile: '' };
+
     checkEnvironment = (entity: Player | Enemy | Party) => {
         if (this.frameCount % 20 !== 0) return;
-        const chunkKey = `${this.playerChunkX},${this.playerChunkY}`;
-        const chunkData = this.loadedChunks.get(chunkKey);
+
+        this.coordCache.chunk = this.playerChunkX + ',' + this.playerChunkY;
+        const chunkData = this.loadedChunks.get(this.coordCache.chunk);
+    
         if (!chunkData) return;
+
         const x = chunkData.map.worldToTileX(entity.x || 0) as number;
         const y = chunkData.map.worldToTileY(entity.y || 0) as number;
-        const key = `${x},${y}`;
-        let cached = this.tileCache.get(key);
+        // const key = `${x},${y}`;
+        this.coordCache.tile = x + ',' + y;
+        let cached = this.tileCache.get(this.coordCache.tile);
 
         if (!cached) {
-            const climb = chunkData.layers?.climbing?.getTileAt(x, y);
-            const water = chunkData.layers?.base?.getTileAt(x, y);
+            const climb = chunkData.layers.climbing.getTileAt(x, y);
+            const water = chunkData.layers.base.getTileAt(x, y);
+            const flower = chunkData.layers.flowers.getTileAt(x, y);
+            const plant = chunkData.layers.plants.getTileAt(x, y);
+
             cached = {
                 climb: !!(climb?.properties?.climb),
-                water: !!(water?.properties?.water)
+                water: !!(water?.properties?.water),
+                flora: !!(flower || plant),
+                y: flower ? flower.pixelY : (plant ? plant.pixelY : 0)
             };
-            this.tileCache.set(key, cached);
+
+            this.tileCache.set(this.coordCache.tile, cached);
         };
         
         entity.isClimbing = cached.climb;
         entity.inWater = cached.water;
 
-        const flower = chunkData.layers?.flowers?.getTileAt(x as number, y as number);
-        if (flower) {
-            if (flower.pixelY > entity.y - 8) {
-                entity.setDepth(1);
-            } else {
-                entity.setDepth(3);
-            };
-        };
-        const plant = chunkData.layers?.plants?.getTileAt(x as number, y as number);
-        if (plant) {
-            if (plant.pixelY > entity.y - 8) {
-                entity.setDepth(1);
-            } else {
-                entity.setDepth(3);
-            };
+        if (cached.flora) {
+            entity.setDepth(cached.y > entity.y - 8 ? 1 : 3);
         };
     };
 
@@ -1112,12 +1099,24 @@ export class Game extends Scene {
         this.checkChunkTransition();
     };
 
+
     setCameraOffset = () => {
-        if (this.frameCount % 4 !== 0 || this.hud.cinemaMode) return;
+        if (this.frameCount % 4 !== 0) return;
+
+        const worldView = this.cameras.main.worldView;
+        
+        if (this.hud.cinemaMode) {
+            this.cachedWidthOffset = worldView.width / X_OFFSET;
+            this.cachedHeightOffset = worldView.height / Y_OFFSET;
+            this.overlay.width = worldView.width + OVERLAY_BUFFER;
+            this.overlay.height = worldView.height + OVERLAY_BUFFER;
+            this.overlay.setPosition(worldView.x - OVERLAY_BUFFER / 2, worldView.y - OVERLAY_BUFFER / 2);
+            return;    
+        };
+
         if (this.frameCount % 60 === 0) {
-            const { width, height } = this.cameras.main.worldView;
-            this.cachedWidthOffset = width / X_OFFSET;
-            this.cachedHeightOffset = height / Y_OFFSET;
+            this.cachedWidthOffset = worldView.width / X_OFFSET;
+            this.cachedHeightOffset = worldView.height / Y_OFFSET;
         };
         
         const prevOffsetX = this.offsetX;
@@ -1130,19 +1129,19 @@ export class Game extends Scene {
         };
         
         const playerVelY = this.player.velocity?.y || 0;
+
         if (playerVelY > 0) {
             this.offsetY = Math.max(this.offsetY - Y_SPEED_OFFSET, -this.cachedHeightOffset);
         } else if (playerVelY < 0) {
             this.offsetY = Math.min(this.cachedHeightOffset, this.offsetY + Y_SPEED_OFFSET);
         };
-        
+
         if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) {
             this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
         };
-        const { width, height, x, y } = this.cameras.main.worldView;
-        this.overlay.width = width + OVERLAY_BUFFER;
-        this.overlay.height = height + OVERLAY_BUFFER;
-        this.overlay.setPosition(x - OVERLAY_BUFFER / 2, y - OVERLAY_BUFFER / 2);
+        this.overlay.width = worldView.width + OVERLAY_BUFFER;
+        this.overlay.height = worldView.height + OVERLAY_BUFFER;
+        this.overlay.setPosition(worldView.x - OVERLAY_BUFFER / 2, worldView.y - OVERLAY_BUFFER / 2);
     };
 
     startCombatTimer = (): void => {
@@ -1183,12 +1182,16 @@ export class Game extends Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
 
-        for (let i = 0; i < this.enemies.length; i++) {
-            let enemy = this.enemies[i], chunk = this.checkChunk(enemy), dist = this.distanceToPlayer(enemy), target = UPDATE_OFF;
+        const enemyCount = this.enemies.length;
+        for (let i = 0; i < enemyCount; i++) {
+            let enemy = this.enemies[i], chunk = this.checkChunk(enemy);
             if (!chunk) {
                 if (enemy.updating) this.bodyUpdate(enemy, false);
                 continue;
             };
+
+            let dist = this.distanceToPlayer(enemy), target = UPDATE_OFF;
+
             if (dist < DISTANCE_CLOSE) {
                 target = UPDATE_CLOSE;
             } else if (dist < DISTANCE_MID) {
@@ -1207,14 +1210,16 @@ export class Game extends Scene {
             };
         };
 
-        for (let i = 0; i < this.party.length; i++) {
+        const partyCount = this.party.length;
+        for (let i = 0; i < partyCount; i++) {
             const party = this.party[i];
             if (party.isDeleting) continue;
             party.update(delta);
             this.checkEnvironment(party);
         };
 
-        for (let i = 0; i < this.npcs.length; i++) {
+        const npcCount = this.npcs.length;
+        for (let i = 0; i < npcCount; i++) {
             let npc = this.npcs[i], chunk = this.checkChunk(npc), distance = this.distanceToPlayer(npc), shouldUpdate = false;
             if (!chunk) {
                 if (npc.updating) this.bodyUpdate(npc, false);

@@ -13,6 +13,7 @@ import { Collapse } from "solid-collapse";
 import ComputerLoadout from "../components/ComputerLoadout";
 const PhaserShaper = lazy(async () => await import("./PhaserShaper"));
 const cleanSettings = {
+    combat: false,
     actionTooltip: false,
     computerArena: false,
     combatTargeting: false,
@@ -106,15 +107,15 @@ export default function PhaserSettings({ settings, setSettings, actions, special
             console.warn(err, "Error Handling Desktop");
         };
     };
-    const handleDesktop = async (desktop: boolean) => {
-        try {
-            const newSettings = { ...settings(), desktop };
-            await saveSettings(newSettings);
-            EventBus.emit("update-desktop-cursor", desktop);
-        } catch (err) {
-            console.warn(err, "Error Handling Desktop");
-        };
-    };
+    // const handleDesktop = async (desktop: boolean) => {
+    //     try {
+    //         const newSettings = { ...settings(), desktop };
+    //         await saveSettings(newSettings);
+    //         EventBus.emit("update-desktop-cursor", desktop);
+    //     } catch (err) {
+    //         console.warn(err, "Error Handling Desktop");
+    //     };
+    // };
 
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };
@@ -483,14 +484,13 @@ export default function PhaserSettings({ settings, setSettings, actions, special
                             <div style={font("0.5em")}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
                         </Collapse>
                     </Collapse>
-
-                    <h1 onClick={() => resetFrame("desktop", !frame().desktop)} style={font("1.25em")}>Desktop</h1>
+                    {/* <h1 onClick={() => resetFrame("desktop", !frame().desktop)} style={font("1.25em")}>Desktop</h1>
                     <Collapse value={frame().desktop} class="my-transition">
                         <div style={font("1em", "#fdf6d8")}>
                         <button class="gold highlight" onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? "Enabled" : "Disabled"}</button>
                         </div>
                         <div style={font("0.5em")}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
-                    </Collapse>
+                    </Collapse> */}
 
                     <h1 onClick={() => resetFrame("fps", !frame().fps)} style={font("1.25em")}>FPS</h1>
                     <Collapse value={frame().fps} class="my-transition">

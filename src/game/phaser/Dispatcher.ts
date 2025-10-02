@@ -42,7 +42,7 @@ function enemy(data: any): void {
 function actionInput({ key, value }: { key: string, value: string | number | boolean }): void {
     EventBus.emit(UPDATE, { key, value });
 };
-function chiomic(data: number): void {
+function chiomic(data: {power:number,type:string}): void {
     EventBus.emit(INITIATE, { data, type: ActionTypes.CHIOMIC });
 };
 function sacrifice(data: number): void {

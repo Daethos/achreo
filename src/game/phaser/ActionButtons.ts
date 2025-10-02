@@ -16,13 +16,13 @@ const ACTIONS = [
     { DODGE: 0x800080 }, 
     { PARRY: 0x800080 }
 ];
-const SPECIALS = [
-    { INVOKE: 0x000000 },
-    { TSHAERAL: 0x000000 }, 
-    { POLYMORPH: 0x000000 }, 
-    { ROOT: 0x000000 },
-    { SNARE: 0x000000 },
-];
+// const SPECIALS = [
+//     { INVOKE: 0x000000 },
+//     { TSHAERAL: 0x000000 },
+//     { POLYMORPH: 0x000000 },
+//     { ROOT: 0x000000 },
+//     { SNARE: 0x000000 },
+// ];
 const DISPLAY = {
     ARC: "arc",
     DIAGONAL: "diagonal",
@@ -293,7 +293,8 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.add(button.graphic);
         });
 
-        SPECIALS.forEach((_element, index) => {
+        const spec = this.scene.settings.specials;
+        spec.forEach((_element, index) => {
             const { buttonX, buttonY } = this.displayButton(SPECIAL, 
                 specialButtons.display, 
                 specialButtons.spacing,
@@ -344,6 +345,63 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             this.add(button.border);
             this.add(button.graphic);
         }); 
+    };
+
+    createNewSpecialButton = (name: string, index: number) => {
+        const { width, height } = this.scene.cameras.main;
+        const specialButtons = this.scene.settings.positions.specialButtons;
+        const centerSpecialX = width * specialButtons.x; // width * 0.725 || / 1.375
+        const centerSpecialY = height * specialButtons.y; // height * 0.6 || / 1.675
+        const { buttonX, buttonY } = this.displayButton(SPECIAL, 
+            specialButtons.display, 
+            specialButtons.spacing,
+            index, centerSpecialX, centerSpecialY, height,
+        );
+        
+        let button: ActionButton = {
+            key: SPECIAL,
+            name, // scene.settings.specials[index],
+            border: new Phaser.GameObjects.Graphics(this.scene),
+            graphic: new Phaser.GameObjects.Graphics(this.scene),
+            color: specialButtons.color,
+            current: 100,
+            total: 100,
+            x: buttonX,
+            y: buttonY,
+            height: this.buttonHeight,
+            width: this.buttonWidth,
+            isReady: true
+        };
+
+        button.graphic.fillStyle(specialButtons.color, specialButtons.opacity);
+        button.graphic.fillCircle(buttonX, buttonY, button.width as number);
+        button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, specialButtons.opacity);
+        button.border.strokeCircle(buttonX, buttonY, button.width + SETTINGS.BORDER_OFFSET as number);
+
+        this.scaleButton(button, specialButtons.width, specialButtons.opacity, specialButtons.border);
+
+        button.graphic.setInteractive(new Phaser.Geom.Circle(buttonX, buttonY, button.width), Phaser.Geom.Circle.Contains)
+            .on("pointerdown", (_pointer: any, _localX: any, _localY: any, _event: any) => {
+                this.pressButton(button);
+            })
+            .on("pointerover", (pointer: any) => {
+                this.setButtonText(button, pointer);
+            })
+            .on("pointerout", () => {
+                const tooltip = this.tooltipManager.get(button.name);
+                if (tooltip && tooltip.timer) {
+                    tooltip?.timer.remove();
+                    tooltip.createTimer(this.scene);
+                } else if (tooltip) {
+                    tooltip.createTimer(this.scene);
+                };
+            });
+        button.graphic.setScrollFactor(0, 0);
+        button.border.setScrollFactor(0, 0);
+        button.graphic.setDepth(3);
+        this.specialButtons.push(button);
+        this.add(button.border);
+        this.add(button.graphic);
     };
 
     highlightAnimation() {
@@ -826,6 +884,13 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 break;
             };
             case SPECIAL: {
+                // console.log({ list, type, buttons: this.specialButtons });
+                if (list.length > this.specialButtons.length) { // Need to generate new buttons
+                    for (let i = 0; i < list.length; ++i) {
+                        if (this.specialButtons[i]) continue;
+                        this.createNewSpecialButton(list[i].toUpperCase(), i);
+                    };
+                };
                 this.specialButtons = this.specialButtons.map((button: ActionButton, index: number) => {
                     button.graphic.removeAllListeners();
                     button = { ...button, name: list[index].toUpperCase() as string };

@@ -3,6 +3,7 @@ import { EventBus } from "../EventBus";
 import { CombatManager } from "./CombatManager";
 import { Combat } from "../../stores/combat";
 import StatusEffect from "../../utility/prayer";
+import { HitLocationResult } from "./HitDetection";
 
 type ActionHandler = (data: any) => void;
 
@@ -10,12 +11,14 @@ interface Action {
     type: string;
     data: any;
     id?: string | undefined;
+    hitLocation?: HitLocationResult;
 };
 
 export type KVI = {
     key: string;
     value: string | number | boolean;
-    id?: string; 
+    id?: string;
+    hitLocation?: HitLocationResult;
 };
 
 const ACTIONS: { [key: string]: ActionHandler } = {
@@ -24,7 +27,7 @@ const ACTIONS: { [key: string]: ActionHandler } = {
     "Set Health": (data: KVI) => Dispatcher.setHealth(data),
     "Instant": (data: string) => Dispatcher.instant(data),
     "Consume": (data: any[]) => Dispatcher.prayer(data),
-    "Chiomic": (data: number) => Dispatcher.chiomic(data),
+    "Chiomic": (data: {power:number,type:string}) => Dispatcher.chiomic(data),
     "Prayer": (data: string) => Dispatcher.talentPrayer(data),
     "Sacrifice": (data: number) => Dispatcher.sacrifice(data),
     "Suture": (data: number) => Dispatcher.suture(data),

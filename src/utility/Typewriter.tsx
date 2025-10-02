@@ -3,13 +3,26 @@ import Typed from "typed.js";
 import { EventBus } from "../game/EventBus";
 type StyleMap = { [key: string]: JSX.CSSProperties };
 const styleMap: StyleMap = {
+    animate: {
+        animation: "gradient 1s ease infinite"
+    },
     rebukeButton: {
         float: "right",
         "font-size": "24px",
         "z-index": 9999,
-        "margin-left": "90vw",
-        "margin-top": "5vh",
+        "margin-left": "100%",
+        // "margin-top": "5vh",
         color: "red",
+        border: "none",
+        "text-decoration": "none",
+        "background-color": "transparent",
+    },
+    cornerBR: {
+        position: "fixed",
+        bottom: 0,
+        right: 0,
+        color: "red",
+        "font-size": "24px",
         border: "none",
         "text-decoration": "none",
         "background-color": "transparent",
@@ -49,7 +62,7 @@ const styleMap: StyleMap = {
         "text-align": "center",
         "text-shadow": "1.5px 1.5px 1.5px darkgoldenrod",
         margin: "auto",
-        "font-size": "16px",
+        "font-size": "1.25rem",
         padding: "1em",
         "font-variant": "small-caps",
     },
@@ -209,7 +222,6 @@ export default function Typewriter({ stringText, styling, performAction, main, n
             subtree: true,
             characterData: true
         });
-        
         return observer;
     };
     
@@ -250,7 +262,7 @@ export default function Typewriter({ stringText, styling, performAction, main, n
             onComplete: () => {
                 if (main) EventBus.emit("typing-complete");
                 isTyping = false;
-            }
+            },
         };
         typed = new Typed(el(), typedContent);
         return () => (typed as Typed).destroy();

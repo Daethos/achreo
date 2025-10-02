@@ -50,7 +50,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         </div>
         <Show when={dims.ORIENTATION === "landscape"} fallback={<>
             <div class="center">
-            <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "50%" : "25%", height: dims.ORIENTATION === "landscape" ? "50%" : "25%", border: "0.15em solid gold" }} />
+            <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "50%" : "25%", height: dims.ORIENTATION === "landscape" ? "50%" : "25%", border: "2mm groove gold" }} />
             </div>
             <br />
             <div class="creature-heading">
@@ -64,7 +64,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         </>}>
             <div class="animate-flicker" style={{ position: "absolute", width: "70%", left: "15%" }}>
             <div class="left" style={{ width: "48%" }}>
-                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="" style={{ width: "75%", height: "50%", border: "0.15em solid gold", "border-radius": "50%" }} />
+                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="" style={{ width: "75%", height: "50%", border: "1mm groove gold", "border-radius": "50%" }} />
             </div>
             <div class="right" style={{ width: "48%" }}>
             <div class="creature-heading center">

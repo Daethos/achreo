@@ -1,9 +1,9 @@
 import { Accessor, createEffect, createSignal, JSX, Show } from "solid-js";
 import { font } from "../utility/styling";
 import { ThreeDots } from "solid-spinner";
-import { EventBus } from "../game/EventBus";
+// import { EventBus } from "../game/EventBus";
 import Ascean from "../models/ascean";
-import Equipment from "../models/equipment";
+// import Equipment from "../models/equipment";
 export default function Merchant({ ascean }: { ascean: Accessor<Ascean>; }) {
     const [merchantAnimation, setMerchantAnimation] = createSignal<{ item: any, player: number, merchant: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:"", name:""},
@@ -42,72 +42,72 @@ export default function Merchant({ ascean }: { ascean: Accessor<Ascean>; }) {
             });
         };
     });
-    function getFine(rarity: string): number | string {
-        switch (rarity) {
-            case 'Common': return '5 silver';
-            case 'Uncommon': return '25 silver';
-            case 'Rare': return '1 gold';
-            case 'Epic': return '3 gold';
-            case 'Legendary': return '100 gold';
-            default: return 0;
-        };
-    };
-    function merchant(item: Equipment): void {
-        try {
-            const weight = {
-                Common: 0,
-                Uncommon: 5,
-                Rare: 10,
-                Epic: 25,
-                Legendary: 50,
-            };
-            const merchant = Math.floor(Math.random() * 101) + weight[item.rarity as keyof typeof weight];
-            const player = ascean().agility + ascean().achre + Math.round(Math.random() * 5 * (Math.random() > 0.5 ? 1 : -1));
-            const success = player > merchant;
-            setMerchantAnimation({ ...merchantAnimation(), item, on: true, rolling: true, step: 1 });
-            setTimeout(() => {
-                if (merchantAnimation().cancel === true) {
-                    setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
-                    return;    
-                };
-                setMerchantAnimation({ ...merchantAnimation(), player, rolling: true, step: 2 });
-                setTimeout(() => {
-                    if (merchantAnimation().cancel === true) {
-                        setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
-                        return;    
-                    };
-                    setMerchantAnimation({ ...merchantAnimation(), merchant, rolling: true, step: 3 });
-                    setTimeout(() => {
-                        if (merchantAnimation().cancel === true) {
-                            setMerchantAnimation({  ...merchantAnimation(),  cancel: false,  rolling: false,  step: 0 });
-                            return;    
-                        };
-                        setMerchantAnimation({ ...merchantAnimation(), merchant, rolling: true, step: 4 });
-                        // if (success) {
-                        //     EventBus.emit('steal-item', { success: true, item: item });
-                        // } else {
-                        //     EventBus.emit('steal-item', { success: false, item: item });
-                        // };
-                        setTimeout(() => {
-                            if (merchantAnimation().cancel === true) {
-                                setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
-                                return;    
-                            };
-                            if (success) { // Failure
-                                EventBus.emit("alert", { header: "You Have Appropriated Goods!", body: `You have successfully lifted the item from the table. The merchant has no idea they no longer possess the ${item.name}. Good job, criminal scum!`, delay: 6000, key: "Close"});    
-                            } else {
-                                const fineCost = getFine(item.rarity as string); 
-                                EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The merchant protested your censure, and have simply been fined ${fineCost} instead. The item has subsequently been pulled from the table.`, delay: 6000, key: "Close"});    
-                            };
-                            setMerchantAnimation({ ...merchantAnimation(), on: false, step: 0 });
-                        }, 3000);
-                    }, 3000);
-                }, 3000);
-            }, 3000);
-        } catch (err: any) {
-            console.warn(err.message, "Error Stealing Item!"); 
-        };
-    };
+    // function getFine(rarity: string): number | string {
+    //     switch (rarity) {
+    //         case 'Common': return '5 silver';
+    //         case 'Uncommon': return '25 silver';
+    //         case 'Rare': return '1 gold';
+    //         case 'Epic': return '3 gold';
+    //         case 'Legendary': return '100 gold';
+    //         default: return 0;
+    //     };
+    // };
+    // function merchant(item: Equipment): void {
+    //     try {
+    //         const weight = {
+    //             Common: 0,
+    //             Uncommon: 5,
+    //             Rare: 10,
+    //             Epic: 25,
+    //             Legendary: 50,
+    //         };
+    //         const merchant = Math.floor(Math.random() * 101) + weight[item.rarity as keyof typeof weight];
+    //         const player = ascean().agility + ascean().achre + Math.round(Math.random() * 5 * (Math.random() > 0.5 ? 1 : -1));
+    //         const success = player > merchant;
+    //         setMerchantAnimation({ ...merchantAnimation(), item, on: true, rolling: true, step: 1 });
+    //         setTimeout(() => {
+    //             if (merchantAnimation().cancel === true) {
+    //                 setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
+    //                 return;    
+    //             };
+    //             setMerchantAnimation({ ...merchantAnimation(), player, rolling: true, step: 2 });
+    //             setTimeout(() => {
+    //                 if (merchantAnimation().cancel === true) {
+    //                     setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
+    //                     return;    
+    //                 };
+    //                 setMerchantAnimation({ ...merchantAnimation(), merchant, rolling: true, step: 3 });
+    //                 setTimeout(() => {
+    //                     if (merchantAnimation().cancel === true) {
+    //                         setMerchantAnimation({  ...merchantAnimation(),  cancel: false,  rolling: false,  step: 0 });
+    //                         return;    
+    //                     };
+    //                     setMerchantAnimation({ ...merchantAnimation(), merchant, rolling: true, step: 4 });
+    //                     // if (success) {
+    //                     //     EventBus.emit('steal-item', { success: true, item: item });
+    //                     // } else {
+    //                     //     EventBus.emit('steal-item', { success: false, item: item });
+    //                     // };
+    //                     setTimeout(() => {
+    //                         if (merchantAnimation().cancel === true) {
+    //                             setMerchantAnimation({ ...merchantAnimation(), cancel: false, rolling: false, step: 0 });
+    //                             return;    
+    //                         };
+    //                         if (success) { // Failure
+    //                             EventBus.emit("alert", { header: "You Have Appropriated Goods!", body: `You have successfully lifted the item from the table. The merchant has no idea they no longer possess the ${item.name}. Good job, criminal scum!`, delay: 6000, key: "Close"});    
+    //                         } else {
+    //                             const fineCost = getFine(item.rarity as string); 
+    //                             EventBus.emit("alert", {header: "You Have Been Caught!", body: `You were caught stealing. The merchant protested your censure, and have simply been fined ${fineCost} instead. The item has subsequently been pulled from the table.`, delay: 6000, key: "Close"});    
+    //                         };
+    //                         setMerchantAnimation({ ...merchantAnimation(), on: false, step: 0 });
+    //                     }, 3000);
+    //                 }, 3000);
+    //             }, 3000);
+    //         }, 3000);
+    //     } catch (err: any) {
+    //         console.warn(err.message, "Error Stealing Item!"); 
+    //     };
+    // };
     return <div>
         <Show when={merchantAnimation().on}>
             <div class="modal" style={{ "z-index": 99 }}>

@@ -61,7 +61,7 @@ export const MindStates: {[key:string]: MindState;} = {
         chaseThresholdSq: (DISTANCE.CHASE * 1.2) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.2) ** 2,
         callHelp: false,
-        summon: true,
+        summon: false, // true
         activations: 0,
         startup: (self, ctx) => {
              if (!self.isCaerenic && (self.inCombat || self.inComputerCombat)) {
@@ -139,7 +139,7 @@ export const MindStates: {[key:string]: MindState;} = {
         chaseThresholdSq: (DISTANCE.CHASE * 1.2) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.3) ** 2,
         callHelp: true,
-        summon: true,
+        summon: false, // true
         activations: 0,
         startup: (self, ctx) => {
             const grip = self.computerCombatSheet.computerWeapons?.[0]?.grip;
@@ -187,7 +187,9 @@ export const MindStates: {[key:string]: MindState;} = {
         callHelp: false,
         summon: false,
         activations: 0,
-        // startup: (self, ctx) => {},
+        startup: (self, ctx) => {
+            self.mindState.keepDistance = self.isRanged;
+        },
         customEvaluate: (self, ctx) => { // self.enemies.length > 1 && 
             if (Math.random() > 0.995 && ctx.direction.ogLengthSq < self.mindState.minDistanceSq && !self.isRanged) { // Also check for distance from at least 1 is close
                 // console.log("%c Controller: Casting AoE", "color:#0ff");
@@ -202,6 +204,7 @@ export const MindStates: {[key:string]: MindState;} = {
                     (self as Party).playerMachine.stateMachine.setState(States.KNOCKBACK);
                 };
             };
+            self.mindState.keepDistance = self.isRanged;
         },
         dynamicSwap: (self, ctx) => {
             if (self.mindState.activations > 25) {
@@ -228,7 +231,7 @@ export const MindStates: {[key:string]: MindState;} = {
         chaseThresholdSq: DISTANCE.CHASE ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 0.8) ** 2,
         callHelp: false,
-        summon: true,
+        summon: false, // true
         activations: 0,
         startup: (self, ctx) => {
             if (!self.isCaerenic && (self.inCombat || self.inComputerCombat)) {
@@ -261,7 +264,9 @@ export const MindStates: {[key:string]: MindState;} = {
         callHelp: true,
         summon: false,
         activations: 0,
-        // startup: (self, ctx) => {},
+        startup: (self, ctx) => {
+            self.mindState.keepDistance = self.isRanged;
+        },
         customEvaluate: (self, ctx) => {
             const ratio = self.health / self.ascean.health.max;
             if (ctx.allies) {
@@ -276,6 +281,7 @@ export const MindStates: {[key:string]: MindState;} = {
                 // console.log("%c Priest: Becoming Stalwart", "color:#fdf6d8");
                 self.stalwartUpdate(true);
             };
+            self.mindState.keepDistance = self.isRanged;
         },
         dynamicSwap: (self, ctx) => {
             if (self.mindState.activations > 25) {
@@ -396,9 +402,10 @@ export const MindStates: {[key:string]: MindState;} = {
         chaseThresholdSq: (DISTANCE.CHASE * 1.2) ** 2,
         minDistanceSq: (DISTANCE.THRESHOLD * 1.2) ** 2,
         callHelp: false,
-        summon: true,
+        summon: false, // true
         activations: 0,
         startup: (self, ctx) => {
+            self.mindState.keepDistance = self.isRanged;
             if (!self.isCaerenic && (self.inCombat || self.inComputerCombat)) {
                 // console.log("%c Sorcerer: Becoming Caerenic", "color:#0ff");
                 self.caerenicUpdate(true);
@@ -419,7 +426,7 @@ export const MindStates: {[key:string]: MindState;} = {
                 self.mindState.activations++;
                 self.rangedBlast();
             };
-
+            self.mindState.keepDistance = self.isRanged;
         },
         dynamicSwap: (self, ctx) => {
             if (self.mindState.activations > 15) {
@@ -438,7 +445,6 @@ export const MindStates: {[key:string]: MindState;} = {
                     self.setMindState("Priest");
                 };
             };
-            
         },
     },
 

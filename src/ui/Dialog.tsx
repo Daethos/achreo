@@ -12,7 +12,7 @@ import Equipment, { determineMutation, getArmorEquipment, getClothEquipment, get
 import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, sellRarity } from "../utility/styling";
 import ItemModal, { attrSplitter } from "../components/ItemModal";
-import QuestManager, { Condition, getQuests, Quest, replaceChar } from "../utility/quests";
+import QuestManager, { Condition, getQuests, Quest, QUEST_TEMPLATES, replaceChar } from "../utility/quests";
 import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
 import Thievery from "./Thievery";
 import Merchant from "./Merchant";
@@ -29,7 +29,8 @@ import { roundToTwoDecimals } from "../utility/combat";
 import MerchantLoot, { MassSell, QuickSell } from "./MerchantLoot";
 import Registry from "./Registry";
 import { Play } from "../game/main";
-import { addSpecial } from "../utility/abilities";
+import { addSpecial, SPECIAL } from "../utility/abilities";
+import { ACTION_ORIGIN } from "../utility/actions";
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
 const GET_ETCH_COST = {
@@ -360,6 +361,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [showQuestComplete, setShowQuestComplete] = createSignal<any>(false);
     const [showQuestSave, setShowQuestSave] = createSignal<any>(false);
     const [showCompleteQuest, setShowCompleteQuest] = createSignal<any>(undefined);
+    const [completeQuestPre, setCompleteQuestPre] = createSignal<any>(undefined);
     const [massLootSell, setMassLootSell] = createSignal<{id:string;rarity:string;}[]>([]);
     const [massLootBuy, setMassLootBuy] = createSignal<{id:string;cost:Currency}[]>([]);
     const [merchantSell, setMerchantSell] = createSignal<boolean>(false);
@@ -377,6 +379,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [party, setParty] = createSignal(false);
     const [registry, setRegistry] = createSignal(false);
     const [itemCosts, setItemCosts] = createSignal<Record<string, {silver: number, gold: number}>>({});
+    const [popupReward, setPopupReward] = createSignal<any>(null); // Holds the reward object/text to display
+    const [rewardQueue, setRewardQueue] = createSignal<any[]>([]); // Holds the list of remaining rewards
+    const [isOverlayVisible, setIsOverlayVisible] = createSignal(false);
+    
     const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
@@ -393,7 +399,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
         setItemCosts(newCosts);
     };
+
     createEffect(() => setMerchantTable(game().merchantEquipment));
+
     createEffect(() => { 
         checkEnemy(combat()?.computer as Ascean, quests);
         checkLuckout(game());
@@ -550,7 +558,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     const checkQuests = (enemy: Ascean, quest: Quest[]) => {
-        // TODO: This will create quests for a (Converted) version of the enemy. Good for the future, but not right now for archtecting and general functionality.
+        // This will create quests for a (Converted) version of the enemy. Good for the future, but not right now for archtecting and general functionality.
         // const name = enemy.name.split("(Converted)")[0].trim();
         const completedQuests = [];
         const fetch = [];
@@ -604,7 +612,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 const item = await getOneDetermined(ascean().level, quest.rewards.items?.[i] as string);
                 items.push(item?.[0]);
             };
-            const complete = {
+            let complete = {
                 ...quest,
                 rewards: {
                     ...quest.rewards,
@@ -614,16 +622,110 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             let completed = JSON.parse(JSON.stringify(completeQuests()));
             completed = completed.filter((q: Quest) => q._id !== quest._id);
             setCompleteQuests(completed);
-            setShowCompleteQuest(complete);
-            setShowQuestSave(true);
-            EventBus.emit("complete-quest", quest);
-            EventBus.emit("save-quest-to-player", complete);
-            addSpecial(ascean, settings, quest.special)
+
+            const rewards = [];
+
+            if (quest.rewards.currency.gold > 0 || quest.rewards.currency.silver > 0) {
+                rewards.push({ type: "Currency", value: `${quest.rewards.currency.gold}g ${quest.rewards.currency.silver}s` });
+            };
+            if (quest.rewards.experience > 0) {
+                rewards.push({ type: "Experience", value: `${quest.rewards.experience} EXP` });
+            };
+            if (complete.rewards?.items?.length as number > 0) {
+                complete.rewards?.items?.forEach(item => {
+                    rewards.push({ type: "Item", value: item });
+                });
+            };
+            if (quest.special) {
+                const duplicate = settings().totalSpecials.includes(quest.special);
+                if (duplicate) {
+                    // console.log({ duplicate: quest.special });
+                    const template = QUEST_TEMPLATES.find((q) => q.title === quest.title)!;
+                    const totalSpecials = template.reward.filter(r => SPECIAL[ascean().mastery].includes(r) && !settings().totalSpecials.includes(r));
+                    if (totalSpecials.length) {
+                        const newSpecial = totalSpecials[Math.floor(Math.random() * totalSpecials.length)];
+                        rewards.push({ type: "Special", value: newSpecial });
+                        complete.special = newSpecial;
+                    };
+                } else {
+                    rewards.push({ type: "Special", value: quest.special });
+                };
+            };
+            
+            setCompleteQuestPre(complete);
+            setIsOverlayVisible(true);
+            setRewardQueue(rewards);
+            
+            processRewardQueue(rewards);
         } catch (err) {
             console.warn(err, "Error Completing Quest");
         };
     };
-    
+
+    const checkQueue = () => {
+        setTimeout(() => {
+            setPopupReward(null);
+            processRewardQueue(rewardQueue());
+        }, 128)
+    };
+
+    const processRewardQueue = (queue: any[]) => {
+        if (queue.length === 0) {
+            setPopupReward(null);
+            setTimeout(() => setIsOverlayVisible(false), 128);
+            return;
+        };
+        
+        setPopupReward(null);
+        const [nextReward, ...rest] = queue;
+        setRewardQueue(rest);
+
+        const type = nextReward.type;
+        const length = rest.length;
+
+        switch (type) {
+            case "Currency":
+                EventBus.emit("purchase-sound");
+                break;
+            case "Experience":
+                (instance.scene as Play).sound.play("treasure", { volume: settings().volume }); // phenomena
+                break;
+            case "Item":
+                (instance.scene as Play).sound.play("phenomena", { volume: settings().volume });
+                break;
+            case "Special":
+                (instance.scene as Play).sound.play("righteous", { volume: settings().volume });
+                break;
+            default: break;
+        };
+        
+        if (type === "Item" || type === "Special") {
+            setPopupReward(nextReward);
+
+            if (length === 0) { // type === "Special"
+                // console.log("Length is now 0");
+                setTimeout(() => {
+                    const complete = completeQuestPre();
+                    addSpecial(ascean, settings, complete.special);
+                    setShowCompleteQuest(complete);
+                    EventBus.emit("save-quest-to-player", complete);
+                    EventBus.emit("complete-quest", complete);
+                    setShowQuestSave(true);
+                    setCompleteQuestPre(undefined);
+                }, 160);
+            };
+            return;
+        };
+        
+        setTimeout(() => {
+            setPopupReward(nextReward);
+
+            setTimeout(() => {
+                processRewardQueue(rest);
+            }, 2000);
+        }, 32);
+    };
+
     const hollowClick = () => console.log("Hollow Click");
 
     const attemptPersuasion = async (persuasion: string): Promise<void> => {
@@ -1291,17 +1393,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         return enemies;
     };
 
-    function checkReward(item: string | Equipment) {
+    function checkReward(item: string | Equipment, num = "4mm") {
         if (typeof item === "string") {
             return item;
         } else { // Equipment
-            return <div onClick={() => setRewardItem({show:true,item})} style={{ "border": `0.2em solid ${getRarityColor(item.rarity as string)}`, "transform": "scale(1.1)", "background-color": "#000", "margin": "0.25em" }}>
+            return <div onClick={() => setRewardItem({show:true,item})} style={{ "border": `${num} ridge ${getRarityColor(item.rarity as string)}`, "transform": "scale(1.1)", "background-color": "#000", "margin": "0.25em" }}>
                 <img src={item.imgUrl} alt={item.name} class="juiceNB" style={{ height: "100%", width: "100%" }} />
             </div>;
         };
     };
 
-    const typewriterStyling: JSX.CSSProperties = {};
     const reforgeConcerns = (item: Equipment) => {
         return { 
             magicalDamage: item?.grip !== undefined ? item.magicalDamage : undefined,
@@ -1334,6 +1435,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     // };
     return (
         <Show when={combat().computer}>
+        {/* <<---------- ENEMY DIALOG TABS ---------->> */}
         <Show when={combat().isEnemy}>
             <div class="story-dialog-options">
                 <DialogButtons options={game().dialog} setIntent={handleIntent} />
@@ -1359,7 +1461,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
                 </Show>
             </div>
-        </Show> 
+        </Show>
+        {/* <<---------- DIALOG WINDOW ---------->> */}
         <div class="dialog-window" style={{ width: combat().isEnemy && combat().computer ? "55%" : "70%" }}>
             <div class="dialog-tab wrap"> 
             <div style={{ color: "gold", "font-size": "1em", "margin-bottom": "3%" }}>
@@ -1443,10 +1546,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             ) : combat().npcType === "Merchant-Alchemy" ? (
                 <> 
                     { ascean()?.firewater?.current === 5 ? (
-                        <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} performAction={hollowClick} />
                     ) : (
                         <>
-                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${ascean().firewater?.current} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={`The Alchemist's eyes scatter about your presence, eyeing ${ascean().firewater?.current} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} performAction={hollowClick} />
                             <br />
                             <button class="highlight dialog-buttons" style={{ color: "blueviolet", "font-size":"1em" }} onClick={refillFlask}>Walk over and refill your firewater?</button>
                         </>
@@ -1454,7 +1557,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     { party() && (
                     <>
                         <br />
-                        <Typewriter stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} styling={{...typewriterStyling, color: "gold"}} performAction={hollowClick} />
+                        <Typewriter stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} styling={{color: "gold"}} performAction={hollowClick} />
                         <br />
                         <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
                     </>
@@ -1468,7 +1571,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <>
                     { combat().persuasionScenario ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={persuasionString} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={persuasionString} performAction={hollowClick} />
                             <br />
                             { combat().enemyPersuaded ? (
                                 <>
@@ -1481,7 +1584,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         </div>
                     ) : combat().luckoutScenario ? (
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={luckoutString} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={luckoutString} performAction={hollowClick} />
                             <br />
                             { combat().playerLuckout ? (
                                 <>
@@ -1495,30 +1598,30 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     ) : combat().playerWin ? (
                         <div>
                             { namedEnemy() ? (
-                                <Typewriter stringText={`"Congratulations ${combat()?.player?.name}, you were fated this win. This is all I have to offer, if it pleases you."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"Congratulations ${combat()?.player?.name}, you were fated this win. This is all I have to offer, if it pleases you."`} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. By the way, did you happen to find any equipment I may have dropped in the fall? Must have left it somewhere else, I imagine."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"Appears I were wrong to treat with you in such a way, ${combat()?.player?.name}. By the way, did you happen to find any equipment I may have dropped in the fall? Must have left it somewhere else, I imagine."`} performAction={hollowClick} />
                             ) } 
                         </div> 
                     ) : combat().computerWin ? (
                         <div>
                             { namedEnemy() ? (
-                                <Typewriter stringText={`"${combat()?.player?.name}, surely this was a jest? Come now, you disrespect me with such play. What was it that possessed you to even attempt this failure?"`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"${combat()?.player?.name}, surely this was a jest? Come now, you disrespect me with such play. What was it that possessed you to even attempt this failure?"`} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`"The ${combat()?.computer?.name} are not to be trifled with."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"The ${combat()?.computer?.name} are not to be trifled with."`} performAction={hollowClick} />
                             ) } 
                         </div> 
                     ) : (
                         <div>
                             { namedEnemy() ? ( 
                                 <>
-                                    <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} styling={typewriterStyling} performAction={hollowClick} />
+                                    <Typewriter stringText={`"Greetings traveler, I am ${combat()?.computer?.name}. ${combat()?.player?.name}, is it? You seem a bit dazed, can I be of some help?"`} performAction={hollowClick} />
                                     <br />
                                     <button class="highlight" style={{ color: "red" }} onClick={() => engageCombat(combat()?.enemyID)}>Forego pleasantries and surprise attack {combat()?.computer?.name}?</button>
                                 </> 
                             ) : ( 
                                 <>
-                                    <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} styling={typewriterStyling} performAction={hollowClick} />
+                                    <Typewriter stringText={`${capitalize(enemyArticle())} ${combat()?.computer?.name} stares at you, unflinching. Eyes lightly trace about you, reacting to your movements in wait. Grip your ${combat().weapons[0]?.name} and get into position?`} performAction={hollowClick} />
                                     <br />
                                     <button class="highlight" style={{ color: "red" }} onClick={() => engageCombat(combat()?.enemyID)}>Engage in hostilities with {combat()?.computer?.name}?</button>
                                 </> 
@@ -1543,7 +1646,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter stringText={`[Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is ${enemyArticle()} ${combat().computer?.name}. They are ${enemyDescriptionArticle()} ${combat().computer?.description}. You are allowed to have up to 3 party members accompanying you on your journey. Choose wisely.]`} styling={{ overflow: "auto", "scrollbar-width": "none", "white-space": "pre-wrap" }} performAction={hollowClick} />
                             <br />
                             <button class="highlight" onClick={changeEnemyToParty}>
-                                <Typewriter stringText={`Recruit ${rep().name} to join your party.`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`Recruit ${rep().name} to join your party.`} performAction={hollowClick} />
                             </button>
                         </div>
                     ) : rep()?.reputation >= 25 && !party() ? (
@@ -1558,7 +1661,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <>
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={persuasionString} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={persuasionString} performAction={hollowClick} />
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
@@ -1571,7 +1674,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             </div>
                         ) : combat().luckoutScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={luckoutString} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={luckoutString} performAction={hollowClick} />
                                 <br />
                                 { combat().playerLuckout ? (
                                     <>
@@ -1585,24 +1688,24 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         ) : combat().playerWin ? (
                             <>
                                 { namedEnemy() ? (
-                                    <Typewriter stringText={`"${combat()?.player?.name}, you are truly unique in someone's design. Before you travel further, if you wish to have it, its yours."`} styling={typewriterStyling} performAction={hollowClick} />
+                                    <Typewriter stringText={`"${combat()?.player?.name}, you are truly unique in someone's design. Before you travel further, if you wish to have it, its yours."`} performAction={hollowClick} />
                                 ) : ( 
-                                    <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} styling={typewriterStyling} performAction={hollowClick} />
+                                    <Typewriter stringText={`"Go now, ${combat()?.player?.name}, take what you will and find those better pastures."`} performAction={hollowClick} />
                                 ) }
                                 <br />
                                 <button class="highlight" onClick={() => clearDuel()}>Seek those pastures and leave your lesser to their pitious nature.</button>
                             </>
                         ) : combat().computerWin ? (
                             <>
-                                <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} performAction={hollowClick} />
                                 <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
                         ) : !combat().isHostile ? (
                             <>
                             { namedEnemy() ? ( 
-                                <Typewriter stringText={`"I hope you find what you seek, ${combat()?.player?.name}. Take care in these parts, you may never know when someone wishes to approach out of malice and nothing more. Strange denizens these times."`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"I hope you find what you seek, ${combat()?.player?.name}. Take care in these parts, you may never know when someone wishes to approach out of malice and nothing more. Strange denizens these times."`} performAction={hollowClick} />
                             ) : ( 
-                                <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} performAction={hollowClick} />
                             ) }
                                 <br />
                                 <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Keep moving.</button>
@@ -1616,24 +1719,24 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "institutions" ? (
                     <>
-                        <Typewriter stringText={`"What institution do you wish to understand?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`"What institution do you wish to understand?"`} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={concept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={concept} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>    
                     </>
                 ) : game().currentIntent === "localLore" ? (
                     <>
-                        <Typewriter stringText={`"Which province's formation do you wish to understand a little more?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`"Which province's formation do you wish to understand a little more?"`} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={local} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={local} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>    
                     </>
                 ) : game().currentIntent === PERSUASION ? (
                     <>
                         <Show when={combat()?.computer?.name?.includes("(Converted)")}>
-                            <Typewriter stringText={`"I sure do love being ${combat()?.computer?.faith} now! Thank you so much for showing me the proper path, ${ascean().name}. Don't tell anyone though, my old comrades may not take kind to me if they find out about my new faith."`} styling={{...typewriterStyling, "color":"gold", margin:"0 auto 3%"}} performAction={hollowClick} />
+                            <Typewriter stringText={`"I sure do love being ${combat()?.computer?.faith} now! Thank you so much for showing me the proper path, ${ascean().name}. Don't tell anyone though, my old comrades may not take kind to me if they find out about my new faith."`} styling={{"color":"gold", margin:"0 auto 3%"}} performAction={hollowClick} />
                         </Show>
                         { combat().playerWin ? (
                             <button class="highlight" style={{ color: "teal" }} onClick={() => clearDuel()}>Continue moving along your path, perhaps words will work next time.</button>
@@ -1649,7 +1752,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         ) : ("") }
                         { combat().persuasionScenario ? (
                             <div style={{ color: "gold" }}>
-                                <Typewriter stringText={persuasionString} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={persuasionString} performAction={hollowClick} />
                                 <br />
                                 { combat().enemyPersuaded ? (
                                     <>
@@ -1665,13 +1768,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <Show when={fetchQuests().length > 0}>
                             <div class="creature-heading">
                                 <For each={fetchQuests()}>{(quest) => {
-                                    // console.log(quest.title, quest.requirements.dialog, quest.requirements.action, combat().computer?.faith, "Value")
                                     if (!quest.requirements.dialog) return;
                                     return <Switch>
                                         <Match when={(quest.title === "Adherence" || quest.title === "Providence") && (rep().reputation >= 15 || combat().playerWin) && !combat().computer?.name.includes("(Converted)") && quest.requirements.action.value !== combat().computer?.faith}>
                                             <div class="wrap" style={{ margin: "2.5% auto" }}>
                                                 <button class="highlight" onClick={() => convertEnemy(quest)}>
-                                                    <Typewriter stringText={`${combat().computer?.name}: "${quest.requirements.dialog as string} ${combat().computer?.faith ? `Perhaps I may strike up an affection for ${combat().weapons[0]?.influences?.[0]}, as you have.` : ""}"`} styling={typewriterStyling} performAction={hollowClick} />
+                                                    <Typewriter stringText={`${combat().computer?.name}: "${quest.requirements.dialog as string} ${combat().computer?.faith ? `Perhaps I may strike up an affection for ${combat().weapons[0]?.influences?.[0]}, as you have.` : ""}"`} performAction={hollowClick} />
                                                 </button>
                                             </div>
                                         </Match> 
@@ -1682,13 +1784,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <Show when={solveQuests().length > 0}>
                             <div class="creature-heading">
                                 <For each={solveQuests()}>{(quest) => {
-                                    // console.log(quest, "Quest", ascean().faith)
                                     if (!quest.requirements.dialog) return;
                                     return <Switch>
                                         <Match when={(quest.title === "Primal Nature" || quest.title === "Seek Devotion") && quest.requirements.action.value !== ascean()?.faith}>
                                             <div class="wrap" style={{ margin: "2.5% auto" }}>
                                                 <button class="highlight gold" onClick={() => convertPlayer(quest)}>
-                                                    <Typewriter stringText={`"${quest.requirements.dialog as string}"`} styling={typewriterStyling} performAction={hollowClick} />
+                                                    <Typewriter stringText={`"${quest.requirements.dialog as string}"`} performAction={hollowClick} />
                                                 </button>
                                             </div>
                                         </Match> 
@@ -1700,7 +1801,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <h1 class="gold">Completed Quests</h1>
                             <div class="creature-heading">
                             <For each={completeQuests()}>{(quest) => {
-                                return <div class="border juice wrap creature-heading">
+                                return <div class="border juice wrap creature-heading" style={{ margin: "3% auto" }}>
                                     <div class="highlight" onClick={() => {
                                         setShowCompleteQuest(quest);
                                         setShowQuestComplete(true);
@@ -1715,50 +1816,50 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <>
                         {/* { combat().playerWin || combat().enemyPersuaded ? (
                             <> */}
-                                <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} styling={typewriterStyling} performAction={hollowClick} />
+                                <Typewriter stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} performAction={hollowClick} />
                                 <br />
                                 <div style={{ color: "gold" }}>
-                                    <Typewriter stringText={region} styling={typewriterStyling} performAction={hollowClick} />
+                                    <Typewriter stringText={region} performAction={hollowClick} />
                                 </div>
                             {/* </>
                         ) : combat().computerWin ? (
-                            <Typewriter stringText={`"Those whispers must wait another day, then."`} styling={typewriterStyling} performAction={hollowClick} />
+                            <Typewriter stringText={`"Those whispers must wait another day, then."`} performAction={hollowClick} />
                         ) : ( 
-                            <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} styling={typewriterStyling} performAction={hollowClick} />                            
+                            <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} performAction={hollowClick} />                            
                         ) } */}
                     </>
                 ) : game().currentIntent === "entities" ? (
                     <>
-                        {/* <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        {/* <Typewriter stringText={`"There are many tales from all over, concerning themselves with myths of beasts and creatures forged with that of man. Of which are you curious?"`} performAction={hollowClick} />
                         <br /> */}
-                        <Typewriter stringText={entityPreamble} styling={{...typewriterStyling, "white-space":"pre-wrap"}} performAction={hollowClick} />
+                        <Typewriter stringText={entityPreamble} styling={{"white-space":"pre-wrap"}} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={entityConcept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={entityConcept} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : game().currentIntent === "phenomena" ? (
                     <>
-                        <Typewriter stringText={`"Many notions exist of man extending themselves further than they are readily capable of physically. Of which are you curious?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`"Many notions exist of man extending themselves further than they are readily capable of physically. Of which are you curious?"`} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={phenomena} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={phenomena} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : game().currentIntent === "worldLore" ? (
                     <>
-                        <Typewriter stringText={`"What do you wish to know about the history of this world?"`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`"What do you wish to know about the history of this world?"`} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={world} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={world} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : game().currentIntent === "whispers" ? (
                     <>
-                        <Typewriter stringText={`"What do you wish to know of the worship and intrigue on the occult and religiosity around the realm."`} styling={typewriterStyling} performAction={hollowClick} />
+                        <Typewriter stringText={`"What do you wish to know of the worship and intrigue on the occult and religiosity around the realm."`} performAction={hollowClick} />
                         <br />
                         <div style={{ color: "gold" }}>
-                            <Typewriter stringText={whisperConcept} styling={{...typewriterStyling, "white-space": "pre-wrap"}} performAction={hollowClick} />
+                            <Typewriter stringText={whisperConcept} styling={{"white-space": "pre-wrap"}} performAction={hollowClick} />
                         </div>
                     </>
                 ) : ( "" ) }
@@ -1774,6 +1875,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             </Show>
             </div>
         </div>
+        {/* <<---------- MODAL WINDOWS ---------->> */}
         <Merchant ascean={ascean} />
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} />
@@ -1907,7 +2009,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     // "border":"0.1rem solid #fdf6d8", "box-shadow":"inset #000 0 0 0 0.2em, inset #fdf6d8 0 0 0 0.3em",
                 }}>
                     <h1 class="center" style={{ "margin-bottom": "0%" }}>Merchant Menu</h1>
-                    <div class="center">
+                    <div class="center" style={{ "margin-bottom": "5%" }}>
                         <Currency ascean={ascean} />
                     </div>
                     <span onClick={() => setMerchantSell(!merchantSell())} style={{ float: "left", "margin-left": "2%", "margin-top":"-4%", color:"gold" }}>{merchantSell() ? "Merchant - Focus Buy" : toggleInventorySell() ? "Merchant - Focus Sell" : "Merchant - Split View"} <span style={{color:"#fdf6d8"}}></span></span>
@@ -1920,13 +2022,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Match when={merchantSell()}>
                         <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
                             <div class="center" style={{ margin:"1%", height: "96%", overflow: "scroll", "scrollbar-width": "none" }}>
-                                <div style={{ display: "grid", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
+                                <div style={{ display: "grid", "margin-bottom": "5%", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
                                 <For each={merchantTable()}>
                                     {(item: any, _index: Accessor<number>) => {
                                         const cost = getItemCost(item);
-                                        return <div style={{ margin: "5%", border: "thick ridge #fdf6d8", padding: "5%" }}>
-                                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={true} />
-                                        </div>;
+                                        return <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={true} />;
                                     }}
                                 </For>
                                 </div>
@@ -1954,9 +2054,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <For each={merchantTable()}>
                                     {(item: any, _index: Accessor<number>) => {
                                         const cost = getItemCost(item);
-                                        return <div style={{ margin: "5%", border: "thick ridge #fdf6d8", padding: "5%" }}>
-                                            <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={false} />
-                                        </div>; 
+                                        return <MerchantLoot item={item} ascean={ascean} setShow={setShowItemBuy} setHighlight={setItemBuy} thievery={thievery} steal={steal} cost={cost} checkMassBuy={checkMassBuy} getBuyMark={getBuyMark} mass={false} />;
                                     }}
                                 </For>
                                 </div>
@@ -2068,10 +2166,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         Items: <For each={showCompleteQuest()?.rewards?.items}>{(item, index) => {
                             const length = showCompleteQuest()?.rewards?.items.length;
                             return <div style={{ display: "inline-block", color: "gold" }}>
-                                {checkReward(item)}{typeof item === "string" ? length === 0 || length - 1 === index() ? "" : `,\xa0` : ""}{" "}
+                                {checkReward(item, "1mm")}{typeof item === "string" ? length === 0 || length - 1 === index() ? "" : `,\xa0` : ""}{" "}
                             </div>
                         }}</For>
-                        {showCompleteQuest()?.special ? <><br /> Special: <span class="gold">{showCompleteQuest()?.special}</span></> : ""}
+                        {(showCompleteQuest()?.special && showQuestSave()) ? <><br /> Special: <span class="gold">{showCompleteQuest()?.special}</span></> : ""}
                     </p>
                     </div>
                     <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "2.5% auto" }}>
@@ -2089,8 +2187,40 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </button>
             </div>
         </Show>
+        <Show when={isOverlayVisible()}>
+            <div class="modal"> 
+                <Show when={popupReward()}>
+                    <div class="reward-card superCenter animate-explode-in" style={{ "--glow-color":"gold", "--base-shadow":"#000 0 0 0 0.2em", "max-width":popupReward()?.type === "Item" ? "35%" : "50%", "max-height":"85vh" }}>
+                            <div class="creature-heading center" style={{ padding: "1rem" }}>
+                                <h1 class="gold">{popupReward()?.type} Acquired!</h1>
+                                <Show when={typeof popupReward().value === "string"} fallback={
+                                    <>
+                                        <h3 class="vibrant-shimmer bone" style={{ "font-size":"2rem", margin: "5% auto -15%" }}>{popupReward().value.name}</h3>
+                                        <div style={{ transform: "scale(0.5)" }}>
+                                            {checkReward(popupReward().value)}
+                                        </div>
+                                    </>
+                                }>
+                                    <h3 class="vibrant-shimmer bone" style={{ margin: popupReward()?.type === "Special" ? "3% auto" : "" }}>{popupReward()?.value}</h3>
+                                </Show>
+                                <Show when={popupReward()?.type === "Special"}>
+                                    <h2 class="wrap" style={{ "font-size": "1.25rem" }}>{ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.description}</h2>
+                                    <h4 class="gold">
+                                        {ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.cost} {ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.cooldown}
+                                        <br />
+                                        {ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.time} {ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.special}
+                                    </h4>
+                                </Show>
+                            </div>
+                    </div>
+                    <Show when={popupReward()?.type === "Item" || popupReward()?.type === "Special"}> 
+                        <button class="highlight middleRight animate" onClick={checkQueue} style={{ "font-size": "1.25rem" }}>{popupReward().type === "Special" ? "Exit" : "Next"}</button>
+                    </Show>
+                </Show>
+            </div>
+        </Show>
         <Show when={rewardItem().show}>
-            <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})}>
+            <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})} style={{ "z-index":1000 }} >
                 <ItemModal item={rewardItem().item} caerenic={false} stalwart={false} />
             </div>
         </Show>

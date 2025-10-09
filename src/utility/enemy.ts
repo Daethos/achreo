@@ -299,7 +299,7 @@ export const PADDING = {
 export const RANGE = {
     LEASH: 1000,
     Underground: 2000,
-    Game: 1000,
+    Game: 500,
     Arena: 2000,
     Gauntlet: 3000,
 };
@@ -468,7 +468,7 @@ export type ARENA_ENEMY = {
     mastery: string;
     id: string;
 };
-export const GRIP_SCALE = { "One Hand": 0.5, "Two Hand": 0.65 };
+export const GRIP_SCALE: {[key:string]: number} = { "Dagger": 0.4, "One Hand": 0.5, "Two Hand": 0.65 };
 export type EnemySheet = {
     id: string;
     game: Ascean;

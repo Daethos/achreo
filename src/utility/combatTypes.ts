@@ -202,6 +202,35 @@ export const ACTION_MULTIPLIER_LOOKUP: { [key: string]: { physical: number; magi
     [ACTION_TYPES.THRUST]: { physical: DAMAGE.SEVENTY_FIVE, magical: DAMAGE.SEVENTY_FIVE },
 };
 
+export const DAMAGE_TYPE_DIALOG: {[key:string]: {description:string;types:string;}} = {
+    Blunt: {
+        description: "The damage types equivalency, governed through harsh and brutal attacks.",
+        types: "Blunt, Earth, Fire, Spooky"
+    },
+    Pierce: {
+        description: "The damage types equivalency, governed through sharp and impaling attacks.",
+        types: "Pierce, Frost, Lightning, Righteous"
+    },
+    Slash: {
+        description: "The damage types equivalency, governed through its own mercurial nature.",
+        types: "Slash, Sorcery, Wild, Wind"
+    }
+};
+
+export const deriveArmorTypeToArrayLocation = (type: string): number => {
+    switch (type) {
+        case "Plate-Mail":
+            return 0;
+        case "Chain-Mail":
+            return 1;
+        case "Leather-Mail":
+            return 2;
+        case "Leather-Cloth":
+            return 3;
+    }
+    return 0;
+};
+
 // Structure: LOOKUP[damageType][attackType][location][defenseType] = multiplier
 export const DAMAGE_LOOKUP: number[][][] = [
     // BLUNT (0)

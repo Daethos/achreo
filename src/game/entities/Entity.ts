@@ -8,7 +8,7 @@ import Player from "./Player";
 import Ascean from "../../models/ascean";
 import Equipment from "../../models/equipment";
 import { v4 as uuidv4 } from "uuid";
-import { CombatStats, roundToTwoDecimals } from "../../utility/combat";
+import { CombatStats } from "../../utility/combat";
 import { Particle } from "../matter/ParticleManager";
 import { Game } from "../scenes/Game";
 import { Underground } from "../scenes/Underground";
@@ -58,6 +58,7 @@ export const FRAMES = {
     PARRY: "player_attack_6",
     POSTURE: "player_attack_3",
     ROLL: "player_roll",
+    GRAPPLE_ROLL: "grapple_roll",
     THRUST: "player_attack_2",
 };
 export type ENEMY = {id:string; threat:number};
@@ -89,7 +90,7 @@ export const SWING_FORCE_ATTRIBUTE: Attribute = {
 };
 type DamageArray = { [key:string]: string[]; };
 const GLOW_INTENSITY = 0.25;
-const SPEED = 1.35
+const SPEED = 1.25; // 1.35;
 const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], physical: ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
@@ -285,6 +286,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     hooking: boolean = false;
     lastHitLocation: HitLocationResult;
     id: number;
+    debugger: any;
+    grappleTime: number = 0;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -851,10 +854,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
         const chance = Math.random() * 101;
         const playerResist = this.scene.state.stalwart.active ? this.scene.state.playerDefense?.magicalPosture as number / 4 : this.scene.state.playerDefense?.magicalDefenseModifier as number / 4;
-        const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
-        this.scene.hud.logger.log(`Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
-        const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
-        if (chance > resist) {
+        // const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
+        // this.scene.hud.logger.log(`Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
+        // const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
+        if (chance > playerResist) {
             return true;
         } else {
             this.isCasting = false;
@@ -920,6 +923,35 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         return false;
     };
 
+    grapplingHook = (x: number, y: number) => {
+        const point = new Phaser.Math.Vector2(x,y);
+        const distance = point.subtract(this.position).length();
+        const duration = Math.max(100, distance * 2);
+        this.grappleTime = duration;
+        // console.log({ duration });
+        if (this.scene.hud.cinemaMode) {
+            this.hooking = false;
+            this.scene.hud.cinemaMode = false;
+            const camera = this.scene.cameras.main;
+            camera.stopFollow();
+            camera.startFollow(this, false, 0.1, 0.1);
+        };
+        this.scene.tweens.add({
+            targets: this,
+            x: { from: this.x, to: x, duration },
+            y: { from: this.y, to: y, duration },
+            onStart: () => {
+                (this as unknown as Player).playerMachine.stateMachine.setState(States.GRAPPLING_ROLL);    
+                this.beam.pointEmitter(x,y,duration)
+            },
+            onComplete: () => {
+                this.hooking = false;
+                this.beam.reset();
+            },
+            yoyo: false
+        });
+    };
+
     hook = (target: Enemy, time: number) => {
         this.hooking = true;
         if (this.name === "player") {
@@ -953,14 +985,38 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.scene.scene.key === "Game") return false;
         const layer = (this.scene as Arena | Underground).groundLayer;
         const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
-        const points = line.getPoints(30);  // Adjust number of points based on precision
-        for (let i = 0; i < points.length; i++) {
+        const points = line.getPoints(0, 20).reverse(); // 30 // Adjust number of points based on precision
+        // if (this.name === "player") {
+        //     this.debugger = this.scene.add.graphics();
+        //     this.debugger.lineStyle(1, 0xffc700, 1); // thickness, color, alpha
+        //     this.debugger.strokeLineShape(line);
+        //     points.forEach(p => {
+        //         this.debugger.fillStyle(0x00ff00, 1); // green points
+        //         this.debugger.fillCircle(p.x, p.y, 2);
+        //     });
+        //     this.scene.time.delayedCall(1500, () => {this.debugger.clear(); this.debugger.destroy()});
+        // };
+        const arr = points.length - 1;
+        for (let i = 0; i < arr; ++i) { // < points.length - 1
             const point = points[i];
+            // if (this.name === "player") console.log({ i, point });
             const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
             if (tile && tile.properties.wall) {
-                return true;  // Wall is detected
+                const tileRect = new Phaser.Geom.Rectangle(tile.pixelX, tile.pixelY, tile.width, tile.height);
+                if (Phaser.Geom.Intersects.LineToRectangle(line, tileRect)) {
+                    // if (this.name === "player") {
+                    //     // this.debugger.clear();
+                    //     // this.debugger.lineStyle(1, 0xff0000, 1);
+                    //     this.debugger.fillStyle(0xff0000, 1);
+                    //     this.debugger.fillCircle(point.x, point.y, 2);    
+                    // };
+                    return true;
+                };
+                // debugGraphics.clear();
+                // return true;  // Wall is detected
             };
         };
+        // debugGraphics.clear();
         return false;  // Clear line of sight
     };
 
@@ -997,6 +1053,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
             this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            this.setVelocity(0);
         },
 
         parry: (frame) => {
@@ -1062,6 +1119,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         dodge: () => this.spriteShield?.setVisible(false),
 
         roll: () => this.spriteShield?.setVisible(false),
+
+        "grappling roll": () => this.spriteShield?.setVisible(false),
 
         movingVertical: () => {
             this.spriteShield?.setAngle(0);
@@ -1356,7 +1415,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 this.checkActionSuccess();
             };
 
-            if (frameIndex === 5 && this.isRanged) {
+            if (frameIndex === 3 && this.isRanged) { // 6
                 if (this.hasMagic) {
                     this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
                 } else if (this.hasBow) {

@@ -17,7 +17,6 @@ import { getAsceanTraits, Traits } from "../utility/traits";
 import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
-// import { STARTING_SPECIALS } from "../utility/abilities";
 import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION, ENEMY_HOSTILE } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
@@ -113,14 +112,14 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    /*
-        Increases Level
+    /* <<--------------------------------------->>
+                    LEVEL UP 
         Increases stats if necessary,
         Changes mastery / faith is applicable
         Checks to increase limit on specials
         Updates statistics recording mastery
         Updates talents to increase total
-    */
+    <<--------------------------------------->> */
     async function levelUp(state: Accessor<any>) {
         let constitution = Number(state().constitution);
         let strength = Number(state().strength);
@@ -212,7 +211,7 @@ export default function PhaserGame (props: IProps) {
         return attribute === mastery ? 1.07 : 1.04;
     };
 
-    function purchaseItem(purchase: { item: Equipment; cost: { silver: number; gold: number; }; }) {
+    function purchaseItem(purchase: {item: Equipment; cost: { silver: number; gold: number; }; }) {
         try {
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
             inventory.push(purchase.item);
@@ -235,7 +234,6 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    
     async function pocketItem(data: {success: boolean, item: Equipment, value: any}) {
         const { success, item, value } = data;
         try {
@@ -292,7 +290,6 @@ export default function PhaserGame (props: IProps) {
                         totalValue: props.statistics().thievery.totalValue + value
                     },
                 };
-                // let merchantEquipment = [ ...game().merchantEquipment ];
                 let merchantEquipment = Array.isArray(game().merchantEquipment) ? JSON.parse(JSON.stringify(game().merchantEquipment)) : [];
                 merchantEquipment = merchantEquipment.filter((eqp: any) => eqp._id !== item._id);
                 setGame({ ...game(), inventory: clean, merchantEquipment });
@@ -320,7 +317,7 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    function buyItems(data: {items: {id:string,rarity:string}[], total: {gold:number,silver:number}}) {        
+    function buyItems(data: {items: {id:string, rarity:string}[], total: {gold:number, silver:number}}) {        
         try {
             const {items,total} = data;
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
@@ -401,7 +398,7 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
-    function sellItems(items: {id:string,rarity:string}[]) {
+    function sellItems(items: {id:string, rarity:string}[]) {
         try {
             let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
             let currency = {silver:props.ascean().currency.silver,gold:props.ascean().currency.gold};
@@ -481,6 +478,8 @@ export default function PhaserGame (props: IProps) {
         statistic.prayers.denial += prayerData.reduce((count: number, prayer: string) => prayer === "Denial" ? count + 1 : count, 0);
         statistic.prayers.dispel += prayerData.reduce((count: number, prayer: string) => prayer === "Dispel" ? count + 1 : count, 0);
         statistic.prayers.silence += prayerData.reduce((count: number, prayer: string) => prayer === "Silence" ? count + 1 : count, 0);
+        statistic.prayers.quicken += prayerData.reduce((count: number, prayer: string) => prayer === "Quicken" ? count + 1 : count, 0);
+        statistic.prayers.insight += prayerData.reduce((count: number, prayer: string) => prayer === "Insight" ? count + 1 : count, 0);
 
         statistic.attacks.magical += typeAttackData.reduce((count: number, type: string) => type === "Magic" ? count + 1 : count, 0);
         statistic.attacks.physical += typeAttackData.reduce((count: number, type: string) => type === "Physical" ? count + 1 : count, 0);
@@ -496,7 +495,9 @@ export default function PhaserGame (props: IProps) {
         statistic.attacks.sorcery += typeDamageData.reduce((count: number, type: string) => type === "Sorcery" ? count + 1 : count, 0);
         statistic.attacks.wild += typeDamageData.reduce((count: number, type: string) => type === "Wild" ? count + 1 : count, 0);
         statistic.attacks.wind += typeDamageData.reduce((count: number, type: string) => type === "Wind" ? count + 1 : count, 0);
+
         statistic.attacks.total = Math.max(totalDamageData, statistic.attacks.total); 
+
         statistic.deities.Daethos += deityData.reduce((count: number, deity: string) => deity === "Daethos" ? count + 1 : count, 0);
         statistic.deities.Achreo += deityData.reduce((count: number, deity: string) => deity === "Achreo" ? count + 1 : count, 0);
         statistic.deities.Ahnve += deityData.reduce((count: number, deity: string) => deity === "Ahn've" ? count + 1 : count, 0);
@@ -584,61 +585,6 @@ export default function PhaserGame (props: IProps) {
         return newReputation;
     };
 
-    
-    function recordLoss(data: Combat) {
-        let stat = {
-            wins: data.playerWin ? 1 : 0,
-            losses: data.playerWin ? 0 : 1,
-            total: 1,
-            actionData: data.actionData,
-            typeAttackData: data.typeAttackData,
-            typeDamageData: data.typeDamageData,
-            totalDamageData: data.totalDamageData,
-            prayerData: data.prayerData,
-            deityData: data.deityData,
-        };
-        const newStats = recordCombat(stat);
-        const newSkills = recordSkills(data.skillData);
-        setCombat({
-            ...combat(),
-            ...data,
-            actionData: [],
-            typeAttackData: [],
-            typeDamageData: [],
-            totalDamageData: 0,
-            prayerData: [],
-            deityData: [],
-            skillData: [],
-            playerStartDescription: "",
-            computerStartDescription: "",
-            playerSpecialDescription: "",
-            computerSpecialDescription: "",
-            playerActionDescription: "",
-            computerActionDescription: "",
-            playerInfluenceDescription: "",
-            computerInfluenceDescription: "",
-            playerInfluenceDescriptionTwo: "",
-            computerInfluenceDescriptionTwo: "",
-            playerDeathDescription: "",
-            computerDeathDescription: "",            
-            playerWin: false,
-            computerWin: false,
-            combatEngaged: false,
-        });
-
-        const update = { 
-            ...props.ascean(), 
-            skills: newSkills,
-            health: { ...props.ascean().health, current: data.newPlayerHealth },
-        };
-        if (!props.settings().tutorial.death) {
-            setTutorial("death");
-            setShowTutorial(true);
-        };
-        EventBus.emit("update-ascean", update);
-        EventBus.emit("update-statistics", newStats);    
-    };
-
     function recordQuestUpdate(enemy: Ascean) {
         let quests = JSON.parse(JSON.stringify(props.quests().quests));
         let updated = false;
@@ -718,12 +664,12 @@ export default function PhaserGame (props: IProps) {
             gold = 0;
         } else if (computerLevel > 10 && computerLevel <= 20) {
             if (computerLevel <= 15) {
-                if (Math.random() >= 0.5) { 
-                    silver = Math.floor(Math.random() * 10) + 1; 
-                    gold = 1; 
-                } else { 
-                    silver = Math.floor(Math.random() * 10) + 35; 
-                    gold = 0; 
+                if (Math.random() >= 0.5) {
+                    silver = Math.floor(Math.random() * 10) + 1;
+                    gold = 1;
+                } else {
+                    silver = Math.floor(Math.random() * 10) + 35;
+                    gold = 0;
                 };
             };
         };
@@ -770,7 +716,7 @@ export default function PhaserGame (props: IProps) {
             firewater,
         };
         if (!props.settings().tutorial.deity) {
-            if (update.experience >= 750 && update.level >= 1) {
+            if (update.experience >= 500 && update.level >= 1) {
                 setTutorial("deity");
                 setShowTutorial(true);  
                 if (game().pauseState === false) {
@@ -791,6 +737,60 @@ export default function PhaserGame (props: IProps) {
         EventBus.emit("update-ascean", update);
         EventBus.emit("update-reputation", newReputation);
         EventBus.emit("update-statistics", newStats);
+    };
+
+    function recordLoss(data: Combat) {
+        let stat = {
+            wins: data.playerWin ? 1 : 0,
+            losses: data.playerWin ? 0 : 1,
+            total: 1,
+            actionData: data.actionData,
+            typeAttackData: data.typeAttackData,
+            typeDamageData: data.typeDamageData,
+            totalDamageData: data.totalDamageData,
+            prayerData: data.prayerData,
+            deityData: data.deityData,
+        };
+        const newStats = recordCombat(stat);
+        const newSkills = recordSkills(data.skillData);
+        setCombat({
+            ...combat(),
+            ...data,
+            actionData: [],
+            typeAttackData: [],
+            typeDamageData: [],
+            totalDamageData: 0,
+            prayerData: [],
+            deityData: [],
+            skillData: [],
+            playerStartDescription: "",
+            computerStartDescription: "",
+            playerSpecialDescription: "",
+            computerSpecialDescription: "",
+            playerActionDescription: "",
+            computerActionDescription: "",
+            playerInfluenceDescription: "",
+            computerInfluenceDescription: "",
+            playerInfluenceDescriptionTwo: "",
+            computerInfluenceDescriptionTwo: "",
+            playerDeathDescription: "",
+            computerDeathDescription: "",            
+            playerWin: false,
+            computerWin: false,
+            combatEngaged: false,
+        });
+
+        const update = { 
+            ...props.ascean(), 
+            skills: newSkills,
+            health: { ...props.ascean().health, current: data.newPlayerHealth },
+        };
+        if (!props.settings().tutorial.death) {
+            setTutorial("death");
+            setShowTutorial(true);
+        };
+        EventBus.emit("update-ascean", update);
+        EventBus.emit("update-statistics", newStats);    
     };
 
     function saveChanges(state: any) {
@@ -878,7 +878,7 @@ export default function PhaserGame (props: IProps) {
     };
 
     function checkDeificInteractions(ascean: Ascean): boolean {
-        return ascean.interactions.deity <= ascean.level - 1 && ascean.level === 2  && ascean.level * 500 <= ascean.experience;
+        return ascean.interactions.deity <= (ascean.level - 1) && ascean.level === 2 && (ascean.level * 500 <= ascean.experience);
     };
 
     function getStances(traits: Traits) {
@@ -1481,6 +1481,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("enemy-combat-text");
         });
     });
+
     return <>
         <div class="flex-1" id="game-container" ref={gameContainer}></div>
         <Show when={live() && checkUi()}>

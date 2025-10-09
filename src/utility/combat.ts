@@ -971,7 +971,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     
 function computerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat {
     let computerRoll = combat.computerWeapons[0].roll;
-    let rollCatch = Math.floor(Math.random() * 101) + (combat.playerAttributes.kyosirMod);
+    let rollCatch = Math.floor(Math.random() * 101) + (combat.playerAttributes.kyosirMod / 3);
     // if (combat.weather === "Alluring Isles") computerRoll -= 10;
     // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") computerRoll -= 5;
     // if (combat.weather === "Fangs" || combat.weather === "Roll") computerRoll += 5;
@@ -1260,7 +1260,7 @@ function playerRollCompiler(combat: Combat, playerAction: string, computerAction
 function doubleRollCompiler(combat: Combat, playerInitiative: number, computerInitiative: number, playerAction: string, computerAction: string): Combat {
     let playerRoll: number = combat.weapons[0]?.roll as number;
     let computerRoll: number = combat.computerWeapons[0].roll;
-    let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
+    let rollCatch: number = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 3);
     // if (combat.weather === "Alluring Isles") {
     //     playerRoll -= 10;
     //     computerRoll -= 10;

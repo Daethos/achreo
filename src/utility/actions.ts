@@ -1,6 +1,17 @@
 import { PLAYER } from "./player";
 
-export const ACTION_ORIGIN = {
+type ACTION = {
+    name: string;
+    description: string;
+    cooldown: string;
+    cost: string;
+    time: string;
+    special: string;
+    svg: string;
+    talent: string;
+}
+
+export const ACTION_ORIGIN: {[key:string]: ACTION} = {
     ATTACK: {
         name: "Attack",
         description: "A slower, focused strike. Capable of dual wielding.",
@@ -504,6 +515,16 @@ export const ACTION_ORIGIN = {
         special: "Channel. AoE (Manual)",
         svg: "BEAM",
         talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Increased Radius.",
+    },
+    "GRAPPLING HOOK": {
+        name: "Grappling Hook",
+        description: "You rip a tendril through this world, seeking material satiety.",
+        cooldown: `${PLAYER.COOLDOWNS.SHORT / 1000}s`,
+        cost: `${PLAYER.STAMINA.HOOK} Grace`,
+        time: "Instant",
+        special: "Kinetic",
+        svg: "CAST",
+        talent: "Optimized: Lowers Cooldown, Lowers Grace. Enhanced: Damage Increase Based on Distance Hooked.",
     },
     HEALING: {
         name: "Healing",

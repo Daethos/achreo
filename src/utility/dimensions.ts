@@ -15,10 +15,8 @@ const getDims = (): DIMS => ({
 const [dimensions, _updateDimensions] = createRoot(() => {
     const [dims, setDims] = createSignal<DIMS>(getDims());
     
-    const handleResize = () => {
-        setDims(getDims())
-        // console.log({ height: dims().HEIGHT, width: dims().WIDTH });
-    };
+    const handleResize = () => setDims(getDims());
+    
     window.addEventListener("resize", handleResize);
     
     return [dims, setDims] as const;

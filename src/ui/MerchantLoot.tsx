@@ -50,7 +50,7 @@ interface MerchantLootProps {
 
 export default function MerchantLoot({ item, ascean, setShow, setHighlight, thievery, steal, cost, checkMassBuy, getBuyMark, mass }: MerchantLootProps) {
     const [thieveryModal, setThieveryModal] = createSignal<boolean>(false);
-    const [rows, setRows] = createSignal<number>(3);
+    const [rows, setRows] = createSignal<number>(5);
     const [template, setTemplate] = createSignal<string>("0.5fr 1fr 0.5fr 0.5fr");
     createEffect(() => {
         let rowNum = 4, temp = "";
@@ -93,31 +93,25 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
         setShow(true)
     };
     const getItemStyle = {
-        background: "black",
         border: `thick ridge ${getRarityColor(item?.rarity as string)}`, 
-        margin: "0 auto",
-        width: "80%"
+        margin: "5.5% auto 0",
+        padding: "0.25em", 
+        width: "60%",
+        "height": "fit-content"
     };
-    return <div style={{ display: "grid", "grid-template-rows": template()}}>
+    return <div style={{ display: "grid", margin: "5%", border: "thick ridge #fdf6d8", padding: "5%", "max-height": "auto", "grid-template-rows": template() }}>
         <h6 style={{ margin: "0 auto 5%" }}>{item?.name}</h6>
-        <button onClick={select} style={getItemStyle}>
-            <div class="center" style={{ margin: "5.5% auto 0",padding: "0.25em" }}>
-                <img src={item?.imgUrl} alt={item?.name} style={{ margin: "5% auto -5%" }} />
-            </div>
-        </button>
-        {/* <div style={{ color:"", "font-size": "0.75em", "margin-top": "4%", "margin-bottom": "0" }}>
-            <span style={{color:"gold"}}>{cost?.gold > 0 && `${cost.gold}g${" "}`}</span>
-            {cost?.silver > 0 && `${cost.silver}s${" "}`}
-        </div> */}
-        <button class="highlight" onClick={purchaseLoot} style={{ "font-size": "0.75em", "font-weight": 700, color: "silver", padding: "0.5em", width: "80%", "z-index": 999, "grid-row": rows() - ((thievery() && mass) ? 2 : (thievery() || mass) ? 1 : 0) }}>
-            <span style={{color:"gold"}}>{cost?.gold > 0 && `${cost.gold}g${" "}`}</span>
-            {cost?.silver > 0 && `${cost.silver}s${" "}`}
+        <div class="center" onClick={select} style={getItemStyle}>
+            <img src={item?.imgUrl} alt={item?.name} style={{ margin: "5% auto -5%" }} />
+        </div>
+        <button class="highlight" onClick={purchaseLoot} style={{ color: "silver", "font-size": mass ? "" : "0.75em", "grid-row": rows() - ((thievery() && mass) ? 2 : (thievery() || mass) ? 1 : 0) }}>
+            <span style={{color:"gold"}}>{cost?.gold > 0 && `${cost.gold}g`}</span> {cost?.silver > 0 && `${cost.silver}s${" "}`}
         </button>
         <Show when={thievery()}>
             <button class="highlight" onClick={() => setThieveryModal(true)} style={{ "font-size": "0.75em", "font-weight": 700, "color": "red", padding: "0.5em", width: "auto", "grid-row": rows() - (mass ? 1 : 0) }}>Steal</button>
         </Show>
         <Show when={mass}>
-            <button class="highlight" onClick={() => checkMassBuy(item)} style={{ "font-weight": 700, color: getBuyMark(item._id) ? "gold" : "red", width: "80%", "grid-row": rows() }}>{getBuyMark(item._id) ? "✓" : "▢"}</button>
+            <button class="highlight" onClick={() => checkMassBuy(item)} style={{ color: getBuyMark(item._id) ? "gold" : "red", "grid-row": rows() }}>{getBuyMark(item._id) ? "✓" : "▢"}</button>
         </Show>
         <Show when={thieveryModal()}> 
             <div class="modal">

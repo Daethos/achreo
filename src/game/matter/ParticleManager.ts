@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-export const PARTICLES = ["achire", "earth",  "fire",  "frost", "hook", "lightning", "righteous", "quor", "sorcery", "spooky", "wild", "wind"];
-const TIME = { quor: 3000, achire: 2000, attack: 1500, hook: 1750, thrust: 1000, posture: 1750, roll: 1500, special: 2000 };
-const VELOCITY = { quor: 4.5, achire: 6, attack: 5, hook: 6, thrust: 6.5, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
+export const PARTICLES = ["achire", "earth",  "fire",  "frost", "grappling hook", "hook", "lightning", "righteous", "quor", "sorcery", "spooky", "wild", "wind"];
+const TIME = { quor: 3000, achire: 2000, attack: 1500, "grappling hook": 1750, hook: 1750, thrust: 1000, posture: 1750, roll: 1500, special: 2000 };
+const VELOCITY = { quor: 4.5, achire: 6, attack: 5, "grappling hook": 6, hook: 6, thrust: 6.5, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
 import Entity, { ENEMY } from "../entities/Entity";
@@ -13,6 +13,7 @@ import { hitLocationDetector } from "../phaser/HitDetection";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
+const MIN_DISTANCE = 196; // 10000; // 100 * 100
 
 type CollisionRule = (attacker: Entity, target: any) => boolean;
 
@@ -83,7 +84,8 @@ export class Particle {
         this.pID = player.particleID;
         this.action = action;
         this.effect = this.spriteMaker(this.scene, player, idKey, particle, special); 
-        this.isParticle = particle === true;
+        // console.log({ effect: this.effect });
+        this.isParticle = particle;
         this.key = idKey; // particle === true ? idKey : key;
         this.magic = MAGIC.includes(key);
         this.player = player;
@@ -92,7 +94,7 @@ export class Particle {
         this.target = this.setTarget(player, scene, special);
         this.timer = this.setTimer(action, id);
         this.velocity = this.setVelocity(action);
-        const effectSensor = Bodies.circle(player.x, player.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
+        const effectSensor = Bodies.circle(this.effect.x, this.effect.y, this.sensorSize, { isSensor: true, label: `effectSensor-${id}`}); 
         this.effect.setExistingBody(effectSensor); 
         this.effect.setCollisionCategory(ENTITY_FLAGS.PARTICLES);
         // this.effect.setCollidesWith(ENTITY_FLAGS.ALL);
@@ -120,16 +122,27 @@ export class Particle {
         this.effect.setAngle(angleTarget(this.target));
     };
     
-    scaler = (particle: boolean, special: boolean, action: string): number => particle && !special ? 0.5 : action === "achire" ? 0.75 : 0.6;
+    scaler = (particle: boolean, special: boolean, action: string): number => particle && !special ? 0.5 : action === "achire" ? 0.75 : action.includes("hook") ? 0.4 : 0.6;
     
-    sensorer = (special: boolean, action: string): number => !special ? 6 : action === "achire" ? 9 : 16;
+    sensorer = (special: boolean, action: string): number => !special ? 6 : action === "achire" ? 9 : action.includes("hook") ? 12 : 16;
 
     sensorListener = (attacker: Player | Enemy | Entity, sensor: any) => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other: any) => {
+                const distSq = (this.effect.x - attacker.x) ** 2 + (this.effect.y - attacker.y) ** 2;
+                if (distSq < MIN_DISTANCE) return;
                 if (other.gameObjectB?.properties?.wall === true) {
                     this.collided = true;
+                    if (this.action === "grappling hook") {
+                        attacker.grapplingHook(this.effect.x, this.effect.y);
+                    };
+                    return;
+                };
+
+                if (other.gameObjectB?.properties?.collides && this.action === "grappling hook") {
+                    this.collided = true;
+                    attacker.grapplingHook(this.effect.x, this.effect.y);
                     return;
                 };
                 
@@ -153,6 +166,10 @@ export class Particle {
                         attacker.lastHitLocation = hitResult;
                         attacker.attackedTarget = target;
                         attacker.particleEffect.success = true;
+                        if (this.action === "grappling hook") {
+                            attacker.grapplingHook(this.effect.x, this.effect.y);
+                            return;
+                        };
                         return;
                     };
                 };
@@ -218,7 +235,14 @@ export class Particle {
     };
 
     spriteMaker(scene: Play, player: Player | Enemy | Entity | Party, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
-        return new Phaser.Physics.Matter.Sprite(scene.matter.world, player.x, player.y, key)
+        const weapon = player.spriteWeapon;
+        const halfWidth = weapon.width * weapon.scaleX;
+        const dx = halfWidth * Math.cos(weapon.rotation); 
+        const dy = halfWidth * Math.sin(weapon.rotation);
+        const tipX = weapon.x + dx;
+        const tipY = weapon.y + dy;
+        // console.log({ console: "spriteMaker", x: player.x, y: player.y, tipX, tipY });
+        return new Phaser.Physics.Matter.Sprite(scene.matter.world, tipX, tipY, key)
             .setScale(this.scaler(particle, special, this.action))
             .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
     };
@@ -237,6 +261,8 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation("fire_anim", "../assets/gui/fire_anim.json");
         scene.load.atlas("frost_effect", "../assets/gui/frost_effect.png", "../assets/gui/frost_json.json");
         scene.load.animation("frost_anim", "../assets/gui/frost_anim.json");
+        scene.load.atlas("grappling hook_effect", "../assets/gui/hook_effect.png", "../assets/gui/hook_atlas.json");
+        scene.load.animation("grappling hook_anim", "../assets/gui/hook_anim.json");
         scene.load.atlas("hook_effect", "../assets/gui/hook_effect.png", "../assets/gui/hook_atlas.json");
         scene.load.animation("hook_anim", "../assets/gui/hook_anim.json");
         scene.load.atlas("lightning_effect", "../assets/gui/lightning_effect.png", "../assets/gui/lightning_json.json");
@@ -309,9 +335,18 @@ export default class ParticleManager extends Phaser.Scene {
     };
 
     spawnEffect(particle: Particle) {
+        const weapon = particle.player.spriteWeapon;
+        const halfWidth = weapon.width * weapon.scaleX;
+        const dx = halfWidth * Math.cos(weapon.rotation); 
+        const dy = halfWidth * Math.sin(weapon.rotation);
+        const tipX = weapon.x + dx;
+        const tipY = weapon.y + dy;
+        // console.log({ console: "spawnEffect", pX: particle.player.x, pY: particle.player.y, tipX, tipY });
+
         particle.effect.setActive(true);
         particle.effect.setVisible(true);
-        particle.effect.setPosition(particle.player.x, particle.player.y);
+        particle.effect.setPosition(tipX, tipY);
+        // particle.effect.setPosition(particle.player.x, particle.player.y);
         particle.effect.world.add(particle.effect.body!);
     };
 
@@ -339,6 +374,8 @@ export default class ParticleManager extends Phaser.Scene {
 
         const x = startX + particle.target.x * distance;
         const y = startY + particle.target.y * distance;
+
+        // console.log({ console: "Add Effect", startX, startY, playerX: particle.player.x, playerY: particle.player.y });
 
         // console.log({ x, y, duration, startX, startY, dir: particle.target });
         this.context.tweens.add({

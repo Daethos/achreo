@@ -556,7 +556,7 @@ const attributeCompiler = (ascean: Ascean, rarities: { helmet: number; chest: nu
     };
         
     newAttributes.rawConstitution =  Math.round((ascean.constitution + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? RACE_BOOST : 0)) * (ascean?.mastery === CONSTITUTION ? MASTERY_MULTIPLIER : 1));
-    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === RACE.SEDYREAL || ascean?.origin === RACE.ASHTRE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === MAN ? RACE_BOOST : 0)) * (ascean?.mastery === STRENGTH ? MASTERY_MULTIPLIER : 1));
+    newAttributes.rawStrength =  Math.round(((ascean?.strength + (ascean?.origin === RACE.SEDYREAL || ascean?.origin === RACE.ASHTRE ? RACE_BOOST : 0)) + (ascean?.sex === MAN ? RACE_BOOST : 0)) * (ascean?.mastery === STRENGTH ? MASTERY_MULTIPLIER : 1));
     newAttributes.rawAgility =  Math.round(((ascean?.agility + (ascean?.origin === RACE.QUOREITE || ascean?.origin === RACE.ASHTRE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? RACE_BOOST : 0))) * (ascean?.mastery === AGILITY ? MASTERY_MULTIPLIER : 1));
     newAttributes.rawAchre =  Math.round(((ascean?.achre + (ascean?.origin === RACE.NOTHEO || ascean?.origin === RACE.FYERS || ascean?.origin === RACE.QUOREITE ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? 1 : 0)) + (ascean?.sex === MAN ? RACE_BOOST : 0)) * (ascean?.mastery === ACHRE ? MASTERY_MULTIPLIER : 1));
     newAttributes.rawCaeren =  Math.round(((ascean?.caeren + (ascean?.origin === RACE.NOTHOS || ascean?.origin === RACE.SEDYREAL ? RACE_BOOST : 0) + (ascean?.origin === RACE.LIIVI ? RACE_BOOST : 0)) + (ascean?.sex === WOMAN ? RACE_BOOST : 0)) * (ascean?.mastery === CAEREN ? MASTERY_MULTIPLIER : 1));
@@ -613,7 +613,7 @@ function baseHealth(level: number): number {
         case 0.5:
             return HEALTH / 2;
         default:
-        return HEALTH;
+            return HEALTH;
     };
 };
 
@@ -623,10 +623,13 @@ function origin(weapon: any, ascean: Ascean): Equipment {
             weapon.criticalChance += 5;
             weapon.physicalDamage *= 1.05;
             weapon.criticalDamage *= 1.05;
+            weapon.dodge += 5;
+            weapon.roll += 5;
             break;
         case RACE.FYERS:
             weapon.magicalPenetration += 5;
             weapon.physicalPenetration += 5;
+            weapon.dodge += 5;
             weapon.roll += 5;
             break;
         case RACE.LIIVI:
@@ -636,19 +639,21 @@ function origin(weapon: any, ascean: Ascean): Equipment {
             weapon.physicalDamage *= 1.02;
             weapon.criticalChance += 2;
             weapon.criticalDamage *= 1.02;
-            weapon.dodge -= 2;
+            weapon.dodge += 2;
             weapon.roll += 2;
             break;
         case RACE.NOTHEO:
+            weapon.criticalDamage *= 1.05;
             weapon.physicalDamage *= 1.05;
             weapon.physicalPenetration += 5;
             break;
         case RACE.NOTHOS:
+            weapon.criticalChance += 5;
             weapon.magicalPenetration += 5;
             weapon.magicalDamage *= 1.05;
             break;
         case RACE.QUOREITE:
-            weapon.dodge -= 5;
+            weapon.dodge += 5;
             weapon.roll += 5;
             weapon.criticalChance += 5;
             break;
@@ -744,7 +749,7 @@ function faith(weapon: Equipment, ascean: Ascean): Equipment {
             weapon.criticalDamage *= FAITH_MID_MODIFIER;
         };
         weapon.criticalDamage *= FAITH_HIGH_MODIFIER;
-        weapon.dodge -= FAITH_FLAT_MODIFIER;
+        weapon.dodge += FAITH_FLAT_MODIFIER;
     };
     weapon.criticalChance = Math.round(weapon.criticalChance * 100) / 100;
     weapon.criticalDamage = Math.round(weapon.criticalDamage * 100) / 100;
@@ -906,8 +911,8 @@ function asceanCompiler(ascean: any): Compiler {
     const originMagPenMod = (ascean.origin === RACE.FYERS || ascean.origin === RACE.NOTHOS ? 5 : 0)
     const physicalPenetration = (ascean.ringOne.physicalPenetration * rarities.ringOne) + (ascean.ringTwo.physicalPenetration * rarities.ringTwo) + (ascean.amulet.physicalPenetration * rarities.amulet) + (ascean.trinket.physicalPenetration * rarities.trinket) + originPhysPenMod;
     const magicalPenetration = (ascean.ringOne.magicalPenetration * rarities.ringOne) + (ascean.ringTwo.magicalPenetration * rarities.ringTwo) + (ascean.amulet.magicalPenetration * rarities.amulet) + (ascean.trinket.magicalPenetration * rarities.trinket) + originMagPenMod;
-    const originPhysDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHOS ? 5 : 0);
-    const originMagDefMod = (ascean.origin === RACE.SEDYREAL || ascean.origin === RACE.NOTHEO ? 5 : 0);
+    const originPhysDefMod = (ascean.origin === RACE.SEDYREAL ? 10 : ascean.origin === RACE.NOTHOS ? 5 : 0);
+    const originMagDefMod = (ascean.origin === RACE.SEDYREAL ? 10 : ascean.origin === RACE.NOTHEO ? 5 : 0);
     const physicalDefenseModifier = Math.round((ascean.helmet.physicalResistance * rarities.helmet) + (ascean.chest.physicalResistance * rarities.chest) + (ascean.legs.physicalResistance * rarities.legs) + 
         (ascean.ringOne.physicalResistance * rarities.ringOne) + (ascean.ringTwo.physicalResistance * rarities.ringTwo) + (ascean.amulet.physicalResistance * rarities.amulet) + (ascean.trinket.physicalResistance * rarities.trinket) + 
         Math.round(((attributes.constitutionMod + attributes.strengthMod + attributes.kyosirMod) / 8)) + originPhysDefMod);

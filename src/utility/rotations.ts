@@ -19,6 +19,7 @@ export const FRAME_KEYS: frame = {
     "player_attack_6": States.PARRY,
     "player_attack_3": States.POSTURE,
     "player_roll": States.ROLL,
+    "grapple_roll": States.GRAPPLING_ROLL,
     "player_attack_2": States.THRUST,
 };
 export const WEAPON_ANIMATION_FRAME_CONFIG = {

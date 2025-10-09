@@ -4602,51 +4602,6 @@
                         }]
                 }, 
                 {
-                 "id":264,
-                 "properties":[
-                        {
-                         "name":"wall",
-                         "type":"bool",
-                         "value":true
-                        }]
-                }, 
-                {
-                 "id":265,
-                 "properties":[
-                        {
-                         "name":"wall",
-                         "type":"bool",
-                         "value":true
-                        }]
-                }, 
-                {
-                 "id":266,
-                 "properties":[
-                        {
-                         "name":"wall",
-                         "type":"bool",
-                         "value":true
-                        }]
-                }, 
-                {
-                 "id":267,
-                 "properties":[
-                        {
-                         "name":"wall",
-                         "type":"bool",
-                         "value":true
-                        }]
-                }, 
-                {
-                 "id":268,
-                 "properties":[
-                        {
-                         "name":"wall",
-                         "type":"bool",
-                         "value":true
-                        }]
-                }, 
-                {
                  "id":280,
                  "properties":[
                         {
@@ -5865,8 +5820,7 @@
                          "type":"bool",
                          "value":true
                         }]
-                },
-            
+                }, 
                 {
                  "id":373,
                  "objectgroup":
@@ -6042,7 +5996,8 @@
                          "type":"bool",
                          "value":true
                         }]
-                }, 
+                },
+            
                 {
                  "id":399,
                  "properties":[
@@ -7745,8 +7700,7 @@
                          "type":"bool",
                          "value":true
                         }]
-                },
-            
+                }, 
                 {
                  "id":842,
                  "properties":[
@@ -7845,7 +7799,8 @@
                          "type":"string",
                          "value":"stairs"
                         }]
-                }, 
+                },
+            
                 {
                  "id":944,
                  "objectgroup":

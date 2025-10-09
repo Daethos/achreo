@@ -1,9 +1,14 @@
+/*  <<------------------ ROSTER ------------------>>
+    Two panel modal pop-up, allowing the player
+    to choose the type of arena and duel schema
+    they wish to perform in, with gambling.
+    <<------------------ ROSTER ------------------>> */
 import { Accessor, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { EventBus } from "../game/EventBus";
 import { v4 as uuidv4 } from "uuid";
-import Currency from "../utility/Currency";
+import Currency, { fixGold } from "../utility/Currency";
 import { FloatingLabel, Form } from "solid-bootstrap";
 import { ArenaRoster } from "./BaseUI";
 import { GameState } from "../stores/game";
@@ -248,7 +253,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
     onMount(() => {
         setParty(instance?.game?.registry?.get("party"));
     });
-
+    const btnStyle = { "font-family": "Centaur", margin: "1%" };
     return <Show when={arena().show}>
         <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
@@ -263,14 +268,14 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         <h1 ></h1>
                         <Switch>
                             <Match when={arena().enemies.length > 0 && switchScene() !== GAUNTLET}>
-                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>
+                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em", ...btnStyle }}>Enter the Eulex</button>
                             </Match>
                             <Match when={checkGauntletReady()}>
-                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em" }}>Enter the Eulex</button>
+                                <button class="highlight animate" onClick={createArena} style={{ "font-size": "1.25em", ...btnStyle }}>Enter the Eulex</button>
                             </Match>
                         </Switch>
                         <For each={arena().enemies}>{(enemy) => {
-                            return <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "" }}>Remove</button></div>
+                            return <div class="textGlow" style={{ color: masteryColor(enemy.mastery), "--glow-color":masteryColor(enemy.mastery), margin: 0 }}>Level {enemy.level} - {enemy.mastery.charAt(0).toUpperCase() + enemy.mastery.slice(1)} <button class="highlight" onClick={() => opponentRemove(enemy)} style={{ animation: "", ...btnStyle }}>Remove</button></div>
                         }}</For>
                         <Show when={switchScene() === GAUNTLET}>
                             <div>
@@ -281,7 +286,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </Show>
                         <Show when={switchScene() === GAUNTLET && arena().gauntlet.type !== "SELECTED"} fallback={
                             <div>
-                                <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em" }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
+                                <button class="highlight" style={{ color: masteryColor(selector().mastery), "font-size": "1.1em", ...btnStyle }} onClick={() => opponentAdd()}>Add ({selector().level} | {selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})</button>
                             </div>
                         }>
                             <div>
@@ -304,44 +309,44 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                                         Prev ({LEVEL_SELECTOR[selector().level].prev}) |  Next ({LEVEL_SELECTOR[selector().level].next}) 
                                     </span>
                                 </p>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].prev)}>-</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].next)}>+</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].prev)}>-</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("level", LEVEL_SELECTOR[selector().level].next)}>+</button>
                             </div>
                             <div style={{ "margin-bottom": "8px" }}><p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
                                 <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>
                                     ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})
                                 </span>
                             </p>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "constitution")}>Con</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "strength")}>Str</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "agility")}>Agi</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "achre")}>Ach</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "caeren")}>Caer</button>
-                                <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "kyosir")}>Kyo</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "constitution")}>Con</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "strength")}>Str</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "agility")}>Agi</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "achre")}>Ach</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "caeren")}>Caer</button>
+                                <button class="highlight" style={btnStyle} onClick={() => selectOpponent("mastery", "kyosir")}>Kyo</button>
                             </div>
                         </div>
                         <div style={{ display: "grid", "grid-template-columns": "repeat(2, 1fr)", "grid-template-rows": "repeat(2, 1fr)" }}>
-                            <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Currency</p>
-                            <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Wager</p>
+                            <p style={{ color: "gold", margin: "0 auto", "font-size": "1.4em", padding: "0" }}>Currency</p>
+                            <p style={{ color: "gold", margin: "0 auto", "font-size": "1.4em", padding: "0" }}>Wager</p>
                             <Currency ascean={ascean} />
-                            <div style={{ padding: "2%", "--glow-color":"silver" }}>
-                                <img src={"../assets/images/gold-full.png"} alt="Gold Stack" /> <span class="textGlow" style={{ color: "gold", "--glow-color":"gold",  }}>{arena().wager.gold}</span> <img src={"../assets/images/silver-full.png"} alt="Silver Stack" /> <span class="textGlow">{arena().wager.silver}</span>
+                            <div style={{ "--glow-color":"silver" }}>
+                                <img src={"../assets/images/gold-full.png"} alt="Gold Stack" /> <span class="textGlow" style={{ color: "gold", "--glow-color":"gold",  }}>{fixGold(arena().wager.gold)}</span> <img src={"../assets/images/silver-full.png"} alt="Silver Stack" /> <span class="textGlow">{arena().wager.silver}</span>
                             </div>
                         </div>
                         <Show when={settings().desktop} fallback={
                             <div style={{ display: "grid", "grid-template-columns": "repeat(2, 1fr)", "margin-top": "2.5%" }}>
                                 <div style={{ margin: "0 0 7.5%" }}>
                                     <p style={{ color: "gold", "font-size": "1.4em", margin: "8px 0" }}>Gold</p>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", 0)}>0</button>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", Math.max(0, arena().wager.gold - 1))}>-</button>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("gold", Math.min(ascean().currency.gold, arena().wager.gold + 1))}>+</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("gold", 0)}>0</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("gold", Math.max(0, arena().wager.gold - 1))}>-</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("gold", Math.min(ascean().currency.gold, arena().wager.gold + 1))}>+</button>
                                     <button class="highlight textGlow" style={{ "--glow-color":"gold", margin: "1%" }} onClick={() => setWager("gold", ascean().currency.gold)}>{ascean().currency.gold}</button>
                                 </div>
                                 <div style={{ margin: "0 0 7.5%" }}>
                                     <p style={{ "font-size": "1.4em", margin: "8px 0" }}>Silver</p>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", 0)}>0</button>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", Math.max(0, arena().wager.silver - 1))}>-</button>
-                                    <button class="highlight" style={{ margin: "1%" }} onClick={() => setWager("silver", Math.min(ascean().currency.silver, arena().wager.silver + 1))}>+</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("silver", 0)}>0</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("silver", Math.max(0, arena().wager.silver - 1))}>-</button>
+                                    <button class="highlight" style={btnStyle} onClick={() => setWager("silver", Math.min(ascean().currency.silver, arena().wager.silver + 1))}>+</button>
                                     <button class="highlight textGlow" style={{ "--glow-color":"silver", margin: "1%" }} onClick={() => setWager("silver", ascean().currency.silver)}>{ascean().currency.silver}</button>
                                 </div>
                             </div>

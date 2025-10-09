@@ -298,13 +298,19 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 </button> 
             )}
         </> ) : ( <>
-            <div class="" style={{ "font-size": "0.75em", color: "gold", "bottom": "10%", position: "absolute" }}>
+            {/* <div style={{ "font-size": "0.75em", color: "gold", "bottom": "10%", position: "absolute" }}>
                 Unfortunately, {highlighted()?.item?.name} requires one to be level {equipLevel(highlighted()?.item?.rarity as string)} to equip.
                 {"\n"}{"\n"}    
+            </div> */}
+            <div class="highlight cornerBL" style={{ "font-size": "0.75em" }}>
+                <div style={{ color: "#fdf6d8" }}>Cannot Equip</div>
             </div>
-            <button class="highlight cornerBL" style={{ transform: "translateX(-50%)", left: "50%", bottom: dims.ORIENTATION === "landscape" ? "0" : "0", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
-                    <div style={{ color: "red" }}>Remove</div>
-                </button>
+            <button class="highlight verticalBottom" style={{ transform: "translateX(-60%)", "font-size": "0.75em" }} onClick={() => setRemoveModalShow(!removeModalShow())}>
+                <div style={{ color: "red" }}>Remove</div>
+            </button>
+            <div class="highlight cornerBR" style={{ "font-size": "0.75em" }}>
+                <div style={{ color: "bone" }}>Requires <span class="bone">Lvl {equipLevel(highlighted()?.item?.rarity as string)}</span></div>
+            </div>
         </> ) }
         </div>
     </>;

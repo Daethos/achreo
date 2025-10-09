@@ -21,13 +21,14 @@ import { DEITIES } from "../utility/deities";
 import { Puff } from "solid-spinner";
 import PhaserSettings from "./PhaserSettings";
 import Statistics from "../utility/statistics";
-import { FAITH_RARITY } from "../utility/combatTypes";
+import { DAMAGE_LOOKUP, DAMAGE_TYPE_DIALOG, deriveArmorTypeToArrayLocation, FAITH_RARITY } from "../utility/combatTypes";
 import Talents from "../utility/talents";
 import { ACTION_ORIGIN } from "../utility/actions";
 import { svg } from "../utility/settings";
 import QuestManager, { Quest, replaceChar } from "../utility/quests";
 import Currency from "../utility/Currency";
 import { usePhaserEvent } from "../utility/hooks";
+import { roundToTwoDecimals } from "../utility/combat";
 const AsceanImageCard = lazy(async () => await import("../components/AsceanImageCard"));
 const ExperienceBar = lazy(async () => await import("./ExperienceBar"));
 const Firewater = lazy(async () => await import("./Firewater"));
@@ -162,6 +163,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     const [entry, setEntry] = createSignal<any>(undefined);
     const [reputationConcern, setReputationConcern] = createSignal<string>(settings()?.reputationViews || REPUTATION.ENEMY);
     const [highlighter, setHighlighter] = createSignal<string>("");
+    const [damageType, setDamageType] = createSignal({ show: false, type: "" });
     const dims = dimensions();
     const bMargin = {"margin-bottom":"3%"};
  
@@ -416,7 +418,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
                         <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
                     </div>
-
                 </div>
             </div>;
             case CHARACTERS.QUESTS:
@@ -543,7 +544,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             case CHARACTERS.TRAITS:
                 return <div class="creature-heading">
                     <h1>Traits</h1>
-                    <h2><span class="gold">Dialog's</span> are immediately available. <span class="gold">Stances</span> are available at level 2. <span class="gold">Specials</span> are available at level 4.</h2>
+                    <h2><span class="gold">Dialog</span> is immediately available. <span class="gold">Stances</span> are available at level 2. <span class="gold">Specials</span> are available at level 4.</h2>
                     <h1>{playerTraitWrapper()?.primary?.name}</h1>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitOneName}</span> - {playerTraitWrapper()?.primary?.traitOneDescription}</h2>
                     <h2> <span class="gold">{playerTraitWrapper()?.primary?.traitTwoName}</span> - {playerTraitWrapper()?.primary?.traitTwoDescription}</h2>
@@ -567,7 +568,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 return <div class="playerWindow creature-heading" classList={{
                 "tutorial-highlight": highlighter() === "character-display",
             }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
-                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scaleX(0.95) scaleY(0.99)" }}>
                     { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
                         <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
                         <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
@@ -612,38 +613,206 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         </div>
                     </div>
 
-                    <div class="stat-section">
-                        <div class="stat-row">
-                            <span class="stat-label">Damage:</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.physicalDamage}</span>
-                            <span class="small-label">Physical</span>
-                            <span class="divider">|</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.magicalDamage}</span>
-                            <span class="small-label">Magical</span>
+                    <div class="stat-card" style={{ "margin-bottom": "1rem"}}>
+                        <div class="stat-label-header">OFFENSE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.type === "Ancient Shard" ? "Shard" : combat()?.weapons?.[0]?.type}</div>
+                                <div class="small-label">Style</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDamageType}</div>
+                                <div class="small-label">Type</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.grip}</div>
+                                <div class="small-label">Grip</div>
+                            </div>
                         </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Critical:</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalChance}%</span>
-                            <span class="divider">|</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalDamage}x</span>
+                        
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">DAMAGE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.physicalDamage}</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.magicalDamage}</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">CRITICAL</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.criticalChance}%</div>
+                                <div class="small-label">Chance</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</div>
+                                <div class="small-label">Damage</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">PENETRATION</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.magicalPenetration}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.physicalPenetration}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                        </div>
+                        
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">SPECIAL</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">+{combat()?.weapons?.[0]?.dodge}%</div>
+                                <div class="small-label">Dodge</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{roundToTwoDecimals(combat()?.weapons?.[0]?.roll)}%</div>
+                                <div class="small-label">Roll</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-section">
-                        <div class="stat-row">
-                            <span class="stat-label">Magical Defense:</span>
-                            <span class="stat-value gold">
-                                {combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]
-                            </span>
+                    <div class="stat-card">
+                        <div class="stat-label-header">DEFENSE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</div>
+                                <div class="small-label">Magical [Postured]</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</div>
+                                <div class="small-label">Physical [Postured]</div>
+                            </div>
                         </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Physical Defense:</span>
-                            <span class="stat-value gold">
-                                {combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]
-                            </span>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">-{combat().playerAttributes.kyosirMod / 2}%</div>
+                                <div class="small-label">Critical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat().stalwart.active ? roundToTwoDecimals(combat().playerDefense?.magicalPosture / 4) : roundToTwoDecimals(combat().playerDefense?.magicalDefenseModifier / 4)}%</div>
+                                <div class="small-label">Resist</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">-{roundToTwoDecimals(combat().playerAttributes.kyosirMod / 3)}%</div>
+                                <div class="small-label">Roll</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">HELMET</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().helmet.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().helmet.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().helmet.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">CHEST</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().chest.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().chest.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().chest.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">LEGS</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().legs.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().legs.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().legs.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
                         </div>
                     </div>
-                    </div>
+                </div>
             </div>;
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
@@ -773,9 +942,9 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 Blessings: <span class="gold">{highestDeity[1]}</span>
             <h1 style={{...bMargin}}>Traits</h1>
             <h2>That which you invoke without intent.</h2>
-            {playerTraitWrapper()?.primary?.name} <span class="gold">({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName})</span><br />
-            {playerTraitWrapper()?.secondary?.name} <span class="gold">({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName})</span><br />
-            {playerTraitWrapper()?.tertiary?.name} <span class="gold">({playerTraitWrapper()?.tertiary?.traitOneName}, {playerTraitWrapper()?.tertiary?.traitTwoName})</span>
+            {playerTraitWrapper()?.primary?.name} <span class="gold">({playerTraitWrapper()?.primary?.traitOneName}, {playerTraitWrapper()?.primary?.traitTwoName}, {playerTraitWrapper()?.primary?.traitThreeName})</span><br />
+            {playerTraitWrapper()?.secondary?.name} <span class="gold">({playerTraitWrapper()?.secondary?.traitOneName}, {playerTraitWrapper()?.secondary?.traitTwoName}, {playerTraitWrapper()?.secondary?.traitThreeName})</span><br />
+            {playerTraitWrapper()?.tertiary?.name} <span class="gold">({playerTraitWrapper()?.tertiary?.traitOneName}, {playerTraitWrapper()?.tertiary?.traitTwoName}, {playerTraitWrapper()?.tertiary?.traitThreeName})</span>
         </div>;
     };
 
@@ -938,10 +1107,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     usePhaserEvent("character", (type: string) => {
         setHighlighter(type);
     });
-    console.log({ highlighter: highlighter() })
-    return <div class="characterMenu" classList={{
-                "tutorial-highlight": !settings().tutorial.boot,
-            }}>
+
+    return (
+        <div class="characterMenu" classList={{
+            "tutorial-highlight": !settings().tutorial.boot,
+        }}>
+        {/*  <<----------- BUTTONS ----------->> */}
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
             <button class="highlight menuHeader" onClick={() => setNextView()}>
                 <div class="playerMenuHeading">Character</div>
@@ -1047,7 +1218,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             ) }     
             </div>
         </> ) }
-        {/* <<----- WINDOW ONE ----->> */}
+        {/* <<---------- WINDOW ONE ---------->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <Switch>
                 <Match when={settings().asceanViews === VIEWS.SETTINGS}>
@@ -1146,13 +1317,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </Match>    
             </Switch>
         </Show>
-        {/* <<----- WINDOW TWO -----> */}
+        {/* <<---------- WINDOW TWO ---------->> */}
         <div class="playerWindow" classList={{
                 "tutorial-highlight": (highlighter() === "deity-concern" || highlighter() === "expanded-info" || highlighter() === "inventory-compare"),
             }} style={{ height: `${dims.HEIGHT * ((settings().asceanViews === VIEWS.SETTINGS && (settings().control === CONTROLS.POST_FX || settings().control === CONTROLS.PHASER_UI)) ? 0.7 : 0.8)}px`, left: "33.5vw", top: (settings().asceanViews === VIEWS.SETTINGS && (settings().control === CONTROLS.POST_FX || settings().control === CONTROLS.PHASER_UI)) ? "1vh" : "", "border-color": masteryColor(ascean().mastery) }}>
             { settings().asceanViews === VIEWS.CHARACTER ? (
-                <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none", margin: "auto" }}>
-                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.95)" }}>
+                <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
+                    <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scaleX(0.95) scaleY(0.99)" }}>
                     { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
                         <img class="stat-" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
                         <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
@@ -1197,35 +1368,203 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         </div>
                     </div>
 
-                    <div class="stat-section">
-                        <div class="stat-row">
-                            <span class="stat-label">Damage:</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.physicalDamage}</span>
-                            <span class="small-label">Physical</span>
-                            <span class="divider">|</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.magicalDamage}</span>
-                            <span class="small-label">Magical</span>
+                    <div class="stat-card" style={{ "margin-bottom": "1rem"}}>
+                        <div class="stat-label-header">OFFENSE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.type === "Ancient Shard" ? "Shard" : combat()?.weapons?.[0]?.type}</div>
+                                <div class="small-label">Style</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDamageType}</div>
+                                <div class="small-label">Type</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.grip}</div>
+                                <div class="small-label">Grip</div>
+                            </div>
                         </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Critical:</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalChance}%</span>
-                            <span class="divider">|</span>
-                            <span class="stat-value gold">{combat()?.weapons?.[0]?.criticalDamage}x</span>
+                        
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">DAMAGE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.physicalDamage}</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.magicalDamage}</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">CRITICAL</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.criticalChance}%</div>
+                                <div class="small-label">Chance</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</div>
+                                <div class="small-label">Damage</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">PENETRATION</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.magicalPenetration}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.weapons?.[0]?.physicalPenetration}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                        </div>
+                        
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">SPECIAL</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">+{combat()?.weapons?.[0]?.dodge}%</div>
+                                <div class="small-label">Dodge</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{roundToTwoDecimals(combat()?.weapons?.[0]?.roll)}%</div>
+                                <div class="small-label">Roll</div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="stat-section">
-                        <div class="stat-row">
-                            <span class="stat-label">Magical Defense:</span>
-                            <span class="stat-value gold">
-                                {combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]
-                            </span>
+                    <div class="stat-card">
+                        <div class="stat-label-header">DEFENSE</div>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</div>
+                                <div class="small-label">Magical [Postured]</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</div>
+                                <div class="small-label">Physical [Postured]</div>
+                            </div>
                         </div>
-                        <div class="stat-row">
-                            <span class="stat-label">Physical Defense:</span>
-                            <span class="stat-value gold">
-                                {combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]
-                            </span>
+                        <div class="stat-flex">
+                            <div class="center">
+                                <div class="gold">-{combat().playerAttributes.kyosirMod / 2}%</div>
+                                <div class="small-label">Critical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{combat().stalwart.active ? roundToTwoDecimals(combat().playerDefense?.magicalPosture / 4) : roundToTwoDecimals(combat().playerDefense?.magicalDefenseModifier / 4)}%</div>
+                                <div class="small-label">Resist</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">-{roundToTwoDecimals(combat().playerAttributes.kyosirMod / 3)}%</div>
+                                <div class="small-label">Roll</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">HELMET</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().helmet.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().helmet.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().helmet.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][0][deriveArmorTypeToArrayLocation(ascean().helmet.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">CHEST</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().chest.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().chest.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().chest.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][1][deriveArmorTypeToArrayLocation(ascean().chest.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
+                        </div>
+
+                        <div class="softBottomBorder" />
+                        <div class="stat-label-middle">LEGS</div>
+                        <div class="stat-label gold" style={{ margin: "-2% auto 3%" }}>({ascean().legs.type})</div>
+                        <div style={{ display: "flex", "justify-content": "space-around" }}>
+                            <div class="center">
+                                <div class="gold">{ascean().legs.physicalResistance}%</div>
+                                <div class="small-label">Physical</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div class="center">
+                                <div class="gold">{ascean().legs.magicalResistance}%</div>
+                                <div class="small-label">Magical</div>
+                            </div>
+                        </div>
+                        <div class="stat-flex">
+                            <div onClick={() => setDamageType({ show: true, type: "Blunt" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[0][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Blunt</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Pierce" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[4][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Pierce</div>
+                            </div>
+                            <div class="softLeftBorder"></div>
+                            <div onClick={() => setDamageType({ show: true, type: "Slash" })} class="center">
+                                <div class="gold">{DAMAGE_LOOKUP[8][2][deriveArmorTypeToArrayLocation(ascean().legs.type)]}x</div>
+                                <div class="small-label">Slash</div>
+                            </div>
                         </div>
                     </div>
                     </div>
@@ -1251,7 +1590,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>
              ) }
         </div>
-        {/* <<----- WINDOW THREE ----->> */}
+        {/* <<---------- WINDOW THREE ---------->> */}
         <Show when={(settings().control !== CONTROLS.POST_FX && settings().control !== CONTROLS.PHASER_UI) || settings().asceanViews !== VIEWS.SETTINGS}>
             <div class="playerWindow" classList={{
                     "tutorial-highlight": (highlighter() === "deity-display" || highlighter() === "character-buttons" || highlighter() === "inventory" || highlighter() === "inventory-compare" || highlighter() === "settings-buttons"),
@@ -1279,6 +1618,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                  ) }
             </div>
         </Show>
+        {/* <<---------- MODAL WINDOWS ---------->> */}
         <Show when={levelUpModalShow()}>
             <Suspense fallback={<Puff color="gold"/>}>
                 <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
@@ -1411,7 +1751,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 {item}{length === 0 || length - 1 === index() ? "" : `,\xa0`}{" "}
                             </div>
                         }}</For>
-                        {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""}
+                        {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">It's a Mystery</span></> : ""}
+                        {/* {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""} */}
                     </p>
                     </div>
                     <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "1.5% auto", padding: "" }}>
@@ -1430,15 +1771,16 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         </Show>
         <Show when={showTalent().show}>
             <div class="modal">
-                <div class="superCenter" style={{ width:"50%", "max-height":"" }}>
-                <div class="border row moisten" style={{ margin: "1em auto",
+                <div class="superCenter" style={{ "width":"65%" }}>
+                <div class="border row moisten" style={{ margin: "1em auto", "max-height":"90vh",
+                    overflow: "scroll", "scrollbar-width": "none",
                     "--glow-color":masteryColor(ascean().mastery),
                     "--base-shadow":"#000 0 0 0 0.2em", "border-color": masteryColor(ascean().mastery),
                     "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em`,
                     animation: "borderTalent 1.5s infinite ease alternate"
                 }}>
                     <div style={{ padding: "1em" }}>
-                        <p class="row" style={{ color: "gold", "font-size": "1.5em", margin: "3%" }}>
+                        <p class="row" style={{ color: "gold", "font-size": "1.5em", margin: "1%" }}>
                             <span style={{color:"#0ff", "margin": "1%", "--glow-color": "#0ff",
                                 animation: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced || (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "flicker 0.75s infinite alternate" : "" }}>{svg(showTalent()?.talent.svg)}</span>
                             <span style={{color:"#0ff", "font-weight":"bold", margin:"1%", "--glow-color": "#0ff",
@@ -1446,20 +1788,20 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         </p>
                         <span class="gold">
                         {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <span style={{}}>(Enhanced)</span> : talents().points.spent < talents().points.total ?
-                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
-                                <p style={font("0.9em")}>Enhance</p>
+                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "" }} onClick={() => setShowTalentConfirm({show:true,type:"enhanced"})}>
+                                <p style={{...font("1.1rem"), margin: "3% auto", "font-weight":900}}>Enhance</p>
                         </button> : ""}{" "}
                         {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? <span style={{ "margin-left": (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? "1%" : "" }}>(Optimized)</span> : talents().points.spent < talents().points.total ?
-                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "1% 3%" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
-                                <p style={font("0.9em")}>Optimize</p>
+                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "green", padding: "" }} onClick={() => setShowTalentConfirm({show:true,type:"efficient"})}>
+                                <p style={{...font("1.1rem"), margin: "3% auto", "font-weight":900}}>Optimize</p>
                             </button> : ""}{" "}
                         </span>
                         {(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient || (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? <br /> : ""}
                         <p style={{ "color":"gold", "font-size":"0.75em" }}>{showTalent()?.talent.talent.split(".")[1]} <br /> {showTalent()?.talent.talent.split("Enhanced:")[0]}</p>
-                        <p style={{ "color":"#fdf6d8", "font-size":"1em" }}>{showTalent()?.talent.description}</p>
+                        <p style={{ "color":"#fdf6d8", "font-size":"1em", margin: "3% auto" }}>{showTalent()?.talent.description}</p>
                         <span style={{ color: "gold", "--glow-color":"gold","text-shadow": "0 0 5px gold, 0 0 10px gold",animation: "flicker 0.5s infinite alternate" }}>{(talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).enhanced ? showTalent()?.talent.talent.split(".")[1] : ""}</span>
-                        <p style={{ color: "#0ff"}}>
-                            <span style={{ }}>
+                        <p style={{ color: "#0ff", margin: "2% auto"}}>
+                            <span>
                                 {showTalent()?.talent.time} {showTalent()?.talent.special} <br />
                             </span>
                             <span style={{ color: (talents().talents[showTalent()?.talent.name.toLowerCase() as keyof typeof talents] as any).efficient ? "gold" : "#0ff", 
@@ -1484,18 +1826,34 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <div class="border row" style={{ margin: "1em auto", "border-color": masteryColor(ascean().mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean().mastery)} 0 0 0 0.3em` }}>
                     <div class="center" style={{ padding: "1em" }}>
                         Do you wish to <b>{showTalentConfirm().type === "efficient" ? "Optimize" : "Enhance"}</b> {showTalent()?.talent.name}? <br /><br />
-                        <button class="highlight" style={{ bottom: "0", right: "0", "color": "green" }} onClick={() => addTalent(showTalent()?.talent.name.toLowerCase(), showTalentConfirm().type)}>
-                            <p style={font("1em")}>Confirm</p>
-                        </button>
-                        <button class="highlight" style={{ bottom: "0", right: "0", "color": "red" }} onClick={() => setShowTalentConfirm({ show: false, type: "" })}>
-                            <p style={font("1em")}>Cancel</p>
-                        </button>
+                        <div class="" style={{ display: "flex", "justify-content":"space-evenly" }}>
+                            <button class="highlight" style={{ bottom: "0", left: "0", "color": "green" }} onClick={() => addTalent(showTalent()?.talent.name.toLowerCase(), showTalentConfirm().type)}>
+                                <p style={{...font("1.1rem"), margin: "3% auto", "font-weight":900}}>Confirm</p>
+                            </button>
+                            <button class="highlight" style={{ bottom: "0", right: "0", "color": "red" }} onClick={() => setShowTalentConfirm({ show: false, type: "" })}>
+                                <p style={{...font("1.1rem"), margin: "3% auto", "font-weight":900}}>Cancel</p>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 </div>
             </div>
         </Show>
-    </div>;
+        <Show when={damageType().show}>
+            <div class="modal" onClick={() => setDamageType({ show: false, type: "" })}>
+                <div class="border superCenter" style={{width:"50%"}}>
+                    <div class="creature-heading center wrap">
+                        <h1 style={{ margin: "5% auto 3%" }}>{DAMAGE_TYPE_DIALOG[damageType().type].types}</h1>
+                        <svg height="5" width="100%" class="tapered-rule" style={{ margin: "3% auto" }}>
+                            <polyline points={`0,0 ${dims.WIDTH * 0.5},2.5 0,5`}></polyline>
+                        </svg>
+                        <h2 style={{ margin: "3% auto 5%" }}>{DAMAGE_TYPE_DIALOG[damageType().type].description}</h2>
+                    </div>
+                </div>
+            </div>
+        </Show>
+        </div>
+    );
 }; 
 
 export default Character;

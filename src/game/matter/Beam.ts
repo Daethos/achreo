@@ -107,6 +107,29 @@ export default class Beam {
         });
     };
 
+    pointEmitter = (x: number, y: number, time: number) => {
+        // this.emitter.start();
+        this.updatePoint(x, y);
+        this.scene.time.addEvent({
+            delay: time / 30,
+            callback: () => this.updatePoint(x,y),
+            callbackScope: this,
+            repeat: 29
+        });
+    };
+
+    updatePoint = (x: number, y: number) => {
+        // let dynamicConfig = {
+        //     moveToX: x - this.xOffset,
+        //     moveToY: y - this.yOffset,
+        //     scale: this.glow(),
+        // };
+        // this.emitter.setConfig({ ...this.settings, ...dynamicConfig });
+        if (Math.random() >= 0.85) {
+            this.drawLightning(new Phaser.Math.Vector2(this.player.x, this.player.y), new Phaser.Math.Vector2(x, y));
+        };
+    };
+
     updateEmitter = (target: Entity | Phaser.Physics.Matter.Sprite | undefined) => {
         if (target === undefined || target.body === undefined) return;
         let dynamicConfig = {};
@@ -160,9 +183,11 @@ export default class Beam {
 
         graphics.beginPath();
         graphics.moveTo(points[0].x, points[0].y);
+        
         for (let i = 1; i < points.length; i++) {
             graphics.lineTo(points[i].x, points[i].y);
-        }
+        };
+
         graphics.strokePath();
 
         this.scene.tweens.add({
@@ -171,7 +196,7 @@ export default class Beam {
             duration: 150,
             onComplete: () => graphics.destroy(),
         });
-    }
+    };
 
     
     glow = (): number => Math.random() / 10;

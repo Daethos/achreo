@@ -128,7 +128,11 @@ export default class Player extends Entity {
         this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
         if (weapon.grip === "One Hand") {
-            this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+            if (weapon.type === "Dagger") {
+                this.spriteWeapon.setScale(PLAYER.SCALE.DAGGER);    
+            } else {
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+            };
             this.swingTimer = SWING_TIME["One Hand"];
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
@@ -550,7 +554,11 @@ export default class Player extends Entity {
 
     invalidTarget = (id: string) => {
         const enemy = this.scene.getEnemy(id);
-        if (enemy) return enemy.health <= 0; // enemy.isDefeated;
+        if (enemy) {
+            const obscure = this.checkLineOfSight();
+            if (obscure) this.scene.showCombatText(this, `Combat Issue: ${enemy.ascean.name} is not in line of sight`, 1500, "damage", false, true); // ${enemy.ascean.name}
+            return enemy.health <= 0 || obscure; // enemy.isDefeated;
+        };
         this.scene.showCombatText(this, `Combat Issue: NPC Targeted`, 1000, "damage", false, true);
         return true;
     };
@@ -596,7 +604,11 @@ export default class Player extends Entity {
             this.currentWeaponSprite = assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
             if (weapon.grip === "One Hand") {
-                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+                if (weapon.type === "Dagger") {
+                    this.spriteWeapon.setScale(PLAYER.SCALE.DAGGER);
+                } else {
+                    this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+                };
             } else {
                 staminaModifier += 2;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
@@ -651,6 +663,7 @@ export default class Player extends Entity {
 
     startCasting = (name: string, duration: number, harm = true, channel = false, beam = true) => {
         this.isCasting = true;
+        this.setVelocity(0);
         this.castbar.setCastName(name);
         this.castbar.setVisible(true);
         this.castbar.setTotal(duration);
@@ -1327,6 +1340,10 @@ export default class Player extends Entity {
                     this.scene.combatManager.stun(this.attackedTarget.enemyID);
                 };
             };
+            // if (action === States.GRAPPLING_HOOK) {
+            //     this.hook(this.attackedTarget, 1500);
+            //     return;
+            // };
             if (action === States.HOOK) {
                 this.hook(this.attackedTarget, 1500);
                 if (this.checkTalentEnhanced(States.HOOK)) {
@@ -1432,12 +1449,18 @@ export default class Player extends Entity {
         };
     };
 
-    playerDodge = () => {
+    playerDodge = (): void => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
-        const duration = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DURATION * 2 : PLAYER.DODGE.DURATION;
-        const distance = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
+        let duration = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DURATION * 2 : PLAYER.DODGE.DURATION;
+        let distance = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
+        const weapon = this.scene.state.weapons[0];
+        const dodge = 1 + (weapon.dodge / 100);
+        // console.log({ dodge, duration, distance });
+        duration *= dodge;
+        distance *= dodge;
+        // console.log({ duration, distance });
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
@@ -1460,7 +1483,55 @@ export default class Player extends Entity {
         requestAnimationFrame(dodgeLoop);
     };
 
-    playerRoll = () => {
+    playerBodyDodge = (dodge: boolean): void => {
+        const body = (this.body as any).parts[3];
+        const legs = (this.body as any).parts[2];
+        if (dodge) {
+            (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
+            (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
+            if (!body.isSensor) {
+                body.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+                body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+                body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+                body.vertices[1].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+                legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+            } else {
+                legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+            };
+            legs.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[0].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[1].x += this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        } else {
+            (this.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
+            (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
+            if (!body.isSensor) {
+                body.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+                body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
+                body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+                body.vertices[1].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+                legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+            } else {
+                legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            };
+            legs.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[0].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+            legs.vertices[1].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        };
+    };
+
+    playerRoll = (): void => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
@@ -1486,6 +1557,43 @@ export default class Player extends Entity {
         };
         let startTime: any = undefined;
         requestAnimationFrame(rollLoop);
+    };
+
+    playerBodyRoll = (roll: boolean): void => {
+        const body = (this.body as any).parts[3];
+        if (roll) {
+            if (!body.isSensor) {
+                body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
+            } else {
+                body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
+            };
+            (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
+            (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
+            (this.body as any).parts[2].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+            (this.body as any).parts[2].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
+        } else {
+            if (!body.isSensor) {
+                body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            } else {
+                body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
+                body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+            };
+            (this.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
+            (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
+            (this.body as any).parts[2].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+            (this.body as any).parts[2].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        };
     };
 
     zeroOutVelocity = (velocityDirection: number, deceleration: number) => {
@@ -1540,9 +1648,9 @@ export default class Player extends Entity {
     };
 
     handleMovement = () => {
-        if (this.isDefeated) return;
-        
         const suffering = this.isSuffering();
+        if (this.isDefeated || suffering) return;
+        
         const isDesktop = this.scene.hud.settings.desktop;
         const input = isDesktop ? this.inputKeys : this.scene.hud.joystickKeys;
         

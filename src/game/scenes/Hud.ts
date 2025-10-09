@@ -492,10 +492,12 @@ export class Hud extends Phaser.Scene {
                 };
             };
         }); 
+        // EventBus.on("alien-sound", () => this.sound.play("alien-whoosh", { volume: this.settings.volume }));
         EventBus.on("equip-sound", () => this.sound.play("equip", { volume: this.settings.volume }));
         EventBus.on("unequip-sound", () => this.sound.play("unequip", { volume: this.settings.volume }));
         EventBus.on("purchase-sound", () => this.sound.play("purchase", { volume: this.settings.volume }));
         EventBus.on("stealth-sound", () => this.sound.play("stealth", { volume: this.settings.volume }));
+        // EventBus.on("treasure-sound", () => this.sound.play("treasure", { volume: this.settings.volume }));
         EventBus.on("death-sound", () => this.sound.play("death", { volume: this.settings.volume / 2 }));
         EventBus.on("weapon-order-sound", () => this.sound.play("weaponOrder", { volume: this.settings.volume }));
         EventBus.on("action-button-sound", () => this.sound.play("TV_Button_Press", { volume: this?.settings?.volume * 2 }));

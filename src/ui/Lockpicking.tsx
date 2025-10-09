@@ -22,6 +22,22 @@ const LOCKPICK: {[key:string]: any} = {
     Legendary: { DIFFICULTY: "Legendary", HEALTH: 100, SIZE: 5, DURABILITY: 0.25, ROTATION: 240, TUMBLERS: 5, PLAYER: 10, DURATION: 32, RESET_ALL: true, INTENSITY: 0.001, NEXT: "Easy" },
 };
 
+const COLORS: {[key:string]: string} = {
+    Easy: "#4CAF50",
+    Medium: "#FFC107",
+    Hard: "#FF9800",
+    Master: "#F44336",
+    Legendary: "#9C27B0",
+};
+
+/* 
+    <<---------- LOCKPICKING ---------->>
+    Mini-Game: Set tumblers one at a time, rotating the pick 
+    in the proper place, and setting the tension wrench further
+    to unlock. Difficulty based on flat tiers.
+    <<---------- LOCKPICKING ---------->> 
+*/
+
 export default function Lockpicking({ ascean, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; lockpick: Accessor<{id: string; interacting: boolean; type: string;}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
     const [angle, setAngle] = createSignal(0); // Lockpick rotation (0-360°)
     const [tension, setTension] = createSignal(115); // Wrench rotation (0-360°)
@@ -90,56 +106,11 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         }, 1000);
     };
 
-    // const checkSweetSpot = () => {
-    //     const currentAngle = angle();
-    //     if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
-
-    //         setTumblers((prev) => {
-    //             prev.current = prev.current + 1;
-    //             return prev;
-    //         });
-
-    //         if (tumblers().current < tumblers().total) {
-    //             // Set new Tumbler
-    //         };
-
-    //         success.play();
-    //         vibrate([500, 250, 500]);
-    //         setGameStatus(SUCCESS); // Lock opened!
-    //         setTimeout(() => {
-    //             if (lockpick().type === "treasure") {
-    //                 EventBus.emit("open-chest", lockpick().id);
-    //             } else if (lockpick().type === "door") {
-    //                 EventBus.emit("open-door", lockpick().id);
-    //             };
-    //             setLockpicking(false);
-    //         }, 1000);
-    //     } else {
-    //         setPickDurability(prev => Math.max(prev - lockDifficulty().HEALTH, 0));
-    //         load.play();
-    //         vibrate(1000);
-    //         setTension(115);
-    //         if (pickDurability() <= 0) {
-    //             setBroke(true);
-    //             setTimeout(() => {
-    //                 setBroke(false);
-    //                 setLockpicks(prev => Math.max(prev - 1, 0));
-    //                 if (lockpicks() > 0) {
-    //                     setPickDurability(100);
-    //                     return;
-    //                 };
-    //                 setGameStatus(FAILURE);
-    //             }, 1000)
-    //         };
-    //     };
-    // };
-
     const checkSweetSpot = () => {
         const currentAngle = angle();
         const currentTumbler = currentTumblerIndex();
         
         if (currentAngle >= sweetSpotStart() && currentAngle <= sweetSpotEnd()) {
-            // Successfully set this tumbler
             success.play();
             vibrate([200, 100, 200]);
             
@@ -153,15 +124,13 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                 setCurrentTumblerIndex(nextTumbler);
                 generateNewSweetSpot();
                 
-                // Partial wrench turn (10-20 degrees) to show progress
-                // setTension(prev => Math.min(prev + 20, 115));
-                
-                // Reset pick to neutral position
                 setTotalRotation(0);
                 setTumblerDown(true);
                 setTimeout(() => setTumblerDown(false), 2000);
             } else {
                 setGameStatus(SUCCESS);
+                setTumblerDown(true);
+                setTimeout(() => setTumblerDown(false), 2000);
                 setTimeout(() => {
                     if (lockpick().type === "treasure") {
                         EventBus.emit("open-chest", lockpick().id);
@@ -169,12 +138,11 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                         EventBus.emit("open-door", lockpick().id);
                     }
                     setLockpicking(false);
-                }, 1000);
+                }, 2000); // 1000
             };
         } else {
-            // Failed - reset ALL tumblers or just current one depending on difficulty
+            // Hard mode: reset everything
             if (lockDifficulty().RESET_ALL) {
-                // Hard mode: reset everything
                 setCurrentTumblerIndex(0);
                 setSetTumblerPositions([]);
                 setTension(115);
@@ -270,14 +238,11 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         const touchY = e.touches[0].clientY;
         const ang = Math.atan2(touchY - centerY, touchX - centerX) * (180 / Math.PI);
         const newAngle = (ang + 360) % 360;
-        // console.log({ newAngle });
         if (activeTouch() === "pick") {
             setAngle(newAngle);
-            setTotalRotation(prev => prev + 1);
+            setTotalRotation(prev => Math.min(prev + 1, lockDifficulty().ROTATION));
             checkDistance();
-            if (totalRotation() > lockDifficulty().ROTATION) {
-                breakPick();
-            };
+            if (totalRotation() >= lockDifficulty().ROTATION) breakPick();
         } else if (activeTouch() === "wrench") {
             if (!isInSweetSpot()) {
                 setPickDurability(prev => Math.max(prev - lockDifficulty().DURABILITY * 2, 0)); // Penalty for forcing wrench
@@ -290,7 +255,6 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
             };
             
             const maxTension = 115 + (currentTumblerIndex() * 20 + 20); // Wrench turns further with each tumbler
-            // console.log({ maxTension });
             setTension(Math.max(newAngle, 110));
             vibrate(16);
             
@@ -314,14 +278,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     };
 
     const getDifficultyColor = (difficulty: string) => {
-        const colors: {[key:string]: string} = {
-            Easy: "#4CAF50",
-            Medium: "#FFC107",
-            Hard: "#FF9800",
-            Master: "#F44336",
-            Legendary: "#9C27B0",
-        };
-        return colors[difficulty];
+        return COLORS[difficulty];
     };
     
     onMount(() => resetLock());
@@ -331,7 +288,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         <h1 onClick={changeDifficulty} style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
         <Show when={tumblerDown()}>
             <div class="modal" style={{ background: "rgba(0,0,0,0.75)" }}>
-                <h1 class="superCenter animate" style={{ top: "20%", "font-size":"4rem", "font-family":"Centaur" }}>Tumbler Set</h1>
+                <h1 class="superCenter animate-fade-inout" style={{ top: "20%", "font-size":"4rem", "font-family":"Centaur", width: "100%" }}>{gameStatus() === SUCCESS ? "The Lock Opened!" : "Tumbler Set"}</h1>
             </div>
         </Show>
         <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
@@ -356,16 +313,28 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                 </Show>
             </div>
         </div>
-        {/* <div style={{ display: "inline-flex" }}>
-            <p style={{ margin: "1%" }}>Durability:</p>
+        <p style={{ margin: "-1% auto 0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
+        <div style={{ display: "inline-flex", width: "50%" }}>
+            <p style={{ margin: "1%" }}>Tumblers:</p>
+            {/* <p style={{ margin: "1%" }}>Durability:</p> */}
             <div class="durability-bar">
-                <div class="durability-fill" style={{ width: `${pickDurability()}%`}} />
+                <div class="durability-fill" style={{ width: `${(currentTumblerIndex()) / tumblers().total * 100}%`}} />
+                {/* <div class="durability-fill" style={{ width: `${pickDurability()}%`}} /> */}
             </div>
-            <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p>
-        </div> */}
-        <p style={{ margin: "0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
-        <p style={{ margin: "0" }}>Tumblers: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{currentTumblerIndex() + 1} / {tumblers().total}</span></p>
-        <Show when={gameStatus() !== PLAYING}>
+            <p class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" , margin: "1%" }}>
+                {currentTumblerIndex()} / {tumblers().total}
+            </p>
+            {/* <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p> */}
+            {/* <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p> */}
+        </div>
+            {/* <div class="durability-bar" style={{ display: "inline-flex" }}>
+            <p style={{ margin: "0" }}>Tumblers: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>
+                {currentTumblerIndex() + 1} / {tumblers().total}</span>
+            </p>
+                <div class="durability-fill" style={{ width: `${currentTumblerIndex() + 1 / tumblers().total}%`}} />
+            </div> */}
+            {/* gameStatus() !== PLAYING */}
+        <Show when={gameStatus() === FAILURE}>
             <div class="result modal">
                 <div class="border superCenter" style={{ height: "50vh", width: "40vw", "z-index": 2 }}>
                     <div class="center creature-heading wrap">
@@ -390,8 +359,8 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                 <div class="border superCenter">
                     <div class="center creature-heading wrap">
                         <h1>How to Lockpick</h1>
-                        <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling for vibrations of the tumblers setting into place.{" "}
-                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> either clockwise or counter in order to attempt to unlock.</h2>
+                        <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling for vibrations of the tumbler setting into place.{" "}
+                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> either clockwise or counter in order to attempt to set the tumblers in place to further move the lockpick into more tumblers.</h2>
                         <p style={font("1em")}><span style={{ color: "red" }}>Warning: </span>You can break the <span class="gold">lockpick</span> from over rotation when feeling around to set in place. You can also break the <span class="gold">lockpick</span> as you rotate the <span style={{ color: "silver" }}>tension wrench</span>, if not set correctly.</p>
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { Accessor, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
+import { Accessor, JSX, Match, Setter, Show, Switch, createEffect, createSignal } from "solid-js";
 import { EventBus } from "../game/EventBus";
 import Typewriter from "./Typewriter";
 import Ascean from "../models/ascean";
@@ -38,7 +38,26 @@ export const initTutorial: Tutorial = {
     views: false
 };
 
-const BOOT_TUTORIAL_STEPS = [
+type STEP = {
+    id: string;
+    type: string;
+    position: JSX.CSSProperties; 
+    // = {
+        // left?: string,
+        // right?: string,
+        // top?: string,
+        // bottom?: string,
+        // height?: string,
+        // width?: string,
+        // "text-align"?: string,
+        // transform?: string,
+    // };
+    class: string;
+    title: string;
+    content: string;
+}
+
+const BOOT_TUTORIAL_STEPS: STEP[] = [
     {
         id: "combatHud",
         type: "",
@@ -60,7 +79,7 @@ const BOOT_TUTORIAL_STEPS = [
         position: { bottom: "10%", left: "40%" },
         class: "verticalBottom",
         title: "Physical Actions →",
-        content: "Physical actions that perform various attacks and movements. Each action performs a similar but distinct behavior. Some range from full fledged attacks, to forms of evasion and movement.",
+        content: "Physical actions that perform various attacks and movements. Each action performs a similar but distinct behavior. Some range from full fledged attacks, to forms of evasion and movement. You can 'hover' over them by dragging your finger outside the button toward and onto the button to see information specific to that button.",
     },
     {
         id: "highlight",
@@ -88,7 +107,7 @@ const BOOT_TUTORIAL_STEPS = [
     }
 ];
 
-const DEATH_TUTORIAL_STEPS = [
+const DEATH_TUTORIAL_STEPS: STEP[] = [
     {
         id: "",
         type: "",
@@ -127,19 +146,20 @@ const DEATH_TUTORIAL_STEPS = [
     },
 ];
 
-const CHARACTER_TUTORIAL_STEPS = [
+const CHARACTER_TUTORIAL_STEPS: STEP[] = [
     {
         id: "character",
         type: "character-buttons",
-        position: {left: "40%", height: "75vh"},
+        position: {left: "40%", height: "75vh", "text-align":"left"},
         class: "superCenter",
         title: "Cycle between character information →",
-        content: `(Quests) Your current quests and their progress.
+        content: `Press the button in the top right corner to switch info.
+(Quests) Your current quests and their progress.
 (Reputation) Your standing with various factions.
 (Skills) Your effectiveness to wield a type of weapon.
-(Statistics) Your combat and prayer history .
+(Statistics) Your combat and prayer history.
 (Talents) The enhancement of your physicals and specials. 
-(Traits) Percularities of your character, e.g. who you embody of the Ancients or Daethos`
+(Traits) Percularities of your character, e.g. who you embody of the Ancients or Daethos.`
     },{
         id: "character",
         type: "expanded-info",
@@ -150,7 +170,7 @@ const CHARACTER_TUTORIAL_STEPS = [
     }
 ];
 
-const FAITH_TUTORIAL_STEPS = [
+const FAITH_TUTORIAL_STEPS: STEP[] = [
     {
         id: "character",
         type: "blessing-display",
@@ -175,7 +195,7 @@ const FAITH_TUTORIAL_STEPS = [
     },
 ];
 
-const INVENTORY_TUTORIAL_STEPS = [
+const INVENTORY_TUTORIAL_STEPS: STEP[] = [
     {
         id: "character",
         type: "inventory",
@@ -200,7 +220,7 @@ const INVENTORY_TUTORIAL_STEPS = [
     },
 ];
 
-const LOOT_TUTORIAL_STEPS = [
+const LOOT_TUTORIAL_STEPS: STEP[] = [
     {
         id: "",
         type: "",
@@ -211,11 +231,11 @@ const LOOT_TUTORIAL_STEPS = [
     },
 ];
 
-const SETTINGS_TUTORIAL_STEPS = [
+const SETTINGS_TUTORIAL_STEPS: STEP[] = [
     {
         id: "character",
         type: "settings-buttons",
-        position: {width: "28.5%"},
+        position: {width: "28.5%", "text-align":"left"},
         class: "superCenter",
         title: "↑ Game Topics →",
         content: `(Actions) Physical Action Details.
@@ -227,7 +247,7 @@ const SETTINGS_TUTORIAL_STEPS = [
     },{
         id: "character",
         type: "expanded-info",
-        position: {left: "75%", width: "28.5%", transform: "translate(-25%,-50%)"},
+        position: {left: "75%", width: "28.5%", transform: "translate(-25%,-50%)", "text-align":"left"},
         class: "superCenter",
         title: "← Setting Type",
         content: `Adjust or Change Gameplay Settings.
@@ -238,18 +258,18 @@ const SETTINGS_TUTORIAL_STEPS = [
     }
 ];
 
-const VIEWS_TUTORIAL_STEPS = [
+const VIEWS_TUTORIAL_STEPS: STEP[] = [
     {
         id: "character",
         type: "inv-button",
-        position: {left: "15%"},
+        position: {left: "15%", "text-align":"left"},
         class: "cornerTL",
         title: "← Click to Cycle Between Different Sheets.",
         content: `(Inventory) Displays all your loot. \n(Character) Displays expanded player info. \n(Settings) show gameplay information. \n(Personal) Shows general and personal deific info.`
     },{
         id: "character",
         type: "stats-display",
-        position: {top: "15%", right: "1%", width: ""},
+        position: {top: "15%", right: "1%"},
         class: "cornerTR",
         title: "↑ Equipment / Stats ↑",
         content: "Toggles your current inventory equipment and your character's current statistics."
@@ -470,7 +490,7 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                 <Show when={step()}>
                     <div class={`creature-heading ${step().class}`} style={{ position: "fixed", "z-index": 999, padding: "1rem", "border-radius": "8px", "background-color": "rgba(0, 0, 0, 0.9)", border: "thick ridge #fdf6d8", "max-width": "400px", ...step().position }}>
                         <h1 style={{ margin: "2% auto", "white-space":"pre-wrap" }}>{step().title}</h1>
-                        <p style={{ "text-align":"center", color: "#fdf6d8", "font-size": step().class === "superCenter" ? "1.2em" : "1.5em", margin: "2% auto 10%", "white-space":"pre-wrap", "font-family":"Centaur" }}>
+                        <p style={{ "text-align": step().position?.["text-align"] ? step().position?.["text-align"] : "center", color: "#fdf6d8", "font-size": step().class === "superCenter" ? "1.2em" : "1.5em", margin: "2% auto 10%", "white-space":"pre-wrap", "font-family":"Centaur" }}>
                             {step().content}
                         </p>
 

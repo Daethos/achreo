@@ -17,16 +17,23 @@ const PICKPOCKET = {
     Master: { DIFFICULTY: "Master", WALL_GRID: 6, WALL_SIZE: 6, ALERT: 4, PADDING: 5, NEXT: "Legendary" },
     Legendary: { DIFFICULTY: "Legendary", WALL_GRID: 7, WALL_SIZE: 7, ALERT: 5, PADDING: 6, NEXT: "Easy" },
 };
-const getDifficultyColor = (difficulty: string) => {
-    const colors = {
-        Easy: "#4CAF50",
-        Medium: "#FFC107",
-        Hard: "#FF9800",
-        Master: "#F44336",
-        Legendary: "#9C27B0",
-    };
-    return colors[difficulty as keyof typeof colors];
+const colors: {[key:string]: string} = {
+    Easy: "#4CAF50",
+    Medium: "#FFC107",
+    Hard: "#FF9800",
+    Master: "#F44336",
+    Legendary: "#9C27B0",
 };
+const getDifficultyColor = (difficulty: string) => colors[difficulty];
+
+/* <<---------- STEALING ---------->>
+    Mini-Game: Navigate the loot through a maze.
+    Time based and sensitive to hitting walls,
+    which make the enemy more likely to be aware
+    they are being pickpocketed.
+    Difficulty based on flat tiers.
+*/
+
 export default function Steal({ ascean, combat, game, settings, stealing, setItems, setShowPickpocket, setStealing }: { ascean: Accessor<Ascean>; combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; stealing: Accessor<{ stealing: boolean; item: any }>; setStealing: Setter<{ stealing: boolean; item: any }>; setItems: Setter<any[]>; setShowPickpocket:Setter<boolean>; }) {
     const [debugMode, setDebugMode] = createSignal<boolean>(true);
     const [stealProgress, setStealProgress] = createSignal<number>(0);

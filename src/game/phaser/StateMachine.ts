@@ -71,6 +71,8 @@ export const States = {
     TETHER: "tether",
 
     HOOK: "hook",
+    GRAPPLING_HOOK: "grappling hook",
+    GRAPPLING_ROLL: "grappling roll",
     MARK: "mark",
     NETHERSWAP: "netherswap",
     RECALL: "recall",

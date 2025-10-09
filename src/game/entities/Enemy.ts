@@ -21,7 +21,7 @@ import Party from "./PartyComputer";
 import { BONE, CAST, DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { CHUNK_SIZE } from "../scenes/Game";
-import { CombatContext, MindState, MindStates } from "../phaser/MindState";
+import { CacheDirection, CombatContext, MindState, MindStates } from "../phaser/MindState";
 import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 import { HitLocation } from "../phaser/HitDetection";
 // @ts-ignore
@@ -110,8 +110,9 @@ export default class Enemy extends Entity {
     distanceToPlayer: number = 0;
     lastDistanceFrame: number = 0;
     cachedDirectionFrame: number = 0;
+    combatContextFrame: number = 0;
     weaponTypeCacheFrame: number = 0;
-    cachedDirection: any;
+    cachedDirection: any = undefined;
     chunkX: number = 0;
     chunkY: number = 0;
     mindState: MindState;
@@ -981,7 +982,11 @@ export default class Enemy extends Entity {
         if (weapon.grip === "Two Hand") {
             this.spriteWeapon.setScale(0.65);
         } else {
-            this.spriteWeapon.setScale(0.5);
+            if (weapon.type === "Dagger") {
+                this.spriteWeapon.setScale(0.4);
+            } else {
+                this.spriteWeapon.setScale(0.5);
+            };
         };
     }; 
 
@@ -1749,6 +1754,10 @@ export default class Enemy extends Entity {
 
     onChaseEnter = () => {
         if (!this.currentTarget || this.chaseTimer) return;
+        if (this.shouldLeash()) { // If enemy has mutliple 'enemies' could be an issue that it leashes while it should still be in 'combat'
+            this.stateMachine.setState(States.LEASH);
+            return;
+        };
         this.enemyAnimation();
         // this.scene.navMesh.enableDebug();
         this.calculatePath();
@@ -1861,7 +1870,7 @@ export default class Enemy extends Entity {
     shouldLeash = (): boolean => {
         if (!this.currentTarget || !this.currentTarget.body || !this.currentTarget.body.position || (!this.inCombat && !this.inComputerCombat)) return true;
         
-        const rangeMultiplier = this.rangedDistanceMultiplier(3);
+        const rangeMultiplier = this.rangedDistanceMultiplier(2);
         const maxRange = RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier;
 
         const isTooFarFromOrigin = 
@@ -2116,7 +2125,7 @@ export default class Enemy extends Entity {
     onLeashEnter = () => {
         this.enemyAnimation();
         this.setTint(ENEMY_COLOR);
-        if (this.inComputerCombat || this.currentTarget) {
+        if ((this.inComputerCombat || this.currentTarget) && !this.shouldLeash()) {
             const enemy = this.computerEnemyAttacker();
             if (enemy) {
                 this.checkComputerEnemyCombatEnter(enemy);
@@ -4742,7 +4751,7 @@ export default class Enemy extends Entity {
         const x = this.currentTarget.x - this.x;
         const y = this.currentTarget.y - this.y;
         const lengthSq = x * x + y * y;
-        this.cachedDirection = { 
+        this.cachedDirection = {
             x,
             y,
             lengthSq, // Pre-calculate this once
@@ -4847,11 +4856,34 @@ export default class Enemy extends Entity {
         };
     };
 
+    dummyDirection = (): CacheDirection => {
+        const x = this?.x || 0;
+        const y = this?.y || 0;
+        return {
+            x,
+            y,
+            lengthSq: 0,
+            ogLengthSq: 0,
+            normal: false,
+            normalize: () => {
+                const len = 0;
+                if (len > 0) {
+                    this.cachedDirection.x = x / len,
+                    this.cachedDirection.y = y / len,
+                    this.cachedDirection.normal = true,
+                    this.cachedDirection.lengthSq = 1 // normalized vector has length 1
+                };
+                return this.cachedDirection;
+            }
+        };
+    };
+
     getCombatContext(): CombatContext {
+        if (this.combatContext && (this.scene.frameCount - this.combatContextFrame) < 90) return this.combatContext;
         const direction = this.getCombatDirection();
         if (!direction) {
             this.combatContext = {
-                direction,
+                direction: this.dummyDirection(),
                 multiplier: 1,
                 climbingModifier: 1,
                 allies: [],
@@ -4874,8 +4906,10 @@ export default class Enemy extends Entity {
             climbingModifier,
             allies,
             isTargetRanged: this.currentTarget.isRanged || false,
-            lineOfSight: this.checkLineOfSight()    
+            lineOfSight: this.checkLineOfSight()
         };
+
+        this.combatContextFrame = this.scene.frameCount;
         
         return this.combatContext;
     };
@@ -4944,7 +4978,7 @@ export default class Enemy extends Entity {
         if (!this.currentWeapon || this.currentWeaponSprite === this.imgSprite(this.currentWeapon)) return; // || this.enemyID !== this.scene.state.enemyID
         this.currentWeaponSprite = this.imgSprite(this.currentWeapon);
         this.spriteWeapon.setTexture(this.currentWeaponSprite);
-        this.spriteWeapon.setScale(GRIP_SCALE[this.currentWeapon.grip as keyof typeof GRIP_SCALE]);
+        this.spriteWeapon.setScale(GRIP_SCALE[this.currentWeapon.type === "Dagger" ? this.currentWeapon.type : this.currentWeapon.grip]);
     };
 
     evaluateEnemyAnimation = () => {

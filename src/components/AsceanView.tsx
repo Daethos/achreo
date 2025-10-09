@@ -34,6 +34,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         });
     });
     return <Show when={dims.ORIENTATION === "landscape"} fallback={
+        //  <<---------- PORTRAIT ---------->> 
         <div class="border superCenter center" style={{ height: "100", width: "85%", overflow: "scroll", "scrollbar-width": "none" }}>
         <div class="creature-heading" style={{ width: "100%", height: "100%" }}>
             <h1>{ascean().name}</h1>
@@ -65,6 +66,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
         </div>
         </div>
     }>
+        {/* <<---------- LANDSCAPE ---------->> */}
         <div class="stat-block superCenter flickerJuiceInsert" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":masteryColor(ascean().mastery), "--base-shadow":"#000 0 0 0 0.2em" }}>
             <div class="border left center animate-flicker" style={{ height: "78%", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
                 <div class="creature-heading superCenter" style={{ height: "90%", width: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
@@ -182,6 +184,7 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                 </div>
             </div>
         </div>
+        {/* <<---------- MODAL WINDOWS ---------->> */}
         <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show())}>
             <Suspense fallback={<Puff color="gold" />}>

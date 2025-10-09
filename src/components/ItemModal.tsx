@@ -4,6 +4,7 @@ import { dimensions } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 import { roundToTwoDecimals } from "../utility/combat";
 import { specialDescription } from "../ui/CombatSettings";
+import Talents from "../utility/talents";
 
 export function attrSplitter(string: string, value: number) {
     if (value <= 0) return "";
@@ -15,9 +16,10 @@ interface Props {
     stalwart: boolean;
     caerenic: boolean;
     prayer?: Accessor<string>;
+    talents?: Accessor<Talents>;
 };
 
-export default function ItemModal({ item, stalwart, caerenic, prayer }: Props) {
+export default function ItemModal({ item, stalwart, caerenic, prayer, talents }: Props) {
     if (!item) return undefined;
     const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dims = dimensions();
@@ -87,14 +89,15 @@ export default function ItemModal({ item, stalwart, caerenic, prayer }: Props) {
                         [<span class="gold">Stalwart</span>]: 
                         {/* You are engaged in combat with your shield raised, adding it to your passive defense.  */}
                         {/* You receive 50% less poise damage.  */}
-                        Receive -15% Damage (25% Enhanced). 
-                        Cannot Dodge or Roll (Capable if Optimized).
+                        {talents?.().talents.stalwart.enhanced ? "+25%" : "+15%"} Defense. 
+                        {talents?.().talents.stalwart.efficient ? "Can Dodge and Roll" : "Cannot Dodge or Roll"}.
                     </p>
                 </Show>
                 <Show when={caerenic}>
                     <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
-                        {/* You attempt to harness your caer with your achre.  */}
-                        [<span class="gold">Caerenic</span>]: +15% Damage (25% Enhanced). Increased Speed. Receive +25% Damage (15% Optimized). 
+                        {/* You attempt to harness your caer with your achre. */}
+                        [<span class="gold">Caerenic</span>]: {talents?.().talents.caerenic.enhanced ? "+25%" : "+15%"} Offense. {talents?.().talents.caerenic.efficient ? "-15%" : "-25%"} Defense. 
+                        {(talents?.().talents.caerenic.enhanced && talents?.().talents.caerenic.efficient) ? "+1.2" : (talents?.().talents.caerenic.enhanced || talents?.().talents.caerenic.efficient) ? "+0.9" : "+0.6"} Speed. 
                     </p>
                 </Show>
             </div> 

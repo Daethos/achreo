@@ -44,6 +44,7 @@ type TalentSchema = {
     freeze: Talent;
     frost: Talent;
     fyerus: Talent;
+    "grappling hook": Talent;
     healing: Talent;
     hook: Talent;
     howl: Talent;
@@ -138,6 +139,7 @@ const initTalentSchema: TalentSchema = {
         freeze: initTalent,
         frost: initTalent,
         fyerus: initTalent,
+        "grappling hook": initTalent,
         healing: initTalent,
         hook: initTalent,
         howl: initTalent,

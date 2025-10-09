@@ -24,6 +24,7 @@ import { IRefPhaserGame } from "../game/PhaserGame";
 import { Store } from "solid-js/store";
 import Steal from "./Steal";
 import { usePhaserEvent } from "../utility/hooks";
+import Talents from "../utility/talents";
 // import { PRAYERS } from "./CombatSettings";
 // import { addSpecial, addStance } from "../utility/abilities";
 // import { CombatAttributes } from "../utility/combat";
@@ -38,8 +39,9 @@ interface Props {
     grace: Accessor<number>;
     touching: Accessor<string[]>;
     instance: Store<IRefPhaserGame>;
+    talents: Accessor<Talents>;
 };
-export default function CombatUI({ ascean, state, game, settings, stamina, grace, touching, instance }: Props) {
+export default function CombatUI({ ascean, state, game, settings, stamina, grace, talents, touching, instance }: Props) {
     const dims = dimensions();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal<boolean>(false);
@@ -322,14 +324,14 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <div class="modal" classList={{
                 "tutorial-highlight": exception(),
             }} onClick={() => setShow(!show())}>
-                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().caerenic.active} prayer={prayer} />
+                <ItemModal item={state().weapons[0]} stalwart={false} caerenic={state().caerenic.active} prayer={prayer} talents={talents} />
             </div>
             </Show>
             <Show when={shieldShow()}>
             <div class="modal" classList={{
                 "tutorial-highlight": exception(),
             }} onClick={() => setShieldShow(!shieldShow())}>
-                <ItemModal item={state()?.player?.shield} stalwart={state().stalwart.active} caerenic={false} />
+                <ItemModal item={state()?.player?.shield} stalwart={state().stalwart.active} caerenic={false} talents={talents} />
             </div>
             </Show>
             <Show when={prayerShow()}>

@@ -169,7 +169,7 @@ export default function InventoryPouch({ ascean, setInventoryType, setHighlighte
         const dy = touch.clientY - touchStartPos.y;
         
         if (Math.abs(dx) > TOUCH_SLOP || Math.abs(dy) > TOUCH_SLOP) {
-            e.preventDefault();
+            // e.preventDefault();
             
             if (!activeDrag()) {
                 setActiveDrag({ index, item });

@@ -69,7 +69,8 @@ export default class PlayerMachine {
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
             .addState(States.JUMP, { onEnter: this.onJumpEnter, onUpdate: this.onJumpUpdate, onExit: this.onJumpExit })
             .addState(States.POSTURE, { onEnter: this.onPostureEnter, onUpdate: this.onPostureUpdate, onExit: this.onPostureExit })
-            .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit })
+            .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit }) // onGrappleRollEnter
+            .addState(States.GRAPPLING_ROLL, { onEnter: this.onGrappleRollEnter, onUpdate: this.onGrappleRollUpdate, onExit: this.onGrappleRollExit }) // onGrappleRollEnter
             .addState(States.THRUST, { onEnter: this.onThrustEnter, onUpdate: this.onThrustUpdate, onExit: this.onThrustExit })
             .addState(States.COMPUTER_ATTACK, { onEnter: this.onComputerAttackEnter, onUpdate: this.onComputerAttackUpdate, onExit: this.onComputerAttackExit })
             .addState(States.COMPUTER_PARRY, { onEnter: this.onComputerParryEnter, onUpdate: this.onComputerParryUpdate, onExit: this.onComputerParryExit })
@@ -90,6 +91,7 @@ export default class PlayerMachine {
             .addState(States.FROST, { onEnter: this.onFrostEnter, onUpdate: this.onFrostUpdate, onExit: this.onFrostExit })
             .addState(States.FYERUS, { onEnter: this.onFyerusEnter, onUpdate: this.onFyerusUpdate, onExit: this.onFyerusExit })
             .addState(States.HEALING, { onEnter: this.onHealingEnter, onUpdate: this.onHealingUpdate, onExit: this.onHealingExit })
+            .addState(States.GRAPPLING_HOOK, { onEnter: this.onGrapplingHookEnter, onUpdate: this.onGrapplingHookUpdate, onExit: this.onGrapplingHookExit })
             .addState(States.HOOK, { onEnter: this.onHookEnter, onUpdate: this.onHookUpdate, onExit: this.onHookExit })
             .addState(States.ILIRECH, { onEnter: this.onIlirechEnter, onUpdate: this.onIlirechUpdate, onExit: this.onIlirechExit })
             .addState(States.INVOKE, { onEnter: this.onInvokeEnter, onUpdate: this.onInvokeUpdate, onExit: this.onInvokeExit })
@@ -238,7 +240,7 @@ export default class PlayerMachine {
         this.scene.combatManager.slow(this.player.spellTarget, 1000);
         power = this.player.entropicMultiplier(power);
         if (this.player.spellTarget === this.player.getEnemyId()) {
-            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: power, id: "kyrnaicism" });
+            this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: {power, type:"kyrnaicism"} });
         } else {
             const chiomic = Math.round(this.mastery() * (1 + (power / CHIOMISM))
                 * this.scene.combatManager.playerCaerenicPro()
@@ -1035,29 +1037,8 @@ export default class PlayerMachine {
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_DODGE : PLAYER.STAMINA.DODGE);
         if (!this.player.isComputer) this.player.swingReset(States.DODGE, true);
         this.scene.sound.play("dodge", { volume: this.scene.hud.settings.volume / 2 });
-        this.player.wasFlipped = this.player.flipX; 
-        (this.player.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
-        (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
-        const body = (this.player.body as any).parts[3];
-        const legs = (this.player.body as any).parts[2];
-        if (!body.isSensor) {
-            body.position.y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
-            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT * 1.5;
-            body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-            body.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-            legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
-        } else {
-            legs.position.y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
-        };
-        legs.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[0].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[1].x += this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        this.player.wasFlipped = this.player.flipX;
+        this.player.playerBodyDodge(true);
         this.player.anims.play(FRAMES.DODGE, true);
         this.player.playerDodge();
         if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
@@ -1072,28 +1053,7 @@ export default class PlayerMachine {
         this.player.computerAction = false;
         this.player.dodgeCooldown = 0;
         this.player.isDodging = false;
-        (this.player.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
-        (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
-        const body = (this.player.body as any).parts[3];
-        const legs = (this.player.body as any).parts[2];
-        if (!body.isSensor) {
-            body.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
-            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT * 1.5;
-            body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-            body.vertices[1].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-            legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
-        } else {
-            legs.position.y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
-        };
-        legs.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[0].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-        legs.vertices[1].x -= this.player.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
+        this.player.playerBodyDodge(false);
         if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
             this.scene.combatManager.hitFeedbackSystem.trailing(false);
             if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
@@ -1106,22 +1066,7 @@ export default class PlayerMachine {
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_ROLL : PLAYER.STAMINA.ROLL);
         if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
         this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
-        const body = (this.player.body as any).parts[3];
-        if (!body.isSensor) {
-            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[2].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[3].y += PLAYER.COLLIDER.DISPLACEMENT;
-        } else {
-            body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT;
-        };
-        (this.player.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
-        (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
-        (this.player.body as any).parts[2].vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        (this.player.body as any).parts[2].vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT / 2;
-        body.vertices[1].y += PLAYER.COLLIDER.DISPLACEMENT / 2; 
+        this.player.playerBodyRoll(true);
         this.player.anims.play(FRAMES.ROLL, true);
         this.player.playerRoll();    
     };
@@ -1136,22 +1081,26 @@ export default class PlayerMachine {
         this.player.isRolling = false;
         this.scene.combatManager.combatMachine.input("action", "");
         this.player.computerAction = false;
-        const body = (this.player.body as any).parts[3];
-        if (!body.isSensor) {
-            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[2].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[3].y -= PLAYER.COLLIDER.DISPLACEMENT;
-        } else {
-            body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT;
-            body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT;
+        this.player.playerBodyRoll(false);
+    };
+
+    onGrappleRollEnter = () => {
+        this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
+        this.player.playerBodyRoll(true);
+        this.player.anims.play(FRAMES.ROLL, true);
+        this.player.playerRoll();
+    };
+    onGrappleRollUpdate = (dt: number) => {
+        this.player.grappleTime -= dt;
+        if (this.player.grappleTime <= 0) {
+            this.player.combatChecker(false);
         };
-        (this.player.body as any).parts[1].position.y -= PLAYER.SENSOR.DISPLACEMENT;
-        (this.player.body as any).parts[1].circleRadius = PLAYER.SENSOR.DEFAULT;
-        (this.player.body as any).parts[2].vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        (this.player.body as any).parts[2].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
+        sprint(this.scene);
+    };
+    onGrappleRollExit = () => {
+        this.player.spriteWeapon.setVisible(true);
+        this.player.rollCooldown = 0;
+        this.player.playerBodyRoll(false);
     };
 
     onThrustEnter = () => {
@@ -1500,6 +1449,7 @@ export default class PlayerMachine {
 
     onDevourEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget?.enemyID)) return; 
+        this.player.setVelocity(0);
         this.player.startCasting("Devour", PLAYER.DURATIONS.DEVOUR, true, true);
         this.player.currentTarget.isConsumed = true;
         this.player.currentTarget.stateMachine.setState(States.CONSUMED);
@@ -1509,33 +1459,27 @@ export default class PlayerMachine {
         const power = this.player.checkTalentEnhanced(States.DEVOUR) ? 0.06 : 0.03;
         this.scene.tweens.add({
             targets: [this.player, this.player.spriteShield, this.player.spriteWeapon],
-            scale: 1.1,
+            scale: 0.9,
             ease: Phaser.Math.Easing.Back.InOut,
-            duration: 500,
+            duration: 250,
             yoyo: true,
             repeat: 1
         });
         this.player.devourTimer = this.scene.time.addEvent({
             delay: 250,
-            callback: () => this.devour(power),
+            callback: () => {
+                if (this.player.isCasting) this.devour(power);
+            },
             callbackScope: this,
             repeat: 8,
         });
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.DEVOUR, PLAYER.COOLDOWNS.LONG);
-        this.scene.time.addEvent({
-            delay: 2000,
-            callback: () => this.player.isCasting = false,
-            callbackScope: this,
-            loop: false,
-        });
-        this.player.setVelocity(0);
         // this.player.setStatic(true);
     };
     onDevourUpdate = (dt: number) => {
+        if (this.player.castbar.time <= 0) this.player.isCasting = false;
         this.player.combatChecker(this.player.isCasting);
-        if (this.player.isCasting === true) {
-            this.player.castbar.update(dt, "channel", "TENDRIL");
-        };
+        if (this.player.isCasting) this.player.castbar.update(dt, "channel", "TENDRIL");
     };
     onDevourExit = () => {
         this.player.stopCasting();
@@ -2132,6 +2076,41 @@ export default class PlayerMachine {
             this.player.checkTalentCost(States.MAIERETH, PLAYER.STAMINA.MAIERETH);
         };
         this.player.stopCasting();
+    };
+
+    onGrapplingHookEnter = () => {
+        this.player.particleEffect = this.scene.particleManager.addEffect("grappling hook", this.player, "hook", true);
+        this.scene.showCombatText(this.player, "Grappling Hook", DURATION.TEXT, DAMAGE, false, true);
+        this.scene.sound.play("dungeon", { volume: this.scene.hud.settings.volume });
+        this.player.flickerCaerenic(750);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.GRAPPLING_HOOK, PLAYER.COOLDOWNS.SHORT);
+        this.player.checkTalentCost(States.GRAPPLING_HOOK, PLAYER.STAMINA["GRAPPLING HOOK"]);
+        this.player.beam.startEmitter(this.player.particleEffect.effect, 1750);
+        this.player.hookTime = 0;
+        screenShake(this.scene);
+
+        const camera = this.scene.cameras.main;
+
+        this.scene.hud.cinemaMode = true;
+        camera.stopFollow();
+        camera.startFollow(this.player.particleEffect.effect);
+
+        this.scene.time.delayedCall(1750, () => {
+            if (!this.scene.hud.cinemaMode || this.player.hooking) return;
+            this.scene.hud.cinemaMode = false;
+            camera.stopFollow();
+            camera.startFollow(this.player, false, 0.1, 0.1);
+        });
+    };
+    onGrapplingHookUpdate = (dt: number) => {
+        this.player.hookTime += dt;
+        if (this.player.hookTime >= 1750 || !this.player.particleEffect?.effect) {
+            this.player.combatChecker(false);
+        };
+    };
+    onGrapplingHookExit = () => {
+        if (this.player.hooking) return;
+        this.player.beam.reset();
     };
 
     onHookEnter = () => {
@@ -3931,6 +3910,7 @@ export default class PlayerMachine {
         this.player.setTint(0xFF0000);
         this.player.setVelocity(0);
         // this.player.setStatic(true);
+        // this.scene.time.delayedCall(128, () => this.player.setStatic(false));
         this.player.anims.pause();
         this.specialCombatText("You've been stunned.");
         screenShake(this.scene, 64);

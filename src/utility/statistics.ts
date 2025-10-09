@@ -70,7 +70,9 @@ export default class Statistics {
             avarice: number; 
             denial: number; 
             dispel: number; 
-            silence: number; 
+            silence: number;
+            insight: number;
+            quicken: number;
          };
     };
     luckout: {
@@ -243,7 +245,9 @@ export default class Statistics {
                 avarice: 0, 
                 denial: 0, 
                 dispel: 0, 
-                silence: 0, 
+                silence: 0,
+                insight: 0,
+                quicken: 0
              },
         };
         this.luckout = {

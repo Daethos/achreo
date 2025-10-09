@@ -57,6 +57,7 @@ export const SPECIALS = [
     "Freeze",
     "Frost",
     "Fyerus",
+    "Grappling Hook",
     "Healing",
     "Hook",
     "Howl",
@@ -117,6 +118,7 @@ export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume,
         "Desperation",
         "Disease",
         "Dispel",
+        "Grappling Hook",
         "Healing",
         "Ilirech",
         "Kyrnaicism",
@@ -140,6 +142,7 @@ export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume,
         
         "Arc",
         "Desperation",
+        "Grappling Hook",
         "Healing",
         "Hook",
         "Howl",
@@ -166,6 +169,7 @@ export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume,
         "Achire",
         "Desperation",
         "Envelop",
+        "Grappling Hook",
         "Healing",
         "Hook",
         "Kynisos",
@@ -247,6 +251,7 @@ export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume,
         "Desperation",
         "Disease",
         "Dispel",
+        "Grappling Hook",
         "Healing",
         "Hook",
         "Ilirech",
@@ -444,6 +449,7 @@ export const FEAR = "Fear";
 export const FREEZE = "Freeze";
 export const FROST = "Frost";
 export const FYERUS = "Fyerus";
+export const GRAPPLE = "Grappling Hook";
 export const HEALING = "Healing";
 export const HOOK = "Hook";
 export const HOWL = "Howl";

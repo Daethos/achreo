@@ -11,7 +11,7 @@ const ORIGINS = [{
         their governance forms of their leaders in a tetrarchy shored by commerce and law. Laconic and mistrusting, few outsiders get to know these folk, 
         drawing further tension from being the only civilization not to collapse during the Shattering in the War of the Ancients a millenia prior.`,
     index: "ashtre",
-    bonus: "+2 STR, +2 AGI, +5% Crit, +5% Crit Dam, +5% Phys Dam, +5% Phys Pen",
+    bonus: "+2 STR, +2 AGI, +5% Crit, +5% Crit Dam, +5% Dodge, +5% Roll, +5% Phys Dam, +5% Phys Pen",
     imgUrl: "../assets/images/Ashtre-Man.jpg"
 },{
     name: "Fyers",
@@ -21,7 +21,7 @@ const ORIGINS = [{
         To note, also a former Ascean in 130 AE. Fyer is the Ancient heralded in the land and has been worshiped for centuries, influencing the people's culture and language, though not the only Ancient worshiped, 
         with known allied Ancients in Ilios, Kyrisos, and Nyrolus were well celebrated. As of late, Daethic worship has seen its rise in the land, with Lord Spiras himself cozying to the Seyr, though his personal beliefs are unknown.`,
     index: "fyers",
-    bonus: "+2 ACH, +2 KYO, +5% Mag Pen, +5% Phys Pen, +5% Roll, +10% Grace", // +10% Grace (Special Ability Stamina)
+    bonus: "+2 ACH, +2 KYO, +5% Mag Pen, +5% Phys Pen, +5% Dodge, +5% Roll, +10% Grace",
     imgUrl: "../assets/images/Fyers-Woman.jpg"
 }, {
     name: "Li'ivi",
@@ -31,7 +31,7 @@ const ORIGINS = [{
         and the Noble Lorians have grown weary of the war's effect on the popularity of General Peroumes, whose had official leave to maintain the war after winning the Ascea, 
         first boosting his popularity as being the first Li'ivi to be crowned the Ascean va'Esai this century.`,
     index: "li'ivi",
-    bonus: "+1 STR, +2 AGI, +1 ACH, +2 CAER, +1 KYO, +2% Crit, +2% Crit Dam, +2% Roll, +2% Phys Dam, +2% Mag Dam, +2% Mag Pen, +2% Phys Pen, +5% Stamina, +5% Grace",
+    bonus: "+2 AGI, +1 ACH, +2 CAER, +1 KYO, +2% Crit, +2% Crit Dam, +2% Dodge, +2% Roll, +2% Phys Dam, +2% Mag Dam, +2% Mag Pen, +2% Phys Pen, +5% Stamina, +5% Grace",
     imgUrl: "../assets/images/Li'ivi-Woman.jpg"
 }, {
     name: "Notheo",
@@ -43,7 +43,7 @@ const ORIGINS = [{
         routinely traveling the various provinces to handle sensitive work on behalf of his father. King Caderyn himself tends his court in the Fox Hollow, rebuilt after the war, its destruction occurring during 'Fires of Fox Hollow' in 133 AE. 
         If not at home, the King travels around the kingdom, lending aid to the peoples affected by war.`,
     index: "noth'eo",
-    bonus: "+2 CON, +2 ACH, +5% Phys Dam, +5% Phys Pen, +5% Mag Def, +5% Stamina",
+    bonus: "+2 CON, +2 ACH, +5% Crit Dam, +5% Phys Dam, +5% Phys Pen, +5% Mag Def, +5% Stamina",
     imgUrl: "../assets/images/Notheo-Man.jpg"
 }, {
     name: "Nothos",
@@ -54,7 +54,7 @@ const ORIGINS = [{
     bioTwo: `Soverian Garrick Myelle yielded greatest fruit in the treaty among the Soverain men, his daughter Jadei wedded to the Prince, Dorien Caderyn. 
         The arrangement of his daughter a choice only known to the Soverains themselves, with a secret vote cast to determine whose daughter were chosen.`,
     index: "noth'os",
-    bonus: "+2 CON, +2 CAER, +5% Mag Dam, +5% Mag Pen, +5% Phys Def, +5% Grace",
+    bonus: "+2 CON, +2 CAER, +5% Crit, +5% Mag Dam, +5% Mag Pen, +5% Phys Def, +5% Grace",
     imgUrl: "../assets/images/Nothos-Woman.jpg"
 }, {
     name: "Quor'eite",
@@ -65,7 +65,7 @@ const ORIGINS = [{
     bioTwo: `Quor'ator Mauricio Capulo has recently come upon a windfall atop mountainous jungle ranges, a new crop becoming a local favorite and extending East toward the Alluring Isles. This is thought to be the genesis for the Sedyren Sun, 
         Cyrian Shyne, betrothing his firstborn son to Capulo's third daughter, the first two already having wed to lower caste families.`,
     index: "quor'eite",
-    bonus: "+2 AGI, +2 ACH, +2 KYO, +5% Crit, +5% Roll, +10% Stamina",
+    bonus: "+2 AGI, +2 ACH, +2 KYO, +5% Crit, +5% Dodge, +5% Roll, +10% Stamina",
     imgUrl: "../assets/images/Quor'eite-Man.jpg"
 }, {
     name: "Sedyreal",
@@ -77,7 +77,7 @@ const ORIGINS = [{
         having two homes with a new mountainous jungle range in the central lands of Sedyrus after the old fortress in the Sedyrus mountains were extinguished and melted from the eruption, killing many from Licivitas and Sedyrus alike. 
         It is a wonder that the Sedyreal were still so capable, after having sustained such losses, to invade and capture a sizable portion of land and conquer a neighboring people.`,
     index: "sedyreal",
-    bonus: "+2 CON, +2 STR, +2 CAER, +5% Mag Def, +5% Phys Def, +5% Crit Dam",
+    bonus: "+2 CON, +2 STR, +2 CAER, +10% Mag Def, +10% Phys Def, +5% Crit Dam",
     imgUrl: "../assets/images/Sedyreal-Man.jpg"
 }];
 

@@ -25,6 +25,30 @@
             ]
         },
         {
+            "key": "grapple_roll",
+            "type": "frames",
+            "repeat": -1,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "player_actions",
+                    "frame": "roll_0"
+                },
+                {
+                    "key": "player_actions",
+                    "frame": "roll_1"
+                },
+                {
+                    "key": "player_actions",
+                    "frame": "roll_2"
+                },
+                {
+                    "key": "player_actions",
+                    "frame": "roll_3"
+                }
+            ]
+        },
+        {
             "key": "player_jump",
             "type": "frames",
             "repeat": 0,

@@ -180,6 +180,7 @@ export const PLAYER = {
     SCALE: {
         SELF: 0.8,
         SHIELD: 0.6,
+        DAGGER: 0.4,
         WEAPON_ONE: 0.5,
         WEAPON_TWO: 0.65,
     },
@@ -233,6 +234,7 @@ export const PLAYER = {
         CONFUSE: COST.LOW,
         DISPEL: COST.LOW,
         FEAR: COST.LOW,
+        "GRAPPLING HOOK": COST.LOW,
         HOOK: COST.LOW,
         MARK: COST.LOW,
         NETHERSWAP: COST.LOW,
@@ -346,6 +348,7 @@ export const PLAYER = {
         FREEZE: DURATION.BOTTOM,
         FROST: DURATION.STANDARD,
         HEALING: DURATION.STANDARD,
+        "GRAPPLING HOOK": DURATION.STANDARD,
         HOOK: DURATION.STANDARD,
         HOWL: DURATION.ONE,
         ILIRECH: DURATION.STANDARD,

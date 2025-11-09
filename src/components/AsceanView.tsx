@@ -68,10 +68,10 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
     }>
         {/* <<---------- LANDSCAPE ---------->> */}
         <div class="stat-block superCenter flickerJuiceInsert" style={{ width: "92%", overflow: "scroll", "scrollbar-width": "none", animation: "fadein 1.5s ease", "--glow-color":masteryColor(ascean().mastery), "--base-shadow":"#000 0 0 0 0.2em" }}>
-            <div class="border left center animate-flicker" style={{ height: "78%", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
+            <div class="border left center animate-flicker" style={{ height: "80%", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
                 <div class="creature-heading superCenter" style={{ height: "90%", width: "90%", overflow: "scroll", "scrollbar-width": "none" }}>
                     <div class="stat-row" style={{ "padding-bottom": "0.4em", width: "95%", "border-bottom":"1px solid rgba(10,10,10,0.2)", "margin": "0 auto" }}>
-                        <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id="origin-pic" />
+                        <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${ascean().origin}-${ascean().sex}.jpg`} id="origin-pic" style={{ border: "thick groove #fdf6d8" }} />
                         <div>
                             <h1>{ascean().name}</h1>
                             <h2>{ascean().description}</h2>
@@ -119,62 +119,9 @@ export default function AsceanView({ ascean }: { ascean: Accessor<Ascean> }) {
                             </div>
                         </div>
                     </div>
-
-                    {/* <div class="stat-card" style={{ 
-                        padding: "0.75rem 1rem",
-                        margin: "0 1rem",
-                        "margin-bottom": "1rem"
-                    }}>
-                        <div class="stat-label" style={{ "margin-bottom": "0.5rem" }}>DEFENSE</div>
-                        <div style={{ display: "flex", "justify-content": "space-around" }}>
-                            <div style={{ "text-align": "center" }}>
-                                <div class="gold" style={{ "font-size": "1.5rem" }}>
-                                    {Math.round(ascean().helmet.physicalResistance as number + (ascean()?.chest?.physicalResistance as number) + (ascean().legs?.physicalResistance as number))}%
-                                </div>
-                                <div class="small-label" style={{ opacity: 0.7 }}>Physical</div>
-                            </div>
-                            <div style={{ "border-left": "1px solid rgba(253, 246, 216, 0.2)" }}></div>
-                            <div style={{ "text-align": "center" }}>
-                                <div class="gold" style={{ "font-size": "1.5rem" }}>
-                                    {Math.round(ascean().helmet.magicalResistance as number + (ascean()?.chest?.magicalResistance as number) + (ascean().legs?.magicalResistance as number))}%
-                                </div>
-                                <div class="small-label" style={{ opacity: 0.7 }}>Magical</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="stat-card" style={{ 
-                        padding: "0.75rem 1rem", 
-                        margin: "0 1rem"
-                    }}>
-                        <div class="stat-label" style={{ "margin-bottom": "0.5rem" }}>CRITICAL</div>
-                        <div style={{ display: "flex", "justify-content": "space-around" }}>
-                            <div style={{ "text-align": "center" }}>
-                                <div class="gold" style={{ "font-size": "1.5rem" }}>
-                                    {ascean().weaponOne.criticalChance}%
-                                </div>
-                                <div class="small-label" style={{ opacity: 0.7 }}>Chance</div>
-                            </div>
-                            <div style={{ "border-left": "1px solid rgba(253, 246, 216, 0.2)" }}></div>
-                            <div style={{ "text-align": "center" }}>
-                                <div class="gold" style={{ "font-size": "1.5rem" }}>
-                                    {ascean().weaponOne.criticalDamage}x
-                                </div>
-                                <div class="small-label" style={{ opacity: 0.7 }}>Damage</div>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
-            {/* <div class="stat-row" style={viewMargin}>
-                <span class="stat-label">Damage:</span> <span class="gold ">{ascean().weaponOne.physicalDamage}</span> <span class="small-label">Physical</span> <span class="divider">|</span>
-                <span class="gold ">{ascean().weaponOne.magicalDamage}</span> <span class="small-label">Magical</span>
-            </div> */}
-            {/* <div class="stat-row" style={viewMargin}>
-                <span class="stat-label">Penetration:</span> <span class="gold ">{ascean().weaponOne.physicalPenetration}%</span> <span class="small-label">Physical</span> <span class="divider">|</span> 
-                <span class="gold ">{ascean().weaponOne.magicalPenetration}%</span> <span class="small-label">Magical</span> 
-            </div> */}
-            <div class="border right center animate-flicker" style={{ height: "78%", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
+            <div class="border right center animate-flicker" style={{ height: "80%", width: "48%", top: "10%", "border-color": masteryColor(ascean().mastery), "box-shadow": `inset #000 0 0 0 0.2rem, inset ${masteryColor(ascean().mastery)} 0 0 0 0.3rem`, "--glow-color":"gold", "background": `linear-gradient(#000, ${backgroundGradient(ascean().mastery, false)}, #000)` }}>
                 <div class="superCenter view" style={{ position: "absolute", ...positioning() }}>
                     <Suspense fallback={<Puff color="gold" />}>
                         <div style={{ "margin-left": "-15%", transform: "scale(1.15)" }}>

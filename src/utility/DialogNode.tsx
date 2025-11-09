@@ -239,7 +239,7 @@ const ASHREUUL = {
     "health":{"current":1000,"max":1000}
 };
 
-export function fetchTutorialEnemy() {
+function fetchTutorialEnemy() {
     try {
         let enemy: any = populateEnemy(TUTORIAL as any);
         const res = asceanCompiler(enemy);

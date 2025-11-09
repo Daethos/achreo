@@ -95,14 +95,17 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.bar.push(closed);
         this.bar.push(open);
 
+        const gameSettings = this.scene.settings;
+        const gameState = this.scene.gameState;
+
         let bar = [];
         for (let i = 0; i < this.bar.length; i++) {
             this.bar[i].setScrollFactor(0, 0);
             this.bar[i].setDepth(6);
             this.bar[i].setOrigin(0, 0);
             this.bar[i].setInteractive();
-            this.bar[i].setScale(this.scene.settings.positions.smallHud.scale); // || 0.095
-            if (this.scene.settings.desktop) {
+            this.bar[i].setScale(gameSettings.positions.smallHud.scale); // || 0.095
+            if (gameSettings.desktop) {
                 const key = this.bar[i].texture.key;
                 if (!MOBILE.includes(key)) {
                     bar.push(this.bar[i])
@@ -118,29 +121,29 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
-            item.setScale(this.scene.settings.positions.smallHud.scale); // || 0.095
+            item.setScale(gameSettings.positions.smallHud.scale); // || 0.095
             if (this.closed === true) {
                 if (item.texture.key !== "closed") {
                     item.setVisible(false);
                 };
             };
-            item.x = xModifier(this.x, Math.min(index, bar.length - 2), this.scene.settings.positions.smallHud.offset); // || 43.75
+            item.x = xModifier(this.x, Math.min(index, bar.length - 2), gameSettings.positions.smallHud.offset); // || 43.75
             if (item.texture.key === "dialog") {
-                const dialog = this.scene.gameState?.dialogTag as boolean;
+                const dialog = gameState?.dialogTag as boolean;
                 const num = this.closed ? bar.length - 3 : 1;
                 item.setVisible(dialog);
-                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+                item.x = xModifier(this.x, num, gameSettings.positions.smallHud.offset); // || 43.75
             };
             if (item.texture.key === "loot") {
-                const loot = this.scene.gameState?.lootTag as boolean;
-                const num = this.closed ? this.scene.gameState?.dialogTag as boolean 
+                const loot = gameState?.lootTag as boolean;
+                const num = this.closed ? gameState?.dialogTag as boolean 
                     ? bar.length - 4 
                     : bar.length - 3 
-                        : this.scene.gameState?.dialogTag as boolean 
+                        : gameState?.dialogTag as boolean 
                             ? 0
                             : 1;
                 item.setVisible(loot);
-                item.x = xModifier(this.x, num, this.scene.settings.positions.smallHud.offset); // || 43.75
+                item.x = xModifier(this.x, num, gameSettings.positions.smallHud.offset); // || 43.75
             };
             item.on("pointerdown", () => {
                 this.pressButton(item);
@@ -150,12 +153,12 @@ export default class SmallHud extends Phaser.GameObjects.Container {
         this.pressButton(closed);
         
         this.stances.push(strafe);
-        if (this.scene.settings.stances.caerenic) {
+        if (gameSettings.stances.caerenic) {
             let caerenic = this.scene.add.image(this.x, this.y, "caerenic");
             this.stances.push(caerenic);
         };
         this.stances.push(stalwart);
-        if (this.scene.settings.stances.stealth) {
+        if (gameSettings.stances.stealth) {
             let stealth = this.scene.add.image(this.x, this.y, "stealth");
             this.stances.push(stealth);
         };
@@ -165,9 +168,9 @@ export default class SmallHud extends Phaser.GameObjects.Container {
             item.setDepth(6);
             item.setOrigin(0, 0);
             item.setInteractive();
-            item.setScale(this.scene.settings.positions.leftHud.scale); // || 0.095
+            item.setScale(gameSettings.positions.leftHud.scale); // || 0.095
             item.setVisible(true);
-            item.x = leftXModifier(this.leftX, Math.min(index, this.stances.length), this.scene.settings.positions.leftHud.offset); // || 43.75
+            item.x = leftXModifier(this.leftX, Math.min(index, this.stances.length), gameSettings.positions.leftHud.offset); // || 43.75
             item.on("pointerdown", () => {
                 this.pressStance(item);
             });

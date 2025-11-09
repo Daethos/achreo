@@ -179,6 +179,42 @@
                     "frame": "player_attacks_1_6"
                 }
             ]
+        },
+        {
+            "key": "player_attack_7",
+            "type": "frames",
+            "repeat": 0,
+            "frameRate": 12,
+            "frames": [
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_0"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_1"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_2"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_3"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_4"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_5"
+                },
+                {
+                    "key": "player_attacks",
+                    "frame": "player_attacks_1_6"
+                }
+            ]
         }
     ]
 }

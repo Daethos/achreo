@@ -143,8 +143,12 @@ export default function Deity({ ascean, combat, game, reputation, settings, stat
                 EventBus.emit("update-pause", false);
                 EventBus.emit("update-small-hud");
             };
-            addStance(settings, "caerenic");
-            addSpecial(ascean, settings, "Consume");
+            setTimeout(() => {
+                addStance(settings, "caerenic");
+                setTimeout(() => {
+                    addSpecial(ascean, settings, "Consume");
+                }, 1500);
+            }, 1500);
         } catch (err: any) {
             console.log(err, "Error Resolving Deity Encounter");
         };

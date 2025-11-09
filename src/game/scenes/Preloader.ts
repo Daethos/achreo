@@ -33,7 +33,8 @@ export class Preloader extends Scene {
         ParticleManager.preload(this);
         Entity.preload(this);
         this.load.tilemapTiledJSON("ascean_test", "../assets/gui/ascean_test.json");
-        this.load.tilemapTiledJSON("tutorial", "../assets/gui/tutorial.json");
+        // this.load.tilemapTiledJSON("tutorial", "../assets/gui/tutorial.json");
+        this.load.tilemapTiledJSON("new_tutorial", "../assets/gui/new_tutorial.json");
         this.load.tilemapTiledJSON("tent", "../assets/gui/tent.json");
         this.load.tilemapTiledJSON("underground", "../assets/gui/underground.json");
         this.load.tilemapTiledJSON("arena", "../assets/gui/arena.json");

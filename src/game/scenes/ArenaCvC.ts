@@ -18,6 +18,8 @@ import Player from "../entities/Player";
 import { Compiler } from "../../utility/ascean";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
 interface ChunkData {
     key: string;
     x: number;
@@ -79,6 +81,8 @@ export class ArenaCvC extends Phaser.Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
 
     constructor (view?: string) {
         const key = view || "ArenaCvC";
@@ -144,10 +148,13 @@ export class ArenaCvC extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
+        this.chatManager = new ChatManager(this);
+        this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
         this.particleManager = new ParticleManager(this);
+
         this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-        this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
         

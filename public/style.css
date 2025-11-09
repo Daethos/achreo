@@ -35,7 +35,7 @@ body {
 .cornerTL {position: absolute; top: 0; left: 0; font-size: 0.8em; border-radius: 5%;}
 .superCenter {position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);}
 .super {font-size: 0.5em;}
-.highlight {color: #fdf6d8; background: #000; border-radius: 0.25em; font-family: "Cinzel-Regular", "Cinzel-Bold"; font-size: 1em; font-variant: small-caps; padding: 0.25em 1rem; margin: 0.5em;}
+.highlight {color: #fdf6d8; background: #000; border-radius: 0.25em; font-family: "Cinzel-Regular", "Cinzel-Bold"; font-size: 1em; font-variant: small-caps; padding: 0.25rem 1rem; margin: 0.25rem;}
 .highlight:focus {color: gold;}
 .highlight:hover {color: gold;}
 .cinzel {font-family: "Cinzel-Regular", "Cinzel-Bold";}

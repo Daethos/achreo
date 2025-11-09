@@ -46,6 +46,7 @@ export const deadEquipment = async (): Promise<void> => {
         console.log(`Safe Equipment Count: ${safe.size}`);
 
         const total = await db.collection(EQUIPMENT).get();
+
         console.log(`Total Equipment in DB: ${total.length}`);
 
         // const jsonString = JSON.stringify(total);

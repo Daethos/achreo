@@ -76,10 +76,19 @@ export const image: {key: string, value:string}[] = [
     {key: "cloud", value: "../assets/images/Cloud-7.png"},
     {key: "splash", value: "../assets/images/white-splash-fade.png"},
 
+    {key: "decorative", value: "../assets/gui/decorative.png"},
+    {key: "MainLev2.0", value: "../assets/gui/MainLev2.0-extruded.png"},
+    {key: "water_layerA_ef", value: "../assets/gui/water_layerA_ef.png"},
+    {key: "Water_tafle_1B", value: "../assets/gui/Water_tafle_1B.png"},
+    {key: "Water_tafle_2B", value: "../assets/gui/Water_tafle_2B.png"},
+    {key: "Water_tafle_3B", value: "../assets/gui/Water_tafle_3B.png"},
+    {key: "Water_tafle_4B", value: "../assets/gui/Water_tafle_4B.png"},
+
     {key: "Castle Decoratives", value: "../assets/gui/Castle Decoratives.png"},
     {key: "Castle Interior", value: "../assets/gui/Castle Interior.png"},
     {key: "Castle Outside", value: "../assets/gui/Castle Outside.png"},
 
+    {key: "teleport", value: "../assets/images/teleport.png"},
     {key: "closed", value: "../assets/images/closed.png"},
     {key: "open", value: "../assets/images/open.png"},
     {key: "caerenic", value: "../assets/images/caerenic.png"},
@@ -105,7 +114,7 @@ export const INTRO_NODES = {
         next: 1,
         text: `This world is a menagerie of beauty and horror, its jungles cruel and wild; marred and mutated with the blood of Ancients. \n
         Worldly beings of fantastic might and worship a thousand years past, civilization and genius grew from their reverence. \n
-        The Sundering eclipsed such flourishing—a War of the Ancients.`,
+        The Sundering eclipsed such flourishing -- a War of the Ancients.`,
     },
     1: {
         key: 1,
@@ -127,7 +136,7 @@ export const INTRO_NODES = {
         key: 3,
         prev: 2,
         next: 4,
-        text: `Inside the past century, warring ceased toward an uncomfortable peace, with many fathers and sons dying in its making—their progeny rapt with placidity. \n
+        text: `Inside the past century, warring ceased toward an uncomfortable peace, with many fathers and sons dying in its making -- their progeny aching with placidity. \n
         The Ascea now satiates those wary of their idle, listless nature; a decennial tournament full of jest and joust, where prestige and wealth are now sought. \n
         And at its end, the title ‘Ascean va'Esai,’ is crowned.`,
     },

@@ -1,7 +1,7 @@
 import Player from "../entities/Player";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
 import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, POSITIVE, staminaCheck, STATE } from "../../utility/player";
-import { FRAMES } from "../entities/Entity";
+import { FRAMES, MOVEMENT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import { screenShake, sprint } from "./ScreenShake";
 import Bubble from "./Bubble";
@@ -16,6 +16,7 @@ import { LevelSheet } from "../../utility/ascean";
 import { TRAIT_DESCRIPTIONS } from "../../utility/traits";
 import Enemy from "../entities/Enemy";
 import { LIGHTNING_MASTERY } from "./ChainLightning";
+import { HitLocation } from "./HitDetection";
 
 const enemyArticle = (enemy: Enemy) => ["a", "e", "i", "o", "u"].includes(enemy.ascean.name.charAt(0).toLowerCase()) ? "an" : "a";
 
@@ -34,12 +35,6 @@ const DURATION = {
     DODGE: 288,
     ROLL: 320,
     SPECIAL: 5000,
-};
-const MOVEMENT = {
-    "up": { x: 0, y: -5 },
-    "down": { x: 0, y: 5 },
-    "left": { x: -5, y: 0 },
-    "right": { x: 5, y: 0 },
 };
 export default class PlayerMachine {
     scene: Play;
@@ -67,6 +62,7 @@ export default class PlayerMachine {
             .addState(States.ATTACK, { onEnter: this.onAttackEnter, onUpdate: this.onAttackUpdate, onExit: this.onAttackExit })
             .addState(States.PARRY, { onEnter: this.onParryEnter, onUpdate: this.onParryUpdate, onExit: this.onParryExit })
             .addState(States.DODGE, { onEnter: this.onDodgeEnter, onUpdate: this.onDodgeUpdate, onExit: this.onDodgeExit })
+            .addState(States.HURL, { onEnter: this.onHurlEnter, onUpdate: this.onHurlUpdate, onExit: this.onHurlExit })
             .addState(States.JUMP, { onEnter: this.onJumpEnter, onUpdate: this.onJumpUpdate, onExit: this.onJumpExit })
             .addState(States.POSTURE, { onEnter: this.onPostureEnter, onUpdate: this.onPostureUpdate, onExit: this.onPostureExit })
             .addState(States.ROLL, { onEnter: this.onRollEnter, onUpdate: this.onRollUpdate, onExit: this.onRollExit }) // onGrappleRollEnter
@@ -184,7 +180,7 @@ export default class PlayerMachine {
 
     levelModifier = () => (this.scene.state.player?.level as number + 9) / 10;
 
-    mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery as keyof typeof this.scene.state.player];
+    mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery];
 
     chiomism = (id: string, power: number, type: string) => {
         // console.log({ id, power, type });
@@ -395,20 +391,20 @@ export default class PlayerMachine {
         let foci;
         switch (focus) {
             case BALANCED:
-                foci = BALANCED_INSTINCTS[mastery as keyof typeof BALANCED_INSTINCTS];
+                foci = BALANCED_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case DEFENSIVE:
-                foci = DEFENSIVE_INSTINCTS[mastery as keyof typeof DEFENSIVE_INSTINCTS];
+                foci = DEFENSIVE_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case OFFENSIVE:
-                foci = OFFENSIVE_INSTINCTS[mastery as keyof typeof OFFENSIVE_INSTINCTS];
+                foci = OFFENSIVE_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
         };
 
-        let key = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].key, value = PLAYER_INSTINCTS[mastery as keyof typeof PLAYER_INSTINCTS][instinct].value;
+        let key = PLAYER_INSTINCTS[mastery][instinct].key, value = PLAYER_INSTINCTS[mastery][instinct].value;
         let finals = [instinct, foci];
         if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) {
             finals.push(instinct);
@@ -426,8 +422,11 @@ export default class PlayerMachine {
             };
         };
 
+        // const specials = this.scene.hud.settings.totalSpecials;
+        // const specific = this.scene.hud.settings.specials;
+
         let check: {success:boolean;cost:number;} = {success:false,cost:0};
-        const grace = PLAYER.STAMINA[value.toUpperCase() as keyof typeof PLAYER.STAMINA];
+        const grace = PLAYER.STAMINA[value.toUpperCase()];
         check = staminaCheck(this.player.grace, grace);
 
         if (check.success === true) {
@@ -891,7 +890,7 @@ export default class PlayerMachine {
             this.player.adjustSpeed(2);
             if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
         };
-        this.player.swingReset(States.ATTACK, true);
+        this.player.swingReset(States.ATTACK);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.ATTACK);
         this.player.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isAttacking = false);
     }; 
@@ -909,9 +908,28 @@ export default class PlayerMachine {
         };
     };
 
+    onHurlEnter = () => {
+        if (!this.player.isRanged) {
+            this.scene.showCombatText(this.player, "Skill Issue: You're not using a ranged weapon!", 1000, DAMAGE, false, true);
+            return;
+        };
+        this.player.isHurling = true;
+        this.player.swingReset(States.HURL);
+        this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.HURL);
+        this.player.anims.play(FRAMES.HURL, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isHurling = false);
+    }; 
+    onHurlUpdate = (_dt: number) => {
+        this.player.combatChecker(this.player.isHurling);
+        sprint(this.scene);
+    }; 
+    onHurlExit = () => {
+        this.player.computerAction = false; 
+        this.player.isHurling = false;
+    };
+
     onJumpEnter = () => {
         screenShake(this.scene);
-        this.player.swingReset(States.JUMP, true);
+        this.player.swingReset(States.JUMP);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.JUMP);
         this.player.isJumping = true;
         const force = 0.5;
@@ -983,7 +1001,7 @@ export default class PlayerMachine {
 
     onParryEnter = () => {
         this.player.isParrying = true;    
-        this.player.swingReset(States.PARRY, true);
+        this.player.swingReset(States.PARRY);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.PARRY);
         if (this.player.hasMagic === true) {
             this.scene.showCombatText(this.player, "Counter Spell", 1000, HUSH, false, true);
@@ -1014,7 +1032,7 @@ export default class PlayerMachine {
         };
         this.player.isPosturing = true;
         this.player.spriteShield.setVisible(true);
-        this.player.swingReset(States.POSTURE, true);
+        this.player.swingReset(States.POSTURE);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.POSTURE);
         this.player.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isPosturing = false);
         this.player.setStatic(true); // Experimental
@@ -1035,14 +1053,14 @@ export default class PlayerMachine {
         if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming || this.player.isRolling) return;
         this.player.isDodging = true;
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_DODGE : PLAYER.STAMINA.DODGE);
-        if (!this.player.isComputer) this.player.swingReset(States.DODGE, true);
+        if (!this.player.isComputer) this.player.swingReset(States.DODGE);
         this.scene.sound.play("dodge", { volume: this.scene.hud.settings.volume / 2 });
         this.player.wasFlipped = this.player.flipX;
         this.player.playerBodyDodge(true);
         this.player.anims.play(FRAMES.DODGE, true);
         this.player.playerDodge();
         if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
-            this.scene.combatManager.hitFeedbackSystem.trailing(true);
+            this.scene.combatManager.hitFeedbackSystem.trailing(this as any, true);
             if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
         };
     };
@@ -1055,7 +1073,7 @@ export default class PlayerMachine {
         this.player.isDodging = false;
         this.player.playerBodyDodge(false);
         if (this.scene.player.checkTalentEnhanced(States.DODGE)) {
-            this.scene.combatManager.hitFeedbackSystem.trailing(false);
+            this.scene.combatManager.hitFeedbackSystem.trailing(this as any, false);
             if (!this.player.isCaerenic && this.player.isGlowing) this.player.checkCaerenic(false); 
         };
     };
@@ -1064,11 +1082,11 @@ export default class PlayerMachine {
         if ((this.player.isStalwart && !this.scene.hud.talents.talents.stalwart.enhanced) || this.player.isStorming || this.player.isDodging) return;
         this.player.isRolling = true;
         this.scene.combatManager.useStamina(this.player.isComputer ? PLAYER.STAMINA.COMPUTER_ROLL : PLAYER.STAMINA.ROLL);
-        if (!this.player.isComputer) this.player.swingReset(States.ROLL, true);
+        if (!this.player.isComputer) this.player.swingReset(States.ROLL);
         this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
         this.player.playerBodyRoll(true);
         this.player.anims.play(FRAMES.ROLL, true);
-        this.player.playerRoll();    
+        this.player.playerRoll(true);    
     };
     onRollUpdate = (_dt: number) => {
         this.player.combatChecker(this.player.isRolling);
@@ -1087,8 +1105,8 @@ export default class PlayerMachine {
     onGrappleRollEnter = () => {
         this.scene.sound.play("roll", { volume: this.scene.hud.settings.volume / 2 });
         this.player.playerBodyRoll(true);
-        this.player.anims.play(FRAMES.ROLL, true);
-        this.player.playerRoll();
+        this.player.anims.play(FRAMES.GRAPPLE_ROLL, true);
+        this.player.playerRoll(false);
     };
     onGrappleRollUpdate = (dt: number) => {
         this.player.grappleTime -= dt;
@@ -1117,7 +1135,7 @@ export default class PlayerMachine {
             this.player.adjustSpeed(2);
             if (!this.player.isCaerenic && !this.player.isGlowing) this.player.checkCaerenic(true);
         };
-        this.player.swingReset(States.THRUST, true);
+        this.player.swingReset(States.THRUST);
         this.scene.combatManager.useStamina(this.player.staminaModifier + PLAYER.STAMINA.THRUST);
         this.player.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isThrusting = false);
     };
@@ -1192,7 +1210,7 @@ export default class PlayerMachine {
                 this.player.aoe = this.scene.aoePool.get("astrave", 1, false, undefined, true);
                 this.player.checkTalentCooldown(States.ASTRAVE, PLAYER.COOLDOWNS.MODERATE);
             };
-        this.specialCombatText("You unearth the winds and lightning from the land of hush and tendril.");
+            this.specialCombatText("You unearth the winds and lightning from the land of hush and tendril.");
             this.player.castingSuccess = false;
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
             this.player.checkTalentCost(States.ASTRAVE, PLAYER.STAMINA.ASTRAVE);
@@ -1238,8 +1256,14 @@ export default class PlayerMachine {
             if (!this.player.isComputer) this.player.checkTalentCooldown(States.ARC, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.player.checkTalentCost(States.ARC, PLAYER.STAMINA.ARC);
-            if (this.player.touching.length > 0) {
-                for (let i = 0; i < this.player.touching.length; ++i) {
+            const touch = this.player.touching.length;
+            if (touch > 0) {
+                this.player.lastHitLocation = {
+                    location: HitLocation.CHEST,
+                    hitPoint: {x:0,y:0},
+                    relativePosition: {x:0,y:0}
+                };
+                for (let i = 0; i < touch; ++i) {
                     this.scene.combatManager.playerMelee(this.player.touching[i].enemyID, "arc");
                     if (this.player.checkTalentEnhanced(States.ARC)) this.scene.combatManager.stun(this.player.touching[i].enemyID);
                 };
@@ -1559,7 +1583,7 @@ export default class PlayerMachine {
             this.player.aoe = this.scene.aoePool.get("fyerus", 6, false, undefined, true);    
         };
         this.scene.combatManager.useGrace(PLAYER.STAMINA.FYERUS);    
-        if (!this.player.isComputer) this.player.setTimeEvent("fyerusCooldown", PLAYER.COOLDOWNS.SHORT);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.FYERUS, PLAYER.COOLDOWNS.SHORT);
         this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
         this.specialCombatText("You unearth the fires and water from the land of hush and tendril.");
     };
@@ -1645,7 +1669,7 @@ export default class PlayerMachine {
     onInvokeUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onInvokeExit = () => {
         this.player.setStatic(false);
-        if (!this.player.currentTarget || this.player.currentTarget.health <= 0 || this.player.outOfRange(PLAYER.RANGE.LONG)) return;
+        if (this.player.currentTarget === undefined || this.player.currentTarget.health <= 0 || this.player.outOfRange(PLAYER.RANGE.LONG)) return;
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.INVOKE, PLAYER.COOLDOWNS.LONG);
         this.scene.combatManager.combatMachine.action({ type: "Instant", data: this.scene.state.playerBlessing });
         if (this.player.checkTalentEnhanced(States.INVOKE)) {
@@ -1677,7 +1701,7 @@ export default class PlayerMachine {
                 this.player.aoe = this.scene.aoePool.get("kynisos", 3, false, undefined, true);    
             };
             this.specialCombatText("You unearth the netting of the golden hunt.");
-            if (!this.player.isComputer) this.player.setTimeEvent("kynisosCooldown", PLAYER.COOLDOWNS.SHORT);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(States.KYNISOS, PLAYER.COOLDOWNS.SHORT);
             this.player.castingSuccess = false;
             this.scene.sound.play("combat-round", { volume: this.scene.hud.settings.volume });
             this.scene.combatManager.useGrace(PLAYER.STAMINA.KYNISOS);    
@@ -1786,6 +1810,7 @@ export default class PlayerMachine {
     onLeapExit = () => {
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.LEAP, PLAYER.COOLDOWNS.SHORT);
         this.player.checkTalentCost(States.LEAP, PLAYER.STAMINA.LEAP);
+        this.scene.combatManager.hitFeedbackSystem.trailing(this as any, false);
     };
 
     onLuckoutEnter = () => {
@@ -1827,7 +1852,7 @@ export default class PlayerMachine {
         if (this.player.castingSuccess === true) {
             this.handleLuckout();
             this.player.castingSuccess = false;
-            this.player.checkTalentCost("luckout", PLAYER.STAMINA[this.player.buttonPressed as keyof typeof PLAYER.STAMINA]);
+            this.player.checkTalentCost("luckout", PLAYER.STAMINA[this.player.buttonPressed]);
             if (!this.player.isComputer) this.player.checkTalentCooldown("luckout", PLAYER.COOLDOWNS.SHORT);
         };
         this.player.stopCasting();
@@ -1965,7 +1990,7 @@ export default class PlayerMachine {
             this.handlePersuasion();
             this.player.castingSuccess = false;
             if (!this.player.isComputer) this.player.checkTalentCooldown("persuasion", PLAYER.COOLDOWNS.SHORT);
-            this.player.checkTalentCost("persuasion", PLAYER.STAMINA[this.player.buttonPressed as keyof typeof PLAYER.STAMINA]);
+            this.player.checkTalentCost("persuasion", PLAYER.STAMINA[this.player.buttonPressed]);
         };
         this.player.stopCasting();
         this.player.persuasionLock = "";
@@ -2444,6 +2469,7 @@ export default class PlayerMachine {
         this.player.rushedEnemies = [];
         if (!this.player.isComputer) this.player.checkTalentCooldown(States.RUSH, PLAYER.COOLDOWNS.SHORT);
         this.player.checkTalentCost(States.RUSH, PLAYER.STAMINA.RUSH);
+        this.scene.combatManager.hitFeedbackSystem.trailing(this as any, false);
     };
 
     onSlowEnter = () => {
@@ -2525,7 +2551,7 @@ export default class PlayerMachine {
 
     onStormEnter = () => this.player.storm();
     onStormUpdate = (_dt: number) => this.player.combatChecker(this.player.isStorming);
-    onStormExit = () => {if (!this.player.isComputer) this.player.setTimeEvent("stormCooldown", this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3)};
+    onStormExit = () => {if (!this.player.isComputer) this.player.checkTalentCooldown(States.STORM, this.player.inCombat ? PLAYER.COOLDOWNS.SHORT : PLAYER.COOLDOWNS.SHORT / 3)};
 
     onSutureEnter = () => {
         if (this.player.currentTarget === undefined || this.player.currentTarget.body === undefined || this.player.outOfRange(PLAYER.RANGE.MODERATE) || this.player.invalidTarget(this.player.currentTarget.enemyID)) return;
@@ -2973,7 +2999,7 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Protecting", 750, EFFECT, false, true);
         const duration = this.player.checkTalentEnhanced(States.PROTECT) ? PLAYER.DURATIONS.PROTECT * 1.5 : PLAYER.DURATIONS.PROTECT;
         this.player.negationBubble = new Bubble(this.scene, this.player.x, this.player.y, "gold", duration);
-        if (!this.player.isComputer) this.player.setTimeEvent("protectCooldown", PLAYER.COOLDOWNS.LONG);
+        if (!this.player.isComputer) this.player.checkTalentCooldown(States.PROTECT, PLAYER.COOLDOWNS.LONG);
         this.scene.time.delayedCall(duration, () => {
             this.player.isProtecting = false;    
             if (this.player.negationBubble) {
@@ -3545,7 +3571,7 @@ export default class PlayerMachine {
             const name = this.scene.hud.settings.specials[i].toLowerCase();
             if (name === "stimulate") continue;
             this.scene.hud.logger.log(`Resetting the cooldown on ${name}`);
-            if (!this.player.isComputer) this.player.setTimeEvent(`${name}Cooldown`, 0);
+            if (!this.player.isComputer) this.player.checkTalentCooldown(name, 0);
         };
         if (this.player.checkTalentEnhanced(States.STIMULATE)) this.scene.combatManager.combatMachine.action({ type: "Prayer", data: "Insight" });
     };
@@ -3578,7 +3604,7 @@ export default class PlayerMachine {
             const directions = ["up", "down", "left", "right"];
             const direction = directions[dir];
             if (move >= 20) {
-                this.player.confuseVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
+                this.player.confuseVelocity = MOVEMENT[direction];
             } else {
                 this.player.confuseVelocity = { x: 0, y: 0 };
             };
@@ -3658,7 +3684,7 @@ export default class PlayerMachine {
             const directions = ["up", "down", "left", "right"];
             const direction = directions[Math.floor(Math.random() * 4)];
             if (move >= 20) {
-                this.player.fearVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
+                this.player.fearVelocity = MOVEMENT[direction];
             } else {
                 this.player.fearVelocity = { x: 0, y: 0 };
             };
@@ -3809,7 +3835,7 @@ export default class PlayerMachine {
             const direction = directions[dir];
             if (move >= 20) {
                 this.player.polymorphMovement = "move";
-                this.player.polymorphVelocity = MOVEMENT[direction as keyof typeof MOVEMENT]; 
+                this.player.polymorphVelocity = MOVEMENT[direction]; 
             } else {
                 this.player.polymorphMovement = "idle";                
                 this.player.polymorphVelocity = { x: 0, y: 0 };

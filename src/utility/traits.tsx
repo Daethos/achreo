@@ -444,65 +444,65 @@ interface TraitModalProps {
 };
 
 export const LuckoutModal = ({ traits, callback, name, influence, show, setShow }: TraitModalProps) => {
+    const svg = window.innerWidth * 0.55;
     return (
         <>
         <Show when={show()}>
         <div class="modal" onClick={() => setShow(!show())}>
-            <div class="border superCenter" style={{ "font-size": "1.25em" }}>
+            <div class="border superCenter" style={{ "font-size": "1rem", height: "90%", width: "60%", top: "47.5%", overflow: "scroll", "scrollbar-width":"none" }}>
             <div class="creature-heading wrap">
                 <h1 style={{ margin: "3%" }}>Luckout</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                    <polyline points={`0,0 ${svg},2.5 0,5`}></polyline>
                 </svg>
-                <h2>These offer a unique opportunity to defeat your enemies without the need for combat. However, failure will result in hostile and immediate engagement.</h2>
+                <h2 style={{ "font-size":"1.15rem" }}>These offer a unique opportunity to defeat your enemies without the need for combat. However, failure will result in hostile and immediate engagement.</h2>
                 <div style={{ "font-size": "1em", margin: "5%" }}>
                 {traits().map((trait: any) => {
                     return (
-                        <div style={{ margin: "3%" }}>
-                            <button class="inner" style={{ color: traitStyle(trait.name), "font-size": "1em", background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.modal.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
+                        <div>
+                            <button class="highlight inner" style={{ color: traitStyle(trait.name), "font-size": "1rem", "font-weight": 900, background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.modal.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
                         </div>
-                    )
+                    );
                 })}
                 </div>
-                <p style={{ margin: "3%" }}>
                 [Note: Your decisions has granted this avenue of gameplay experience. There are more to discover.]<br /><br />
-                </p>
             </div>
             </div>
         </div>
         </Show>
-    <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%" }} onClick={() => setShow(!show())}>[ {">>>"} Combat Alternative(s) Expalantion {"<<<"} ]</button>
+        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "font-size":"1rem" }} onClick={() => setShow(!show())}> (→ Luckout Combat Alternative(s) Expalantion ← )</button>
         {traits().map((trait: any) => {
             return (
-                <div style={{ margin: "3%" }}>
-                    <button class="inner" style={{ color: traitStyle(trait.name), background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
+                <div>
+                    <button class="highlight inner" style={{ color: traitStyle(trait.name), background: "#000", "font-weight": 900, "font-size":"1.15rem" }} onClick={() => callback(trait.name)}>[{trait.name}] - {trait.luckout.action.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
                 </div>
-            )
+            );
         })}
         </>
     );
 };
 
 export const PersuasionModal = ({ traits, callback, name, influence, show, setShow }: TraitModalProps) => {
+    const svg = window.innerWidth * 0.55;
     return (
         <>
         <Show when={show()}>
         <div class="modal" onClick={() => setShow(!show())}>
-            <div class="border superCenter" style={{ "font-size": "1.25em" }}>
+            <div class="thick-border superCenter" style={{ "font-size": "1rem", height: "90%", width: "60%", top: "47.5%", overflow: "scroll", "scrollbar-width":"none" }}>
             <div class="creature-heading wrap">
                 <h1 style={{ margin: "3%" }}>Persuasion</h1>
                 <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points="0,0 400,2.5 0,5"></polyline>
+                    <polyline points={`0,0 ${svg},2.5 0,5`}></polyline>
                 </svg>
-                <h2>These offer a unique opportunity to entreat with your enemies without the need for combat. 
+                <h2 style={{ "font-size":"1.15rem" }}>These offer a unique opportunity to entreat with your enemies without the need for combat. 
                 However, failure may result anywhere from stymied conversation to hostile engagement. Perhaps with more notoriety this can change.</h2>
-                <div style={{ "font-size": "1em", margin: "5%" }}>
+                <div style={{ "font-size": "1rem", margin: "5%" }}>
                 {traits().map((trait: any) => {
                     return (
-                        <div style={{ margin: "3%" }}>
-                            <button class="inner" style={{ color: traitStyle(trait.name), "font-size": "1em", background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
+                        <div>
+                            <button class="highlight inner" style={{ color: traitStyle(trait.name), "font-size": "1rem", "font-weight": 900, background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.modal.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
                         </div>
-                    )
+                    );
                 })}
                 </div>
                 [Note: Your decisions has granted this avenue of gameplay experience. There are more to discover.]<br /><br />
@@ -510,13 +510,13 @@ export const PersuasionModal = ({ traits, callback, name, influence, show, setSh
             </div>
         </div>
         </Show>
-        <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3% auto 0" }} onClick={() => setShow(!show())}>[ {">>>"} Persuasive Alternative(s) Explanation {"<<<"} ]</button>
+        <button class="inner" style={{ color: "#fdf6d8", background: "#000", margin: "3% auto", "font-size":"1rem", display: "block" }} onClick={() => setShow(!show())}>( → Persuasive Alternative(s) Explanation ← )</button>
         {traits().map((trait: any) => {
             return (
-                <div style={{ margin: "5%" }}>
-                    <button class="inner" style={{ color: traitStyle(trait.name), background: "#000" }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
+                <div>
+                    <button class="highlight inner" style={{ color: traitStyle(trait.name), background: "#000", "font-size":"1.15rem", "font-weight": 900 }} onClick={() => callback(trait.name)}>[{trait.name}]: {trait.persuasion.action.replace("{enemy.name}", name).replace("{ascean.weaponOne.influences[0]}", influence())}</button>
                 </div>
-            )
+            );
         })}
         </>
     );
@@ -528,31 +528,31 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
         <>
         <Show when={show()}>
         <div class="modal" style={{ "z-index": 2 }}>
-            <div class="border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", "max-height" : "95%", width: "65%", "z-index": 2, top: "47.5%" }}>
-            <div class="creature-heading wrap">
-                <h1 style={{ margin: "3%" }}>Quests</h1>
-                <svg height="5" width="100%" class="tapered-rule mt-2">
-                    <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
-                </svg>
-                <h2>These are the quests you have available to you. Each quest has its own requirements and rewards. 
-                Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
-                <div style={{ "font-size": "0.75em", margin: "5%" }}>
-                {quests().map((quest: Quest, index: number) => {
-                    return <div style={{ margin: "3%" }}>
-                        <div class="dialog-buttons inner juiceNB" style={{ color: index % 2 === 0 ? "gold" : "white", "font-size": "1em", background: "#000" }}>[{quest.title}]: {quest.description}</div>
-                        <button class="highlight" onClick={() => {EventBus.emit("add-quest", {title:quest.title,enemy}); }} style={font("1em", "green")}>Accept {quest.title}</button>
+            <div class="thick-border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", "max-height" : "95%", width: "65%", "z-index": 2, top: "47.5%" }}>
+                <div class="creature-heading wrap">
+                    <h1 style={{ margin: "3%" }}>Quests</h1>
+                    <svg height="5" width="100%" class="tapered-rule mt-2">
+                        <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
+                    </svg>
+                    <h2 style={font("1.2rem")}>These are the quests you have available to you. Each quest has its own requirements and rewards. 
+                    Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
+                    <div style={{ "font-size": "1rem", margin: "5%" }}>
+                    {quests().map((quest: Quest, index: number) => {
+                        return <div style={{ margin: "3%" }}>
+                            <div class="dialog-buttons inner juiceNB" style={{ color: index % 2 === 0 ? "gold" : "white", "font-size": "1.25rem", background: "#000" }}>[{quest.title}]: {quest.description}</div>
+                            <button class="highlight" onClick={() => {EventBus.emit("add-quest", {title:quest.title,enemy}); }} style={font("1.25rem", "green")}>Accept {quest.title}</button>
+                        </div>
+                    })}
+                    [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                     </div>
-                })}
-                [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                 </div>
-            </div>
             </div>
             <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setShow(!show())}>
                 <p style={font("0.5em")}>X</p>
             </button>
         </div>
         </Show>
-        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "--glow-color":"#fdf6d8" }} onClick={() => setShow(!show())}>Show Available Quests</button>
+        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "--glow-color":"#fdf6d8", "font-size":"1rem", "font-weight": 900 }} onClick={() => setShow(!show())}><span class="gold">[Quests]:</span> You have potential quests available. Would you like to examine them?</button>
         </>
     );
 };

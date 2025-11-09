@@ -627,10 +627,10 @@ function origin(weapon: any, ascean: Ascean): Equipment {
             weapon.roll += 5;
             break;
         case RACE.FYERS:
-            weapon.magicalPenetration += 5;
-            weapon.physicalPenetration += 5;
-            weapon.dodge += 5;
-            weapon.roll += 5;
+            weapon.magicalPenetration += 7;
+            weapon.physicalPenetration += 7;
+            weapon.dodge += 7;
+            weapon.roll += 7;
             break;
         case RACE.LIIVI:
             weapon.magicalPenetration += 2;
@@ -772,7 +772,7 @@ function weaponCompiler(weapon: any, ascean: Ascean, attributes: CombatAttribute
         magicalPenetration: weapon.magicalPenetration * rarity,
         criticalChance: weapon.criticalChance * rarity,
         criticalDamage: weapon.criticalDamage,
-        dodge: weapon.dodge,
+        dodge: 10 - weapon.dodge,
         roll: weapon.roll * rarity,
         constitution: weapon.constitution * rarity,
         strength: weapon.strength * rarity,
@@ -789,7 +789,8 @@ function weaponCompiler(weapon: any, ascean: Ascean, attributes: CombatAttribute
     penetration(newWeapon, attributes, combatStats);
     crit(newWeapon, attributes, combatStats);
     faith(newWeapon, ascean);
-    // newWeapon.dodge += (60 + combatStats.dodgeCombat);
+    // newWeapon.dodge += combatStats.dodgeCombat;
+    newWeapon.dodge *= 1 + (combatStats.dodgeCombat / 100);
     newWeapon.roll += combatStats.rollCombat;
     newWeapon.physicalDamage = Math.round(newWeapon.physicalDamage * combatStats.damagePhysical);
     newWeapon.magicalDamage = Math.round(newWeapon.magicalDamage * combatStats.damageMagical);
@@ -902,8 +903,12 @@ function asceanCompiler(ascean: any): Compiler {
         (ascean.ringOne.criticalChance * rarities.ringOne) + (ascean.ringTwo.criticalChance * rarities.ringTwo) + (ascean.amulet.criticalChance * rarities.amulet) + (ascean.trinket.criticalChance * rarities.trinket);
     const critDamageModifier = (ascean.helmet.criticalDamage * rarities.helmet) * (ascean.chest.criticalDamage * rarities.chest) * (ascean.legs.criticalDamage * rarities.legs) * 
         (ascean.ringOne.criticalDamage * rarities.ringOne) * (ascean.ringTwo.criticalDamage * rarities.ringTwo) * (ascean.amulet.criticalDamage * rarities.amulet) * (ascean.trinket.criticalDamage * rarities.trinket);
-    const dodgeModifier = Math.round((ascean.shield.dodge * rarities.shield) + (ascean.helmet.dodge * rarities.helmet) + (ascean.chest.dodge * rarities.chest) + (ascean.legs.dodge * rarities.legs) + 
-        (ascean.ringOne.dodge * rarities.ringOne) + (ascean.ringTwo.dodge * rarities.ringTwo) + (ascean.amulet.dodge * rarities.amulet) + (ascean.trinket.dodge * rarities.trinket) - Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
+    const dodgeModifier = Math.round(
+        (Math.max(0, 10 - ascean.shield.dodge) * rarities.shield) + 
+        (Math.max(0, 7 - ascean.helmet.dodge) * rarities.helmet) + 
+        (Math.max(0, 7 - ascean.chest.dodge) * rarities.chest) + 
+        (Math.max(0, 7 - ascean.legs.dodge) * rarities.legs) + 
+        Math.round(((attributes.agilityMod + attributes.achreMod) / 2))); // Was 3
     const rollModifier = Math.round((ascean.shield.roll * rarities.shield) + (ascean.helmet.roll * rarities.helmet) + (ascean.chest.roll * rarities.chest) + (ascean.legs.roll * rarities.legs) + 
         (ascean.ringOne.roll * rarities.ringOne) + (ascean.ringTwo.roll * rarities.ringTwo) + (ascean.amulet.roll * rarities.amulet) + (ascean.trinket.roll * rarities.trinket) + 
         Math.round(((attributes.agilityMod + attributes.achreMod) / 4))); // Was 3
@@ -919,7 +924,6 @@ function asceanCompiler(ascean: any): Compiler {
     const magicalDefenseModifier = Math.round((ascean.helmet.magicalResistance * rarities.helmet) + (ascean.chest.magicalResistance * rarities.chest) + (ascean.legs.magicalResistance * rarities.legs) + 
         (ascean.ringOne.magicalResistance * rarities.ringOne) + (ascean.ringTwo.magicalResistance * rarities.ringTwo) + (ascean.amulet.magicalResistance * rarities.amulet) + (ascean.trinket.magicalResistance * rarities.trinket) + 
         Math.round(((attributes.constitutionMod + attributes.caerenMod + attributes.kyosirMod) / 8)) + originMagDefMod);
-
     const combatStats = {
         combatAttributes: attributes,
         damagePhysical: physicalDamageModifier,
@@ -935,7 +939,6 @@ function asceanCompiler(ascean: any): Compiler {
         originPhysDef: originPhysDefMod,
         originMagDef: originMagDefMod
     };
-
     if (ascean.health.max === 0) {
         ascean = setHealth(ascean, attributes.healthTotal);
     } else {

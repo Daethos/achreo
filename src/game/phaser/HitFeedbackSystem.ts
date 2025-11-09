@@ -1,7 +1,7 @@
 import { randomFloatFromInterval } from "../../models/equipment";
 import { Combat } from "../../stores/combat";
 import { masteryNumber } from "../../utility/styling";
-import { Play } from "../main";
+import { Entity, Play } from "../main";
 import ChainLightning from "./ChainLightning";
 import { HitProfile, HitProfiles } from "./HitProfiles";
 // import ParticlesAlongBounds from 'phaser3-rex-plugins/plugins/particlesalongbounds.js';
@@ -539,14 +539,24 @@ export class HitFeedbackSystem {
     public healing = (pos: Phaser.Math.Vector2): void => {
         this.heal.explode(25, pos.x, pos.y+6);
     };
-
-    private ghost = (add: number) => {
-        const ghost = this.scene.add.sprite(this.scene.player.x, this.scene.player.y, "player_actions", "player_idle_0");
+    private ghost = (entity: Entity, add: number) => {
+        let texture, frame;
+        if (entity.isLeaping) {
+            texture = "player_actions";
+            frame = "roll_0";
+        } else if (entity.isRushing) {
+            texture = "player_attacks";
+            frame = "player_attacks_2_0";
+        } else {
+            texture = "player_slide";
+            frame = "player_slide_0";
+        };
+        const ghost = this.scene.add.sprite(entity.x, entity.y, texture, frame);
         ghost.setAlpha(0.4 + add)
-        .setDepth(this.scene.player.depth - 1)
-        .setFlipX(this.scene.player.flipX)
+        .setDepth(entity.depth - 1)
+        .setFlipX(entity.flipX)
         .setScale(0.8)
-        .setTint(masteryNumber(this.scene.player.ascean.mastery));
+        .setTint(masteryNumber(entity.ascean.mastery));
         
         this.scene.tweens.add({
             targets: ghost,
@@ -556,9 +566,9 @@ export class HitFeedbackSystem {
         });
     };
 
-    public trailing = (on: boolean): void => {
+    public trailing = (entity: Entity, on: boolean): void => {
         if (on) {
-            const offset = this.scene.player.flipX ? 6 : -6;
+            const offset = entity.flipX ? 6 : -6;
             let add = 0.0;
             this.trail.updateConfig({followOffset: { x: offset, y: 16 }});
             this.trail.start();
@@ -566,7 +576,7 @@ export class HitFeedbackSystem {
                 delay: 75,
                 callback: () => {
                     add += 0.1;
-                    this.ghost(add)
+                    this.ghost(entity, add)
                 },
                 callbackScope: this,
                 repeat: 5,

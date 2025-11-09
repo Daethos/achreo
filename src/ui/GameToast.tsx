@@ -17,18 +17,19 @@ export default function GameToast({ actions, show, setShow, alert, setAlert }: P
         setShow(!show());
         setAlert(undefined as unknown as { header: string; body: string, delay: number, arg: any });
     };
-    const toast: any = {"position": alert()?.key !== "" ? "absolute" : "", "bottom": alert()?.extra ? "25vh" : alert()?.key !== "" ? "45vh" : "0" };
-    return <div class="cornerBL realize" style={{ width: "30%", "z-index": 3 }}>
-        <Toast class="toast" onClose={() => close()} show={show()} delay={alert()?.delay} autohide style={toast}>
+    return <div class={`${alert()?.key ? "middleLeft" : "cornerBL"} realize`} style={{ width: "35%", "z-index": 1001 }}>
+        <Toast class="toast" onClose={() => close()} show={show()} delay={alert()?.delay} autohide>
             <p class="toastHeader">{alert()?.header}</p>
             <svg height="5" width="100%" class="tapered-rule mt-2"><polyline points="0,0 200,2.5 0,5"></polyline></svg>
-            <p class="center toastBody" style={{ "white-space": "pre-wrap" }}>{alert()?.body}</p>
-            <Show when={alert()?.extra}>
-                <button class="highlight toastButton" style={{ "margin-left": "50%", transform: "translateX(-50%)", "margin-bottom": alert()?.key ? "5%" : "2%" }} onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
-            </Show>
-            <Show when={alert()?.key}>
-                <button class="highlight toastButton" style={{ "margin-left": "50%", transform: "translateX(-50%)" }} onClick={() => performAction(alert()?.key as string)}>{alert()?.key}</button>
-            </Show>
+            <p class="center toastBody" style={{ "font-size": "0.75rem", "white-space": "pre-wrap" }}>{alert()?.body}</p>
+            <div style={{ display: "flex", "margin": "6% auto 3%" }}>
+                <Show when={alert()?.extra}>
+                    <button class="highlight toastButton animate" style={{ "font-size": "0.85rem", float: "left" }} onClick={() => performAction(alert()?.extra as string)}>{alert()?.extra}</button>
+                </Show>
+                <Show when={alert()?.key}>
+                    <button class="highlight toastButton" style={{ "font-size": "0.85rem", float: "right" }} onClick={() => performAction(alert()?.key as string)}>{alert()?.key}</button>
+                </Show>
+            </div>
         </Toast>
     </div>;
 };

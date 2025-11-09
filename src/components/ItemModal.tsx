@@ -70,9 +70,16 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                 <Show when={item?.physicalPenetration || item?.magicalPenetration}>
                     Penetration: <span class="gold">{roundToTwoDecimals(item?.physicalPenetration as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(item?.magicalPenetration as number)}</span> Magi <br />
                 </Show>
-                Crit Chance: <span class="gold">{roundToTwoDecimals(item?.criticalChance)}%</span> <br />
-                Crit Damage: <span class="gold">{roundToTwoDecimals(item?.criticalDamage)}x</span> <br />
-                Roll Chance: <span class="gold">{roundToTwoDecimals(item?.roll)}%</span> <br />
+                Critical: <span class="gold">{roundToTwoDecimals(item?.criticalChance)}%</span> Chance | <span class="gold">{roundToTwoDecimals(item?.criticalDamage)}x</span> Damage <br />
+                {/* Crit Chance: <span class="gold">{roundToTwoDecimals(item?.criticalChance)}%</span> <br />
+                Crit Damage: <span class="gold">{roundToTwoDecimals(item?.criticalDamage)}x</span> <br /> */}
+                <Show when={item.dodge > 0 || item?.type.includes("Shield")} fallback={
+                    <span>
+                        Roll Chance: <span class="gold">{roundToTwoDecimals(item?.roll)}%</span> <br />
+                    </span>
+                }>
+                    Special: <span class="gold">{roundToTwoDecimals(item?.type.includes("Shield") ? (10 - item.dodge) : item?.dodge)}%</span> Dodge | <span class="gold">{roundToTwoDecimals(item?.roll)}%</span> Roll <br />
+                </Show>
                 <Show when={item?.influences && item?.influences?.length > 0}>
                     Influence: <span class="gold">{item?.influences?.[0]}</span>
                 </Show>
@@ -97,7 +104,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                     <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
                         {/* You attempt to harness your caer with your achre. */}
                         [<span class="gold">Caerenic</span>]: {talents?.().talents.caerenic.enhanced ? "+25%" : "+15%"} Offense. {talents?.().talents.caerenic.efficient ? "-15%" : "-25%"} Defense. 
-                        {(talents?.().talents.caerenic.enhanced && talents?.().talents.caerenic.efficient) ? "+1.2" : (talents?.().talents.caerenic.enhanced || talents?.().talents.caerenic.efficient) ? "+0.9" : "+0.6"} Speed. 
+                        {(talents?.().talents.caerenic.enhanced && talents?.().talents.caerenic.efficient) ? "+0.8" : (talents?.().talents.caerenic.enhanced || talents?.().talents.caerenic.efficient) ? "+0.6" : "+0.4"} Speed. 
                     </p>
                 </Show>
             </div> 

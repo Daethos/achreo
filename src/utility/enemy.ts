@@ -270,7 +270,7 @@ export const DISTANCE = {
     MIN: 0,
     ATTACK: 50,
     MOMENTUM: 0.75,
-    THRESHOLD: 75,
+    THRESHOLD: 65,
     CHASE: 125,
     COMBAT: 60,
     RANGED_ALIGNMENT: 25,
@@ -292,11 +292,11 @@ export const DURATION = {
     ROLL: 320, // 320
     SPECIAL: 10000,
 };
-export const PADDING = {
+export const PADDING: {[key:string]: number;} = {
     HEIGHT: 10,
     WIDTH: 10
 };
-export const RANGE = {
+export const RANGE: {[key:string]: number;} = {
     LEASH: 1000,
     Underground: 2000,
     Game: 500,
@@ -545,7 +545,8 @@ export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.25, mastery: ["
     try {
         let complete: any[] = [];
         for (let i = 0; i < enemies.length; i++) {
-            let enemy = nonRandomEnemy(enemies[i].level, enemies[i].mastery);
+            const level = Math.random() > 0.5 ? 0.5 : 0.25;
+            let enemy = nonRandomEnemy(level, enemies[i].mastery);
             enemy = populateEnemy(enemy);
             const res = asceanCompiler(enemy);
             complete.push(res);

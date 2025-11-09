@@ -108,7 +108,6 @@ export default class Beam {
     };
 
     pointEmitter = (x: number, y: number, time: number) => {
-        // this.emitter.start();
         this.updatePoint(x, y);
         this.scene.time.addEvent({
             delay: time / 30,
@@ -119,12 +118,6 @@ export default class Beam {
     };
 
     updatePoint = (x: number, y: number) => {
-        // let dynamicConfig = {
-        //     moveToX: x - this.xOffset,
-        //     moveToY: y - this.yOffset,
-        //     scale: this.glow(),
-        // };
-        // this.emitter.setConfig({ ...this.settings, ...dynamicConfig });
         if (Math.random() >= 0.85) {
             this.drawLightning(new Phaser.Math.Vector2(this.player.x, this.player.y), new Phaser.Math.Vector2(x, y));
         };

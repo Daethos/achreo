@@ -106,7 +106,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         }, 1000);
     };
 
-    const checkSweetSpot = () => {
+    function checkSweetSpot() {
         const currentAngle = angle();
         const currentTumbler = currentTumblerIndex();
         
@@ -136,7 +136,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                         EventBus.emit("open-chest", lockpick().id);
                     } else if (lockpick().type === "door") {
                         EventBus.emit("open-door", lockpick().id);
-                    }
+                    };
                     setLockpicking(false);
                 }, 2000); // 1000
             };
@@ -206,16 +206,16 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         });
     };
 
-    const handlePickTouch = (e: TouchEvent) => {
-        e.preventDefault();
+    const handlePickTouch = () => {
+        // e.preventDefault();
         if (gameStatus() !== PLAYING || lockpicks() === 0) return;
         picking.loop = true;
         picking.play();
         setActiveTouch("pick");
     };
 
-    const handleWrenchTouch = (e: TouchEvent) => {
-        e.preventDefault();
+    const handleWrenchTouch = () => {
+        // e.preventDefault();
         setActiveTouch("wrench");
         const wobble = () => {
             if (!rumble()) return;
@@ -229,7 +229,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
 
     const handleTouchMove = (e: TouchEvent) => {
         if (gameStatus() !== PLAYING || lockpicks() === 0 || activeTouch() === undefined) return;
-        e.preventDefault();
+        // e.preventDefault();
         
         const lockRect = (e.currentTarget as any)?.getBoundingClientRect();
         const centerX = lockRect.left + lockRect.width / 2;
@@ -284,18 +284,13 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     onMount(() => resetLock());
 
     return (
-        <div class="lockpicking-game border creature-heading" style={{ position: "absolute", left: "20vw", top: "1vh", height: "95vh", width: "60vw", "--glow-color": "teal", "z-index": 99 }}>
-        <h1 onClick={changeDifficulty} style={{ margin: "3% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
-        <Show when={tumblerDown()}>
-            <div class="modal" style={{ background: "rgba(0,0,0,0.75)" }}>
-                <h1 class="superCenter animate-fade-inout" style={{ top: "20%", "font-size":"4rem", "font-family":"Centaur", width: "100%" }}>{gameStatus() === SUCCESS ? "The Lock Opened!" : "Tumbler Set"}</h1>
-            </div>
-        </Show>
-        <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>
+        <div class="lockpicking-game thick-border creature-heading" style={{ position: "absolute", left: "20vw", top: "0", height: "97.5%", width: "60vw", "--glow-color": "teal", "z-index": 1000, margin: "0" }}>
+        <h1 onClick={changeDifficulty} style={{ margin: "1% auto" }}>Lockpicking (<span style={{ color: getDifficultyColor(lockDifficulty().DIFFICULTY) }}>{(lockDifficulty().DIFFICULTY)}</span>)</h1>
+        <div class="lock" onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} style={{height:"72.5%"}}>
             <div class="lock-body">
                 <Show when={lockpicks() > 0}>
-                    <div class="lockpick" classList={{ "animate-flickerDiv": broke() }} style={{ transform: `rotate(${angle()}deg)`, "--glow-color": "red" }} onTouchStart={handlePickTouch} />
-                    <div class="tension-wrench" style={{ background: "silver", transform: `rotate(${tension()}deg)`, "z-index": 1 }} onTouchStart={handleWrenchTouch} />
+                    <div class="lockpick" classList={{ "animate-flickerDiv": broke() }} style={{ transform: `rotate(${angle()}deg)`, "--glow-color": "red", "box-shadow":"5px #000" }} onTouchStart={handlePickTouch} />
+                    <div class="tension-wrench" style={{ transform: `rotate(${tension()}deg)`, "z-index": 1 }} onTouchStart={handleWrenchTouch} />
                 </Show>
                 <div class="keyhole" style={{ transform: `translate(-50%, -50%) rotate(${tension() - 115}deg)` }} />
                 <Show when={debugMode()}>
@@ -313,20 +308,20 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                 </Show>
             </div>
         </div>
-        <p style={{ margin: "-1% auto 0" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
-        <div style={{ display: "inline-flex", width: "50%" }}>
-            <p style={{ margin: "1%" }}>Tumblers:</p>
-            {/* <p style={{ margin: "1%" }}>Durability:</p> */}
-            <div class="durability-bar">
-                <div class="durability-fill" style={{ width: `${(currentTumblerIndex()) / tumblers().total * 100}%`}} />
-                {/* <div class="durability-fill" style={{ width: `${pickDurability()}%`}} /> */}
+            <p style={{ margin: "0 auto" }}>Lockpicks Remaining: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>{lockpicks()}</span></p>
+            <div style={{ display: "inline-flex", width: "50%" }}>
+                <p style={{ margin: "1%" }}>Tumblers:</p>
+                {/* <p style={{ margin: "1%" }}>Durability:</p> */}
+                <div class="durability-bar">
+                    <div class="durability-fill" style={{ width: `${(currentTumblerIndex()) / tumblers().total * 100}%`}} />
+                    {/* <div class="durability-fill" style={{ width: `${pickDurability()}%`}} /> */}
+                </div>
+                <p class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" , margin: "1%" }}>
+                    {currentTumblerIndex()} / {tumblers().total}
+                </p>
             </div>
-            <p class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" , margin: "1%" }}>
-                {currentTumblerIndex()} / {tumblers().total}
-            </p>
             {/* <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p> */}
             {/* <p style={{ color: pickDurability() > 80 ? "#fdf6d8" : pickDurability() > 60 ? "gold" : pickDurability() > 40 ? "#ffbf00" : pickDurability() > 20 ? "orange" : "red", margin: "1%" }}>({Math.round(pickDurability())}%)</p> */}
-        </div>
             {/* <div class="durability-bar" style={{ display: "inline-flex" }}>
             <p style={{ margin: "0" }}>Tumblers: <span class="gold" classList={{ "animate-flicker": broke() }} style={{ "--glow-color": "red" }}>
                 {currentTumblerIndex() + 1} / {tumblers().total}</span>
@@ -364,6 +359,11 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
                         <p style={font("1em")}><span style={{ color: "red" }}>Warning: </span>You can break the <span class="gold">lockpick</span> from over rotation when feeling around to set in place. You can also break the <span class="gold">lockpick</span> as you rotate the <span style={{ color: "silver" }}>tension wrench</span>, if not set correctly.</p>
                     </div>
                 </div>
+            </div>
+        </Show>
+        <Show when={tumblerDown()}>
+            <div class="modal" style={{ background: "rgba(0,0,0,0.75)" }}>
+                <h1 class="superCenter animate-fade-inout" style={{ top: "25%", "font-size":"4rem", "font-family":"Centaur", width: "100%", "z-index":99 }}>{gameStatus() === SUCCESS ? "The Lock Opened!" : "Tumbler Set"}</h1>
             </div>
         </Show>
         {/* <Show when={lockpicks() > 0}>

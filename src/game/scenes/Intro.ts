@@ -6,7 +6,7 @@ import { dimensions } from "../../utility/dimensions";
 const dims = dimensions();
 const WRAP = {
     HEIGHT: 0.7,
-    WIDTH: 0.8
+    WIDTH: 0.85
 };
 
 export class Intro extends Scene {
@@ -16,7 +16,7 @@ export class Intro extends Scene {
     private introTextBorder: Phaser.GameObjects.Rectangle;
     private nextText: Phaser.GameObjects.Text;    
     private prevText: Phaser.GameObjects.Text;
-    private fullText: Phaser.GameObjects.Text;
+    // private fullText: Phaser.GameObjects.Text;
     private node: any;
 
     constructor() {super("Intro");};
@@ -53,7 +53,7 @@ export class Intro extends Scene {
                     useAdvancedWrap: true
                 }
             });
-        this.introText.setPosition(width * (1 - WRAP.WIDTH) / 2, height * 0.15).setOrigin(0, 0).setScrollFactor(0);
+        this.introText.setPosition(width * (1 - WRAP.WIDTH) / 2, height * 0.125).setOrigin(0, 0).setScrollFactor(0);
 
         this.introTextBorder = new Phaser.GameObjects.Rectangle(this,
             1, // this.introText.x * 0.9,
@@ -81,6 +81,12 @@ export class Intro extends Scene {
             setTextCallbackScope: undefined,
         });
         typing.start(this.node.text);
+        
+        // typing.on("complete", () => {
+        //     this.nextText.setVisible(true);
+        //     this.prevText.setVisible(true);
+        // });
+
         this.nextText = this.add.text(width * 0.9, height * 0.85, "Next", {
             color: "#fdf6d8",
             fontFamily: "Cinzel",
@@ -99,15 +105,15 @@ export class Intro extends Scene {
             align: "center",
         });
         this.prevText.setOrigin(0); 
-        this.fullText = this.add.text(width * 0.475, height * 0.85, "Reveal", {
-            color: "#fdf6d8",
-            fontFamily: "Cinzel",
-            fontSize: "18px",
-            stroke: "black",
-            strokeThickness: 2,
-            align: "center",
-        });
-        this.fullText.setOrigin(0); 
+        // this.fullText = this.add.text(width * 0.475, height * 0.85, "Reveal", {
+        //     color: "#fdf6d8",
+        //     fontFamily: "Cinzel",
+        //     fontSize: "18px",
+        //     stroke: "black",
+        //     strokeThickness: 2,
+        //     align: "center",
+        // });
+        // this.fullText.setOrigin(0); 
         if (this.node.prev === undefined) {
             this.prevText.visible = false;
         };
@@ -115,9 +121,9 @@ export class Intro extends Scene {
             this.nextText.visible = false;
         };
         this.nextText.setInteractive()
-            .on("pointerdown", () => {
-                this.nextText.setColor("gold");
-            })
+            // .on("pointerdown", () => {
+            //     this.nextText.setColor("gold");
+            // })
             .on("pointerup", () => {
                 this.sound.play("TV_Button_Press", { loop: false });
                 if (this.node.key === 5) {
@@ -138,13 +144,13 @@ export class Intro extends Scene {
                     this.node = INTRO_NODES[this.node.next as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };
-                this.nextText.setColor("#fdf6d8");
+                // this.nextText.setColor("#fdf6d8");
             })
 
         this.prevText.setInteractive()
-            .on("pointerdown", () => {
-                this.prevText.setColor("gold");
-            })
+            // .on("pointerdown", () => {
+            //     this.prevText.setColor("gold");
+            // })
             .on("pointerup", () => {
                 this.sound.play("TV_Button_Press", { loop: false }); 
                 if (INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES]?.prev === undefined) {
@@ -162,20 +168,20 @@ export class Intro extends Scene {
                     this.node = INTRO_NODES[this.node.prev as keyof typeof INTRO_NODES];
                     typing.start(this.node.text);
                 };
-                this.prevText.setColor("#fdf6d8");
+                // this.prevText.setColor("#fdf6d8");
             });
 
-        this.fullText.setInteractive()
-            .on("pointerdown", () => {
-                this.fullText.setColor("gold");
-            })
+        this.introText.setInteractive()
+            // .on("pointerdown", () => {
+            //     this.introText.setColor("gold");
+            // })
             .on("pointerup", () => {
                 this.sound.play("TV_Button_Press", { loop: false });
                 if (typing.isTyping) {
                     typing.stop(true);
-                    return;
+                    // return;
                 };
-                this.fullText.setColor("#fdf6d8");
+                this.introText.setColor("#fdf6d8");
             });
         EventBus.emit("current-scene-ready", this);
     };

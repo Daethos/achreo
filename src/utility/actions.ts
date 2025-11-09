@@ -32,6 +32,16 @@ export const ACTION_ORIGIN: {[key:string]: ACTION} = {
         svg: "DODGE",
         talent: "Optimized: Doubles Dodge Distance. Enhanced: Leave behind a mirror image.", // No use yet
     },
+    HURL: {
+        name: "Hurl",
+        description: "A powerful arcing throw. Can launch arrows and magical projectiles over obstacles [Ranged Only].",
+        cooldown: `1.25-1.5s`,
+        cost: `${PLAYER.STAMINA.HURL} Stamina`,
+        time: "Instant", 
+        special: "(Physical)",
+        svg: "ATTACK",
+        talent: "Optimized: Increased throw velocity. Enhanced: Projectiles explode on impact.",
+    },
     JUMP: {
         name: "Jump",
         description: "A flexible action to leap over enemies, obstacles, and projectiles.",

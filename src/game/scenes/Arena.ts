@@ -26,6 +26,8 @@ import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
 interface ChunkData {
     key: string;
     x: number;
@@ -100,6 +102,8 @@ export class Arena extends Phaser.Scene {
     playerChunkX: number = 0;
     playerChunkY: number = 0;
     pillars: any[] = [];
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
 
     constructor (view?: string) {
         const key = view || "Arena";
@@ -138,13 +142,11 @@ export class Arena extends Phaser.Scene {
             this.matter.world.convertTilemapLayer(layer!);
             layer?.forEachTile(tile => {
                 if ((tile.physics as any).matterBody) {
-                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter BEFORE");
                     (tile.physics as any).matterBody.body.collisionFilter = {
                         category: ENTITY_FLAGS.WORLD,
                         mask: 4294967295, // ENTITY_FLAGS.UPPER_BODY, // Collides with legs/full body
                         group: 0, // -1, // Negative group prevents self-collisions
                     };
-                    // console.log((tile.physics as any).matterBody.body.collisionFilter, "Collsion Filter AFTER");
                 };
             });
             layer?.forEachTile((tile) => {tile = new Tile(tile);});
@@ -217,14 +219,17 @@ export class Arena extends Phaser.Scene {
         if (this.hud.settings.desktop === true) {
             this.input.setDefaultCursor("url(assets/images/cursor.png), pointer");
         };
+
+        this.chatManager = new ChatManager(this);
         this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
 
         this.createArenaEnemy();
-        this.aoePool = new AoEPool(this, 110);
+        this.aoePool = new AoEPool(this, 120);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));

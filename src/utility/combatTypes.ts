@@ -5,6 +5,7 @@ export const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
 export const ATTACKS = {
     achire: "achire",
     attack: "attack",
+    hurl: "hurls",
     hook: "hook",
     parry: "parry",
     posture: "posture against",
@@ -21,6 +22,7 @@ export const ACTION_TYPES = {
     ARC: "arc",
     ATTACK: "attack",
     HOOK: "hook",
+    HURL: "hurl",
     LEAP: "leap",
     POSTURE: "posture",
     QUOR: "quor",
@@ -117,6 +119,7 @@ export const MASTERY = {
 export const HOLD_TYPES = { ONE_HAND: "One Hand", TWO_HAND: "Two Hand" };
 export const THRESHOLD = {ONE_HAND: 100, TWO_HAND: 150};
 
+
 export const DUAL_ELIGIBILITY = {
     [HOLD_TYPES.ONE_HAND]: {
         [ATTACK_TYPES.PHYSICAL]: {
@@ -194,6 +197,7 @@ export const ATTACK_LOOKUP = {
 export const ACTION_MULTIPLIER_LOOKUP: { [key: string]: { physical: number; magical: number } } = {
     [ACTION_TYPES.ACHIRE]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
     [ACTION_TYPES.ARC]: { physical: DAMAGE.TWO, magical: DAMAGE.TWO },
+    [ACTION_TYPES.HURL]: { physical: DAMAGE.TWO, magical: DAMAGE.TWO },
     [ACTION_TYPES.LEAP]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
     [ACTION_TYPES.QUOR]: { physical: DAMAGE.TWO, magical: DAMAGE.TWO },
     [ACTION_TYPES.RUSH]: { physical: DAMAGE.ONE_TWENTY_FIVE, magical: DAMAGE.ONE_TWENTY_FIVE },
@@ -361,7 +365,7 @@ export const LOCATION_TO_NUM = new Map([
     ["legs", LOCATION_NUMS.legs]
 ]);
 
-export const ENEMY_ATTACKS = {
+export const ENEMY_ATTACKS: {[key:string]: string} = {
     achire: "achires into",
     attack: "attacks",
     hook: "hooks into",
@@ -376,7 +380,7 @@ export const ENEMY_ATTACKS = {
     writhe: "writhes into",
 };
 
-export const STRONG_ATTACKS = ["achire", "attack", "arc", "leap", "quor", "rush", "special", "storm", "writhe"];
+export const STRONG_ATTACKS = ["achire", "attack", "arc", "hurl", "leap", "quor", "rush", "special", "storm", "writhe"];
 export const STRONG_TYPES: {[key:string]: string[]} = {
     "Leather-Cloth": ["Frost","Lightning","Righteous","Pierce"],
     "Leather-Mail": ["Pierce","Slash","Wind","Sorcery","Wild"],
@@ -403,10 +407,17 @@ export const DEVOUR = 150;
 export const SACRIFICE = 75;
 export const SUTURE = 200;
 
+// [80+, 75-79, 70-74, 65-69, 60-64, 55-59, 50-54, 45-49, 40-44, 35-39, 30-34, 25-29, 20-24]
 export const GLANCING_MULTIPLIERS = [
-    // threshold differences: 
-    // [80+, 75-79, 70-74, 65-69, 60-64, 55-59, 50-54, 45-49, 40-44, 35-39, 30-34, 25-29, 20-24]
-    0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7
+    0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8
+    // 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7
 ];
 
 export const ENEMY_PRAYERS = [PRAYERS.BUFF, PRAYERS.DAMAGE, PRAYERS.DEBUFF, PRAYERS.HEAL];
+
+export const CONSTITUTION = "constitution";
+export const STRENGTH = "strength";
+export const AGILITY = "agility";
+export const ACHRE = "achre";
+export const CAEREN = "caeren";
+export const KYOSIR = "kyosir";

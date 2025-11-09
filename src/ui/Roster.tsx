@@ -201,6 +201,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
             }
         });
     };
+
     function safe(e: any, floor: number, ceiling: number): number {
         const wager = e.currentTarget.value;
         if (wager > floor && wager <= ceiling) {
@@ -208,6 +209,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         };
         return 0;
     };
+
     function checkTeam() {
         const partyAvailable = party().length > 0;
         let team: boolean = false;
@@ -216,11 +218,13 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
         };
         setArena({...arena(), party: team});
     };
+
     function switchScenes() {
         setSwitchScene(SCENE_SWITCH[switchScene()].next);
         setArena({...arena(), map: SCENE_SWITCH[switchScene()].key});
         if (switchScene() === UNDERGROUND) checkTeam();
     };
+
     function clearWager() {
         let silver = ascean().currency.silver, gold = ascean().currency.gold;
         if (arena().win) {
@@ -257,7 +261,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
     return <Show when={arena().show}>
         <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
-                <div class="left" style={{...partialStyle(ascean().mastery), left: "1%"}}>
+                <div class="left" style={{...partialStyle(ascean().mastery), left: "0.5%"}}>
                     <div class="creature-heading center" >
                         <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
                         <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
@@ -365,7 +369,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </Show>
                     </div>
                 </div>
-                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red", "font-size":"0.65em" }}>X</button>
+                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red", "font-weight": "bold" }}>X</button>
             </>}>
                 <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 1s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>

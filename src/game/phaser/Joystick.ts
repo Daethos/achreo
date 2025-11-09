@@ -1,6 +1,9 @@
 import { EventBus } from "../EventBus";
 import { Hud } from "../scenes/Hud";
-const FORCE = 0.125;
+const FORCE = 0.15; // 0.125;
+const DEAD_ZONE = 15; // Configurable dead zone
+const MAX_SPEED = 10; // Prevent extreme movements
+
 export default class Joystick extends Phaser.GameObjects.Container {
     public scene: Hud;
     public pointer: any;
@@ -92,19 +95,20 @@ export default class Joystick extends Phaser.GameObjects.Container {
             this.joystick.thumb.setAlpha(opacity);
         }, undefined, this);
     };
+
     update() {
         if (this.joystick.force === 0) return;
-        if (this.joystick.forceX > 15) {
-            this.pointer.x += this.joystick.forceX * FORCE;
+        const { width, height } = this.scene.cameras.main;
+        
+        if (Math.abs(this.joystick.forceX) > DEAD_ZONE) {
+            this.pointer.x += Phaser.Math.Clamp(this.joystick.forceX * FORCE, -MAX_SPEED, MAX_SPEED);
         };
-        if (this.joystick.forceX < -15) {
-            this.pointer.x += this.joystick.forceX * FORCE;
+        
+        if (Math.abs(this.joystick.forceY) > DEAD_ZONE) {
+            this.pointer.y += Phaser.Math.Clamp(this.joystick.forceY * FORCE, -MAX_SPEED, MAX_SPEED);
         };
-        if (this.joystick.forceY > 15) {
-            this.pointer.y += this.joystick.forceY * FORCE;
-        };
-        if (this.joystick.forceY < -15) {
-            this.pointer.y += this.joystick.forceY * FORCE;
-        };
+        
+        this.pointer.x = Phaser.Math.Wrap(this.pointer.x, 0, width);
+        this.pointer.y = Phaser.Math.Wrap(this.pointer.y, 0, height);
     };
 };

@@ -30,6 +30,8 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import WeatherManager from "../matter/Weather";
 import { Entity } from "../main";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 562500; // 640000; 750 / 800
@@ -121,6 +123,8 @@ export class Game extends Scene {
     playerChunkX: number = 0;
     playerChunkY: number = 0;
     weather: WeatherManager;
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
 
     constructor () {
         super("Game");
@@ -181,15 +185,17 @@ export class Game extends Scene {
             };
         };
 
+        this.chatManager = new ChatManager(this);
         this.particleManager = new ParticleManager(this);
         this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
         // this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
         this.startDayCycle();
         
-        this.aoePool = new AoEPool(this, 220);
+        this.aoePool = new AoEPool(this, 110);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));

@@ -3,7 +3,7 @@ import Ascean, { initAscean } from "../models/ascean";
 import Equipment, { initEquipment } from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { ARMOR_WEIGHT, ARMORS, ACTION_TYPES, ATTACKS, DAMAGE, ENEMY_ATTACKS, HOLD_TYPES, STRONG_ATTACKS, STRONG_TYPES, ATTACK_TYPES, MASTERY, WEAPON_TYPES, DEITIES, FAITH_RARITY, DEFENSE_TYPE_TO_NUM, DAMAGE_TYPE_NUMS, DAMAGE_TYPE_TO_NUM, LOCATION_TO_NUM, DAMAGE_LOOKUP, ATTACK_LOOKUP, DUAL_ELIGIBILITY, ACTION_MULTIPLIER_LOOKUP, ENEMY_PRAYERS, THRESHOLD } from "./combatTypes";
-import StatusEffect, { PRAYERS } from "./prayer";
+import StatusEffect, { EFFECT, PRAYERS } from "./prayer";
 
 export type CombatAttributes = {
     rawConstitution: number;
@@ -493,114 +493,110 @@ function stripEffect(prayer: StatusEffect, defense: Defense, weapon: Equipment, 
     return { defense, weapon };
 };
 
-function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: number): Combat {
+function applyEffectLogic(combat: Combat, effect: StatusEffect, weapon: Equipment, isPlayer: boolean) {
+    switch (effect.prayer) {
+        case PRAYERS.BUFF:
+            const buff = applyEffect(effect, isPlayer ? combat.playerDefense : combat.computerDefense!, weapon, true);
+            if (isPlayer) {
+                combat.playerDefense = buff.defense;
+            } else {
+                combat.computerDefense = buff.defense;
+            };
+            weapon = buff.weapon;
+            break;
+        case PRAYERS.DAMAGE:
+            damageTick(combat, effect, true);
+            break;
+        case PRAYERS.DISPEL:
+            if (combat.computerEffects.length > 0) computerDispel(combat);
+            if (isPlayer) combat.playerEffects.pop();
+            break;
+        case PRAYERS.INSIGHT:
+            combat.isInsight = true;
+            break;
+        case PRAYERS.QUICKEN:
+            combat.isQuicken = true;
+            break;
+        case PRAYERS.DEBUFF:
+            const debuff = applyEffect(effect, isPlayer ? combat.computerDefense! : combat.playerDefense, weapon, false);
+            if (isPlayer) {
+                combat.computerDefense = debuff.defense;
+            } else {
+                combat.playerDefense = debuff.defense;
+            };
+            weapon = debuff.weapon;
+            break;
+        case PRAYERS.HEAL:
+            healTick(combat, effect, true);
+            break;
+    };
+};
+
+export function faithSuccess(combat: Combat, name: string, weapon: Equipment, index: number): Combat {
     const desc = index === 0 ? "" : "Two"
+    const blessing = name === "player" ? combat.playerBlessing : combat.computerBlessing;
+    const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
+    const effectName = `Gift of ${weapon.influences?.[0]}`;
+
     if (name === "player") {
-        const blessing = combat.playerBlessing;
         combat.prayerData.push(blessing);
         combat.deityData.push(weapon.influences?.[0] as string);
         combat.religiousSuccess = true;
-        const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
-        let exists: StatusEffect | undefined;
-        if (negativeEffect === true) {
-            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);
+        const targetEffects = negativeEffect ? combat.computerEffects : combat.playerEffects;
+        const effectIndex = targetEffects.findIndex(effect => effect.name === effectName && effect.prayer === blessing);
+
+        if (effectIndex === -1) {
+            const newEffect = new StatusEffect(combat, combat.player, combat.computer!, weapon, combat.playerAttributes, blessing);
+            targetEffects.push(newEffect);
+            applyEffectLogic(combat, newEffect, weapon, true);
         } else {
-            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon.influences?.[0]}` && effect.prayer === blessing);   
-        };
-        if (!exists) {
-            exists = new StatusEffect(combat, combat.player, combat.computer as Ascean, weapon, combat.playerAttributes, blessing);
-            if (negativeEffect) {
-                combat.computerEffects.push(exists);
-            } else {
-                combat.playerEffects.push(exists);
-            };
-            if (exists.prayer === PRAYERS.BUFF) {
-                const buff = applyEffect(exists, combat.playerDefense, weapon, true);
-                combat.playerDefense = buff.defense;
-                weapon = buff.weapon;
-            };
-            if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, true);
-            if (exists.prayer === PRAYERS.DISPEL) {
-                if (combat.computerEffects.length > 0) computerDispel(combat); 
-                combat.playerEffects.pop();
-            };
-            if (exists.prayer === PRAYERS.INSIGHT) combat.isInsight = true;
-            if (exists.prayer === PRAYERS.QUICKEN) combat.isQuicken = true;
-            
-            if (exists.prayer === PRAYERS.DEBUFF) {
-                const debuff = applyEffect(exists, combat.computerDefense as Defense, combat.computerWeapons[0], false);
-                combat.computerDefense = debuff.defense;
-                weapon = debuff.weapon;
-            };
-            if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, true);
-            combat[`playerInfluenceDescription${desc}`] = exists.description;
-        } else {
-            if (exists.stacks) {
-                exists = StatusEffect.updateEffectStack(exists, combat, combat.player, weapon);
-                combat[`playerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`; 
-                if (exists.prayer === PRAYERS.BUFF) {
-                    const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
-                    combat.playerDefense = buff.defense;
-                    weapon = buff.weapon;
-                };
-                if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, true);
-            }; 
-            if (exists.refreshes) {
-                exists.duration = Math.floor(combat.player.level / 3 + 1) > 6 ? 6 : Math.floor(combat.player.level / 3 + 1);
-                exists.tick.end += exists.duration;
-                exists.endTime += 6;
-                exists.activeRefreshes += 1;
-                if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, true);
-                combat[`playerInfluenceDescription${desc}`] = `${exists.description} Refreshed ${exists.activeRefreshes} time(s).`;
+            const existingEffect = targetEffects[effectIndex];
+            if (existingEffect.stacks) {
+                // Update the effect in the array directly
+                targetEffects[effectIndex] = StatusEffect.updateEffectStack(existingEffect, combat, combat.player, weapon);
+                combat[`playerInfluenceDescription${desc}`] = `${targetEffects[effectIndex].description} Stacked ${targetEffects[effectIndex].activeStacks} times.`;
+                applyEffectLogic(combat, targetEffects[effectIndex], weapon, true);
+            } else if (existingEffect.refreshes) {
+                // Simple refresh - reset duration completely
+                const duration = Math.floor(combat.player.level / EFFECT.DURATION_MODIFIER + 1);
+                const ceiling = EFFECT.DURATION_MAX + EFFECT.DURATION_MODIFIER;
+                const ticks = duration > ceiling ? ceiling : duration;
+
+                existingEffect.duration = ticks;
+                existingEffect.endTime = combat.combatTimer + (ticks * EFFECT.DURATION_MODIFIER);
+                existingEffect.activeRefreshes += 1;
+                
+                combat[`playerInfluenceDescription${desc}`] = `${existingEffect.description} Refreshed ${existingEffect.activeRefreshes} time(s).`;
+                applyEffectLogic(combat, existingEffect, weapon, true);
             };
         };
     } else { // Computer Effect
-        const blessing = combat.computerBlessing;
-        combat.computerReligiousSuccess = true;
-        const negativeEffect = blessing === PRAYERS.DAMAGE || blessing === PRAYERS.DEBUFF;
-        let exists: StatusEffect | undefined;
-        if (negativeEffect) {
-            exists = combat.playerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);
+        combat.computerReligiousSuccess = true;    
+        const targetEffects = negativeEffect ? combat.playerEffects : combat.computerEffects;
+        const effectIndex = targetEffects.findIndex(effect => effect.name === effectName && effect.prayer === blessing);
+
+        if (effectIndex === -1) {
+            const newEffect = new StatusEffect(combat, combat.computer!, combat.player, weapon, combat.playerAttributes, blessing);
+            targetEffects.push(newEffect);
+            applyEffectLogic(combat, newEffect, weapon, true);
         } else {
-            exists = combat.computerEffects.find(effect => effect.name === `Gift of ${weapon?.influences?.[0]}` && effect.prayer === blessing);   
-        };
-        if (!exists) {
-            exists = new StatusEffect(combat, combat.computer as Ascean, combat.player, weapon, combat.computerAttributes as CombatAttributes, blessing);
-            if (negativeEffect) {
-                combat.playerEffects.push(exists);
-            } else {
-                combat.computerEffects.push(exists);
-            };
-            if (exists.prayer === PRAYERS.BUFF) {
-                const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
-                combat.computerDefense = buff.defense;
-                weapon = buff.weapon;
-            };
-            if (exists.prayer === PRAYERS.DAMAGE) damageTick(combat, exists, false);
-            if (exists.prayer === PRAYERS.DEBUFF) {
-                const debuff = applyEffect(exists, combat.playerDefense, combat.weapons[0], false);
-                combat.computerDefense = debuff.defense;
-                weapon = debuff.weapon;
-            };
-            if (exists.prayer === PRAYERS.HEAL) healTick(combat, exists, false);
-            
-            combat[`computerInfluenceDescription${desc}`] = exists.description;
-        } else {
-            if (exists.stacks) {
-                exists = StatusEffect.updateEffectStack(exists, combat, combat.computer as Ascean, weapon);
-                combat[`computerInfluenceDescription${desc}`] = `${exists.description} Stacked ${exists.activeStacks} times.`;
-                if (exists.prayer === PRAYERS.BUFF) {
-                    const buff = applyEffect(exists, combat.computerDefense as Defense, weapon, true);
-                    combat.computerDefense = buff.defense;
-                    weapon = buff.weapon;
-                };
-            };
-            if (exists.refreshes) {
-                exists.duration = Math.floor(combat.computer?.level as number / 3 + 1) > 6 ? 6 : Math.floor(combat.computer?.level as number / 3 + 1);
-                exists.tick.end += exists.duration;
-                exists.endTime += 6;
-                exists.activeRefreshes += 1;
-                combat[`computerInfluenceDescription${desc}`] = `${exists.description} Refreshed ${exists.activeRefreshes} time(s) for ${exists.duration + 1} round(s).`;
+            const existingEffect = targetEffects[effectIndex];
+            if (existingEffect.stacks) {
+                // Update the effect in the array directly
+                targetEffects[effectIndex] = StatusEffect.updateEffectStack(existingEffect, combat, combat.computer!, weapon);
+                combat[`computerInfluenceDescription${desc}`] = `${targetEffects[effectIndex].description} Stacked ${targetEffects[effectIndex].activeStacks} times.`;
+                applyEffectLogic(combat, targetEffects[effectIndex], weapon, false);
+            } else if (existingEffect.refreshes) {
+                // Simple refresh - reset duration completely
+                const duration = Math.floor(combat.computer!.level / EFFECT.DURATION_MODIFIER + 1);
+                const ceiling = EFFECT.DURATION_MAX + EFFECT.DURATION_MODIFIER;
+                const ticks = duration > ceiling ? ceiling : duration;
+                existingEffect.duration = ticks;
+                existingEffect.endTime = combat.combatTimer + (ticks * EFFECT.DURATION_MODIFIER);
+                existingEffect.activeRefreshes += 1;
+                
+                combat[`computerInfluenceDescription${desc}`] = `${existingEffect.description} Refreshed ${existingEffect.activeRefreshes} time(s).`;
+                applyEffectLogic(combat, existingEffect, weapon, false);
             };
         };
     };
@@ -1234,15 +1230,10 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
 function playerRollCompiler(combat: Combat, playerAction: string, computerAction: string): Combat { 
     let playerRoll = combat.weapons[0]?.roll as number;
     let rollCatch = Math.floor(Math.random() * 101) + (combat.computerAttributes?.kyosirMod as number / 2);
-    // if (combat.weather === "Alluring Isles") {
-    //     playerRoll -= 10;
-    // };
-    // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") {
-    //     playerRoll -= 5;
-    // };
-    // if (combat.weather === "Fangs" || combat.weather === "Roll") {
-    //     playerRoll += 5;
-    // };
+    // if (combat.weather === "Alluring Isles") playerRoll -= 10;
+    // if (combat.weather === "Kingdom" || combat.weather === "Sedyrus") playerRoll -= 5;
+    // if (combat.weather === "Fangs" || combat.weather === "Roll") playerRoll += 5;
+
     if (playerRoll > rollCatch) {
         combat.rollSuccess = true;
         combat.playerSpecialDescription = 

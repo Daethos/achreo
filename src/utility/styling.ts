@@ -281,7 +281,7 @@ const fullStyle = (mastery: string) => {
 
 const partialStyle = (mastery: string) => {
     return {
-        top: "10%", height: "80%", width: "48%", 
+        top: "5%", height: "85%", width: "48%", 
         background: "linear-gradient(#000, #222)",
         border: `thick ridge ${masteryColor(mastery)}`,
         "border-radius": "0.15em",

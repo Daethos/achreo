@@ -27,6 +27,8 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
 import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
 
 interface ChunkData {
     key: string;
@@ -58,6 +60,7 @@ export class Underground extends Scene {
     targetTarget: any;
     playerLight: any;
     dms: DM[] = [];
+    dm: DM;
     npcs: NPC[] | [] = [];
     lootDrops: LootDrop[] = [];
     combat: boolean = false;
@@ -103,6 +106,8 @@ export class Underground extends Scene {
     playerChunkX: number = 0;
     playerChunkY: number = 0;
     pillars: any[] = [];
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
 
     constructor () {
         super("Underground");
@@ -122,7 +127,7 @@ export class Underground extends Scene {
         this.tweenManager = {};
         this.markers = [];
         let camera = this.cameras.main;
-        camera.zoom = this.hud.settings.positions?.camera?.zoom || 0.8;
+        camera.zoom = this.hud.settings.positions.camera.zoom;
         const map = this.make.tilemap({ key: "underground" });
         this.map = map;
         this.add.rectangle(0, 0, 2048, 2048, 0x000000);
@@ -181,10 +186,16 @@ export class Underground extends Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(500, 64);
 
+        this.chatManager = new ChatManager(this);
+        this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
+        this.particleManager = new ParticleManager(this);
+
         map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
         map?.getObjectLayer("dms")?.objects.forEach((_dm: any) => {
-            (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 }));
+            this.dm = new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 });
+            // (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 }));
         });
 
         camera.startFollow(this.player, false, 0.1, 0.1);
@@ -197,12 +208,11 @@ export class Underground extends Scene {
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 100, 0.05, 0.05); // 0xFFD700 || 0xFDF6D8 || 0xDAA520
         this.game.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
         
-        this.musicBackground = this.sound.add("isolation", { volume: this?.hud?.settings?.volume || 0.1, loop: true });
-        if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.musicCombat = this.sound.add("industrial", { volume: this?.hud?.settings?.volume, loop: true });
-        this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
-        this.particleManager = new ParticleManager(this);
-        this.combatManager = new CombatManager(this);
+        this.musicBackground = this.sound.add("isolation", { volume: this.hud.settings.volume || 0.1, loop: true });
+        if (this.hud.settings.music === true) this.musicBackground.play();
+        this.musicCombat = this.sound.add("industrial", { volume: this.hud.settings.volume, loop: true });
+        this.musicStealth = this.sound.add("stealthing", { volume: this.hud.settings.volume, loop: true });
+        
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
@@ -214,7 +224,7 @@ export class Underground extends Scene {
                 this.party.push(p);
             };
         };
-        this.aoePool = new AoEPool(this, 110);
+        this.aoePool = new AoEPool(this, 120);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
@@ -660,9 +670,10 @@ export class Underground extends Scene {
             this.enemies[i].update(delta);
             if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
         };
-        for (let i = 0; i < this.dms.length; i++) {
-            this.dms[i].update(delta);
-        };
+        this.dm.update(delta);
+        // for (let i = 0; i < this.dms.length; i++) {
+        //     this.dms[i].update(delta);
+        // };
         const camera = this.cameras.main;
         const bounds = new Phaser.Geom.Rectangle(
             this.map.worldToTileX(camera.worldView.x) as number - 2,

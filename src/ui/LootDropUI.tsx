@@ -28,7 +28,7 @@ export default function LootDropUI({ ascean, game, settings }: { ascean: Accesso
             <Show when={visibleLoot()}>
             <For each={visibleLoot()}>
                 {((lootDrop: Equipment) => {
-                    return <LootDrop lootDrop={lootDrop} setShow={setShow} setLootDrop={setLootDrop} />
+                    return <LootDrop lootDrop={lootDrop} showTutorial={showTutorial} setShow={setShow} setLootDrop={setLootDrop} />
                 })}
             </For>
             </Show>

@@ -240,7 +240,7 @@ export const PARTY_RANGED: MasteryAbility = {
 const STATE = "stateMachine";
 const POSITIVE = "positiveMachine";
 
-export const PARTY_INSTINCTS = {
+export const PARTY_INSTINCTS: {[key: string]: {key:string; value:string;}[];} = {
     "constitution": [
         { // 0 - Critical Heal
             key: STATE,
@@ -517,7 +517,7 @@ export const BALANCED = "Balance";
 export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
 
-export const PARTY_BALANCED_INSTINCTS = {
+export const PARTY_BALANCED_INSTINCTS: {[key:string]: string[];} = {
     "constitution": [States.ILIRECH, States.LIKYR, States.KYNISOS, States.KYRNAICISM, States.PARALYZE, States.WARD],
     "strength": [States.QUOR, States.SPRINTING, States.STORM, States.WARD, States.LEAP],
     "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.PURSUIT],
@@ -525,7 +525,7 @@ export const PARTY_BALANCED_INSTINCTS = {
     "caeren": [States.ASTRAVE, States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
     "kyosir": [States.CONFUSE, States.DISPEL, States.KYNISOS, States.KYRNAICISM, States.SUTURE],
 };
-export const PARTY_DEFENSIVE_INSTINCTS = {
+export const PARTY_DEFENSIVE_INSTINCTS: {[key:string]: string[];} = {
     "constitution": [States.ABSORB, States.DESPERATION, States.HEALING, States.KYRNAICISM, States.LIKYR, States.SHIELD, States.SHIRK],
     "strength": [States.DESPERATION, States.HOWL, States.MEND, States.SPRINTING, States.WARD],
     "agility": [States.DESPERATION, States.ENVELOP, States.KYRNAICISM, States.SHIMMER, States.SNARE],
@@ -533,7 +533,7 @@ export const PARTY_DEFENSIVE_INSTINCTS = {
     "caeren": [States.DESPERATION, States.FEAR, States.HEAL, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
-export const PARTY_OFFENSIVE_INSTINCTS = {
+export const PARTY_OFFENSIVE_INSTINCTS: {[key:string]: string[];} = {
     "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.MAIERETH, States.PARALYZE],
     "strength": [States.LEAP, States.QUOR, States.RUSH, States.SPRINTING, States.STORM],
     "agility": [States.ACHIRE, States.KYNISOS, States.RUSH, States.SPRINTING, States.STORM],

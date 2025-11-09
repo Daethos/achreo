@@ -21,7 +21,7 @@ const ORIGINS = [{
         To note, also a former Ascean in 130 AE. Fyer is the Ancient heralded in the land and has been worshiped for centuries, influencing the people's culture and language, though not the only Ancient worshiped, 
         with known allied Ancients in Ilios, Kyrisos, and Nyrolus were well celebrated. As of late, Daethic worship has seen its rise in the land, with Lord Spiras himself cozying to the Seyr, though his personal beliefs are unknown.`,
     index: "fyers",
-    bonus: "+2 ACH, +2 KYO, +5% Mag Pen, +5% Phys Pen, +5% Dodge, +5% Roll, +10% Grace",
+    bonus: "+2 ACH, +2 KYO, +7% Mag Pen, +7% Phys Pen, +7% Dodge, +7% Roll, +10% Grace",
     imgUrl: "../assets/images/Fyers-Woman.jpg"
 }, {
     name: "Li'ivi",

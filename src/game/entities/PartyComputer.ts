@@ -158,7 +158,7 @@ export default class Party extends Entity {
         this.spriteShield.setVisible(false);
         this.playerVelocity = new Phaser.Math.Vector2();
         this.speed = this.startingSpeed(ascean);
-        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
+        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name] || [];
         this.playerMachine = new PartyMachine(scene, this);
         this.setScale(PLAYER.SCALE.SELF);   
         // let partyCollider = Bodies.rectangle(this.x, this.y + 10, PLAYER.COLLIDER.WIDTH, PLAYER.COLLIDER.HEIGHT, { 
@@ -235,6 +235,7 @@ export default class Party extends Entity {
             this.setVisible(true);
             this.spriteWeapon.setVisible(true);
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y);
+            this.createShadow(true);
         });
         this.beam = new Beam(this);
         this.originalPosition = new Phaser.Math.Vector2(this.x, this.y);
@@ -563,7 +564,7 @@ export default class Party extends Entity {
 
         this.checkGear(e.computer?.shield as Equipment, e.computerWeapons?.[0] as Equipment, e.computerDamageType.toLowerCase());
         this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
-        if (e?.realizedComputerDamage > 0) EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction as keyof typeof ENEMY_ATTACKS]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
+        if (e?.realizedComputerDamage > 0) EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
         if (this.health <= 0) this.playerMachine.stateMachine.setState(States.DEFEATED);
     };
     
@@ -762,7 +763,7 @@ export default class Party extends Entity {
     };
     
     checkSpecials(ascean: Ascean) {
-        this.combatSpecials = PARTY_SPECIAL[ascean.mastery as keyof typeof PARTY_SPECIAL];
+        this.combatSpecials = PARTY_SPECIAL[ascean.mastery];
     };
     
     setSpecialCombat = (mult = 0.75, remove = false) => {
@@ -1707,7 +1708,7 @@ export default class Party extends Entity {
         if (this.isStealthing) {
             this.handleStealth();
         } else {
-            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] * SWING_FORCE[action as keyof typeof SWING_FORCE]);
+            this.applyKnockback(this.attackedTarget, SWING_FORCE[this.weapons[0]?.grip] * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType]] * SWING_FORCE[action]);
         };
     };
 

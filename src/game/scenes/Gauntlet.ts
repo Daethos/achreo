@@ -27,6 +27,8 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import { ARENA_ENEMY, DEFEATED, fetchArena, VICTORIOUS } from "../../utility/enemy";
 import { LEVEL_SELECTOR } from "../../ui/Roster";
 import { Entity } from "../main";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
 
 
 
@@ -107,6 +109,8 @@ export class Gauntlet extends Phaser.Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
 
     constructor (view?: string) {
         const key = view || "Gauntlet";
@@ -197,6 +201,7 @@ export class Gauntlet extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setRoundPixels(true);
 
+        this.chatManager = new ChatManager(this);
         this.particleManager = new ParticleManager(this);
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.countdown = this.add.text(0, 0, "", { color: "#fdf6d8", fontFamily: "Cinzel", fontSize: "20px", stroke: "#000", strokeThickness: 2, align: "center" });
@@ -231,13 +236,14 @@ export class Gauntlet extends Phaser.Scene {
             this.input.setDefaultCursor("url(assets/images/cursor.png), pointer");
         };
         this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
 
         this.createArenaEnemy();
-        this.aoePool = new AoEPool(this, 110);
+        this.aoePool = new AoEPool(this, 240);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));

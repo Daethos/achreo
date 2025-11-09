@@ -15,8 +15,16 @@
     inset #000 0 0 0 0.2rem, 
     inset #fdf6d8 0 0 0 0.3rem; 
 }
+
+.thick-border {
+    border: thick ridge #fdf6d8; 
+    border-radius: 0.25rem; 
+    margin: 0.5rem; 
+    background-color: #000; 
+    z-index: 0;
+}
 .characterMenu { z-index: 2; position: fixed; top: 0; left: 0; }
-.playerSettingSelect { font-size: 1.25em; position: fixed; top: -1vh; right: 0.5vh; z-index: 1 }
+.playerSettingSelect { font-size: 1.25em; position: fixed; top: 0; right: 0.5vh; z-index: 1 }
 .character-name {font-size:1em}
 .compare-border {border: 0.1rem solid #fdf6d8;border-left: 0.1rem solid #fdf6d8;border-right: 0.1rem solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
@@ -40,17 +48,20 @@
 .juice, .juiced, .juiceNB, .juiceConcept, .juiceSmall, .juiceSub, .juiceItem {
     animation: juicy 0.75s ease;
     transition: transform 0.75s ease;
+    /* animation-composition: accumulate; */
 }
 .juice:hover, .juice:focus, .juiceConcept:hover, .juiceConcept:focus, .juiceSmall:hover, .juiceSmall:focus, .juiceSub:hover, .juiceSub:focus {
     background: #27001d;
     transform: scale(1.1); 
     border-color: gold;
     box-shadow: inset #000 0 0 0 0.2rem, inset var(--glow-color, gold) 0 0 0 0.3rem;
-    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
+    /* transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease; */
+    transition: all 0.75s ease;
 }
 .juice:not(:hover):not(:focus) {
     transform: scale(1);
-    transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease;
+    /* transition: transform 0.75s ease, background 0.75s ease, box-shadow 0.75s ease, border-color 0.75s ease; */
+    transition: all 0.75s ease;
     border-color: #fdf6d8;
 }
 .menu:hover .juice:not(:hover),
@@ -65,6 +76,7 @@
     --pulse-duration: 3s;
     --pulse-easing: cubic-bezier(0.65, 0, 0.35, 1);
     animation: gradientShimmer var(--pulse-duration) var(--pulse-easing) infinite, borderTalent 1.5s 0.1s infinite ease alternate;
+    /* , floating 1.2s ease-in-out infinite alternate  */
 }
 .glowMenu:focus,.glowMenu:hover {
     animation: borderMenu 1s 0.1s infinite ease alternate;
@@ -132,17 +144,91 @@
     overflow: hidden;
     opacity: 0;
 }
-.animate-explode-in {
-    animation-name: explode-in, float-shimmer;
-    animation-duration: 0.3s, 1.2s; /* Explode is 0.3s, Shimmer is 1.2s */
+.player-explode-in {
+    animation-name: ascean-explode, player-float-shimmer;
+    animation-duration: 0.3s, 1.5s;
     animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55), ease-in-out;
-    animation-fill-mode: forwards, none; /* Explode holds, Shimmer loops */
+    animation-fill-mode: forwards, none;
     
     animation-delay: 0s, 0.3s; 
     
-    animation-iteration-count: 1, infinite; /* Explode runs once, Shimmer loops */
-    animation-direction: normal, alternate; /* Shimmer alternates */
+    animation-iteration-count: 1, infinite;
+    animation-direction: normal, alternate;
 }
+.enemy-explode-in {
+    animation-name: ascean-explode, enemy-float-shimmer;
+    animation-duration: 0.3s, 1.5s;
+    animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55), ease-in-out;
+    animation-fill-mode: forwards, none;
+    
+    animation-delay: 0s, 0.3s; 
+    
+    animation-iteration-count: 1, infinite;
+    animation-direction: normal, alternate;
+}
+.ascean-static {
+    transform: scale(0.8) translateY(0);
+}
+.float-ui {
+    animation: deity-float-shimmer 1.2s ease-in-out infinite alternate;
+}
+.set-float:focus, .set-float:hover {
+    animation: floating 1.2s ease-in-out infinite alternate;
+}
+@keyframes floating {
+    0% {
+        transform: translateY(0) rotateX(10deg);
+    }
+    100% {
+        transform: translateY(-5px) rotateX(10deg);
+    }
+}
+
+@keyframes ascean-explode {
+    0% { transform: scale(0.1) rotate(0deg); opacity: 0; }
+    80% { transform: scale(1.15) rotate(2deg); opacity: 0.8; }
+    100% { transform: scale(0.75) rotate(0deg); opacity: 1; }
+}
+
+@keyframes deity-float-shimmer {
+    0% {
+        transform: translateY(0) scale(0.95) skew(0.002turn, 0.2deg);
+    }
+    100% {
+        transform: translateY(-5px) scale(1) rotateX(0) skew(0turn, 0deg);
+    }
+}
+
+@keyframes player-float-shimmer {
+    0% {
+        transform: translateY(0) scale(0.75) skew(0.002turn, 0.2deg);
+    }
+    100% {
+        transform: translateY(-5px) scale(0.8) rotateX(0) skew(0turn, 0deg);
+    }
+}
+
+@keyframes enemy-float-shimmer {
+    0% {
+        transform: translateY(0) scale(0.75) skew(-0.002turn, 0.2deg);
+    }
+    100% {
+        transform: translateY(-5px) scale(0.8) rotateX(0) skew(0turn, 0deg);
+    }
+}
+
+.animate-explode-in {
+    animation-name: explode-in, float-shimmer;
+    animation-duration: 0.3s, 1.2s;
+    animation-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55), ease-in-out;
+    animation-fill-mode: forwards, none;
+    
+    animation-delay: 0s, 0.3s; 
+    
+    animation-iteration-count: 1, infinite;
+    animation-direction: normal, alternate;
+}
+
 .reward-popup-overlay {
     position: fixed;
     top: 0;
@@ -153,17 +239,19 @@
     z-index: 100; 
     
     opacity: 0; 
-    transition: opacity 0.5s ease-out; /* The fade-out duration */
+    transition: opacity 0.5s ease-out;
 }
 
 .reward-popup-overlay.visible {
     opacity: 1;
 }
+
 @keyframes explode-in {
     0% { transform: translate(-50%, -50%) scale(0.1) rotate(0deg); opacity: 0; }
     80% { transform: translate(-50%, -50%) scale(1.15) rotate(2deg); opacity: 0.8; }
     100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
 }
+
 @keyframes float-shimmer {
     0% {
         transform: translate(-50%, -50%) translateY(0);
@@ -177,6 +265,7 @@
         box-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 15px #000 inset;
     }
 }
+
 .vibrant-shimmer {
     font-size: 2.5em;
     color: gold;
@@ -189,6 +278,7 @@
     0% { transform: scale(1); }
     100% { transform: scale(1.03); }
 }
+
 .reward-reveal-flash {
     /* Starts slightly transparent and small, then flashes gold */
     animation: reveal-flash 0.5s ease-out forwards;
@@ -415,24 +505,24 @@
 .menu-3d {
     transform-style: preserve-3d;
     transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-    /* transform: rotateX(5deg); */
 }
 .menu-3d:focus, .menu-3d:hover {
     transform: rotateX(-10deg);
 }
 
 .menu-item-3d {
-    /* transform: rotateX(10deg) rotateY(10deg) translate3D(-25px); */
     opacity: 0.9;
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
     position: relative;
 }
   
 .menu-item-3d:focus, 
-.menu-item-3d:hover { 
-    transform: rotateX(10deg) scale(1.1);
+.menu-item-3d:hover {
+    transform: rotateX(10deg);
     opacity: 1;
     z-index: 10;
+    /* animation: floating 1.2s ease-in-out infinite alternate; */
+    /* animation-composition: accumulate; */
     /* filter: drop-shadow(0 0 15px var(--glow-color)); */
 }
   
@@ -486,9 +576,6 @@ svg.defs {
 .super-out {animation: 3s 1 fadeout;}
 .animate-fade { animation: 2s 1 fadein, gradient 1s ease infinite; }
 .animate-fade-inout { 
-    /* animation: 2s 1 fadein forwards,  */
-    /* gradient 2s ease forwards,  */
-    /* 1s 1 fadeout forwards;  */
     animation-name: fadein, gradient, fadeout;
     animation-duration: 1s, 2s, 1s;
     animation-delay: 0s, 0s, 1s;
@@ -519,18 +606,31 @@ svg.defs {
 .drop-25 {position: absolute; top: 15%;}
 .left {position: absolute; left: 1%;}
 .default {color: #000; background: #fdf6d8; border-radius: 0.25rem; padding: 0.25rem 1rem; margin: 0.5rem;}
+.dialog-header {
+    position: absolute; top: 0; left: 0; background: #000; 
+    color: gold; 
+    font-size: 1.25rem; 
+    display: flex; 
+    border: thick ridge #fdf6d8; 
+    height: 15%; 
+    align-content: center; 
+    z-index: 3
+}
 .dialog-window {
-    display:inline-flex;position:absolute;z-index:1;
-    height:80%;left:15%;top:10%;
-    background:#000;border:thick ridge gold;border-radius:0.25em;box-shadow:0 0 0.5rem #ffc700;
-    overflow-y:scroll;scrollbar-width:none;
+    position:absolute;
+    height:81%; left:0%; top:16.5%;
+    background:#000;
+    border:thick ridge #fdf6d8; border-radius:0.25em; box-shadow:0 0 0.5rem #fdf6d8;
+    overflow-y:scroll; scrollbar-width:none;
+    text-align: center;
+    z-index:3;
 }
 .dialog-tab {padding:3%;height:auto;}
 .story-dialog-options {
     position:absolute;display:block;overflow-y:scroll;scrollbar-width:none;z-index:1;
     margin:auto;text-align:center;
     height:80%;width:15%;left:70%;top:10%;
-    background:#000;border:thick ridge gold;border-radius:0.25em;box-shadow:0 0 0.5rem #ffc700;
+    background:#000;border:thick ridge #fdf6d8;border-radius:0.25em;box-shadow:0 0 0.5rem #fdf6d8;
 }
 .playerCombatUi {position: fixed;top: 0;left: 0;width: 50%;}
 .combatUiShield {position: absolute;top: 2.5vh;left: 43vw; align-items: center;justify-content: center;background-color: #000;max-height: 10vh;border-radius: 50% 50% 50% 50% / 12% 12% 88% 88%;transform: scale(1.2);}
@@ -550,7 +650,7 @@ svg.defs {
 .disengage {position: absolute;left: 10vw;top: 5vh;}
 .menuButton {font-family: "Cinzel-Regular";font-size:1rem;}
 .lootDropWindow {position: absolute;font-family: "Cinzel-Regular";background-color: #000;height: 40%;width: 35%;top: 50%;left: 32.5%;padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
-.menuHeader { font-size: 1.1em; margin-left: 4%; margin-top: 3%; }
+.menuHeader { font-size: 1.1em; margin-left: 3%; margin-top: 3%; }
 .insideMenu { margin: 0.5em 0.25em 0 0; }
 .playerMenuHeading {font-family: "Cinzel-Regular";font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;}
 .playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15rem solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
@@ -681,13 +781,24 @@ svg.defs {
 }
 
 .lock {
-    width: 250px;
-    height: 250px;
-    margin: 20px auto;
+    width: 300px;
+    height: 300px;
+    margin: 1% auto 1.5%;
     position: relative;
-    background: #222;
-    border: 0.15em solid #fdf6d8;
+    /* background: #222; */
+    border: thick groove #fdf6d8;
     border-radius: 50%;
+    background: repeating-linear-gradient(
+        45deg,              /* Angle for a brushed/cast effect */
+        #222,               /* Dark Base Color */
+        #222 2px,           /* Repeat Base */
+        #333 3px,           /* Subtle Highlight/Shadow */
+        #111 4px            /* Darker Shadow/Grain */
+    );
+
+    box-shadow: 
+        -5px -5px 10px rgba(255, 255, 255, 0.15) inset, 
+        5px 5px 10px rgba(0, 0, 0, 0.5) inset;
 }
 
 .lock-body {
@@ -702,54 +813,72 @@ svg.defs {
     left: 50%;
     width: 15%;
     height: 50px;
-    background: #444;
+    background: radial-gradient(circle at center, 
+        #000000 0%,          /* Pure black at the center */
+        #111111 50%,          /* Very dark gray mid-way */
+        #444444 100%         /* Match the existing base color at the edge */
+    ); 
+    /* #444; */
     transform: translate(-50%, -50%);
     border-radius: 50% 50% 0 0;
+    box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.7) inset;
 }
 
 .tension-wrench {
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 85px;
-    height: 4.5px;
-    background: silver;
+    width: 0;
+    height: 3px;
     transform: rotate(115deg);
     transform-origin: left center;
-    transition: transform 0.1s;
     z-index: 1;
+    
+    border-top: 3px solid transparent; 
+    border-bottom: 3px solid transparent;
+    border-right: 101px solid silver;
+
+    transition: transform 0.1s;
+    pointer-events: auto;
+    box-shadow: 
+        0 -1px 0 0 rgba(255, 255, 255, 0.6) inset, 
+        0 1px 0 0 rgba(0, 0, 0, 0.4) inset, 
+        2px 2px 3px 0 rgba(0, 0, 0, 0.3);
     &::after {
         content: '';
         position: absolute;
-        left: 80.5px;
-        top: -8px;
-        width: 4.5px;
-        height: 20.5px;
-        background: rgba(192, 192, 192, 0.7);
+        left: 93px;
+        top: 0;
+        width: 8px;
+        height: 24px;
+        background: rgba(192, 192, 192, 0.9);
         pointer-events: auto;
     }
 }
 
 .lockpick {
     position: absolute;
-    width: 110px;
-    height: 6px;
-    background: gold;
-    top: 50%;
+    top: 49%;
     left: 50%;
     transform-origin: left center;
     z-index: 1;
-    &::before {
-        content: '';
-        position: absolute;
-        left: 104px;
-        top: -15px;
-        width: 6px;
-        height: 20px;
-        background: rgba(255, 215, 0, 0.7);
-        pointer-events: auto;
-    }
+
+    width: 0;
+    height: 4px;
+    
+    border-top: 4px solid transparent;
+    border-bottom: 4px solid transparent;
+    border-right: 135px solid gold;
+    box-shadow: 
+        /* Top Edge Highlight (Inner, light gold/white) */
+        0 -1px 0 0 rgba(255, 255, 255, 0.7) inset,
+        /* Bottom Edge Shadow (Inner, bronze/dark gold) */
+        0 1px 0 0 rgba(100, 70, 0, 0.6) inset,
+        /* General Drop Shadow (Outer, for depth) */
+        2px 2px 3px 0 rgba(0, 0, 0, 0.4);
+    pointer-events: auto;
 }
+
 .durability-bar {
     width: 150px;
     height: 10px;

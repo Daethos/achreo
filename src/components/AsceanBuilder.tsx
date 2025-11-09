@@ -40,6 +40,11 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
         setAttribute(Attributes.find(a => a.name === attr) as any);
         setAttrShow(!attrShow());
     };
+    async function clickPlay(ascean: CharacterSheet) {
+        setNewAscean(ascean); 
+        if (!click.ended) click.pause();
+        await click.play();
+    };
     return <div class="stat-block superCenter" style={{ overflow: "hidden", "scrollbar-width": "none" }}>
         <Show when={menu().screen !== SCREENS.COMPLETE.KEY && dims.ORIENTATION !== "landscape"}>
             <Preview newAscean={newAscean} />
@@ -113,7 +118,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <div class="menu-3d">
                         <For each={STARTING_CHARACTERS}>
                             {(ascean, _index) => (
-                                <div class="border row card juice glowJuice flickerJuiceInsert menu-item-3d backgroundFocus" onClick={() => {setNewAscean(ascean); click.play();}} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`, "--background-color": backgroundGradient(ascean.mastery, false) }}>
+                                <div class="border row card juice glowJuice flickerJuiceInsert menu-item-3d backgroundFocus" onClick={() => clickPlay(ascean)} style={{ width: "70%", margin: "1em auto", "border-color": masteryColor(ascean.mastery),"--glow-color": masteryColor(ascean.mastery),"--base-shadow": "#000 0 0 0 0.2em","box-shadow": `#000 0 0 0 0.2em, ${masteryColor(ascean.mastery)} 0 0 0 0.3em`, "--background-color": backgroundGradient(ascean.mastery, false) }}>
                                     <img style={{...photo, "border-color": masteryColor(ascean.mastery)}} src={`../assets/images/${ascean.origin}-${ascean.sex}.jpg`} /><br />
                                     <h4 class={`gold`} style={{ "font-family": "Cinzel-Regular", width: "50%", "margin-left":"5%" }}>{ascean.name}</h4>
                                 </div>
@@ -127,7 +132,7 @@ export default function AsceanBuilder({ newAscean, setNewAscean, menu }: { newAs
                         <div class="creature-heading center" style={{ width: "90%" }}>
                             <h1>{newAscean().name}</h1>
                             <h2>{newAscean().description}</h2>
-                            <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id="origin-pic" style={{ "border-color": masteryColor(newAscean().mastery) }} />
+                            <img onClick={() => setShowOrigin(!showOrigin())} src={`../assets/images/${newAscean().origin}-${newAscean().sex}.jpg`} id="origin-pic" style={{ "border": `thick groove ${masteryColor(newAscean().mastery)}` }} />
                             <p onClick={() => setArmorShow(!armorShow())} style={{margin:"2%"}}>Armor: <span class="gold">{newAscean().preference}</span></p>
                             <p style={{margin:"2%"}}>Faith: <span class="gold" onClick={() => setShowFaith(!showFaith())}>{newAscean().faith}</span> | Mastery: <span class="gold" onClick={() => toggle(newAscean().mastery)}>{newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}</span></p>
                             <div style={{ display: "inline-flex", "justify-content":"center" }}>

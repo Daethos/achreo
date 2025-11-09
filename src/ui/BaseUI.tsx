@@ -63,6 +63,7 @@ interface Props {
 export default function BaseUI({ instance, ascean, combat, game, quests, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [touching, setTouching] = createSignal<string[]>([]);
+    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false, map: "ARENA", gauntlet: { opponents: 1, type: "RANDOMIZED", round: 1 } });
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
         ascean: ascean(),
         currency: ascean().currency,
@@ -82,13 +83,17 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         caeren: 0,
         kyosir: 0,
     });
-    const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false, map: "ARENA", gauntlet: { opponents: 1, type: "RANDOMIZED", round: 1 } });
+    
     createEffect(() => EventBus.emit("combat", combat()));  
     createEffect(() => EventBus.emit("game", game()));  
     createEffect(() => EventBus.emit("reputation", reputation()));
     createEffect(() => EventBus.emit("settings", settings()));
     createEffect(() => EventBus.emit("talents", talents()));
-    const sendEnemyData = () => EventBus.emit("get-enemy", combat().computer);
+
+    function sendEnemyData() {
+        EventBus.emit("get-enemy", combat().computer);
+    };
+
     function initiateCombat(data: any, type: string) {
         try {    
             let res: Combat | undefined | any = undefined,
@@ -327,8 +332,9 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                         realizedComputerDamage = Math.round(newPlayerHealth - data.value);
                     };
                     playerActionDescription =  
-                        data.value > newPlayerHealth ? `You heal for ${Math.round(data.value - newPlayerHealth)}, back to ${Math.round(data.value)}.` 
-                        : `You are damaged for ${Math.round(newPlayerHealth - data.value)}, down to ${Math.round(data.value)}`;
+                        data.value > newPlayerHealth 
+                            ? `You heal for ${Math.round(data.value - newPlayerHealth)}, back to ${Math.round(data.value)}.` 
+                            : `You are damaged for ${Math.round(newPlayerHealth - data.value)}, down to ${Math.round(data.value)}`;
                     newPlayerHealth = data.value;
                     res = { ...combat(), computerWin, newPlayerHealth, damagedID: data.id, realizedComputerDamage };
                     EventBus.emit("blend-combat", { computerWin, newPlayerHealth: data.value, damagedID: data.id });
@@ -445,6 +451,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             console.warn(err, "Error Initiating Combat");
         };
     };
+
     function resolveCombat(res: Combat) {
         try {
             timer.adjustTime(0, res.combatEngaged, 0, true);
@@ -461,12 +468,18 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     opponentExp: Math.min(experience + ascean().experience, res?.player?.level! * 1000),
                 };
                 EventBus.emit("record-win", { record: res, experience: newState });
-                const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
-                EventBus.emit("enemy-loot", loot);
+                
+                const scene = instance.scene?.scene.key;
+                if (scene !== "Tutorial") {
+                    const loot = { enemyID: res.enemyID, level: res.computer?.level as number };
+                    EventBus.emit("enemy-loot", loot);
+                };
+                
                 setAsceanState({ ...asceanState(), avarice: false });
                 setTimeout(() => {
                     EventBus.emit("special-combat-text", { playerSpecialDescription: `Providence: You have gained up to ${experience} experience.` });
                     (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "effect");
+                    (instance.scene as any).experienceManager.gainExperience(res.enemyID);
                 }, 500);
             } else {
                 EventBus.emit("record-loss", res);
@@ -475,18 +488,31 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         } catch (err: any) {
             console.warn(err, "Error Resolving Combat");
         };
-    };    
+    };
+
     function balanceExperience(experience: number, level: number) {
         experience *= (110 - (level * 5)) / 100;
         experience = Math.round(experience);
         return experience;
     };
+
     function filterEnemies(id: string) {
         let newEnemies = enemies();
         newEnemies = newEnemies.filter(e => e.id !== id);
         setEnemies(newEnemies);
     };
-    usePhaserEvent("killing-blow", (data: {e: Ascean, enemyID: string}) => {
+
+    function removeEnemy() {
+        if (combat().enemyID !== "") filterEnemies(combat().enemyID);
+        EventBus.emit("clear-enemy");    
+    };
+
+    function tutorialEnemy(enemy: Compiler) {
+        instance.game?.registry.set("enemies", enemy);
+        EventBus.emit("create-tutorial-enemy");
+    };
+
+    function killingBlow(data: { e: Ascean, enemyID: string }) {
         const { e, enemyID } = data;
         let experience: number = Math.round(e.level * 50 * (e.level / ascean().level) + (combat().playerAttributes?.rawKyosir as number));
         experience = balanceExperience(experience, ascean().level);
@@ -499,14 +525,15 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
             opponent: e.level,
             opponentExp: Math.min(experience + ascean().experience, ascean().level * 1000),
         };
+        (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "effect");
+        (instance.scene as any).experienceManager.gainExperience(enemyID);
         EventBus.emit("record-win", { record: combat(), experience: newState });
         const loot = { enemyID, level: e.level };
         EventBus.emit("enemy-loot", loot);
-    });
-    usePhaserEvent("remove-non-aggressive-enemy", () => {
-        if (combat().enemyID !== "") filterEnemies(combat().enemyID);
-        EventBus.emit("clear-enemy");
-    });
+    };
+
+    usePhaserEvent("killing-blow", killingBlow);
+    usePhaserEvent("remove-non-aggressive-enemy", removeEnemy);
     usePhaserEvent("initiate-combat", (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
     usePhaserEvent("remove-enemy", filterEnemies);
     usePhaserEvent("request-enemy", sendEnemyData);
@@ -515,10 +542,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
     usePhaserEvent("remove-touching", (e: string) => setTouching((prev) => prev.filter((p:any) => p !== e)));
     usePhaserEvent("update-ascean-state" , (e: any) => setAsceanState(e));
     usePhaserEvent("show-roster", () => setArena({ ...arena(), show: true }));
-    usePhaserEvent("set-tutorial-enemy", (enemy: Compiler) => {
-        instance.game?.registry.set("enemies", enemy);
-        EventBus.emit("create-tutorial-enemy");
-    });
+    usePhaserEvent("set-tutorial-enemy", tutorialEnemy);
     usePhaserEvent("set-wager-arena", (data: { wager: { silver: number; gold: number; multiplier: number; }; enemies: Compiler[]; team: boolean }) => {
         const { wager, enemies, team } = data;
         instance.game?.registry.set("enemies", enemies);
@@ -549,6 +573,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         const { wager, win } = data;
         setArena({ ...arena(), wager, result: true, show: true, win });
     });
+    
     return <div id="base-ui">
         <Show when={showTutorial()}>
             <Suspense fallback={<Puff color="gold" />}>

@@ -140,7 +140,7 @@ export default class Enemy extends Entity {
             this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
             this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
             this.computerCombatSheet = this.createComputerCombatSheet(data.data);
-            this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
+            this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name] || [];
         };
         this.setTint(ENEMY_COLOR);
         this.stateMachine = new StateMachine(this, NAME);
@@ -279,7 +279,7 @@ export default class Enemy extends Entity {
         this.chunkX = this.scene.playerChunkX;
         this.chunkY = this.scene.playerChunkY;
         this.acc = 0;
-        this.isHostile = false;
+        this.isHostile = this.setHostility();
         this.lastHitLocation = { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } };
 
         const mindStates = MIND_STATES[this.ascean.mastery];
@@ -349,6 +349,7 @@ export default class Enemy extends Entity {
             this.spriteWeapon.setVisible(true);
             this.spriteShield.setVisible(true);
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y);
+            this.createShadow(true);
         });
     };
 
@@ -367,6 +368,7 @@ export default class Enemy extends Entity {
         this.spriteWeapon.destroy();
         this.spriteShield.destroy();
         this.weaponHitbox.destroy();
+        this.shadow.destroy();
     };
 
     ping = () => {
@@ -398,6 +400,7 @@ export default class Enemy extends Entity {
         this.adjustSpeed(PLAYER.SPEED.CAERENIC * multiplier);
         this.computerCombatSheet.computerCaerenic = caerenic;
         if (this.isGlowing) return;
+        // this.createShadow(!caerenic);
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon")
         this.setGlow(this.spriteShield, caerenic, "shield");
@@ -406,6 +409,7 @@ export default class Enemy extends Entity {
     checkCaerenic = (caerenic: boolean, kill: boolean = false) => {
         this.isGlowing = caerenic;
         if (this.isCaerenic && !kill) return;
+        // this.createShadow(!caerenic);
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon");
         this.setGlow(this.spriteShield, caerenic, "shield");
@@ -448,6 +452,15 @@ export default class Enemy extends Entity {
             this.negationBubble.cleanUp();
             this.negationBubble = undefined;
         };
+    };
+
+    setHostility = () => {
+        const reputation = this.scene.hud.reputation;
+        const faction = reputation.factions.find(f => f.name === this.ascean.name);
+        if (faction) {
+            return faction.hostile;
+        };
+        return false;
     };
 
     setMindState = (mind: string) => {
@@ -851,6 +864,7 @@ export default class Enemy extends Entity {
         this.scene.combatEngaged(true);
         this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
         this.scene.hud.showCombatHud(`${this.ascean.name} Engaged`, EFFECT);
+        this.enemies.push({ id: this.scene.player.playerID, threat: 0 });
         this.ping();
     };
 
@@ -932,7 +946,7 @@ export default class Enemy extends Entity {
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.computerCombatSheet = this.createComputerCombatSheet(compiler);
-        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
+        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name] || [];
     };
 
     enemyFetchedOn = (e: any) => {
@@ -948,7 +962,7 @@ export default class Enemy extends Entity {
         this.healthbar = new HealthBar(this.scene, this.x, this.y, this.health);
         this.castbar = new CastingBar(this.scene, this.x, this.y, 0, this);
         this.computerCombatSheet = this.createComputerCombatSheet(e.combat as Compiler);
-        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name as keyof typeof ENEMY_ENEMIES] || [];
+        this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name] || [];
     };
 
     createEnemy = () => {
@@ -1239,7 +1253,7 @@ export default class Enemy extends Entity {
                         this.setSpecialCombat(true, 0.3);
                         return;
                     };
-                    const special = ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL][Math.floor(Math.random() * ENEMY_SPECIAL[mastery as keyof typeof ENEMY_SPECIAL].length)].toLowerCase();
+                    const special = ENEMY_SPECIAL[mastery][Math.floor(Math.random() * ENEMY_SPECIAL[mastery].length)].toLowerCase();
                     this.specialAction = special;
                     // this.currentAction = "special";
                     const specific = [States.RENEWAL];
@@ -1579,7 +1593,7 @@ export default class Enemy extends Entity {
     onIdleExit = () => this.anims.stop();
  
     onPatrolEnter = () => {
-        this.enemyAnimation();
+        // this.enemyAnimation();
         this.patrolPath = this.generatePatrolPath(); // Generate patrol points via navmesh
         if (!this.patrolPath || this.patrolPath.length < 2) {
             this.stateMachine.setState(States.IDLE);
@@ -1871,7 +1885,7 @@ export default class Enemy extends Entity {
         if (!this.currentTarget || !this.currentTarget.body || !this.currentTarget.body.position || (!this.inCombat && !this.inComputerCombat)) return true;
         
         const rangeMultiplier = this.rangedDistanceMultiplier(2);
-        const maxRange = RANGE[this.scene.scene.key as keyof typeof RANGE] * rangeMultiplier;
+        const maxRange = RANGE[this.scene.scene.key] * rangeMultiplier;
 
         const isTooFarFromOrigin = 
             Math.abs(this.originPoint.x - this.position.x) > maxRange ||
@@ -1890,11 +1904,17 @@ export default class Enemy extends Entity {
         this.scene.time.delayedCall(this.swingTime(), () => {
             this.isSwinging = false;
             this.currentAction = this.evaluateCombat();
-            // if (this.currentAction === "") 
         }, undefined, this);
     };
 
-    swingTime = (): number => Math.max(0.16, 1 - (this.ascean.level - 1) * 0.08) * this.swingTimer;
+    /* 
+        One Hand: 2500
+        Two Hand: 3000
+        Per Level Reduction: 250 / 300
+        Swing Speed Max: 500 / 600
+    */
+
+    swingTime = (): number => Math.max(0.2, 1 - (this.ascean.level - 1) * 0.1) * this.swingTimer;
 
     onCombatEnter = () => {
         if (this.shouldExitCombat()) return;
@@ -2835,6 +2855,9 @@ export default class Enemy extends Entity {
         direction.normalize();
         this.flipX = direction.x < 0;
         this.attack();
+        const leapStartY = this.y;
+        const arcHeight = 75; // Adjust this value for higher/lower arcs
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, true);
         this.scene.tweens.add({
             targets: this,
             scale: 1.2,
@@ -2842,15 +2865,35 @@ export default class Enemy extends Entity {
             ease: Phaser.Math.Easing.Back.InOut,
             yoyo: true,
         });
+
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * leap),
             y: this.y + (direction.y * leap),
             duration: 800,
-            ease: Phaser.Math.Easing.Elastic.InOut,
-            onComplete: () => { 
-                if (this.touching.length > 0) {
-                    for (let i = 0; i < this.touching.length; ++i) {
+            ease: Phaser.Math.Easing.Back.InOut,
+            onStart: () => {
+                this.isAttacking = true;
+                screenShake(this.scene);
+                this.scene.sound.play("leap", { volume: this.scene.hud.settings.volume });
+                this.anims.play(FRAMES.GRAPPLE_ROLL, true);
+            },
+            onUpdate: (tween) => {
+                const progress = tween.progress;
+                const currentArc = Math.sin(progress * Math.PI) * arcHeight;
+                this.y = leapStartY + (this.y - leapStartY) - currentArc;
+            },
+            onComplete: () => {
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
+                this.isLeaping = false; 
+                const length = this.touching.length;
+                if (length > 0) {
+                    this.lastHitLocation = {
+                        location: HitLocation.CHEST,
+                        hitPoint: {x:0,y:0},
+                        relativePosition: {x:0,y:0}
+                    };
+                    for (let i = 0; i < length; ++i) {
                         if (this.touching[i].name === "player") {
                             this.scene.combatManager.writhe(this.touching[i].playerID, this.enemyID, "leap");
                             this.scene.combatManager.useStamina(5);
@@ -2870,7 +2913,10 @@ export default class Enemy extends Entity {
         };
     };
     onLeapUpdate = (_dt: number) => {};
-    onLeapExit = () => this.evaluateCombatDistance();
+    onLeapExit = () => {
+        this.evaluateCombatDistance();
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, false);
+    };
     onLikyrEnter = () => {
         this.targetID = this.getTargetId();
         this.startCasting("Likyr", PLAYER.DURATIONS.LIKYR, DAMAGE);
@@ -3112,6 +3158,7 @@ export default class Enemy extends Entity {
             this.isValidComputerRushEnemy(this.currentTarget);
         };
 
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, true);
         // this.flickerCaerenic(600);
         direction.normalize();
         this.flipX = direction.x < 0;
@@ -3139,16 +3186,24 @@ export default class Enemy extends Entity {
         this.setAlpha(1);
         this.isCasting = false;
         this.evaluateCombatDistance();
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, false);
     };
 
     rushComplete = () => {
-        if (this.rushedEnemies.length > 0) {
-            for (let i = 0; i < this.rushedEnemies.length; ++i) {
-                if (this.rushedEnemies[i].name === "player") {
+        const rush = this.rushedEnemies.length;
+        if (rush > 0) {
+            this.lastHitLocation = {
+                location: HitLocation.CHEST,
+                hitPoint: {x:0,y:0},
+                relativePosition: {x:0,y:0}
+            };
+            for (let i = 0; i < rush; ++i) {
+                const enemy = this.rushedEnemies[i];
+                if (enemy.name === "player") {
                     this.scene.combatManager.useStamina(5);
-                    this.scene.combatManager.writhe(this.rushedEnemies[i].playerID, this.enemyID, "rush");
-                } else if (this.inComputerCombat) { // CvC this.rushedEnemies[i].name === NAME && 
-                    this.scene.combatManager.computer({ type: "Weapon", payload: { action: "rush", origin: this.enemyID, enemyID: this.rushedEnemies[i].enemyID } });
+                    this.scene.combatManager.writhe(enemy.playerID, this.enemyID, "rush");
+                } else if (this.inComputerCombat) { // CvC enemy.name === NAME && 
+                    this.scene.combatManager.computer({ type: "Weapon", payload: { action: "rush", origin: this.enemyID, enemyID: enemy.enemyID } });
                 };
             };
         };
@@ -3577,21 +3632,24 @@ export default class Enemy extends Entity {
         };
 
         this.scene.showCombatText(this, "Mending", 500, "tendril", false, true);
-        const mend = Phaser.Math.Between(this.healthbar.getTotal() * 0.075, this.healthbar.getTotal() * 0.125);
-        const heal = Math.min(this.healthbar.getTotal(), this.health + mend);
+        const multiplier = Phaser.Math.Between(0.05, 0.1); // 0.075, 0.125
+        const max = this.ascean.health.max;
+        const mend = max * multiplier;
+        const health = Math.min(max, this.health + mend);
+        const playerID = this.scene.player.playerID;
         
         this.reactiveBubble.setCharges(this.reactiveBubble.charges - 1);
         if (this.reactiveBubble.charges <= 0) this.isMending = false;
 
-        if (id === this.scene?.player?.playerID && this.isCurrentTarget) { // Player Combat
-            this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: heal, id: this.enemyID }, type: HEALTH });
-        } else if (id === this.scene?.player?.playerID) { // Non Targerted Player Combat
-            this.health = heal;
-            this.updateHealthBar(heal);
+        if (id === playerID && this.isCurrentTarget) { // Player Combat
+            this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: health, id: this.enemyID }, type: HEALTH });
+        } else if (id === playerID) { // Non Targerted Player Combat
+            this.health = health;
+            this.updateHealthBar(health);
             this.scene.showCombatText(this, `${mend}`, 1500, HEAL);
         } else { // Computer Combat
-            this.health = heal;
-            this.updateHealthBar(heal);
+            this.health = health;
+            this.updateHealthBar(health);
             this.scene.showCombatText(this, `${mend}`, 1500, HEAL);
             this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
         };
@@ -3624,6 +3682,7 @@ export default class Enemy extends Entity {
         });
     };
     onModerateUpdate = (_dt: number) => {if (!this.isModerating) this.positiveMachine.setState(States.CLEAN);};
+
     moderate = (id: string) => {
         if (id === "") return;
         if (this.reactiveBubble === undefined || this.isModerating === false) {
@@ -4641,13 +4700,10 @@ export default class Enemy extends Entity {
             if (this.attackedTarget.isShadowing === true) this.attackedTarget.pursue(this.enemyID);
             if (this.attackedTarget.isTethering === true) this.attackedTarget.tether(this.enemyID);
         };
-        // console.log("Action and Force Concerns: Size | Attribute | Action", action, SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE], this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]], SWING_FORCE[action as keyof typeof SWING_FORCE])
         this.applyKnockback(this.attackedTarget, 
-            SWING_FORCE[this.weapons[0]?.grip as keyof typeof SWING_FORCE] 
-            * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType as keyof typeof SWING_FORCE_ATTRIBUTE]] 
-            * SWING_FORCE[action as keyof typeof SWING_FORCE]);
-        
-        // if (this.inCombat) hitStop(this.scene);
+            SWING_FORCE[this.weapons[0]?.grip] 
+            * this.ascean[SWING_FORCE_ATTRIBUTE[this.weapons[0]?.attackType]] 
+            * SWING_FORCE[action]);
         
         this.attackedTarget = undefined;
     };

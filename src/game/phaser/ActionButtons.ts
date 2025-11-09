@@ -5,6 +5,7 @@ import { ACTION_ORIGIN } from "../../utility/actions";
 import { Hud } from "../scenes/Hud";
 import { COOLDOWN, COST } from "../../ui/Character";
 import Player from "../entities/Player";
+
 const ACTION = "action";
 const SPECIAL = "special";
 const GRAPHIC = "graphic";
@@ -16,13 +17,6 @@ const ACTIONS = [
     { DODGE: 0x800080 }, 
     { PARRY: 0x800080 }
 ];
-// const SPECIALS = [
-//     { INVOKE: 0x000000 },
-//     { TSHAERAL: 0x000000 },
-//     { POLYMORPH: 0x000000 },
-//     { ROOT: 0x000000 },
-//     { SNARE: 0x000000 },
-// ];
 const DISPLAY = {
     ARC: "arc",
     DIAGONAL: "diagonal",
@@ -41,6 +35,10 @@ const SETTINGS = {
 };
 const PADDING = 10;
 const WIDTH = 250;
+
+const START_ANGLE = 270; 
+const COOLDOWN_ALPHA = 0.9;
+
 export type ActionButton = {
     key: string;
     name: string;
@@ -55,8 +53,13 @@ export type ActionButton = {
     height: number;
     circle?: number;
     isReady: boolean;
+    maskGraphic: Phaser.GameObjects.Graphics;
+    maskBorder: Phaser.GameObjects.Graphics;
+    graphicGeometryMask: Phaser.Display.Masks.GeometryMask;
+    borderGeometryMask: Phaser.Display.Masks.GeometryMask;
     on?: (event: string, fn: () => void, context?: any) => void;
 };
+
 class Tooltip {
     name: string;
     container: Phaser.GameObjects.Container | undefined;
@@ -135,6 +138,7 @@ class Tooltip {
         };
     };
 };
+
 export default class ActionButtons extends Phaser.GameObjects.Container {
     public scene: Hud;
     public actionButtons: ActionButton[];
@@ -240,11 +244,16 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         const centerSpecialY = height * specialButtons.y; // height * 0.6 || / 1.675
 
         ACTIONS.forEach((_element, index) => {
-            const { buttonX, buttonY } = this.displayButton(ACTION, 
-                actionButtons.display, 
-                actionButtons.spacing,
-                index, centerActionX, centerActionY, height
-            );
+            const { buttonX, buttonY } = this.displayButton(ACTION, actionButtons.display, actionButtons.spacing, index, centerActionX, centerActionY, height);
+            
+            const maskGraphic = new Phaser.GameObjects.Graphics(scene);
+            maskGraphic.fillStyle(actionButtons.color);
+            const graphicGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskGraphic);
+
+            const maskBorder = new Phaser.GameObjects.Graphics(scene);
+            maskBorder.fillStyle(actionButtons.border);
+            const borderGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskBorder);
+
             let button: ActionButton = {
                 key: ACTION,
                 name: scene.settings.actions[index],
@@ -258,6 +267,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 height: this.buttonHeight,
                 width: this.buttonWidth,
                 isReady: true,
+                maskGraphic,
+                maskBorder,
+                graphicGeometryMask,
+                borderGeometryMask,
             };
 
             button.graphic.fillStyle(actionButtons.color, actionButtons.opacity);
@@ -288,9 +301,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
 
+            button.maskGraphic.clear();
+            button.maskBorder.clear();
+
             this.actionButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
+            this.add(button.maskBorder);
+            this.add(button.maskGraphic);
         });
 
         const spec = this.scene.settings.specials;
@@ -300,6 +318,15 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 specialButtons.spacing,
                 index, centerSpecialX, centerSpecialY, height,
             );
+            
+            const maskGraphic = new Phaser.GameObjects.Graphics(scene);
+            maskGraphic.fillStyle(specialButtons.color);
+            const graphicGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskGraphic);
+
+            const maskBorder = new Phaser.GameObjects.Graphics(scene);
+            maskBorder.fillStyle(specialButtons.border);
+            const borderGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskBorder);
+
             let button: ActionButton = {
                 key: SPECIAL,
                 name: "", // scene.settings.specials[index],
@@ -312,7 +339,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 y: buttonY,
                 height: this.buttonHeight,
                 width: this.buttonWidth,
-                isReady: true
+                isReady: true,
+                maskGraphic,
+                maskBorder,
+                graphicGeometryMask,
+                borderGeometryMask,
             };
 
             button.graphic.fillStyle(specialButtons.color, specialButtons.opacity);
@@ -338,12 +369,19 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                         tooltip.createTimer(scene);
                     };
                 });
+            
             button.graphic.setScrollFactor(0, 0);
             button.border.setScrollFactor(0, 0);
             button.graphic.setDepth(3);
+
+            button.maskGraphic.clear();
+            button.maskBorder.clear();
+
             this.specialButtons.push(button);
             this.add(button.border);
             this.add(button.graphic);
+            this.add(button.maskBorder);
+            this.add(button.maskGraphic);
         }); 
     };
 
@@ -358,6 +396,14 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             index, centerSpecialX, centerSpecialY, height,
         );
         
+        const maskGraphic = new Phaser.GameObjects.Graphics(this.scene);
+        maskGraphic.fillStyle(specialButtons.color);
+        const graphicGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskGraphic);
+
+        const maskBorder = new Phaser.GameObjects.Graphics(this.scene);
+        maskBorder.fillStyle(specialButtons.border);
+        const borderGeometryMask = new Phaser.Display.Masks.GeometryMask(this.scene, maskBorder);
+
         let button: ActionButton = {
             key: SPECIAL,
             name, // scene.settings.specials[index],
@@ -370,7 +416,11 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             y: buttonY,
             height: this.buttonHeight,
             width: this.buttonWidth,
-            isReady: true
+            isReady: true,
+            maskGraphic,
+            maskBorder,
+            graphicGeometryMask,
+            borderGeometryMask,
         };
 
         button.graphic.fillStyle(specialButtons.color, specialButtons.opacity);
@@ -396,12 +446,19 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     tooltip.createTimer(this.scene);
                 };
             });
+            
         button.graphic.setScrollFactor(0, 0);
         button.border.setScrollFactor(0, 0);
         button.graphic.setDepth(3);
+
+        button.maskGraphic.clear();
+        button.maskBorder.clear();
+        
         this.specialButtons.push(button);
         this.add(button.border);
         this.add(button.graphic);
+        this.add(button.maskBorder);
+        this.add(button.maskGraphic);
     };
 
     highlightAnimation() {
@@ -437,10 +494,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 button.border.clear();
                 switch (button.key) {
                     case ACTION:
-                        this.animate(button, actionButtons.color, actionButtons.border, actionButtons.opacity, actionButtons.width, 0.4);
+                        this.animate(button, actionButtons.color, actionButtons.border, actionButtons.opacity, actionButtons.width, 0.25);
                         break;
                     case SPECIAL:
-                        this.animate(button, specialButtons.color, specialButtons.border, specialButtons.opacity, specialButtons.width, 0.15);
+                        this.animate(button, specialButtons.color, specialButtons.border, specialButtons.opacity, specialButtons.width, 0.25);
                         break;
                     default:
                         break;
@@ -583,9 +640,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, display, actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, actionButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, actionButtons.border, actionButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -598,9 +655,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, display, specialButtons.spacing,index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, specialButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, specialButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -629,9 +686,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, actionButtons.display, actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, actionButtons.border, opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -644,9 +701,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, specialButtons.display, specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -675,9 +732,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, actionButtons.display, actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, actionButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, border, actionButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -690,9 +747,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, specialButtons.display, specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, specialButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, border, specialButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -722,9 +779,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.color = color;
                     const { buttonX, buttonY } = this.displayButton(button.key, actionButtons.display, actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, actionButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, actionButtons.border, actionButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -738,9 +795,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.color = color;
                     const { buttonX, buttonY } = this.displayButton(button.key, specialButtons.display, specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, specialButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); //  * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, specialButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); //  * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -769,9 +826,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, actionButtons.display, spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, actionButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); // * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, actionButtons.border, actionButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); // * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -784,9 +841,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, specialButtons.display, spacing,index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, specialButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); // * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, specialButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); // * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -814,9 +871,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, actionButtons.display, actionButtons.spacing, index, centerActionX, centerActionY, height);
                     button.graphic.fillStyle(button.color, actionButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * actionButtons.width); // * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, actionButtons.border, actionButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * actionButtons.width); // * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -832,9 +889,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                     button.border.clear();
                     const { buttonX, buttonY } = this.displayButton(button.key, specialButtons.display, specialButtons.spacing, index, centerSpecialX, centerSpecialY, height);
                     button.graphic.fillStyle(button.color, specialButtons.opacity);
-                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width * button.current / button.total);
+                    button.graphic.fillCircle(buttonX, buttonY, SETTINGS.BUTTON_WIDTH * specialButtons.width); // * button.current / button.total
                     button.border.lineStyle(SETTINGS.BORDER_LINE, specialButtons.border, specialButtons.opacity);
-                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width * button.current / button.total);
+                    button.border.strokeCircle(buttonX, buttonY, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * specialButtons.width); // * button.current / button.total
                     button.x = buttonX;
                     button.y = buttonY;
                     button.graphic.input?.hitArea.setPosition(buttonX, buttonY);
@@ -884,7 +941,6 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
                 break;
             };
             case SPECIAL: {
-                // console.log({ list, type, buttons: this.specialButtons });
                 if (list.length > this.specialButtons.length) { // Need to generate new buttons
                     for (let i = 0; i < list.length; ++i) {
                         if (this.specialButtons[i]) continue;
@@ -906,6 +962,9 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
             default:
                 break;
         };    
+        this.scene.time.delayedCall(2000, () => {
+            this.scene.actionBarRebuild();
+        });
     };
 
     private scaleButton = (button: ActionButton, scale: number, opacity: number, border: number): ActionButton => {
@@ -913,10 +972,10 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         if (button.current / button.total >= 1) {
             button.graphic.clear();
             button.graphic.fillStyle(button.color, opacity);
-            button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * scale * button.current / button.total);
+            button.graphic.fillCircle(button.x, button.y, SETTINGS.BUTTON_WIDTH * scale); // * button.current / button.total
             button.border.clear();
             button.border.lineStyle(SETTINGS.BORDER_LINE, border, opacity);
-            button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * scale * button.current / button.total);
+            button.border.strokeCircle(button.x, button.y, (SETTINGS.BUTTON_WIDTH + SETTINGS.BORDER_OFFSET) * scale); // * button.current / button.total
         };
         return button;
     };
@@ -1075,39 +1134,70 @@ export default class ActionButtons extends Phaser.GameObjects.Container {
         };
     };
 
-    public setCurrent = (current: number, limit: number, name: string) => {
-        this.actionButtons = this.actionButtons.map((button) => {
-            if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true && !this.scene.talents.talents.stalwart.enhanced) return button; // this.scene.player
-            if (button.name === name.toUpperCase()) {
-                const progressPercentage = current / limit;
-                if (current / limit >= 1) {
-                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * 1.25);
-                    button.isReady = true;    
-                } else {
-                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * progressPercentage);
-                    button.graphic.disableInteractive();
-                    button.isReady = false;    
-                };
-                button.current = progressPercentage * button.total;
-            };
-            return button;
-        });
-        this.specialButtons = this.specialButtons.map((button) => {
-            if (button.name === name.toUpperCase()) {
-                const progressPercentage = current / limit;
-                if (current / limit >= 1) {
-                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * 1.25 * 0.75);
-                    button.isReady = true;    
-                } else {
-                    button.graphic.fillCircle(button.x, button.y, this.buttonHeight * progressPercentage * 0.75);
-                    button.graphic.disableInteractive();
-                    button.isReady = false;    
-                };
-                button.current = progressPercentage * button.total;
-            };
-            return button;
-        });
+    public setCurrent = (current: number, limit: number, button: ActionButton) => {
+        if ((button.name === "DODGE" || button.name === "ROLL") && this.scene.registry.get("player").isStalwart === true && !this.scene.talents.talents.stalwart.enhanced) return button; // this.scene.player
+        const progressPercentage = current / limit;
+        if (current / limit >= 1) {
+            button.graphic.fillCircle(button.x, button.y, this.buttonHeight * 1.25);
+            button.isReady = true;    
+        } else {
+            button.graphic.fillCircle(button.x, button.y, this.buttonHeight * progressPercentage);
+            button.graphic.disableInteractive();
+            button.isReady = false;    
+        };
+        button.current = progressPercentage * button.total;
         this.draw();
+    };
+
+    public setCurrentWipe = (current: number, limit: number, button: ActionButton) => {
+        const progressPercentage = current / limit;
+        const settings = this.scene.settings.positions;
+        /*  remainingPercentage being wiped will have the overlay slowly hide, rather than reveal
+            const remainingPercentage = 1 - progressPercentage;
+        */ 
+        
+        const WIPE_EDGE_ANGLE = START_ANGLE + (360 * progressPercentage); 
+        const radius = SETTINGS.BUTTON_WIDTH * (button.key === ACTION ? settings.actionButtons.width : settings.specialButtons.width);
+        const borderRadius = (SETTINGS.BUTTON_WIDTH + 3) * (button.key === ACTION ? settings.actionButtons.width : settings.specialButtons.width);
+        const border = button.key === ACTION ? settings.actionButtons.border : settings.specialButtons.border;
+
+        button.maskGraphic.clear();
+        button.maskBorder.clear();
+        
+        if (progressPercentage >= 1) {
+            button.isReady = true;
+            button.border.clearMask();
+            button.graphic.clearMask();
+            button.graphic.setInteractive(); 
+        } else {
+            button.maskGraphic.fillStyle(button.color, COOLDOWN_ALPHA); // settings.actionButtons.opacity);
+            button.maskBorder.fillStyle(border, COOLDOWN_ALPHA); // settings.specialButtons.opacity);
+            
+            button.maskBorder.slice(
+                button.x, // + 178, 
+                button.y, // + 82, 
+                borderRadius,
+                Phaser.Math.DegToRad(WIPE_EDGE_ANGLE), 
+                Phaser.Math.DegToRad(START_ANGLE), 
+                true // true = clockwise, false = counterclockwise
+            ).fill();
+
+            button.maskGraphic.slice(
+                button.x, // + 178, 
+                button.y, // + 82, 
+                radius,
+                Phaser.Math.DegToRad(WIPE_EDGE_ANGLE), 
+                Phaser.Math.DegToRad(START_ANGLE), 
+                true // true = clockwise, false = counterclockwise
+            ).fill();
+
+            if (progressPercentage < 0.05) {
+                button.graphic.disableInteractive();
+                button.isReady = false;
+            };
+        };
+
+        button.current = progressPercentage * button.total;
     };
 
     public cleanUp = () => {

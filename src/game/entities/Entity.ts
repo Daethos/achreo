@@ -23,6 +23,7 @@ import { Gauntlet } from "../scenes/Gauntlet";
 import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abilities";
 import { PLAYER } from "../../utility/player";
 import { hitLocationDetector, HitLocationResult } from "../phaser/HitDetection";
+import { ACTION_TYPES } from "../../utility/combatTypes";
 
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
@@ -35,8 +36,13 @@ export function calculateThreat(damage: number, currentHealth: number, totalHeal
     return relative;
 };
 
+export const MOVEMENT: {[key:string]: {x:number;y:number;};} = {
+    "up": { x: 0, y: -5 },
+    "down": { x: 0, y: 5 },
+    "left": { x: -5, y: 0 },
+    "right": { x: 5, y: 0 },
+};
 export type Player_Scene = Game | Underground | Tutorial | Arena | Gauntlet;
-
 export const FRAMES = {
     ANIMATION_COMPLETE: "animationcomplete",
     CLIMB: "player_climb",
@@ -53,6 +59,7 @@ export const FRAMES = {
     PRAY: "player_pray",
     ATTACK: "player_attack_1",
     DODGE: "player_slide",
+    HURL: "player_attack_7",
     JUMP: "player_jump",
     LAND: "player_landing",
     PARRY: "player_attack_6",
@@ -61,12 +68,15 @@ export const FRAMES = {
     GRAPPLE_ROLL: "grapple_roll",
     THRUST: "player_attack_2",
 };
+// const BASE_VISION_RANGE = 200;
 export type ENEMY = {id:string; threat:number};
 const ACTION = "action";
 const COMPUTER_ACTION = "computerAction";
-// const DISTANCE_CLEAR = 51;
-export const ENEMY_SWING_TIME = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
-export const SWING_TIME = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
+const ONE_HAND = "One Hand";
+
+export const ENEMY_SWING_TIME: {[key: string]: number} = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
+export const SWING_TIME: {[key: string]: number} = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
+
 type Force = {[key:string]:number;};
 export const SWING_FORCE: Force = { 
     "One Hand": 1, 
@@ -83,19 +93,35 @@ export const SWING_FORCE: Force = {
     "parry": 0,
     "hook": 0,
 }; // 750, 1250 [old]
+
 type Attribute = {[key: string]: string;};
 export const SWING_FORCE_ATTRIBUTE: Attribute = {
     "Physical": "strength",
     "Magic": "caeren"
 };
 type DamageArray = { [key:string]: string[]; };
+const PARTICLE_MAP = [
+    // Inner circle (8 points)
+    [0, -25], 
+    // [25, -25],
+    [25, 0], 
+    // [25, 25], 
+    [0, 25], 
+    // [-25, 25], 
+    [-25, 0], 
+    // [-25, -25],
+    // Outer circle (12 points)  
+    [0, -50], [43, -25], [43, 25], [0, 50],
+    [-43, 25], [-43, -25]
+];
 const GLOW_INTENSITY = 0.25;
-const SPEED = 1.25; // 1.35;
+const SPEED = 1.2; // 1.35;
 const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], physical: ["blunt", "pierce", "slash"] };
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
 var entityCount = 0;
+
 export default class Entity extends Phaser.Physics.Matter.Sprite {
     declare scene: Play;
     ascean: Ascean;
@@ -128,6 +154,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     isAttacking: boolean = false;
     isDodging: boolean = false;
+    isHurling: boolean = false;
     isJumping: boolean = false;
     isParrying: boolean = false;
     isPosturing: boolean = false;
@@ -288,6 +315,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     id: number;
     debugger: any;
     grappleTime: number = 0;
+    shadow: Phaser.GameObjects.Graphics; // Phaser.FX.Shadow | 
+    visionCache: { canSeeEntity: boolean; timestamp: number; } = { canSeeEntity: false, timestamp: 0 };
+    visionCacheTime: number = 200;
+    lastRaycastFrame: number = 0;
+    raycastFrameSkip: number = 3;
 
     static preload(scene: Phaser.Scene) {
         scene.load.atlas("player_actions", "../assets/gui/player_actions.png", "../assets/gui/player_actions_atlas.json");
@@ -355,15 +387,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     // case "Leather-Cloth":
                     //     break;
                     case "Leather-Mail":
-                        stamina += 0.5;
+                        stamina += 0.33; // 0.5;
                         // modifier -= 0.01; // += 0.025;
                         break;
                     case "Chain-Mail":
-                        stamina + 1;
+                        stamina += 0.67; // 1;
                         // modifier -= 0.02; // += 0.0;
                         break;
                     case "Plate-Mail":
-                        stamina += 1.5;
+                        stamina += 1; // 1.5;
                         // modifier -= 0.03; // -= 0.025;
                         break;
                     default:
@@ -378,32 +410,69 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             speed += this.scene.hud.settings.difficulty.enemySpeed || 0;
         };
 
-        const helmet = entity.helmet.type;
-        const chest = entity.chest.type;
-        const legs = entity.legs.type;
-        let modifier = 0;
-        const addModifier = (item: string) => {
-            switch (item) {
-                // case "Leather-Cloth":
-                //     break;
-                case "Leather-Mail":
-                    modifier -= 0.005; // 0.01; // += 0.025;
-                    break;
-                case "Chain-Mail":
-                    modifier -= 0.01; // 0.02; // += 0.0;
-                    break;
-                case "Plate-Mail":
-                    modifier -= 0.015; // 0.03; // -= 0.025;
-                    break;
-                default:
-                    break;
-            };
-        };
-        addModifier(helmet);
-        addModifier(chest);
-        addModifier(legs);
-        speed += modifier;
+        /*
+            This is to test whether the type of armor in-game affects the entity's speed.
+            Not convinced it's necessary yet, but I will tinker with it in the future.
+        */
+        // const helmet = entity.helmet.type;
+        // const chest = entity.chest.type;
+        // const legs = entity.legs.type;
+        // let modifier = 0;
+        // const addModifier = (item: string) => {
+        //     switch (item) {
+        //         // case "Leather-Cloth":
+        //         //     break;
+        //         case "Leather-Mail":
+        //             modifier -= 0.005; // 0.01; // += 0.025;
+        //             break;
+        //         case "Chain-Mail":
+        //             modifier -= 0.01; // 0.02; // += 0.0;
+        //             break;
+        //         case "Plate-Mail":
+        //             modifier -= 0.015; // 0.03; // -= 0.025;
+        //             break;
+        //         default:
+        //             break;
+        //     };
+        // };
+        // addModifier(helmet);
+        // addModifier(chest);
+        // addModifier(legs);
+        // speed += modifier;
         return speed;
+    };
+
+    setupRaycasting(): void {
+        this.visionCache = { canSeeEntity: false, timestamp: 0 };
+    };
+
+    canSeeEntity(): boolean {
+        const now = this.scene.time.now;
+        if (now - this.visionCache.timestamp < this.visionCacheTime) {
+            return this.visionCache.canSeeEntity;
+        };
+
+        this.lastRaycastFrame++;
+        if (this.lastRaycastFrame < this.raycastFrameSkip) {
+            return this.visionCache.canSeeEntity;
+        };
+        this.lastRaycastFrame = 0;
+
+
+        return true;
+    };
+
+    createShadow(create: boolean) {
+        if (create) {
+            // this.shadow = this.postFX?.addShadow(0.1, 4, 0.025, 1, 0x000000); // 16
+            this.shadow = this.scene.add.graphics();
+            this.shadow.fillStyle(0x000000, 0.3);
+            this.shadow.fillEllipse(0, 0, 20, 10); // Wide, flat ellipse
+            this.shadow.setDepth(1); // Behind player
+            this.shadow.setPosition(this.x, this.y + 25);
+        } else {
+            // this.postFX?.remove(this.shadow);
+        };
     };
 
     private startGlowTween(object: any, type: string) {
@@ -544,28 +613,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    // updateGlow = (object: any) => {
-    //     const glowFilter = this?.scene?.glowFilter;
-    //     if (!glowFilter) {
-    //         this.removeGlow();
-    //         return;
-    //     };
-    //     let instance = glowFilter.get(object)[0];
-    //     // const strength = this.name === "player" && (this as unknown as Player).checkTalentEnhanced("caerenic") ? 5 : 2;
-    //     if (instance) {
-    //         instance.outerStrength = 2 + Math.sin(this.scene.time.now * 0.005) * 2;
-    //         instance.innerStrength = 2 + Math.cos(this.scene.time.now * 0.005) * 2;
-    //     } else {
-    //         glowFilter.add(object, {
-    //             outerStrength: 2 + Math.sin(this.scene.time.now * 0.005) * 2,
-    //             innerStrength: 2 + Math.cos(this.scene.time.now * 0.005) * 2,
-    //             glowColor: this.glowColor,
-    //             quality: GLOW_INTENSITY,
-    //             knockout: true
-    //         });
-    //     };
-    // };
-
     adjustSpeed = (speed: number): number => {
         return this.speed += speed;
     };
@@ -642,7 +689,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     
     applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
         if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting)) return;
-        force *= 0.35; // 0.55
+        force *= 0.4; // 0.35
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
             targets: target,
@@ -710,10 +757,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     movingUp = (): boolean => this.body?.velocity.x === 0 && this.body?.velocity.y < 0;
     down = (): boolean => this.body?.velocity?.y as number > 0;
     up = (): boolean => this.body?.velocity?.y as number < 0;
+    
     updatePositionHistory = () => {
         this.lastX = this.x;
         this.lastY = this.y;
     };
+
     syncPositions = () => {
         if (!this.moving()) return; // this.scene.frameCount & 1
         const { x, y } = this;
@@ -722,6 +771,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.healthbar) this.healthbar.update(this);
         if (this.reactiveBubble) this.reactiveBubble.update(x, y);
         if (this.negationBubble) this.negationBubble.update(x, y);
+        if (this.shadow) this.shadow.setPosition(x, y + 25);
     };
 
     xCheck = () => this.velocity?.x !== 0;
@@ -748,6 +798,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.isTethering) total++;
         return total;    
     };
+
     isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isFrozen || this.isParalyzed || this.isPolymorphed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {
@@ -795,30 +846,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     checkActionSuccess = () => {
-        if (this.isStorming || !this.touching.length) return;
+        if (!this.touching.length) return;
         this.setWeaponHitbox();
         for (let i = 0; i < this.touching.length; i++) {
             if (this.touching[i].health > 0) this.enhancedHitBoxCheck(this.touching[i]);
-            // if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
         };
-        // if (this.name === "player" && !this.isStorming) {
-        //     if (this.touching.length > 0) {
-        //         for (let i = 0; i < this.touching.length; i++) {
-        //             if (this.touching[i].health > 0) this.enhancedHitBoxCheck(this.touching[i]);
-        //             // if (this.touching[i].health > 0) this.hitBoxCheck(this.touching[i]); // this.touching[i] !== target &&
-        //         };
-        //     };
-        // };
-        // if ((this.name === "enemy" || this.name === "party") && this.currentTarget && this.currentTarget.body) {
-        //     const direction = this.currentTarget.position.subtract(this.position);
-        //     const distance = direction.length();
-        //     if (distance < DISTANCE_CLEAR && !this.currentTarget.isProtecting && this.currentTarget.health > 0) {
-        //         this.attackedTarget = this.currentTarget;
-        //         (this as unknown as Enemy | Party).weaponActionSuccess();
-        //     } else {
-        //         this.currentAction = "";
-        //     };
-        // };
     };
 
     checkBow = (type: string) => type === "Bow" || type === "Greatbow";
@@ -829,15 +861,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (weapon === undefined) return;
         this.isRanged = weapon?.attackType === "Magic" || weapon?.type === "Bow" || weapon?.type === "Greatbow";
         if (this.name === "player") {
-            this.swingTimer = SWING_TIME[weapon?.grip as keyof typeof SWING_TIME] || 1500;
-            if (weapon?.grip === "One Hand") {
+            this.swingTimer = SWING_TIME[weapon.grip as string] || 1500;
+            if (weapon?.grip === ONE_HAND) {
                 this.weaponHitbox.radius = 24;
             } else {
                 this.weaponHitbox.radius = 28;
             };
         } else {
-            this.swingTimer = ENEMY_SWING_TIME[weapon?.grip as keyof typeof ENEMY_SWING_TIME] || 1000;
-            if (weapon?.grip === "One Hand") {
+            this.swingTimer = ENEMY_SWING_TIME[weapon.grip as string] || 1000;
+            if (weapon?.grip === ONE_HAND) {
                 this.weaponHitbox.radius = 24;
             } else {
                 this.weaponHitbox.radius = 28;
@@ -853,10 +885,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             return false;
         };
         const chance = Math.random() * 101;
-        const playerResist = this.scene.state.stalwart.active ? this.scene.state.playerDefense?.magicalPosture as number / 4 : this.scene.state.playerDefense?.magicalDefenseModifier as number / 4;
-        // const enemyPenetration = this.combatStats?.attributes?.kyosirMod || 0;
-        // this.scene.hud.logger.log(`Enemy Special Chance: ${roundToTwoDecimals(chance)} | Player Resist: ${playerResist} | Enemy Penetration: ${enemyPenetration}`);
-        // const resist = playerResist - enemyPenetration; // 0 - 25% - 0 - 25%
+        const playerResist = this.scene.state.stalwart.active ? this.scene.state.playerDefense.magicalPosture / 4 : this.scene.state.playerDefense.magicalDefenseModifier / 4;
         if (chance > playerResist) {
             return true;
         } else {
@@ -898,8 +927,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.lastHitLocation = hitResult;
             this.attackedTarget = target;
             
-            // console.log(`${this.ascean.name} hit ${target.name} in the ${hitResult.location} at position (${hitResult.relativePosition.x.toFixed(2)}, ${hitResult.relativePosition.y.toFixed(2)})`);
-            
             (this as any).weaponActionSuccess();
         };
     };
@@ -928,7 +955,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const distance = point.subtract(this.position).length();
         const duration = Math.max(100, distance * 2);
         this.grappleTime = duration;
-        // console.log({ duration });
         if (this.scene.hud.cinemaMode) {
             this.hooking = false;
             this.scene.hud.cinemaMode = false;
@@ -986,37 +1012,17 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const layer = (this.scene as Arena | Underground).groundLayer;
         const line = new Phaser.Geom.Line(this.currentTarget?.x, this.currentTarget?.y, this.x, this.y);
         const points = line.getPoints(0, 20).reverse(); // 30 // Adjust number of points based on precision
-        // if (this.name === "player") {
-        //     this.debugger = this.scene.add.graphics();
-        //     this.debugger.lineStyle(1, 0xffc700, 1); // thickness, color, alpha
-        //     this.debugger.strokeLineShape(line);
-        //     points.forEach(p => {
-        //         this.debugger.fillStyle(0x00ff00, 1); // green points
-        //         this.debugger.fillCircle(p.x, p.y, 2);
-        //     });
-        //     this.scene.time.delayedCall(1500, () => {this.debugger.clear(); this.debugger.destroy()});
-        // };
         const arr = points.length - 1;
         for (let i = 0; i < arr; ++i) { // < points.length - 1
             const point = points[i];
-            // if (this.name === "player") console.log({ i, point });
             const tile = this.scene.map.getTileAtWorldXY(point.x, point.y, false, this.scene.cameras.main, layer);
             if (tile && tile.properties.wall) {
                 const tileRect = new Phaser.Geom.Rectangle(tile.pixelX, tile.pixelY, tile.width, tile.height);
                 if (Phaser.Geom.Intersects.LineToRectangle(line, tileRect)) {
-                    // if (this.name === "player") {
-                    //     // this.debugger.clear();
-                    //     // this.debugger.lineStyle(1, 0xff0000, 1);
-                    //     this.debugger.fillStyle(0xff0000, 1);
-                    //     this.debugger.fillCircle(point.x, point.y, 2);    
-                    // };
                     return true;
                 };
-                // debugGraphics.clear();
-                // return true;  // Wall is detected
             };
         };
-        // debugGraphics.clear();
         return false;  // Clear line of sight
     };
 
@@ -1040,7 +1046,56 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
-    particleAoe = (effect: Particle) => this.scene.aoePool.get(effect.key.split("_effect")[0], 3, false, undefined, false, undefined, {effect, entity:this as any});
+    particleAoe = (effect: Particle) => {
+        this.scene.aoePool.get(effect.key.split("_effect")[0], 5, false, undefined, false, undefined, {effect, entity: this as any});
+        this.explodeAoe(effect);
+    };
+
+    explodeAoe(effect: Particle) {
+        if (effect.action !== ACTION_TYPES.HURL) return;
+        if ((this as unknown as Player).checkTalentEnhanced(States.HURL)) {
+            const target = effect.effect;
+            let previous = {x: target.x, y: target.y};
+            const volume = this.scene.hud.settings.volume;
+            for (let i = 0; i < PARTICLE_MAP.length; ++i) {
+                const x = target.x + PARTICLE_MAP[i][0];
+                const y = target.y + PARTICLE_MAP[i][1];
+                this.scene.time.delayedCall(80 * (i + 1), () => {
+                    this.beam.drawLightning(new Phaser.Math.Vector2(previous), new Phaser.Math.Vector2(x, y));
+                    const rate = Phaser.Math.Between(0.75, 1.25);
+                    this.scene.sound.play("lightning", { volume, rate });
+                    previous.x = x;
+                    previous.y = y;
+                    const dummy = this.createParticleCopy(effect, x, y);
+                    this.scene.aoePool.explode(effect.key.split("_effect")[0], 5, this as any, dummy.effect.x, dummy.effect.y);
+
+                    this.scene.time.delayedCall(5000, () => {
+                        if (dummy.effect) {
+                            dummy.effect.destroy();
+                        };
+                    }, undefined, this);
+                }, undefined, this);
+            };
+        };
+    };
+
+    createParticleCopy(original: Particle, newX: number, newY: number): Particle {
+        const copy = Object.create(Object.getPrototypeOf(original));
+        Object.assign(copy, original);
+        
+        copy.effect = new Phaser.Physics.Matter.Sprite(
+            this.scene.matter.world,
+            newX,
+            newY,
+            original.effect.texture.key
+        );
+        
+        copy.effect.setScale(original.effect.scale);
+        copy.effect.setAlpha(original.effect.alpha);
+        copy.effect.setRotation(original.effect.rotation);
+        
+        return copy;
+    };
 
     getFrame = (anim: any): string => FRAME_KEYS[anim.key];
 
@@ -1092,7 +1147,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? SHIELD_ANIMATION_FRAME_CONFIG.posturing.flipX
                 : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX
                 
-            this.spriteWeapon.setDepth(this.depth + 1);
+            this.spriteWeapon.setDepth(this.depth - 1);
             this.spriteShield.setAlpha(1).setDepth(this.depth + 1).setScale(0.6);
             if (this.up()) {
                 this.spriteShield.setAngle(this.flipX ? 30 : -30);
@@ -1116,63 +1171,83 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
 
+        hurl: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
+        
+            this.spriteWeapon.setDepth(1);
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+
         dodge: () => this.spriteShield?.setVisible(false),
 
         roll: () => this.spriteShield?.setVisible(false),
 
-        "grappling roll": () => this.spriteShield?.setVisible(false),
+        "grappling roll": () => {
+            this.spriteShield?.setVisible(false);
+            this.spriteWeapon?.setVisible(false);
+        },
 
         movingVertical: () => {
             this.spriteShield?.setAngle(0);
             this.spriteShield?.setVisible(true);
             this.spriteShield?.setFlipX(this.flipX);
+
+            const alternative = this.isClimbing || this.inWater;
+
             if (this.movingDown()) {
-                this.spriteShield?.setDepth(this.depth - ((this.isStalwart || this.isClimbing) ? -1 : 1));
+                this.spriteShield?.setDepth(this.depth - ((this.isStalwart || alternative) ? -1 : 1));
                 this.spriteWeapon?.setDepth(this.depth + 1);
             } else {
-                this.spriteShield?.setDepth(this.depth + (this.isStalwart && !this.isClimbing ? -1 : 1));
-                this.spriteWeapon?.setDepth(this.depth - (this.isClimbing ? -1 : 1));
+                this.spriteShield?.setDepth(this.depth + (this.isStalwart && !alternative ? -1 : 1));
+                this.spriteWeapon?.setDepth(this.depth - (alternative ? -1 : 1));
             };
-            if (!this.flipX) {
+
+            if (this.flipX) {
                 if (this.hasBow) {
-                    this.spriteWeapon?.setOrigin(0.25, 0.25);
-                    this.spriteWeapon?.setAngle(107.5);
-                } else {
-                    this.spriteWeapon?.setOrigin(-0.2, 0.75);
-                    this.spriteWeapon?.setAngle(107.5);
-                };
-                if (this.isStalwart && !this.isClimbing) {
-                    this.spriteShield?.setScale(0.6);
-                    this.spriteShield?.setAlpha(1);
-                    this.spriteShield?.setOrigin(0, 0.5);
-                } else {
-                    this.spriteShield?.setAlpha(0.75);
-                    this.spriteShield?.setScale(0.4, 0.6);
-                    if (this.isClimbing) {
-                        this.spriteShield?.setOrigin(0.4, 0.5);
-                    } else {
-                        this.spriteShield?.setOrigin(0.2, 0.5);
-                    };
-                };
-            } else {
-                if (this.hasBow) {
-                    this.spriteWeapon?.setOrigin(0, 0.5);
-                    this.spriteWeapon?.setAngle(-7.5);
+                    this.spriteWeapon?.setOrigin(0.6, 0.75);
+                    this.spriteWeapon?.setAngle(72.5); // -7.5
                 } else {
                     this.spriteWeapon?.setOrigin(0.2, 1.2);
                     this.spriteWeapon?.setAngle(-194.5);
                 };
-                if (this.isStalwart && !this.isClimbing) {
+                if (this.isStalwart && !alternative) {
                     this.spriteShield?.setScale(0.6);
                     this.spriteShield?.setAlpha(1);
                     this.spriteShield?.setOrigin(1, 0.5);
                 } else {
                     this.spriteShield?.setAlpha(0.75);
                     this.spriteShield?.setScale(0.4, 0.6);
-                    if (this.isClimbing) {
+                    if (alternative) {
                         this.spriteShield?.setOrigin(0.6, 0.5);
                     } else {
-                        this.spriteShield?.setOrigin(0.8, 0.5);
+                        /* WORKING ON  */
+                        this.spriteShield?.setOrigin(0.5, 0.5);
+                    };
+                };
+            } else {
+                if (this.hasBow) {
+                    this.spriteWeapon?.setOrigin(0.75, 0.5);
+                    this.spriteWeapon?.setAngle(7.5); // 107.5
+                } else {
+                    this.spriteWeapon?.setOrigin(-0.35, 0.75);
+                    this.spriteWeapon?.setAngle(107.5);
+                };
+                if (this.isStalwart && !alternative) {
+                    this.spriteShield?.setScale(0.6);
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(0, 0.5);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setScale(0.4, 0.6);
+                    if (alternative) {
+                        this.spriteShield?.setOrigin(0.4, 0.5);
+                    } else {
+                        /* WORKING ON  */
+                        this.spriteShield?.setOrigin(0.5, 0.5);
                     };
                 };
             };
@@ -1181,6 +1256,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         moving: () => {
             this.spriteShield?.setVisible(true);
             this.spriteShield?.setFlipX(this.flipX);
+            
+            // const frameIndex = frame.index;
+            // const configKey = this.hasBow ? BOW : NOBOW;
+            // const config = this.flipX 
+            //     ? WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].flipX 
+            //     : WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].noFlipX;
+                
+            // applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(1);
@@ -1372,6 +1456,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].flipX
                 : WEAPON_ANIMATION_FRAME_CONFIG.posturing[configKey].noFlipX;
 
+
             const shieldConfig = this.flipX
                 ? SHIELD_ANIMATION_FRAME_CONFIG.posturing.flipX
                 : SHIELD_ANIMATION_FRAME_CONFIG.posturing.noFlipX;
@@ -1389,12 +1474,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 } else if (this.name === "party") {
                     if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.POSTURE;
                 };
-            } else if (frameIndex === 4 && this.isRanged) {
-                if (this.hasMagic) {
-                    this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
-                } else if (this.hasBow) {
-                    this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
-                };
+            } else if (frameIndex === 3 && this.hasMagic) {
+                this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
+            } else if (frameIndex === 4 && this.hasBow) {
+                this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.bowDamageType());
             } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
             };
@@ -1407,20 +1490,20 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 ? WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].flipX
                 : WEAPON_ANIMATION_FRAME_CONFIG.attacking[configKey].noFlipX;
 
-
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+
+            if (frameIndex === 3) {
+                this.spriteWeapon.setDepth(this.depth + 1);
+            };
 
             if (this.name === "player" && (this as unknown as Player).checkTalentEnhanced(States.ATTACK) && !this.isRanged && frameIndex === 4) {
                 this.scene.combatManager.combatMachine.input(ACTION, States.ATTACK);
                 this.checkActionSuccess();
             };
-
-            if (frameIndex === 3 && this.isRanged) { // 6
-                if (this.hasMagic) {
-                    this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
-                } else if (this.hasBow) {
-                    this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
-                };
+            if (frameIndex === 3 && this.hasBow) {
+                this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.bowDamageType());
+            } else if (frameIndex === 4 && this.hasMagic) { // 6
+                this.particleEffect = this.scene.particleManager.addEffect(ATTACK, this, this.currentDamageType);
             } else if (frameIndex === 6 && !this.isRanged) {
                 this.currentAction = States.ATTACK;
                 if (this.name === "player") {
@@ -1434,6 +1517,42 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 8 && !this.isRanged) {
                 this.checkActionSuccess();
             };
+        },
+        
+        hurl: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.parrying[configKey].noFlipX;
+
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            
+            if (frameIndex === 3 && this.hasBow) {
+                this.particleEffect = this.scene.particleManager.addEffect(States.HURL, this, this.bowDamageType());
+            } else if (frameIndex === 4 && this.hasMagic) { // 6
+                this.particleEffect = this.scene.particleManager.addEffect(States.HURL, this, this.currentDamageType);
+            };
+        },
+
+        movingVertical: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.movingVertical[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.movingVertical[configKey].noFlipX;
+                
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+        },
+
+        moving: (frame) => {
+            const frameIndex = frame.index;
+            const configKey = this.hasBow ? BOW : NOBOW;
+            const config = this.flipX
+                ? WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].flipX
+                : WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].noFlipX;
+        
+            applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
     };
 

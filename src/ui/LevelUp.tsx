@@ -7,6 +7,7 @@ import AttributeModal from "../components/Attributes";
 import { FAITHS } from "../components/Faith";
 import Ascean from "../models/ascean";
 import { LevelSheet } from "../utility/ascean";
+import { masteryColor } from "../utility/styling";
 
 const dims = dimensions();
 
@@ -108,12 +109,12 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
         setShow(false);
     };
     return <div class="modal" style={{ "z-index": 5 }}>
-        <div class="stat-block superCenter" style={{ width: "100%", background: "rgba(0, 0, 0, 0.9" }}>
-            <div class="left center" style={{ height: "80%", width: "48%",  top: "10%",display: "inline-block", border: "0.15em solid #fdf6d8" }}>
+        <div class="stat-block superCenter" style={{ width: "100%", background: "rgba(0, 0, 0, 1" }}>
+            <div class="left center" style={{ height: "85%", width: "48%", left: "0.5%", top: "12.5%",display: "inline-block", border: `thick ridge ${masteryColor(asceanState().mastery)} `}}>
                 <div style={{ width: "auto", "font-size": "0.9em" }}>
 
                 <h3 class="gold wrap" style={{ "margin": "5%" }}>Congratulations {asceanState().ascean.name}, You Can Now Level Up To {asceanState().ascean.level + 1}</h3>
-                <p class="gold wrap" style={{ "margin-bottom": "3%" }}>You may change your faith at this time.</p>
+                <p class="bone wrap" style={{ "margin-bottom": "3%" }}>You may change your faith at this time.</p>
                 <div>
                     <For each={FAITHS}>
                         {(faith) => (
@@ -121,7 +122,7 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                         )}
                     </For>
                 </div>
-                <div class="gold wrap" style={{ "margin": "3%" }}>You may also change your focus of mastery at this time.</div>
+                <div class="bone wrap" style={{ "margin": "3%" }}>You may also change your focus of mastery at this time.</div>
                 <div>
                     <For each={Attributes}>
                         {(mastery) => (
@@ -131,28 +132,32 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
                 </div>      
                 </div>
             </div>
-            <div class="right center" style={{ height: "80%", width: "48%", top: "10%", display: "inline-block", border: "0.15em solid #fdf6d8" }}>
-            <div style={{ width: "auto", "font-size": "0.9em" }}>
-                <p class="gold">You will gain 2 attribute points <br />Would you like to allocate them now?</p>
-                <h3 class="gold" style={{ "margin-bottom" : "5%", animation: pool() === 2 ? "texty 1s infinite ease alternate" : "", "--glow-color": "gold" }}>Attribute Pool: {pool()} / 2</h3>
+            <div class="right center" style={{ height: "85%", width: "48%", left: "50.5%", top: "12.5%", display: "inline-block", border: `thick ridge ${masteryColor(asceanState().mastery)} `}}>
+            <div style={{ width: "auto", "font-size": "0.9rem" }}>
+                <h3 class="gold" style={{ "margin-bottom" : "-2%", animation: pool() === 2 ? "texty 1s infinite ease alternate" : "", "--glow-color": "gold" }}>Attribute Pool: {pool()} / 2</h3>
+                <p class="bone">You have gained 2 attribute points</p>
+                {/* <br />Would you like to allocate them now? */}
                 <For each={Attributes}>
                     {(attribute) => (
-                        <InputGroup style={{ width: dims.ORIENTATION === "landscape" ? `33%` : `40%`, display: "inline-block", height: "auto" }}>
-                            <p class="tighten">{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</p>
-                            <br />
-                            <span class="gold">{asceanState()[attribute.name as keyof typeof asceanState] + asceanState().ascean[attribute.name as keyof typeof asceanState]} ({Math.floor((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState] - 10) / 2) > 0 ? "+" : ""}{(Math.floor(((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState]) - 10) / 2))})</span>
-                            <br />
-                            <button class="highlight" onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? "inline-block" : "none", width: "auto", height: "auto", transform: "scale(0.75)" }}>-</button>
-                            <button class="highlight" onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling() ? "inline-block" : "none", width: "auto", height: "auto", transform: "scale(0.75)" }}>+</button>
+                        <InputGroup class="stat-column" style={{ width: "30%", display: "inline-block", "margin-bottom":"0.5rem", padding: "0 0.25rem" }}>
+                            <div class="stat-card" style={{ height: "25vh", padding: "0.5rem" }}>
+                                <p class="tighten stat-label" style={{ margin: "3% auto" }}>{attribute.name.toUpperCase()}</p>
+                                {/* {attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)} */}
+                                <p class="gold" style={{ margin: "5% auto", "font-size":"1rem" }}>{asceanState()[attribute.name as keyof typeof asceanState] + asceanState().ascean[attribute.name as keyof typeof asceanState]} ({Math.floor((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState] - 10) / 2) > 0 ? "+" : ""}{(Math.floor(((asceanState()[attribute.name as keyof typeof asceanState] as number + asceanState().ascean[attribute.name as keyof typeof asceanState]) - 10) / 2))})</p>
+                                <div style={{ display: "inline-flex" }}>
+                                    <button class="highlight" onClick={(e) => handleChange(e, attribute.name, -1)} style={{ display: floor(attribute.name) ? "inline-block" : "", visibility: floor(attribute.name) ? "visible" : "hidden", width: "auto", height: "auto", "font-weight": 900  }}>-</button>
+                                    <button class="highlight" onClick={(e) => handleChange(e, attribute.name, 1)} style={{ display: ceiling() ? "inline-block" : "", visibility: ceiling() ? "visible" : "hidden", width: "auto", height: "auto", "font-weight": 900  }}>+</button>
+                                </div>
+                            </div>
                         </InputGroup>
                     )}
                 </For>
             </div>
             </div>
             <Show when={pool() === 2}>
-                <button class="highlight cornerTL animate" style={{ "background-color": "green", color: "#000", "font-weight": 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
+                <button class="highlight cornerTL animate" style={{ "font-weight": 700 }} onClick={() => levelUp(asceanState)}>Level Up</button>
             </Show>
         </div>
-        <button class="highlight cornerBR" style={{ "background-color": "red" }} onClick={() => setShow(!show())}>X</button>
+        <button class="highlight cornerTR" style={{ "color": "red", "font-weight": 700 }} onClick={() => setShow(!show())}>X</button>
     </div>;
 };

@@ -1,5 +1,5 @@
 import Ascean from "../models/ascean";
-import { Accessor, Setter, Show, createSignal } from "solid-js";
+import { Accessor, Match, Setter, Show, Switch, createSignal } from "solid-js";
 import { dimensions } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
 import { font } from "../utility/styling";
@@ -18,39 +18,44 @@ interface FirewaterProps {
 function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewater, showBleed, setShowBleed, repelenishFirewater, highlighter }: FirewaterProps) {
     const dims = dimensions();
     return <>
-        <div class="modal" classList={{
-                "tutorial-highlight": highlighter() === "firewater-button",
-            }}>
-            <button class="border superCenter" style={{ "max-height": dims.ORIENTATION === "landscape" ? "85%" : "50%", "max-width": dims.ORIENTATION === "landscape" ? "35%" : "70%" }}>
+        <div class="modal" classList={{ "tutorial-highlight": highlighter() === "firewater-button" }}>
+            <button class="thick-border superCenter" style={{ "max-height": dims.ORIENTATION === "landscape" ? "auto" : "50%", "max-width": dims.ORIENTATION === "landscape" ? "50%" : "70%" }}>
             <div class="creature-heading wrap" style={{ height: "100%" }}>
                 <h1>
                     Firewater ( {ascean().firewater.current} / {ascean().firewater.max} )
                 </h1>
-                <h2 style={{ top: "-2.5%" }}>
+                <h2 style={{ top: "-2.5%", "font-size":"1.15rem" }}>
                     This is a bottle of Fyervas Firewater, associated with Fyer of Fire and Se'vas of War. This elixir strengthens the body and imbues you with a fiery spirit, making you{" "}
                     more resilient and able to withstand combat and other challenges. This bottle has {ascean().firewater.current} charges left.
                 </h2>
                 <p class="gold">
-                    Do you wish to drink from the flask?<br />
-                    <span style={font("0.75em", "#fdf6d8")}>
+                    Do you wish to drink from the flask?<br /><br />
+                    <span style={{...font("1rem", "#fdf6d8"), "margin": "1rem auto" }}>
                         [This replenishes 100% of your maximum health. Defeating enemies of comparable or greater strength will replenish the Firewater]
                     </span>
                 </p>
-                {ascean().firewater.current === 0 ? ( <div>
-                    <button class="center highlight" style={{ margin: "3%" }} onClick={() => setShowBleed(!showBleed())}>
-                        <div style={{ color: "red" }}>Inspect</div>
-                    </button>
-                    <button class="center highlight" style={{ margin: "3%" }} onClick={() => setShowFirewater(!showFirewater())}>
-                        <div style={{ color: "gold" }}>Close flask</div>
-                    </button>
-                </div> ) : ( <div>
-                    <button class="center highlight" style={{ margin: "3%" }} onClick={() => drinkFirewater()}>
-                        <div style={{ color: "blue" }}>Drink?</div>
-                    </button>
-                    <button class="center highlight" style={{ margin: "3%" }} onClick={() => setShowFirewater(!showFirewater())}>
-                        <div style={{ color: "gold" }}>Close Flask</div>
-                    </button>
-                </div> )}
+                <Switch>
+                    <Match when={ascean().firewater.current === 0}>
+                        <div>
+                            <button class="center highlight" style={{ margin: "0 5% 5%", "font-size":"1rem" }} onClick={() => setShowBleed(!showBleed())}>
+                                <div style={{ color: "red" }}>Inspect</div>
+                            </button>
+                            <button class="center highlight" style={{ margin: "0 5% 5%", "font-size":"1rem" }} onClick={() => setShowFirewater(!showFirewater())}>
+                                <div style={{ color: "#fdf6d8" }}>Close flask</div>
+                            </button>
+                        </div> 
+                    </Match>
+                    <Match when={ascean().firewater.current > 0}>
+                        <div>
+                            <button class="center highlight" style={{ margin: "0 5% 5%", "font-size":"1rem" }} onClick={() => drinkFirewater()}>
+                                <div style={{ color: "gold" }}>Drink?</div>
+                            </button>
+                            <button class="center highlight" style={{ margin: "0 5% 5%", "font-size":"1rem" }} onClick={() => setShowFirewater(!showFirewater())}>
+                                <div style={{ color: "#fdf6d8" }}>Close Flask</div>
+                            </button>
+                        </div> 
+                    </Match>
+                </Switch>
             </div>
             </button>
         </div>
@@ -70,11 +75,12 @@ function FirewaterModal({ ascean, showFirewater, setShowFirewater, drinkFirewate
                     <p class="basicText" style={{ color: "red" }}>
                         Do you wish to set camp and let it bleed?
                     </p>
-                    {ascean().firewater.current === 0 && (
+
+                    <Show when={ascean().firewater.current === 0}>
                         <button class="center highlight" style={{ "margin-bottom": "5%" }} onClick={() => repelenishFirewater()}>
                             <div style={{ color: "red" }}>Bleed</div>
                         </button>
-                    )}
+                    </Show>
                 </div>
                 </div>
                 </div>

@@ -41,17 +41,7 @@ export const initTutorial: Tutorial = {
 type STEP = {
     id: string;
     type: string;
-    position: JSX.CSSProperties; 
-    // = {
-        // left?: string,
-        // right?: string,
-        // top?: string,
-        // bottom?: string,
-        // height?: string,
-        // width?: string,
-        // "text-align"?: string,
-        // transform?: string,
-    // };
+    position: JSX.CSSProperties;
     class: string;
     title: string;
     content: string;
@@ -104,6 +94,14 @@ const BOOT_TUTORIAL_STEPS: STEP[] = [
         class: "cornerBR",
         title: "↓ Small HUD ↓",
         content: "These settings allow you to: Bring up character sheets, combat settings, combat logs, resetting the cursor (if mobile), pause (if mobile), and toggle its visibility.",
+    },
+    {
+        id: "",
+        type: "",
+        position: {},
+        class: "superCenter",
+        title: "Enemies and NPCs",
+        content: "When encountering other entities, beware of their colors: if they are tinted BLUE, they are friendly NPCs, capable of giving either important information, or perhaps trade for better garments. If they are tinted RED, they are potential enemies, and it is up to you to decide how you wish to engage with them, as dialog is still an option.",
     }
 ];
 
@@ -404,7 +402,7 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
                 Pleading yield and hither.
                 </p>
                 <button class="button" data-function-name="blessPlayer">
-                <img src=${ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.jpg" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.png" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt=${ascean().faith}  class=${"godBorder"+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
+                <img src=${ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.png" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.png" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt=${ascean().faith}  class=${"godBorder"+ascean().mastery.charAt(0).toUpperCase()+ascean().mastery.slice(1)} />
                 </button>
                 </div>`
             );
@@ -477,7 +475,6 @@ export default function TutorialOverlay({ ascean, settings, tutorial, show, setS
             console.warn(err.message);
         };
     };
-    // console.log({ tutorial: tutorial() });
     return (
         <Switch>
             <Match when={tutorial() === "deity"}>

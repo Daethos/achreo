@@ -14,13 +14,14 @@ import { Compiler, LevelSheet, asceanCompiler } from "../utility/ascean";
 import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from "../assets/db/db";
 import { getNpcDialog } from "../utility/dialog";
 import { getAsceanTraits, Traits } from "../utility/traits";
-import { fetchDm, fetchTutorialEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
+import { fetchDm, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
 import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION, ENEMY_HOSTILE } from "../utility/player";
 import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
 import QuestManager, { Quest } from "../utility/quests";
+import { addStance } from "../utility/abilities";
 const BaseUI = lazy(async () => await import("../ui/BaseUI"));
 
 const RARITY_GOLD_MAP: {[key:string]: number} = {
@@ -113,12 +114,13 @@ export default function PhaserGame (props: IProps) {
     };
 
     /* <<--------------------------------------->>
-                    LEVEL UP 
-        Increases stats if necessary,
-        Changes mastery / faith is applicable
-        Checks to increase limit on specials
-        Updates statistics recording mastery
-        Updates talents to increase total
+    *               LEVEL UP 
+    *    Increases stats if necessary,
+    *    Changes mastery / faith is applicable
+    *    Checks to increase limit on specials
+    *    Checks to ensure stance is given
+    *    Updates statistics recording mastery
+    *    Updates talents to increase total
     <<--------------------------------------->> */
     async function levelUp(state: Accessor<any>) {
         let constitution = Number(state().constitution);
@@ -151,8 +153,9 @@ export default function PhaserGame (props: IProps) {
                     max: hyd?.ascean.health.max as number
                 },
             } as Ascean;
+
             const currentSpecials = props.settings().specials;
-            if (currentSpecials.length < 5 && currentSpecials.length < update.level) {
+            if (currentSpecials.length < 5 && (currentSpecials.length + 1) < update.level) {
                 let newSettings = JSON.parse(JSON.stringify(props.settings()));
                 const increase = newSettings.totalSpecials.find((special: string) => !currentSpecials.includes(special));
                 if (increase) {
@@ -160,14 +163,13 @@ export default function PhaserGame (props: IProps) {
                     props.setSettings(newSettings);
                     await updateSettings(newSettings);
                     EventBus.emit("fetch-button-reorder");
-                }; 
+                };
             };
-            // if (props.ascean().mastery !== newMastery) {
-            //     const settings = { ...props.settings(), specials: STARTING_SPECIALS[newMastery as keyof typeof STARTING_SPECIALS] };
-            //     props.setSettings(settings);
-            //     await updateSettings(settings);
-            //     EventBus.emit("fetch-button-reorder");
-            // };
+
+            if (update.level >= 3 && !props.settings().stances.caerenic) {
+                addStance(props.settings, "caerenic");
+            };
+
             EventBus.emit("update-ascean-state", {
                 ...state(),
                 ascean: save,
@@ -182,7 +184,8 @@ export default function PhaserGame (props: IProps) {
                 kyosir: 0,
                 mastery: save.mastery,
                 faith: save.faith,
-            });                
+            });
+
             EventBus.emit("update-ascean", save);
 
             let newStats = {
@@ -193,6 +196,7 @@ export default function PhaserGame (props: IProps) {
                 }
             };
             EventBus.emit("update-statistics", newStats);
+            
             let newTalents = JSON.parse(JSON.stringify(props.talents()));
             newTalents = {
                 ...newTalents,
@@ -719,7 +723,7 @@ export default function PhaserGame (props: IProps) {
             if (update.experience >= 500 && update.level >= 1) {
                 setTutorial("deity");
                 setShowTutorial(true);  
-                if (game().pauseState === false) {
+                if (!game().pauseState) {
                     EventBus.emit("update-pause", true);
                     EventBus.emit("toggle-bar", true);    
                     EventBus.emit("update-small-hud");
@@ -728,7 +732,7 @@ export default function PhaserGame (props: IProps) {
         };
         if (checkDeificInteractions(update)) {
             setShowDeity(true);
-            if (game().pauseState === false) {
+            if (!game().pauseState) {
                 EventBus.emit("update-pause", true);
                 EventBus.emit("toggle-bar", true);    
                 EventBus.emit("update-small-hud");
@@ -826,10 +830,10 @@ export default function PhaserGame (props: IProps) {
             };
             const newAscean = {
                 ...props.ascean(),
-                experience: experience,
+                experience,
                 health: { ...props.ascean().health, current: health },
-                currency: currency,
-                firewater: firewater,
+                currency,
+                firewater,
             };
             EventBus.emit("update-ascean", newAscean);
         } catch (err: any) {
@@ -1122,7 +1126,7 @@ export default function PhaserGame (props: IProps) {
             await deleteMerchantEquipment();
             setGame({ ...game(), merchantEquipment: [], dialogTag: false, currentNode: undefined, currentNodeIndex: 0 });    
         });
-        EventBus.on("fetch-tutorial-enemy", fetchTutorialEnemy);
+        // EventBus.on("fetch-tutorial-enemy", fetchTutorialEnemy);
         EventBus.on("fetch-enemy", fetchEnemy);
         EventBus.on("fetch-npc", fetchNpc);
         EventBus.on("fetch-dm", fetchDm);

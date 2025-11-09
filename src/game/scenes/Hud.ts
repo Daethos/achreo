@@ -21,6 +21,7 @@ import { Gauntlet } from "./Gauntlet";
 import ScrollingCombatText from "../phaser/ScrollingCombatText";
 import { ObjectPool } from "../phaser/ObjectPool";
 import { DebugMonitor } from "../phaser/DebugMonitor";
+import Player from "../entities/Player";
 // import { ArenaCvC, ArenaView } from "./ArenaCvC";
 const dims = dimensions();
 export const X_OFFSET = 12.5;
@@ -142,7 +143,7 @@ export class Hud extends Phaser.Scene {
         this.smallHud.destroy();
     };
 
-    createArenas = () => {
+    // createArenas = () => {
         // this.arenaButton = this.add.image(this.cameras.main.width - 20, this.cameras.main.height - 50, "toggleButton").setDepth(10).setInteractive(); 
         // this.arenaButton.on("pointerdown", this.toggleArenaView, this);
         // // Create a gridSize squared grid of containers 
@@ -179,7 +180,7 @@ export class Hud extends Phaser.Scene {
         //         this.borders.push(border);
         //     };
         // };
-    };
+    // };
 
     desktops = () => {
         this.input.keyboard?.on("keydown-P", () => {
@@ -461,8 +462,11 @@ export class Hud extends Phaser.Scene {
     startGameScene = () => {
         const scene = this.settings?.map ? this.settings.map : "Tutorial";
         this.currScene = scene;
-        if (!this.settings.tutorial?.boot) return;
+        if (!this.settings.tutorial?.intro) return;
         this.scene.launch(scene, this);
+        // this.time.delayedCall(128, () => {
+        //     if (!this.settings.tutorial.boot) EventBus.emit("boot-tutorial");
+        // });
     };
 
     gameEvents = (): void => {
@@ -700,6 +704,53 @@ export class Hud extends Phaser.Scene {
         if (activate) this.smallHud.activate("dialog", dialogTag);
     };
 
+    setTimeEvent = (player: Player, cooldown: string, limit: number) => {
+        const evasion = cooldown === "rollCooldown" || cooldown === "dodgeCooldown";
+        if (evasion === false) (player as any)[cooldown] = limit;
+        
+        let type = cooldown.split("Cooldown")[0];
+        if (type === "luckout") {
+            type = `${type} ${player.luckoutLock}`
+        } else if (type === "persuasion") {
+            type = `${type} ${player.persuasionLock}`
+        };
+        
+        const button = this.actionBar.getButton(type);
+        if (!button) return;
+
+        button.graphic.setMask(button.graphicGeometryMask);
+        button.border.setMask(button.borderGeometryMask);
+        const cooldownStartTime = this.time.now;
+        this.actionBar.setCurrentWipe(0, limit, button);
+
+        if (player.inCombat || type) {
+            const timer = this.time.addEvent({
+                delay: 50, 
+                callback: () => {
+                    const elapsed = this.time.now - cooldownStartTime;
+                    if (elapsed < limit) {
+                        this.actionBar.setCurrentWipe(elapsed, limit, button);
+                    } else {
+                        timer!.remove();
+                        this.actionBar.setCurrentWipe(limit, limit, button);
+                        this.actionBar.animateButton(button);
+                        if (evasion === false) {
+                            (player as any)[cooldown] = 0;
+                        };
+                    }
+                },
+                callbackScope: this,
+                loop: true
+            });
+            
+        } else {
+            this.actionBar.setCurrentWipe(limit, limit, button);
+            if (!evasion) {
+                (player as any)[cooldown] = 0;
+            };
+        };
+    };
+
     switchScene = (data: {current: string; next: string;}) => {
         if (this.switchingScene) {
             EventBus.emit("alert", { header: "Error Switching Scene", body: `Scene is already switching from ${this.prevScene} to ${this.currScene}` });
@@ -739,6 +790,11 @@ export class Hud extends Phaser.Scene {
             scene.resume();
             this.hitStopping = false;
         }, undefined, this);
+    };
+
+    actionBarRebuild = () => {
+        const scene = this.scene.get(this.currScene);
+        (scene as Play).player.rebuildActionHandlers();
     };
 
     updateCoordinates(x: number, y: number) {

@@ -14,11 +14,18 @@ import { ObjectPool } from "../phaser/ObjectPool";
 import { Compiler } from "../../utility/ascean";
 import DM from "../entities/DM";
 // @ts-ignore
+import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
+// @ts-ignore
 import { PhaserNavMeshPlugin } from "phaser-navmesh";
 import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { Entity } from "../main";
+import { ExperienceManager } from "../phaser/ExperienceManager";
+import { ChatManager } from "../phaser/ChatManager";
+import { ParticleTextures } from "../matter/ParticleTextures";
+import { fetchTutorial } from "../../utility/enemy";
+import Treasure from "../matter/Treasure";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 interface ChunkData {
@@ -32,7 +39,24 @@ interface ChunkData {
     navMesh: any;
     overlay: Phaser.GameObjects.Graphics;
 };
+
+const PROGRESSION = {
+    WELCOME: "welcome", 
+    MOVEMENT: "movement", 
+    SETTINGS: "settings", 
+    COMBAT: "combat", 
+    IMPROVEMENT: "improvement",
+    RESOLUTION: "resolution",
+    ENEMY: "enemy",
+    ARENA: "arena",
+    FINAL: "final",
+    EXIT: "exit"
+};
+
+const tileSize = 32;
+
 export class Tutorial extends Phaser.Scene {
+    animatedTiles: any[];
     offsetX: number = 0;
     offsetY: number = 0;
     state: Combat = initCombat;
@@ -41,7 +65,8 @@ export class Tutorial extends Phaser.Scene {
     centerY: number = window.innerHeight / 2;
     enemies: Enemy[] = [];
     party: Party[] = [];
-    dms: DM[] = [];    
+    dms: DM[] = [];
+    dm: DM;
     lootDrops: LootDrop[] = [];
     target: Phaser.GameObjects.Sprite;
     playerLight: Phaser.GameObjects.PointLight;
@@ -73,25 +98,51 @@ export class Tutorial extends Phaser.Scene {
     loadedChunks: Map<string, ChunkData> = new Map();
     playerChunkX: number = 0;
     playerChunkY: number = 0;
+    experienceManager: ExperienceManager;
+    chatManager: ChatManager;
+    completedSections: Set<string> = new Set();
+    triggers: any[] = [];
+    particleGenerator: ParticleTextures;
+    treasures: Treasure[] = [];
+    tileCache = new Map<string, {climb:boolean, water:boolean}>();
+    climbing: any;
+    swimming: any;
 
     constructor () {
         super("Tutorial");
     };
 
-    preload() {};
+    preload() {
+        this.load.scenePlugin("animatedTiles", AnimatedTiles, "animatedTiles", "animatedTiles");
+    };
 
     create (hud: Hud) {
         this.cameras.main.fadeIn();
         this.hud = hud;
         this.gameEvent();
         this.state = this.registry.get("combat");
-        const map = this.make.tilemap({ key: "tutorial" });
+        const map = this.make.tilemap({ key: "new_tutorial" }); // tutorial
         this.map = map;
-        const tileSize = 32;
-        const tileSet = map.addTilesetImage("GrasslandMainLev2.0", "GrasslandMainLev2.0", tileSize, tileSize, 1, 2);
-        let layer0 = map.createLayer("Tile Layer 0 - Base", tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        let layer1 = map.createLayer("Tile Layer 1 - Top", tileSet as Phaser.Tilemaps.Tileset, 0, 0);
-        [layer0, layer1].forEach((layer) => {
+        const tileSet = map.addTilesetImage("MainLev2.0", "MainLev2.0", tileSize, tileSize, 1, 2) as Phaser.Tilemaps.Tileset;
+        const decorative = map.addTilesetImage("decorative", "decorative", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
+        const waterLayer = map.addTilesetImage("water_layerA_ef", "water_layerA_ef", 160, 96, 0, 0) as Phaser.Tilemaps.Tileset;
+        const water1 = map.addTilesetImage("Water_tafle_1B", "Water_tafle_1B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
+        const water2 = map.addTilesetImage("Water_tafle_2B", "Water_tafle_2B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
+        const water3 = map.addTilesetImage("Water_tafle_3B", "Water_tafle_3B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
+        const water4 = map.addTilesetImage("Water_tafle_4B", "Water_tafle_4B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
+
+        let layer0 = map.createLayer("Base", [tileSet, waterLayer], 0, 0);
+        let layer1 = map.createLayer("Water Top", [tileSet, waterLayer, water1, water2, water3, water4], 0, 0);
+        let layer2 = map.createLayer("Top", [tileSet, decorative], 0, 0);
+        let layer3 = map.createLayer("Flora Base", decorative, 0, 0);
+        let layer4 = map.createLayer("Flora Top", decorative, 0, 0);
+        let layer5 = map.createLayer("Earth Base", decorative, 0, 0);
+        let layer6 = map.createLayer("Earth Top", decorative, 0, 0);
+
+        this.climbing = [layer2, layer5, layer6];
+        this.swimming = layer0;
+
+        [layer0, layer1, layer2, layer3, layer4, layer5, layer6].forEach((layer) => {
             layer?.setCollisionByProperty({ collides: true });
             this.matter.world.convertTilemapLayer(layer!);
             layer?.forEachTile(tile => {
@@ -104,43 +155,64 @@ export class Tutorial extends Phaser.Scene {
                 };
             });
         });
+
+        // const posts = map.getObjectLayer("Posts");
+        const triggerLayer = map.getObjectLayer("Triggers");
+
+        triggerLayer?.objects.forEach(triggerObj => {
+            this.createMatterTrigger(triggerObj);
+        });
+
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
-        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
-            this.dms.push(new DM({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0", npcType: "Tutorial Teacher", id: 12 })));
+        this.player.setPosition(965, 328);
+        // if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
 
-        map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => {
-            const type = pillar.properties?.[0].value;
-            const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
-            const shift = {x: type === "exit" ? 32 : 16, y: 16}
-            const sensor = Bodies.circle(pillar.x + shift.x, pillar.y + shift.y, 16, { isSensor: true, label: `${type}PillarSensor` });
-            graphics.setExistingBody(sensor);
-            graphics.setCollisionCategory(ENTITY_FLAGS.WORLD);
-            const body = 
-                type === "game" ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy, and trade with local merchants to yield better equipment and improve yourself.` :
-                type === "movement" ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
-                type === "combat" ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
-                type === "settings" ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
-                type === "improvement" ? `Defeated enemies drop loot, and chances are that it may be an improvement of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
-                type === "exit" ? "If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!" : "";
-            const extra = 
-                type === "movement" ? "Movement" :
-                type === "combat" ? "Combat" :
-                type === "settings" ? "Settings" :
-                type === "exit" ? "Enter World" : "";
-            this.matterCollision.addOnCollideStart({
-                objectA: [sensor],
-                callback: (other: any) => {
-                    if (other.gameObjectB?.name !== "player") return;
-                    EventBus.emit("alert", { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: "Close", extra });
-                },
-                context: this
-            });
-        });
+        (this.sys as any).animatedTiles.init(map);
+        
+        this.chatManager = new ChatManager(this);
+        this.combatManager = new CombatManager(this);
+        this.experienceManager = new ExperienceManager(this);
+        this.particleManager = new ParticleManager(this);
+
+        map?.getObjectLayer("Npcs")?.objects.forEach((npc: any) => 
+            this.dm = new DM({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0", npcType: "Tutorial Teacher", id: 12 })
+        );
+        this.dm.setPosition(1036, 328);
+
+        this.particleGenerator = new ParticleTextures(this);
+
+        // map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => {
+        //     const type = pillar.properties?.[0].value;
+        //     const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
+        //     const shift = {x: type === "exit" ? 32 : 16, y: 16}
+        //     const sensor = Bodies.circle(pillar.x + shift.x, pillar.y + shift.y, 16, { isSensor: true, label: `${type}PillarSensor` });
+        //     graphics.setExistingBody(sensor);
+        //     graphics.setCollisionCategory(ENTITY_FLAGS.WORLD);
+        //     const body = 
+        //         type === "game" ? `This is an action roleplaying game. As you may have noted, you've created a character and entered this world. \n\n You can speak to and attack any enemy (who are tinted red), or spreak to helpful npcs (tinted in blue) and trade with local merchants to yield better equipment and improve yourself.` :
+        //         type === "movement" ? `The game starts with mobile in mind; twin joysticks for movement and aiming (ranged and specials). \n\n The left joystick allows you to move your character, and the right is used for certain special abilities and manual targeting if you have it enabled in the settings menu. \n\n However, in desktop, the keyboard and mouse are both modular and can be used for either movement or actions.` :
+        //         type === "combat" ? `The Physical and Special action buttons allow you to perform damage in combat. \n\n Physically, everyone is capable of swinging their weapon and/or shooting projectiles, in addition to forms of evasion with dodge and roll. \n\n With Specials, you are restricted to your current 'mastery', and perform specialized abilities that can heal yourself, directly damage the enemy, or control them via magical effects.` :
+        //         type === "settings" ? `Clicking on your name, your character in-game, or toggling the book menu and clicking on the first 'player' icon will all lead you to the main settings menu. \n\n From here, you can tab and change multiple options for gameplay concerns, including but not limited to: enemy aggression, special capability, and movement speed.` :
+        //         type === "improvement" ? `Defeated enemies drop loot, and chances are that it may be an improvement of your current garb. \n\n Merchants also sell multitudes of armor, shields, and weapons, with some being able to forge greater qualities from lesser ones. \n\n You can compare and contrast the different peculiarities of each item and decide how to augment and enhance your character, even in combat.` :
+        //         type === "exit" ? "If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!" : "";
+        //     const extra = 
+        //         type === "movement" ? "Movement" :
+        //         type === "combat" ? "Combat" :
+        //         type === "settings" ? "Settings" :
+        //         type === "exit" ? "Enter World" : "";
+        //     this.matterCollision.addOnCollideStart({
+        //         objectA: [sensor],
+        //         callback: (other: any) => {
+        //             if (other.gameObjectB?.name !== "player") return;
+        //             EventBus.emit("alert", { header: `${type.charAt(0).toUpperCase() + type.slice(1)} Post`, body, delay: 60000, key: "Close", extra });
+        //         },
+        //         context: this
+        //     });
+        // });
         
         // for (let i = 0; i < 16; i++) {
         //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
@@ -154,6 +226,7 @@ export class Tutorial extends Phaser.Scene {
         camera.setLerp(0.1, 0.1);
         camera.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         camera.setRoundPixels(true);
+
         this.target = this.add.sprite(0, 0, "target").setDepth(99).setScale(0.15).setVisible(false);
         this.lights.enable();
         this.playerLight = this.add.pointlight(this.player.x, this.player.y, 0xDAA520, 150, 0.05, 0.05);
@@ -163,17 +236,105 @@ export class Tutorial extends Phaser.Scene {
         this.musicCombat2 = this.sound.add("combat2", { volume: this?.hud?.settings?.volume, loop: true });
         this.musicStealth = this.sound.add("stealthing", { volume: this?.hud?.settings?.volume, loop: true });
         if (this.hud.settings?.music === true) this.musicBackground.play();
-        this.particleManager = new ParticleManager(this);
-        this.combatManager = new CombatManager(this);
         this.input.mouse?.disableContextMenu();
+
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
         this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
         for (let i = 0; i < 50; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+        
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
+    };
+
+    createMatterTrigger(obj: any) {
+        const type = obj?.properties?.[0]?.value;
+        if (!type) return;
+        // console.log({ type });
+        const graphics = new Phaser.Physics.Matter.Image(this.matter.world, obj.x, obj.y, "beam");
+
+        const trigger = Bodies.rectangle(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, {
+            isSensor: true,
+            label: type
+        });
+
+        graphics.setExistingBody(trigger);
+        graphics.setCollisionCategory(ENTITY_FLAGS.WORLD);
+
+        let count = 0;
+
+        this.matterCollision.addOnCollideStart({
+            objectA: [trigger],
+            callback: (other: any) => {
+                if (other.gameObjectB?.name !== "player") return;
+                if (other.bodyB.label !== "body") return;
+                // console.log({ label: other.bodyB.label });
+                // console.log("Trigger!", { type });
+                switch(type) {
+                    case PROGRESSION.ARENA:
+                        if (this.dm.x !== 1125) {
+                            this.dm.currentStage = PROGRESSION.ARENA;
+                            this.particleGenerator.cinematicTeleport(this.dm, 1125, 640, true);
+                        };
+                        break;
+                    case PROGRESSION.COMBAT:
+                        if (this.dm.x !== 1720) {
+                            this.dm.currentStage = PROGRESSION.COMBAT;
+                            this.particleGenerator.cinematicTeleport(this.dm, 1720, 1400, true);
+                        };
+                        break;
+                    case PROGRESSION.ENEMY:
+                        if (count > 2) return;
+                        EventBus.emit("fetch-tutorial-enemy");
+                        count++;
+                        break;
+                    case PROGRESSION.EXIT:
+                        EventBus.emit("alert", {
+                            header: "Exit",
+                            body: `If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!`, 
+                            delay: 10000,
+                            key: "Close",
+                            extra: "Enter World"
+                        });
+                        break;
+                    case PROGRESSION.FINAL:
+                        if (this.dm.x !== 1036) {
+                            this.dm.currentStage = PROGRESSION.FINAL;
+                            this.particleGenerator.cinematicTeleport(this.dm, 1036, 328, true);
+                        };
+                        break;
+                    case PROGRESSION.IMPROVEMENT:
+                        if (this.dm.x !== 290) {
+                            this.dm.currentStage = PROGRESSION.IMPROVEMENT;
+                            this.particleGenerator.cinematicTeleport(this.dm, 290, 515, true);
+                        };
+                        break;
+                    case PROGRESSION.RESOLUTION:
+                        if (this.dm.x !== 240) {
+                            this.dm.currentStage = PROGRESSION.RESOLUTION;
+                            this.particleGenerator.cinematicTeleport(this.dm, 240, 1200, true);
+                        };
+                        break;
+                    case PROGRESSION.SETTINGS:
+                        if (this.dm.x !== 1700) {
+                            this.dm.currentStage = PROGRESSION.SETTINGS;
+                            this.particleGenerator.cinematicTeleport(this.dm, 1700, 300, true);
+                        };
+                        break;
+                    case PROGRESSION.WELCOME:
+                        if (this.dm.x !== 1036) {
+                            this.dm.currentStage = PROGRESSION.FINAL;
+                            this.particleGenerator.cinematicTeleport(this.dm, 1036, 328, true);
+                        };
+                        break;
+                    default:
+                        console.log("Unknown trigger type:", type);
+                };
+            },
+            context: this
+        });
     };
 
     showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
@@ -197,9 +358,7 @@ export class Tutorial extends Phaser.Scene {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].cleanUp();
         };
-        for (let i = 0; i < this.dms.length; i++) {
-            this.dms[i].cleanUp();
-        };
+        this.dm.cleanUp();
         this.player.cleanUp();
     };
 
@@ -254,6 +413,56 @@ export class Tutorial extends Phaser.Scene {
         });
         EventBus.on("create-tutorial-enemy", this.createTutorialEnemy);
         EventBus.on("resetting-game", this.resetting);
+        EventBus.on("section-completed", (section: string) => {
+            switch (section) {
+                case PROGRESSION.WELCOME:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.SETTINGS:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.COMBAT:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.IMPROVEMENT:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.RESOLUTION:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.FINAL:
+                    this.particleGenerator.cinematicTeleport(this.dm, 0, 0, false);
+                    break;
+                case PROGRESSION.ARENA:
+                    this.particleGenerator.cinematicTeleport(this.dm, 1036, 328, true);
+                    break;
+                default: break;
+            };
+        });
+        EventBus.on("fetch-arena-combat", () => {
+            const amount = Phaser.Math.Between(6, 12);
+            // console.log(`Summoning ${amount} enemies`);
+            let enemies = [];
+            for (let i = 0; i < amount; ++i) {
+                const enemy = fetchTutorial();
+                enemies.push(enemy?.[0]);
+            };
+            this.registry.set("enemies", enemies);
+            this.createTutorialEnemy(false);
+        });
+        EventBus.on("fetch-tutorial-enemy", () => {
+            const enemy = fetchTutorial();
+            this.registry.set("enemies", enemy);
+            this.createTutorialEnemy();
+        });
+        EventBus.on("fetch-treasure-chest", () => {
+            const treasure = new Treasure({
+                scene: this,
+                x: 290,
+                y: 515,
+            });
+            this.treasures.push(treasure);
+        });
     };
 
     resumeScene = () => {
@@ -272,6 +481,7 @@ export class Tutorial extends Phaser.Scene {
         this.scene.wake();
         EventBus.emit("current-scene-ready", this);
     };
+
     switchScene = (current: string) => {
         this.cameras.main.fadeOut().once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, (_cam: any, _effect: any) => {
             this.registry.set("combat", this.state);
@@ -441,17 +651,57 @@ export class Tutorial extends Phaser.Scene {
 
     drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
-    createTutorialEnemy = () => {
-        EventBus.emit("alert", { header: "Tutorial", body: "The tutorial enemy is being summoned.", key: "Close" });
+    createTutorialEnemy = (solo = true) => {
+        const body = solo ? "An enemy is being summoned." : "A bevy of enemies are being summoned.";
+        EventBus.emit("alert", { header: "Tutorial", body, key: "Close" });
+        const randomX = [-100, -150, -200, -250, -300, 100, 150, 200, 250, 300];
+        const randomY = [100, 150, 200, 250, 300, 350, 400, 450, 500];
+
         this.time.delayedCall(1500, () => {
             let data: Compiler[] = this.registry.get("enemies");
             for (let j = 0; j < data.length; j++) {
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
                 this.enemies.push(enemy);
-                enemy.setPosition(this.player.x - 50, this.player.y);
+                
+                if (solo) {
+                    enemy.setPosition(this.player.x + 100, this.player.y);
+                } else {
+                    const x = randomX[Math.floor(Math.random() * randomX.length)];
+                    const y = randomY[Math.floor(Math.random() * randomY.length)];
+                    enemy.setPosition(this.player.x + x, this.player.y + y);    
+                };
+                
                 this.time.delayedCall(1500, () => {
-                    enemy.checkEnemyCombatEnter();
-                    this.player.targetEngagement(enemy.enemyID);
+                    if (solo) {
+                        enemy.checkEnemyCombatEnter();
+                        this.player.targetEngagement(enemy.enemyID);
+                    } else {
+                        const length = this.enemies.length;
+                        this.player.targets.push(enemy);
+                        const targets: (Enemy | Player)[] = [];
+                        
+                        for (let k = 0; k < length; ++k) {
+                            const otherEnemy = this.enemies[k];
+                            if (otherEnemy.enemyID === enemy.enemyID) continue;
+                            enemy.enemies.push({ id: otherEnemy.enemyID, threat: 0 });    
+                            targets.push(otherEnemy);  
+                        };
+
+                        enemy.inCombat = true;
+                        enemy.inComputerCombat = true;
+                        
+                        const target = targets[Math.floor(Math.random() * targets.length)];
+                        const shouldTargetPlayer = Math.random() > 0.65;
+
+                        if (shouldTargetPlayer) {
+                            enemy.checkEnemyCombatEnter();
+                        } else {
+                            enemy.checkComputerEnemyCombatEnter(target as Enemy);
+                        };
+                    };
+                    const random = this.enemies[Math.floor(Math.random() * this.enemies.length)];
+                    this.player.targetEngagement(random.enemyID);
+                    this.player.sendEnemies(this.player.targets);
                 }, undefined, this);
             };
         }, undefined, this);
@@ -471,6 +721,7 @@ export class Tutorial extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
     killEnemy = (enemy: Enemy) => {
         if (enemy.isCurrentTarget) {
             this.player.disengage();
@@ -481,10 +732,49 @@ export class Tutorial extends Phaser.Scene {
             enemy.destroy();
         }, undefined, this);
     };
+
+    private coordCache = { chunk: '', tile: '' };
+
+    checkEnvironment = (entity: Player | Enemy) => {
+        if (this.frameCount % 20 !== 0) return;
+
+        const x = this.map.worldToTileX(entity.x || 0) as number;
+        const y = this.map.worldToTileY(entity.y || 0) as number;
+        this.coordCache.tile = x + ',' + y;
+
+        let cached = this.tileCache.get(this.coordCache.tile);
+
+        if (!cached) {
+            // const climb = this.climbing.getTileAt(x, y);
+            const water = this.swimming.getTileAt(x, y);
+
+            // cached = {
+            //     climb: !!(climb?.properties?.climb),
+            //     water: !!(water?.properties?.water),
+            // };
+
+            const climb = this.climbing.some((layer: Phaser.Tilemaps.TilemapLayer) => {
+                const tile = layer.getTileAt(x, y);
+                return !!tile?.properties?.climb;
+            }); 
+
+            cached = {
+                climb: climb,
+                water: !!(water?.properties?.water),
+            };
+
+            this.tileCache.set(this.coordCache.tile, cached);
+        };
+        
+        entity.isClimbing = cached.climb;
+        entity.inWater = cached.water;
+    };
+
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
+        this.checkEnvironment(this.player);
         this.hud.rightJoystick.update();
     };
 
@@ -513,6 +803,7 @@ export class Tutorial extends Phaser.Scene {
         };
         
         if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
+        // console.log({ x: this.player.x, y: this.player.y });
     };
 
     startCombatTimer = (): void => {
@@ -542,12 +833,12 @@ export class Tutorial extends Phaser.Scene {
     update(_time: number, delta: number): void {
         this.playerUpdate(delta);
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update(delta);
-            if ((this.enemies[i].isDefeated || this.enemies[i].isTriumphant) && !this.enemies[i].isDeleting) this.destroyEnemy(this.enemies[i]);
+            const enemy = this.enemies[i];
+            enemy.update(delta);
+            this.checkEnvironment(enemy);
+            if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
         };
-        for (let i = 0; i < this.dms.length; i++) {
-            this.dms[i].update(delta);
-        };
+        this.dm.update(delta);
         this.combatManager.combatMachine.process();
         this.frameCount++;
     };

@@ -37,17 +37,17 @@ export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSh
             <For each={description().split("\n")}>
                 {(line, index) => {
                     if (index() !== 0) return;
-                    return <p style={{ "margin": "5% auto" }}>{line}</p>
+                    return <p style={{ ...font("1rem"), "margin": "5% auto 0" }}>{line}</p>
                 }}
             </For>
         </h2>
         { dims.ORIENTATION === "landscape" ? (
-            <div style={{...font("1em", "gold"), "margin": "7% auto"}}>
-                <p style={{ "margin": "2% auto", "font-family":"Centaur" }}>
-                {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} [<span class="bone">Faith</span>]
-                </p>
-                <p style={{ "margin-top": "1%", "font-family":"Centaur" }}>
-                {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)} [<span class="bone">Mastery</span>]
+            <div style={{...font("1rem", "gold"), "margin": "5% auto"}}>
+                <p style={{ "margin": "1% auto", "font-family":"Centaur" }}>
+                    [<span class="bone">Faith</span>]: {newAscean().faith.charAt(0).toUpperCase() + newAscean().faith.slice(1)} <span class="bone">| </span> 
+                    [<span class="bone">Mastery</span>]: {newAscean().mastery.charAt(0).toUpperCase() + newAscean().mastery.slice(1)}
+                    </p>
+                    <p style={{ "margin-top": "1%", "font-family":"Centaur" }}>
                 </p>
             </div>
         ) : (

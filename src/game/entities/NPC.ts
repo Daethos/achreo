@@ -96,7 +96,10 @@ export default class NPC extends Entity {
                 this.clearTint();
                 this.setTint(0x0000FF);
             });
-        scene.time.delayedCall(1000, () => this.setVisible(true));
+        scene.time.delayedCall(1000, () => {
+            this.setVisible(true);
+            this.createShadow(true);
+        });
     };
 
     cleanUp() {

@@ -61,7 +61,6 @@ export class CombatManager {
 
         this.handleHitFeedback(e);
         
-        
         if (e.parrySuccess) {
             this.context.showCombatText(this.context.player, "Parry", PLAYER.DURATIONS.TEXT, EFFECT, true, false);
             this.stunned(e.enemyID);
@@ -506,16 +505,21 @@ export class CombatManager {
     magic = (target: Player | Enemy | Party, entity: Player | Enemy | Party): void => {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
+        let damage = Math.round(ascean[ascean.mastery] * 0.5);
         if (target.name === "player") {
-            const damage = Math.round(ascean[ascean?.mastery as keyof typeof ascean] * 0.4);
+            if (entity.name === "player") {
+                damage *= this.playerCaerenicPro() * this.playerCaerenicNeg();
+            } else {
+                damage *= this.computerCaerenicPro(entity as Enemy | Party) * this.playerCaerenicNeg();
+            };
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: "player", value: health, id: (entity as Enemy).enemyID }, type: "Set Health" });
         } else if (entity.name === "player") {
-            const damage = Math.round(ascean[ascean.mastery as keyof typeof ascean] * 0.4);
+            damage *= this.playerCaerenicPro() * this.computerCaerenicNeg(target as Enemy | Party);
             const health = target.health - damage;
             this.combatMachine.action({ data: { key: "enemy", value: health, id: (target as Enemy).enemyID }, type: "Health" });
         } else { // Computer Entity + Computer Target
-            const damage = Math.round(ascean?.[ascean?.mastery as keyof typeof ascean] * 0.4);
+            damage *= this.computerCaerenicPro(entity as Enemy | Party) * this.computerCaerenicNeg(target as Enemy | Party);
             const health = target.health - damage;
             (entity as Enemy).computerCombatSheet.newComputerEnemyHealth = health;
             (target as Enemy).computerCombatSheet.newComputerHealth = health;
@@ -549,7 +553,7 @@ export class CombatManager {
         if (!enemy) return;
         const match = this.context.isStateEnemy(id);
         if (match) { // Target Player Attack
-            this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type } });
+            this.combatMachine.action({ type: "Weapon",  data: { key: "action", value: type, hitLocation: this.context.player.lastHitLocation } });
         } else { // Blind Player Attack
             if (enemy.health === 0) return;
             this.combatMachine.action({ type: "Player", data: { 
@@ -560,7 +564,8 @@ export class CombatManager {
                 combatStats: enemy.combatStats, 
                 weapons: enemy.weapons, 
                 health: enemy.health, 
-                actionData: { action: enemy.currentAction, parry: enemy.parryAction }
+                actionData: { action: enemy.currentAction, parry: enemy.parryAction },
+                hitLocation: this.context.player.lastHitLocation
             }});
         };
     };

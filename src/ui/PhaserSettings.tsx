@@ -107,15 +107,6 @@ export default function PhaserSettings({ settings, setSettings, actions, special
             console.warn(err, "Error Handling Desktop");
         };
     };
-    // const handleDesktop = async (desktop: boolean) => {
-    //     try {
-    //         const newSettings = { ...settings(), desktop };
-    //         await saveSettings(newSettings);
-    //         EventBus.emit("update-desktop-cursor", desktop);
-    //     } catch (err) {
-    //         console.warn(err, "Error Handling Desktop");
-    //     };
-    // };
 
     async function currentControl(e: string) {
         const newSettings: Settings = { ...settings(), control: e };

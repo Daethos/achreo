@@ -30,7 +30,7 @@ export function addSpecial(ascean: Accessor<Ascean>, settings: Accessor<Settings
     }, 1000);
 };
 
-export const ACTIONS = Object.freeze(["Attack", "Posture", "Roll", "Dodge", "Jump", "Parry", "Thrust"]);
+export const ACTIONS = Object.freeze(["Attack", "Posture", "Roll", "Dodge", "Hurl", "Jump", "Parry", "Thrust"]);
 export const SPECIALS = [
     "Invoke",
     "Consume",

@@ -1,6 +1,6 @@
 import Party, { COLOR } from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAMES } from "../entities/Entity";
+import { FRAMES, MOVEMENT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
@@ -25,12 +25,6 @@ const DURATION = {
     DODGE: 288,
     ROLL: 320,
     SPECIAL: 5000,
-};
-const MOVEMENT = {
-    "up": { x: 0, y: -5 },
-    "down": { x: 0, y: 5 },
-    "left": { x: -5, y: 0 },
-    "right": { x: 5, y: 0 },
 };
 const PARTY_COMBAT_TEXT = "party-combat-text";
 export default class PlayerMachine {
@@ -747,20 +741,20 @@ export default class PlayerMachine {
         let foci;
         switch (focus) {
             case BALANCED:
-                foci = PARTY_BALANCED_INSTINCTS[mastery as keyof typeof PARTY_BALANCED_INSTINCTS];
+                foci = PARTY_BALANCED_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case DEFENSIVE:
-                foci = PARTY_DEFENSIVE_INSTINCTS[mastery as keyof typeof PARTY_DEFENSIVE_INSTINCTS];
+                foci = PARTY_DEFENSIVE_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
             case OFFENSIVE:
-                foci = PARTY_OFFENSIVE_INSTINCTS[mastery as keyof typeof PARTY_OFFENSIVE_INSTINCTS];
+                foci = PARTY_OFFENSIVE_INSTINCTS[mastery];
                 foci = foci[Math.floor(Math.random() * foci.length)];
                 break;
         };
 
-        let key = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].key, value = PARTY_INSTINCTS[mastery as keyof typeof PARTY_INSTINCTS][instinct].value;
+        let key = PARTY_INSTINCTS[mastery][instinct].key, value = PARTY_INSTINCTS[mastery][instinct].value;
         let finals = [instinct, foci];
         if (instinct === 0 || instinct === 3 || instinct === 7 || instinct === 12) finals.push(instinct);
         let final = finals[Math.floor(Math.random() * finals.length)];
@@ -1465,7 +1459,7 @@ export default class PlayerMachine {
 
     caerenicDamage = () => this.player.isCaerenic ? 1.15 : 1;
     levelModifier = () => (this.player?.ascean.level as number + 9) / 10;
-    mastery = () => this.player?.computerCombatSheet.computer?.[this.player?.ascean.mastery as keyof typeof this.player.ascean];
+    mastery = () => this.player?.computerCombatSheet.computer?.[this.player?.ascean.mastery];
 
     /*
         TODO: FIXME:
@@ -2553,7 +2547,7 @@ export default class PlayerMachine {
             const directions = ["up", "down", "left", "right"];
             const direction = directions[dir];
             if (move >= 20) {
-                this.player.confuseVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
+                this.player.confuseVelocity = MOVEMENT[direction];
             } else {
                 this.player.confuseVelocity = { x: 0, y: 0 };
             };
@@ -2612,7 +2606,7 @@ export default class PlayerMachine {
             const directions = ["up", "down", "left", "right"];
             const direction = directions[Math.floor(Math.random() * 4)];
             if (move >= 20) {
-                this.player.fearVelocity = MOVEMENT[direction as keyof typeof MOVEMENT];
+                this.player.fearVelocity = MOVEMENT[direction];
             } else {
                 this.player.fearVelocity = { x: 0, y: 0 };
             };
@@ -2721,7 +2715,7 @@ export default class PlayerMachine {
             const direction = directions[dir];
             if (move >= 20) {
                 this.player.polymorphMovement = "move";
-                this.player.polymorphVelocity = MOVEMENT[direction as keyof typeof MOVEMENT]; 
+                this.player.polymorphVelocity = MOVEMENT[direction]; 
             } else {
                 this.player.polymorphMovement = "idle";                
                 this.player.polymorphVelocity = { x: 0, y: 0 };

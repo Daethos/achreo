@@ -263,7 +263,7 @@ export const IntstitutionalButtons = ({ current, options, handleConcept, handleI
     const [show, setShow] = createSignal<boolean>(false);
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => {checkShow(current, o, show, setShow); handleInstitution(o);}}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleInstitution(o);}}>{o}</button>
             <Show when={current() === o && show()}>
                 <SubConceptButtons options={institutions[o as keyof typeof institutions]} handleConcept={handleConcept} />
             </Show>
@@ -276,7 +276,7 @@ export const SubConceptButtons = ({ options, handleConcept }: { options: any, ha
         if (o === "Preamble") return;
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceConcept' style={{ "font-size": "0.65em" }} onClick={() => handleConcept(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceConcept' style={{ "font-size": "0.85rem" }} onClick={() => handleConcept(o)}>{text}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -572,6 +572,7 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
             "Another belief is that its more natural, pure cousin was captured long ago, and the Dachreon would sacrifice it on an altar or brazier to the spirits of nature and Achreo, spilling forth its contents and climbing inside to awaken his inner animal, mending itself into a creature, becoming one and transforming."`,
     }    
 };
+
 function checkShow(current: Accessor<string>, option: string, show: Accessor<boolean>, setShow: Setter<boolean>) {
     if (option === current()) {
         setShow(!show());
@@ -579,12 +580,13 @@ function checkShow(current: Accessor<string>, option: string, show: Accessor<boo
         setShow(true);
     };
 };
+
 export const SupernaturalEntityButtons = ({ current, options, handleEntity, handleConcept }: { current: any, options: any, handleEntity: any, handleConcept: (con: string) => void }) => {
     const [show, setShow] = createSignal<boolean>(false);
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => {checkShow(current, o, show, setShow); handleEntity(o);}}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleEntity(o);}}>{text}</button>
             <Show when={current() === o && show()}>
                 <SubConceptButtons options={SupernaturalEntityLore[o as keyof typeof SupernaturalEntityLore]} handleConcept={handleConcept} />
             </Show>
@@ -630,10 +632,11 @@ export const SupernaturalPhenomenaLore: SupernaturalPhenomena = {
         "According to oral tradition later written into works, one gains this ability to embolden himself with heightened senses, perhaps extending beyond the normal few we appear to innately possess. Physical enhancements take the form of increased strength, agility, regeneration, and recalling of memories of the victim or volunteer, depending on the nature of the transference. \n
         "Said to be marked with a gift of Kyr'na, and interestingly some espouse Lilos, an Ancient whose nature remained most mysterious through annals of recorded history."`,
 };
+
 export const SupernaturalPhenomenaButtons = ({ options, handlePhenomena }: { options: any, handlePhenomena: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handlePhenomena(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handlePhenomena(o)}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -713,11 +716,12 @@ export const localLore: Region = { // Localized, Smaller Concerned Knowledge of 
         "Folk from the Alluring Isles whose ancestry is infused with Licivitan blood are referred to as Lilos if they are adherent, or Daefarer's if devoted.\n
         "Folk from the Alluring Isles whose ancestry is infused with Sedyren blood are referred to as Slabs, referring to their worship of Quor'ei and Se'dyro alike, and neither are fit for Island and sailing like. Quite derogatory."`
 };
+
 export const LocalLoreButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const [show, setShow] = createSignal<boolean>(false);
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => {handleRegion(o); setShow(!show())}}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {handleRegion(o); setShow(!show())}}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -837,7 +841,7 @@ export const WhispersButtons = ({ current, options, handleConcept, handleWhisper
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => {checkShow(current, o, show, setShow); handleWhisper(o);}}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleWhisper(o);}}>{text}</button>
             <Show when={current() === o && show()}>
                 <SubConceptButtons options={whispers[o as keyof typeof whispers]} handleConcept={handleConcept} />
             </Show>
@@ -926,7 +930,7 @@ export const WorldLoreButtons = ({ options, handleWorld }: { options: any, handl
     const buttons = Object.keys(options).map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleWorld(o)}>{text}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handleWorld(o)}>{text}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -945,7 +949,7 @@ export const provincialInformation: Region = { // Current Provincial Knowledge
 export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
     const buttons = Object.keys(options).map((o: any) => {
         return <div style={{ margin: "5%"}}>
-            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.65em" }} onClick={() => handleRegion(o)}>{o}</button>
+            <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handleRegion(o)}>{o}</button>
         </div>;
     });
     return <>{buttons}</>;
@@ -955,19 +959,27 @@ export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: 
 export interface RegionInformation {
     Astralands: {
         SupernaturalEntity: {
-            "Ahn'are": string;
-            Cerchre: string;
-            Chioba: string;
-            Dwarves: string;
-            Gatshyr: string;
-            Quoros: string;
-            Tavore: string;
-            Anashtre: string;
-            Sinacyn: string;
-            Tshiathail_Kon: string; // Skeleton Knight King
-            
-            Carrier_Birds: string;
-            "Rana'vas": string;
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Cerchre: string;
+                Chioba: string;
+                Dwarves: string;
+                Gatshyr: string;
+                Quoros: string;
+                Tavore: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Anashtre: string;
+                Sinacyn: string;
+                Tshiathail_Kon: string; // Skeleton Knight King
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                "Rana'vas": string;
+            };
         };
         SupernaturalPhenomena: {
             Insight: string;
@@ -985,27 +997,36 @@ export interface RegionInformation {
         };
     };
     Kingdom: {
-        Entity: {
-            "Ahn'are": string;
-            Cerchre: string;
-            Chioba: string;
-            Cragore: string;
-            Dwarves: string;
-            Gatshyr: string;
-            Ilire: string;
-            "Ma'ier": string;
-            Morath: string;
-            "Re'vas": string;
-            Shyr: string;
-            Tshios: string;
-            Aphyero: string;
-            Chyrolus: string;
-            Draochre: string;
-            Sinacyn: string;
-            Tshiathail_Kon: string; // Skeleton Knight King
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Cerchre: string;
+                Chioba: string;
+                Cragore: string;
+                Dwarves: string;
+                Gatshyr: string;
+                Ilire: string;
+                "Ma'ier": string;
+                Morath: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Chyrolus: string;
+                Draochre: string;
+                Sinacyn: string;
+                Tshiathail_Kon: string; // Skeleton Knight King
+            };
 
-            Carrier_Birds: string;
-            "Rana'vas": string;
+            Animalis: {
+                Preamble: string;  
+                Carrier_Birds: string;
+                "Rana'vas": string;
+            };
         };
         Phenomena: {
             Shifting: string;
@@ -1014,21 +1035,189 @@ export interface RegionInformation {
         };
     };
     Soverains: {
-
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Cerchre: string;
+                Chioba: string;
+                Dwarves: string;
+                Gatshyr: string;
+                Ilire: string;
+                Morath: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tavore: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Draochre: string;
+                Nyrae: string;
+                Sinacyn: string;
+                Tshiathail_Kon: string; // Skeleton Knight King
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                "Rana'vas": string;
+            };
+        };
     };
     Fangs: {
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Chioba: string;
+                Gatshyr: string;
+                Morath: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tavore: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Chyrolus: string;
+                Fyrash: string;
+                "Ky'myr": string;
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                Kraken: string;
+                "Rana'vas": string;
+            };
+        };
 
     };
     Licivitas: {
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Chioba: string;
+                Cragore: string;
+                Dwarves: string;
+                Gatshyr: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Chyrolus: string;
+                Fyrash: string;
+                "Ky'myr": string;
+                Nyrae: string;
+                Sinacyn: string;
+            };
+            Animalis: {
+                Preamble: string;
+                Canire: string;
+                Carrier_Birds: string;
+                "Rana'vas": string;
+            };
+        };
 
     };
     Firelands: {
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Chioba: string;
+                Dwarves: string;
+                Gatshyr: string;
+                "Ma'ier": string;
+                "Re'vas": string;
+                Shyr: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Chyrolus: string;
+                Fyrash: string;
+                Nyrae: string;
+                "Quor'eo": string;
+                Sinacyn: string;
+                Tshiathail_Kon: string; // Skeleton Knight King
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                Kraken: string;
+                "Rana'vas": string;
+                Phoenix: string;
+            };
+        };
 
     };
     Sedyrus: {
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Chioba: string;
+                Gatshyr: string;
+                "Ma'ier": string;
+                Quoros: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Aphyero: string;
+                Chyrolus: string;
+                Fyrash: string;
+                "Ky'myr": string;
+                Nyrae: string;
+                "Quor'eo": string;
+                Sinacyn: string;
+                Tshiathail_Kon: string; // Skeleton Knight King
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                "Rana'vas": string;
+                Shamanic: string;
+            };
+        };
 
     };
     Isles: {
+        SupernaturalEntity: {
+            Hybrida: {
+                Preamble: string;
+                "Ahn'are": string;
+                Chioba: string;
+                Gatshyr: string;
+                "Re'vas": string;
+                Shyr: string;
+                Tavore: string;
+                Tshios: string;
+            };
+            Specificus: {
+                Preamble: string;
+                Chyrolus: string;
+                Fyrash: string;
+                Nyrae: string;
+                Sinacyn: string;
+            };
+            Animalis: {
+                Preamble: string;
+                Carrier_Birds: string;
+                Kraken: string;
+                "Rana'vas": string;
+                Shamanic: string;
+            };
+        };
 
     };
 };

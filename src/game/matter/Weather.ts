@@ -1,10 +1,15 @@
 import { screenShake } from "../phaser/ScreenShake";
 import { Game, OVERLAY_BUFFER } from "../scenes/Game";
 
+const WIDTH_EMIT = 1.6;
+const HEIGHT_EMIT = 1.3;
+const WIDTH_OFFSET = 0.8;
+const HEIGHT_OFFSET = 0.65;
 const FADE_IN = 2050;
 const FADE_OUT = 2000;
 const OSCILLATE = 10;
 const WEATHER_DURATION = 60000;
+
 type weather = "clear" | "ash" | "celestial" | "fog" | "fog rain" | "fog snow" | "hail" | "meteor" | "rain" | "sand" | "snow" | "thunderash" | "thunderstorm" | "thundersnow";
 const phrase = {
     clear: "clear sky",
@@ -22,15 +27,15 @@ const phrase = {
     thundersnow: "thundersnow",
     thunderstorm: "a thunderstorm"
 };
-type WeightedTransition = { type: weather; weight: number };
 
+type WeightedTransition = { type: weather; weight: number };
 const weatherTransitions: { [key in weather]: WeightedTransition[] } = {
     clear: [
-        { type: "clear", weight: 4 },
+        { type: "clear", weight: 90 },
         { type: "celestial", weight: 1 },
-        { type: "fog", weight: 2 },
-        { type: "rain", weight: 2 },
-        { type: "snow", weight: 2 }
+        { type: "fog", weight: 3 },
+        { type: "rain", weight: 3 },
+        { type: "snow", weight: 3 }
     ],
     ash: [
         { type: "clear", weight: 2 },
@@ -38,7 +43,7 @@ const weatherTransitions: { [key in weather]: WeightedTransition[] } = {
         { type: "thunderash", weight: 1 }
     ],
     celestial: [
-        { type: "clear", weight: 5 },
+        { type: "clear", weight: 12 },
         { type: "celestial", weight: 1 },
         { type: "meteor", weight: 1 },
         { type: "sand", weight: 1 },
@@ -233,14 +238,14 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 3000, max: 5000 },
             speedY: { min: 10, max: 20 },
             scale: { start: 1, end: 0.1 },
             alpha: { start: 1, end: 0 },
             quantity: 4,
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 4,
             },
@@ -254,7 +259,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 2000, max: 4000 },
             speedY: { min: 20, max: 40 },
             scale: { start: 0.8, end: 0.2 },
@@ -263,7 +268,7 @@ export default class WeatherManager {
             quantity: 4,
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 4,
             },
@@ -278,7 +283,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 5000, max: 10000 },
             quantity: 1,
             frequency: 1250,
@@ -288,7 +293,7 @@ export default class WeatherManager {
             speedY: { min: -1, max: 1 },
             blendMode: "NORMAL",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 5,
             },
@@ -302,7 +307,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: { x: -width * 0.75, y: -height * 0.6 },
+            followOffset: { x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET },
             lifespan: 400,
             accelerationY: 300,
             gravityY: 500,
@@ -313,7 +318,7 @@ export default class WeatherManager {
             angle: { min: 85, max: 95 },
             blendMode: "NORMAL",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 6,
             },
@@ -325,10 +330,10 @@ export default class WeatherManager {
     private meteorSetting() {
         const { width, height } = this.scene.cameras.main;
         return {
-            x: () => Phaser.Math.Between(0, width * 1.5),
+            x: () => Phaser.Math.Between(0, width * WIDTH_EMIT),
             y: () => Phaser.Math.Between(-height * 0.5, 0),
             follow: this.scene.player,
-            followOffset: { x: -width * 0.75, y: -height * 0.6 },
+            followOffset: { x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET },
             lifespan: 300,
             speedX: { min: -200, max: -300 },
             speedY: { min: 300, max: 400 },
@@ -338,7 +343,7 @@ export default class WeatherManager {
             frequency: 300,
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 0.6),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_OFFSET),
                 type: "random",
                 quantity: 2,
             },
@@ -352,7 +357,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 500, max: 1500 },
             accelerationY: { min: 50, max: 100 },
             scale: { start: 0.6, end: 0 },
@@ -360,7 +365,7 @@ export default class WeatherManager {
             speedY: { min: 35, max: 75 },
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 5,
             },
@@ -374,7 +379,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 1500, max: 3000 },
             speedX: { min: 100, max: 200 },
             speedY: { min: -10, max: 10 },
@@ -383,7 +388,7 @@ export default class WeatherManager {
             blendMode: "NORMAL",
             quantity: 6,
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 6,
             },
@@ -397,7 +402,7 @@ export default class WeatherManager {
             x: () => Phaser.Math.Between(0, width),
             y: () => Phaser.Math.Between(0, height),
             follow: this.scene.player,
-            followOffset: {x: -width * 0.75, y: -height * 0.6},
+            followOffset: {x: -width * WIDTH_OFFSET, y: -height * HEIGHT_OFFSET},
             lifespan: { min: 2000, max: 4000 },
             speedY: { min: 20, max: 40 },
             scale: { start: 0.5, end: 0 },
@@ -405,7 +410,7 @@ export default class WeatherManager {
             frequency: 100,
             blendMode: "ADD",
             emitZone: {
-                source: new Phaser.Geom.Rectangle(0, 0, width * 1.5, height * 1.2),
+                source: new Phaser.Geom.Rectangle(0, 0, width * WIDTH_EMIT, height * HEIGHT_EMIT),
                 type: "random",
                 quantity: 5,
             },

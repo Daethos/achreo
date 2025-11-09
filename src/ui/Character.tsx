@@ -201,10 +201,15 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
 
     function checkSpecials() {
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
-
         const mastery = settings().totalSpecials;
-        // const mastery = SPECIAL[ascean().mastery];
-        // const mastery = SPECIALS; /* Everything for testing */
+        
+        /* Everything pertaining to the potential specials per mastery 
+            const mastery = SPECIAL[ascean().mastery]; 
+        */
+
+        /* Everything for testing 
+            const mastery = SPECIALS;
+        */
         
         const speaking = playerTraitWrapper();
         let extra: any[] = []; // ["Lightning"]; // Testing
@@ -227,6 +232,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 physical.push(pTraitOne);
             };
             if (traitTwoName === "Persuasion") {
+                const pTraitTwo = `${traitTwoName} (${trait.name})`;
+                physical.push(pTraitTwo);
+            };
+            if (traitThreeName === "Persuasion") {
                 const pTraitTwo = `${traitTwoName} (${trait.name})`;
                 physical.push(pTraitTwo);
             };
@@ -274,7 +283,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {border: `0.15em solid ${getRarityColor(rarity)}`, "background-color": "transparent"};
+        return {border: `thick ridge ${getRarityColor(rarity)}`, "background-color": "transparent"};
     };
 
     const checkHighlight = () => {
@@ -379,7 +388,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         const stances = ["Stalwart"];
         if (settings().stances.caerenic) stances.push("Caerenic");
         if (settings().stances.stealth) stances.push("Stealth");
-        return stances // , "Attack", "Dodge", "Parry", "Posture", "Roll", "Thrust"
+        return stances
             .concat(actions())
             .concat(specials())
             .filter((spec) => {
@@ -396,54 +405,34 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             case CHARACTERS.CHARACTER:
                 return <div class="playerWindow creature-heading" style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div>
-                    { dims.ORIENTATION === "landscape" ? ( <>
                         <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ "margin-top": "1.5%", "margin-bottom": "2.5%" }} />
                         <h2 style={{ "margin": "2%" }}>{combat()?.player?.description}</h2>
-                    </> ) : ( <>
-                        <h2 style={{ "margin-top": "15%" }}>
-                            <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
-                            {combat()?.player?.description}
-                        </h2>
-                    </> ) }
-                    <div style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dims.WIDTH > 1200 ? "5%" : dims.HEIGHT > 410 ? "1%" : dims.WIDTH < 875 ? "1%" : "" }}>
-                        <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                        <div style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scale(0.9)", "margin-top": dims.WIDTH > 1200 ? "5%" : dims.HEIGHT > 410 ? "1%" : dims.WIDTH < 875 ? "1%" : "" }}>
+                            <AttributeCompiler ascean={ascean} setAttribute={setAttribute} show={attrShow} setShow={setAttrShow} setDisplay={setAttributeDisplay} />
+                        </div>
+                        <div style={{ "margin-bottom": "0%", "font-size": dims.WIDTH > 1200 ? "1.5em" : dims.WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dims.HEIGHT > 410 ? "2.5%" : "" }}>
+                            <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
+                            <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
+                            <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
+                            <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
+                            <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
+                            <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
+                            <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
+                            <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
+                        </div>
                     </div>
-                    <div style={{ "margin-bottom": "0%", "font-size": dims.WIDTH > 1200 ? "1.5em" : dims.WIDTH < 875 ? "0.95em" : "1.05em", "font-family": "Cinzel Regular", "margin-top": dims.HEIGHT > 410 ? "2.5%" : "" }}>
-                        <div>Level: <span class="gold">{combat()?.player?.level}</span>{"\n"}</div>
-                        <div onClick={() => setShowFaith(!showFaith())}>Faith: <span class="gold">{ascean().faith}</span> | Mastery: <span class="gold">{combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}</span></div>
-                        <div>Health: <span class="gold">{Math.round(combat()?.newPlayerHealth)} / {combat()?.playerHealth}{"\n"}</span></div>
-                        <div>Stamina: <span class="gold">{Math.round(combat()?.playerAttributes?.stamina as number)}</span> Grace: <span class="gold">{Math.round(combat()?.playerAttributes?.grace as number)}</span></div>
-                        <div>Damage: <span class="gold">{combat()?.weapons?.[0]?.physicalDamage}</span> Physical | <span class="gold">{combat()?.weapons?.[0]?.magicalDamage}</span> Magical</div>
-                        <div>Critical: <span class="gold">{combat()?.weapons?.[0]?.criticalChance}%</span> | <span class="gold">{combat()?.weapons?.[0]?.criticalDamage}x</span></div>
-                        <div>Magical Defense: <span class="gold">{combat()?.playerDefense?.magicalDefenseModifier}% / [{combat()?.playerDefense?.magicalPosture}%]</span>{"\n"}</div>
-                        <div>Physical Defense: <span class="gold">{combat()?.playerDefense?.physicalDefenseModifier}% / [{combat()?.playerDefense?.physicalPosture}%]</span>{"\n"}</div>
-                    </div>
-                </div>
-            </div>;
+                </div>;
             case CHARACTERS.QUESTS:
                 return <div class="creature-heading">
                     <h1 style={{...bMargin}}>Quests</h1>
                     <For each={quests().quests}>{(quest, _index) => {
-                        const completed = quest.requirements.technical.id === "fetch" 
+                        const completed = quest.requirements.technical.id === "fetch"
                             ? quest.requirements.technical.current === quest.requirements.technical.total && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!
                             : quest.requirements.technical.solved && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
-                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{
-                                "borderTalent": completed,
-                            }}
-                        style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", 
-                            "border-color": masteryColor(quest.mastery), 
-                            "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em`, 
-                            // animation: `borderTalent 1.5s infinite ease alternate`,
-                            "--base-shadow":"#000 0 0 0 0.2em", 
-                            "--glow-color": masteryColor(quest.mastery) 
-                        }}>
-                            <h2 classList={{
-                                "animate-flicker-infinite": completed,
-                            }} style={{ color: "gold", "font-size": completed ? "1.15em" : "", padding: "5px" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
+                        return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{ "borderTalent": completed }} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em`, "--base-shadow":"#000 0 0 0 0.2em", "--glow-color": masteryColor(quest.mastery) }}>
+                            <h2 classList={{ "animate-flicker-infinite": completed }} style={{ color: "gold", "font-size": completed ? "1.15em" : "", padding: "5px" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
-                            <p classList={{
-                                "animate-flicker-infinite": completed,
-                            }} style={{ color: "gold", "font-size": completed ? "1.15em" : "" }}>{quest.giver}</p>
+                            <p classList={{ "animate-flicker-infinite": completed }} style={{ color: "gold", "font-size": completed ? "1.15em" : "" }}>{quest.giver}</p>
                         </div>
                     }}</For>
                 </div>;
@@ -566,18 +555,16 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         switch (character) {
             case CHARACTERS.CHARACTER:
                 return <div class="playerWindow creature-heading" classList={{
-                "tutorial-highlight": highlighter() === "character-display",
-            }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
+                    "tutorial-highlight": highlighter() === "character-display",
+                }} style={{ height: `${dims.HEIGHT * 0.8}px`, left: "0.25vw", overflow: "scroll", "--glow-color":"#000", "border-color": masteryColor(ascean().mastery) }}>
                     <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scaleX(0.95) scaleY(0.99)" }}>
-                    { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
-                        <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
-                        <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
-                    </div> ) : ( <>
-                        <h2 style={{ "margin-top": "15%" }}>
-                            <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
-                            {combat()?.player?.description}
-                        </h2>
-                    </> ) }
+                    <div class="stat-section stat-row">
+                        <img onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
+                        <div style={{ display: "block"}}>
+                            <h1 style={{ margin: "2% auto 1%", "font-size":"1.25rem" }}>{combat()?.player?.name}</h1>
+                            <h2 style={{ margin: "2% auto 1%" }}>{combat()?.player?.description}</h2>
+                        </div>
+                    </div>
                     <AttributeCompiler
                         ascean={ascean} 
                         setAttribute={setAttribute} 
@@ -594,7 +581,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
                             <span class="stat-label">Faith:</span>
                             <span class="stat-value gold">{ascean().faith}</span>
-                            <span class="divider">|</span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
                             <span class="stat-label">Mastery:</span>
                             <span class="stat-value gold">
                                 {combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}
@@ -678,7 +666,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div class="stat-label-middle">SPECIAL</div>
                         <div class="stat-flex">
                             <div class="center">
-                                <div class="gold">+{combat()?.weapons?.[0]?.dodge}%</div>
+                                <div class="gold">+{roundToTwoDecimals(combat()?.weapons?.[0]?.dodge)}%</div>
                                 <div class="small-label">Dodge</div>
                             </div>
                             <div class="softLeftBorder"></div>
@@ -1105,6 +1093,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     };
 
     usePhaserEvent("character", (type: string) => {
+        console.log({ type });
         setHighlighter(type);
     });
 
@@ -1114,9 +1103,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         }}>
         {/*  <<----------- BUTTONS ----------->> */}
         { settings().asceanViews === VIEWS.CHARACTER ? ( <>
-            <button class="highlight menuHeader" onClick={() => setNextView()}>
-                <div class="playerMenuHeading">Character</div>
-            </button>
+            <button class="highlight menuHeader" onClick={() => setNextView()}><div class="playerMenuHeading">Character</div></button>
             <div class="playerSettingSelect" classList={{
                 "tutorial-highlight": highlighter() === "character-buttons",
             }}>
@@ -1162,12 +1149,14 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <button class="highlight menuHeader" classList={{
                 "tutorial-highlight": highlighter() === "inv-button",
                 "animate": highlighter() === "inv-button",
-            }} onClick={() => setNextView()} style={{ position: "fixed", top: "-5.5%", left: "-3.5%" }}><div class="playerMenuHeading">Inventory</div></button>
+            }} onClick={() => setNextView()} style={{ position: "fixed", top: "0", left: "0", margin: "0.5%" }}>
+                <div class="playerMenuHeading">Inventory</div>
+            </button>
 
             <button class="highlight" classList={{
                 "tutorial-highlight": highlighter() === "stats-display",
                 "animate": highlighter() === "stats-display",
-            }} onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "-1%", right: "20vw", "z-index": 1 }}>
+            }} onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "", right: "20vw", "z-index": 1 }}>
                 <div>{expandedCharacter() === true ? "Player Stats" : "Equipment"}</div>
             </button>
 
@@ -1261,30 +1250,27 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {/* <button class="highlight cornerBR" style={{ "background-color": "gold", "z-index": 1, "font-size": "0.25em", padding: "0.25em" }} onClick={() => getExperience()}>
                             <p>Get Exp</p>
                         </button> */}
-                        <div style={{ "display": "grid", "margin-top": dims.HEIGHT > 420 ? "2.5%" : "" }}>
                         <Show when={ascean().experience >= ascean().level * 1000}>
-                            <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
+                            <button class="highlight cornerTR" style={{ "background-color": "purple", "z-index": 1, "font-size": "0.5em", padding: "0.25em", "border-radius":"0.25rem" }} onClick={() => setLevelUpModalShow(!levelUpModalShow())}>
                                 <p class="animate" style={{ "padding-left": "0.75em", "padding-right": "0.75em", margin: "0 0 3% 0" }}>Level++</p>
                             </button>
                         </Show>
-                        <div class="gold" style={dims.ORIENTATION === "landscape" ? { "font-size": dims.WIDTH > 1200 ? "2em" : "", margin: "3% auto 2.5%", "text-align": "center" } : { margin: "5% auto 2.5%", "text-align": "center" }}>
-                            {combat()?.player?.name}
-                        </div>
-                        <div style={{ "margin-bottom": "2%" }}>
-                            <Suspense fallback={<Puff color="gold"/>}>
-                                <HealthBar combat={combat} enemy={false} game={game} />
-                            </Suspense>
-                        </div>
-                        <div style={dims.ORIENTATION === "landscape" ? { "margin-left": "0", "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "7.5%" : "2.5%", transform: dims.WIDTH > 1200 ? "scale(1.2)" : "scale(0.9)" } : { "margin-left": "5%", transform: "scale(0.75)", "margin-top": "20%" }}>
-                            <Suspense fallback={<Puff color="gold"/>}>
-                                <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
-                            </Suspense>
-                        </div>
-                        <div style={{ "margin-top": dims.WIDTH > 1200 ? "35%" : dims.HEIGHT > 420 ? "-2%" : "-6%" }}>
-                            <Suspense fallback={<Puff color="gold"/>}>
-                                <ExperienceBar ascean={ascean} game={game} />
-                            </Suspense>
-                        </div>
+                        <div style={{ "display": "grid", "align-items": "center", "grid-template-rows": "auto 1fr auto" }}>
+                            <div style={{ "padding-top": (ascean().experience >= ascean().level * 1000) ? "1.5rem" : "1.25rem" }}>
+                                <Suspense fallback={<Puff color="gold"/>}>
+                                    <HealthBar combat={combat} enemy={false} game={game} />
+                                </Suspense>
+                            </div>
+                            <div style={{ transform: "scale(0.9)", "margin-top":"5%", "margin-bottom":"-5%" }}>
+                                <Suspense fallback={<Puff color="gold"/>}>
+                                    <AsceanImageCard ascean={ascean} show={show} setShow={setShow} setEquipment={setEquipment} />
+                                </Suspense>
+                            </div>
+                            <div style={{ "padding-bottom": "" }}>
+                                <Suspense fallback={<Puff color="gold"/>}>
+                                    <ExperienceBar ascean={ascean} game={game} />
+                                </Suspense>
+                            </div>
                         </div>
                     </div>
                 </Match>
@@ -1324,15 +1310,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             { settings().asceanViews === VIEWS.CHARACTER ? (
                 <div class="center creature-heading" style={{ overflow: "scroll", "scrollbar-width": "none" }}>
                     <div class="stat-panel souls" style={{ transform: dims.WIDTH > 1200 ? "scale(1)" : "scaleX(0.95) scaleY(0.99)" }}>
-                    { dims.ORIENTATION === "landscape" ? ( <div class="stat-section stat-row">
-                        <img class="stat-" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ }} />
-                        <h2 style={{ margin: "3% auto 1%" }}>{combat()?.player?.description}</h2>
-                    </div> ) : ( <>
-                        <h2 style={{ "margin-top": "15%" }}>
-                            <span><img id="origin-pic" src={asceanPic()} alt={ascean().name} style={{ position: "absolute", left: "-75%", top: "50%" }} /></span>
-                            {combat()?.player?.description}
-                        </h2>
-                    </> ) }
+                    <div class="stat-section stat-row">
+                        <img class="" onClick={() => setShowOrigin(!showOrigin())} id="origin-pic" src={asceanPic()} alt={ascean().name} />
+                        <div style={{ display: "block"}}>
+                            <h1 style={{ margin: "2% auto 1%", "font-size":"1.25rem" }}>{combat()?.player?.name}</h1>
+                            <h2 style={{ margin: "2% auto 1%" }}>{combat()?.player?.description}</h2>
+                        </div>
+                    </div>
                     <AttributeCompiler
                         ascean={ascean} 
                         setAttribute={setAttribute} 
@@ -1349,7 +1333,8 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
                             <span class="stat-label">Faith:</span>
                             <span class="stat-value gold">{ascean().faith}</span>
-                            <span class="divider">|</span>
+                        </div>
+                        <div class="stat-row" onClick={() => setShowFaith(!showFaith())}>
                             <span class="stat-label">Mastery:</span>
                             <span class="stat-value gold">
                                 {combat()?.player?.mastery?.charAt(0).toUpperCase() as string + combat()?.player?.mastery.slice(1)}
@@ -1433,7 +1418,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         <div class="stat-label-middle">SPECIAL</div>
                         <div class="stat-flex">
                             <div class="center">
-                                <div class="gold">+{combat()?.weapons?.[0]?.dodge}%</div>
+                                <div class="gold">+{roundToTwoDecimals(combat()?.weapons?.[0]?.dodge)}%</div>
                                 <div class="small-label">Dodge</div>
                             </div>
                             <div class="softLeftBorder"></div>
@@ -1627,7 +1612,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show)}>
             <Suspense fallback={<Puff color="gold"/>}>
-                <ItemModal item={equipment()} stalwart={combat().stalwart.active} caerenic={combat().caerenic.active} /> 
+                <ItemModal item={equipment()} stalwart={false} caerenic={false} /> 
             </Suspense>
             </div> 
         </Show>
@@ -1751,10 +1736,10 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                                 {item}{length === 0 || length - 1 === index() ? "" : `,\xa0`}{" "}
                             </div>
                         }}</For>
-                        {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">It's a Mystery</span></> : ""}
                         {/* {showQuest()?.quest?.special ? <><br /> Special: <span class="gold">{showQuest()?.quest?.special}</span></> : ""} */}
                     </p>
                     </div>
+                    {showQuest()?.quest?.special ? <h4 class="center">Special?: <span class="gold">It's a Mystery</span></h4> : ""}
                     <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "1.5% auto", padding: "" }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>

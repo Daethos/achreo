@@ -28,15 +28,15 @@ export function createHealthDisplay(combat: Accessor<Combat>, game:Accessor<Game
     const [healthPercentage, setHealthPercentage] = createSignal<number>(0); 
     const [display, setDisplay] = createSignal<string>(game().healthDisplay);
     const [healthDisplay, setHealthDisplay] = createSignal<string>("");
-    createEffect(() => setHealthPercentage(Math.round((enemy ? combat().newComputerHealth : combat().newPlayerHealth) / (enemy ? combat().computerHealth : combat().playerHealth) * 100)));  
+    createEffect(() => setHealthPercentage(Math.round((enemy ? combat().newComputerHealth : combat().newPlayerHealth) / (enemy ? Math.round(combat().computerHealth) : combat().playerHealth) * 100)));  
     createEffect(() => setDisplay(game().healthDisplay));  
     createEffect(() => {
         if (display() === "FULL") {
-            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? combat().computerHealth : combat().playerHealth} (${healthPercentage()}%)`);
+            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? Math.round(combat().computerHealth) : combat().playerHealth} (${healthPercentage()}%)`);
         } else if (display() === "NONE") {
             setHealthDisplay(`          `);
         } else if (display() === "NUMBER") {
-            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? combat().computerHealth : combat().playerHealth}`);
+            setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)} / ${enemy ? Math.round(combat().computerHealth) : combat().playerHealth}`);
         } else if (display() === "BARE") {
             setHealthDisplay(`${Math.round(enemy ? combat().newComputerHealth : combat().newPlayerHealth)}`);
         } else if (display() === "PERCENT") {

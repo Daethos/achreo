@@ -3,6 +3,8 @@ import Equipment from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { CombatAttributes } from "./combat";
 import { v4 as uuidv4 } from "uuid";
+import { ACHREO, AHNVE, ASTRA, CAMBIRE, CHIOMYR, DAETHOS, FYER, ILIOS, KYNGI, KYRISOS, KYRNA, LILOS, MAANRE, NYROLUS, QUOREI, RAHVRE, SEDYRO, SENARI, SEVAS, SHRYGEI, TSHAER } from "./deities";
+import { ACHRE, AGILITY, CAEREN, CONSTITUTION, HOLD_TYPES, KYOSIR, STRENGTH, WEAPON_TYPES } from "./combatTypes";
 
 export type Effect = { 
     physicalDamage?: number;
@@ -29,12 +31,7 @@ export type Intensity = {
     governance: string;
 };
 
-export type Tick = {
-    start: number;
-    end: number;
-};
-
-const EFFECT = {
+export const EFFECT = {
     BASE: 1.1,
     ONE_FIFTEEN: 1.15,
     ONE_TWENTY_FIVE: 1.25,
@@ -71,6 +68,11 @@ export const PRAYERS = {
 
 const SPECIALS = [PRAYERS.AVARICE, PRAYERS.DENIAL, PRAYERS.DISPEL, PRAYERS.INSIGHT, PRAYERS.QUICKEN, PRAYERS.SILENCE];
 
+
+const REFRESH = [PRAYERS.AVARICE, PRAYERS.DENIAL, PRAYERS.DISPEL, PRAYERS.INSIGHT, PRAYERS.QUICKEN, PRAYERS.SILENCE];
+
+const STACK = [PRAYERS.HEAL, PRAYERS.DEBUFF, PRAYERS.BUFF, PRAYERS.DAMAGE];
+
 export default class StatusEffect {
     public id: string;
     public name: string;
@@ -82,7 +84,6 @@ export default class StatusEffect {
     public special: boolean;
     public debuffTarget: string;
     public duration: number;
-    public tick: Tick;
     public intensity: Intensity;
     public refreshes: boolean;
     public activeRefreshes: number;
@@ -105,7 +106,6 @@ export default class StatusEffect {
         this.special = this.setSpecial(prayer);
         this.debuffTarget = this.setDebuffTarget(combat, player, prayer);
         this.duration = this.setDuration(player);
-        this.tick = this.setTick(combat);
         this.intensity = this.setIntensity(weapon, weapon?.influences?.[0] as string, attributes, player);
         this.refreshes = this.setRefreshes(prayer);
         this.stacks = this.setStacks(prayer);
@@ -124,9 +124,11 @@ export default class StatusEffect {
     setID = () => {
         return uuidv4();
     };
+
     setSpecial = (prayer: string) => {
         return SPECIALS.includes(prayer) ? true : false;
     };
+
     static buff(potentialModifiers: any, realizedModifiers: any): any {
         realizedModifiers.physicalDefenseModifier = potentialModifiers.physicalDefenseModifier ? Math.round(potentialModifiers.physicalDefenseModifier * 100) / 100 : 0;
         realizedModifiers.magicalDefenseModifier = potentialModifiers.magicalDefenseModifier ? Math.round(potentialModifiers.magicalDefenseModifier * 100) / 100 : 0;
@@ -148,10 +150,12 @@ export default class StatusEffect {
         };
         return cleanSlate;
     };
+
     static damage(potentialModifiers: any, realizedModifiers: any): any {
         realizedModifiers.damage = potentialModifiers.damage;
         return realizedModifiers;
     };
+
     static debuff(potentialModifiers: any, realizedModifiers: any): any {
         realizedModifiers.physicalDefenseModifier = potentialModifiers.physicalDefenseModifier ? Math.round(potentialModifiers.physicalDefenseModifier * 100) / 100 : 0;
         realizedModifiers.magicalDefenseModifier = potentialModifiers.magicalDefenseModifier ? Math.round(potentialModifiers.magicalDefenseModifier * 100) / 100 : 0;
@@ -173,13 +177,15 @@ export default class StatusEffect {
         };
         return cleanSlate;
     };
+
     static heal(potentialModifiers: any, realizedModifiers: any): any {
         realizedModifiers.healing = potentialModifiers.healing;
         return realizedModifiers;
     };
+
     static setModifiers = (weapon: Equipment, potentialModifiers: any, effectModifiers: any): any => {
         switch(weapon?.influences?.[0]) {
-            case "Daethos": {
+            case DAETHOS: {
                 potentialModifiers.physicalDamage = effectModifiers.physicalDamage / EFFECT.FIVE;
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage / EFFECT.FIVE;
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration / EFFECT.FIVE;
@@ -189,7 +195,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Achreo": {
+            case ACHREO: {
                 potentialModifiers.physicalDamage = effectModifiers.healing / EFFECT.FIVE;
                 potentialModifiers.magicalDamage = effectModifiers.healing / EFFECT.FIVE;
                 potentialModifiers.criticalChance = effectModifiers.damage / EFFECT.FIVE;
@@ -199,7 +205,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Ahn've": {
+            case AHNVE: {
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.ONE_FIFTEEN;
                 potentialModifiers.dodge = effectModifiers.dodge * EFFECT.ONE_FIFTEEN;
 
@@ -207,7 +213,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Astra": {
+            case ASTRA: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.ONE_FIFTY;
                 potentialModifiers.roll = effectModifiers.roll;
@@ -216,7 +222,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Cambire": {
+            case CAMBIRE: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
                 potentialModifiers.roll = effectModifiers.roll;
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
@@ -225,7 +231,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Chiomyr": {
+            case CHIOMYR: {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
@@ -234,7 +240,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Fyer": {
+            case FYER: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.TWO;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.TWO;
             
@@ -242,7 +248,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Ilios": {
+            case ILIOS: {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration / EFFECT.ONE_FIFTY;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration / EFFECT.ONE_FIFTY;
                 potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.ONE_FIFTY;
@@ -254,7 +260,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Kyn'gi": {
+            case KYNGI: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance * EFFECT.ONE_FIFTEEN;
                 potentialModifiers.roll = effectModifiers.roll * EFFECT.ONE_FIFTEEN;
 
@@ -262,7 +268,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Kyrisos": {
+            case KYRISOS: {
                 potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier;
                 potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier;
                 potentialModifiers.roll = effectModifiers.roll;
@@ -271,7 +277,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
-            case "Kyr'na": {
+            case KYRNA: {
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 
@@ -279,7 +285,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Lilos": {
+            case LILOS: {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.physicalDamage = effectModifiers.physicalDamage;
 
@@ -287,7 +293,7 @@ export default class StatusEffect {
                 potentialModifiers.damage = effectModifiers.damage * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Ma'anre": {
+            case MAANRE: {
                 potentialModifiers.roll = effectModifiers.roll / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.dodge = effectModifiers.dodge / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.ONE_TWENTY_FIVE;
@@ -297,7 +303,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Nyrolus": {
+            case NYROLUS: {
                 potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier;
                 potentialModifiers.physicalPosture = effectModifiers.physicalPosture / EFFECT.ONE_TWENTY_FIVE;
@@ -307,7 +313,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
-            case "Quor'ei": {
+            case QUOREI: {
                 potentialModifiers.physicalDefenseModifier = effectModifiers.physicalDefenseModifier;
                 potentialModifiers.magicalDefenseModifier = effectModifiers.magicalDefenseModifier / EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.physicalPosture = effectModifiers.physicalPosture;
@@ -317,7 +323,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_FIFTY;
                 break;
             };
-            case "Rahvre": {
+            case RAHVRE: {
                 potentialModifiers.magicalDamage = effectModifiers.magicalDamage;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage / EFFECT.ONE_FIFTY;
@@ -326,7 +332,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Senari": {
+            case SENARI: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance / EFFECT.TWO;
                 potentialModifiers.roll = effectModifiers.roll;
                 potentialModifiers.dodge = effectModifiers.dodge;
@@ -335,7 +341,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing * EFFECT.ONE_TWENTY_FIVE;
                 break;
             };
-            case "Se'dyro": {
+            case SEDYRO: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration;
@@ -344,7 +350,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Se'vas": {
+            case SEVAS: {
                 potentialModifiers.criticalChance = effectModifiers.criticalChance * EFFECT.BASE;
                 potentialModifiers.criticalDamage = effectModifiers.criticalDamage * EFFECT.BASE;
 
@@ -352,7 +358,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Shrygei": {
+            case SHRYGEI: {
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration * EFFECT.BASE;
                 potentialModifiers.magicalPenetration = effectModifiers.magicalPenetration * EFFECT.BASE;
 
@@ -360,7 +366,7 @@ export default class StatusEffect {
                 potentialModifiers.healing = effectModifiers.healing;
                 break;
             };
-            case "Tshaer": {
+            case TSHAER: {
                 potentialModifiers.physicalDamage = effectModifiers.physicalDamage * EFFECT.ONE_TWENTY_FIVE;
                 potentialModifiers.physicalPenetration = effectModifiers.physicalPenetration;
                 potentialModifiers.criticalChance = effectModifiers.criticalChance;
@@ -375,15 +381,17 @@ export default class StatusEffect {
         };
         return potentialModifiers;
     };
+
     static updateEffectStack(statusEffect: StatusEffect, combat: Combat, player: Ascean, weapon: Equipment) {
         let updatedEffect = statusEffect;
-        updatedEffect.tick.end += 2;
+
         updatedEffect.endTime += EFFECT.DURATION_MAX;
         updatedEffect.activeStacks += 1;
+
         let playerIntensity = updatedEffect.intensity.initial * updatedEffect.intensity.magnitude;
         let isEnemy = combat.computer;
         let playerFaith = combat?.player?.name === player.name ? combat.player.faith.toLowerCase() : isEnemy?.faith.toLowerCase();
-        if ((weapon?.influences?.[0] === "Daethos" && playerFaith === FAITHS.DEVOTED) || (weapon?.influences?.[0] !== "Daethos" && playerFaith === FAITHS.ADHERENT)) {
+        if ((weapon?.influences?.[0] === DAETHOS && playerFaith === FAITHS.DEVOTED) || (weapon?.influences?.[0] !== DAETHOS && playerFaith === FAITHS.ADHERENT)) {
             playerIntensity *= EFFECT.ONE_FIFTEEN;
         };
         updatedEffect.intensity.value += playerIntensity;
@@ -426,17 +434,30 @@ export default class StatusEffect {
                 realizedModifiers.damage *= updatedEffect.activeStacks;
                 break;
             };
+            case PRAYERS.DEBUFF: {
+                realizedModifiers = StatusEffect.debuff(potentialModifiers, realizedModifiers);
+                break;
+            };
+            case PRAYERS.HEAL: {
+                realizedModifiers = StatusEffect.heal(potentialModifiers, realizedModifiers);
+                realizedModifiers.healing *= updatedEffect.activeStacks;
+                break;
+            };
             default:
                 break;
         };
 
         updatedEffect.effect = realizedModifiers;
+
+        updatedEffect.description = updatedEffect.setDescription(combat, player, combat.computer!, weapon, updatedEffect.prayer);
+
         return updatedEffect;
     };
 
     setActiveStacks(intensity: { initial: number; value: number; }): number {
         return this.activeStacks = intensity.value / intensity.initial; // Value is the cumulative stacking of the initial intensity. Initial is the base intensity.
     };
+
     setDebuffTarget(data: Combat, player: Ascean, prayer: string): string {
         if (prayer !== PRAYERS.DEBUFF) return "";
         let enemyWeapon = data.computerWeapons[0].name;
@@ -446,64 +467,69 @@ export default class StatusEffect {
             return this.debuffTarget = data?.weapons?.[0]?.name as string;
         };
     };
+
     setDuration(player: Ascean): number {
         let duration = Math.floor(player.level / EFFECT.DURATION_MODIFIER + 1) > EFFECT.DURATION_MAX ? EFFECT.DURATION_MAX : Math.floor(player.level / EFFECT.DURATION_MODIFIER + 1);
         return this.duration = duration;
     };
+
     setImgURL = (weapon: Equipment): string => {
         return this.imgUrl = weapon.imgUrl;
     };
+
     setIntensity(weapon: Equipment, deity: string, attributes: CombatAttributes, player: Ascean): { initial: number; value: number; magnitude: number; governance: string; } {
         let attribute = 0;
         let type = "";
-        if (deity === "Achreo" || deity === "Astra" || deity === "Quor'ei" || deity === "Senari") {
-            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
-                type = "achre";
+        if (deity === ACHREO || deity === ASTRA || deity === QUOREI || deity === SENARI) {
+            if (weapon.grip === HOLD_TYPES.ONE_HAND || weapon.type === WEAPON_TYPES.BOW) {
+                type = ACHRE;
                 attribute = (attributes.totalAchre + weapon.achre) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
-                type = "caeren";
+                type = CAEREN;
                 attribute = attributes.totalCaeren + weapon.caeren * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
-        } else if (deity === "Ahn've" || deity === "Cambire" || deity === "Fyer" || deity === "Nyrolus") {
-            if (weapon.grip === "One Hand") {
-                type = "achre";
+        } else if (deity === AHNVE || deity === CAMBIRE || deity === FYER || deity === NYROLUS) {
+            if (weapon.grip === HOLD_TYPES.ONE_HAND) {
+                type = ACHRE;
                 attribute = attributes.totalAchre + weapon.achre * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
-                type = "caeren";
+                type = CAEREN;
                 attribute = (attributes.totalCaeren + weapon.caeren) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
-        } else if (deity === "Kyn'gi" || deity === "Se'dyro" || deity === "Ma'anre") {
-            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
-                type = "agility";
+        } else if (deity === KYNGI || deity === SEDYRO || deity === MAANRE) {
+            if (weapon.grip === HOLD_TYPES.ONE_HAND || weapon.type === WEAPON_TYPES.BOW) {
+                type = AGILITY;
                 attribute = (attributes.totalAgility + weapon.agility) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             } else {
-                type = "strength";
+                type = STRENGTH;
                 attribute = attributes.totalStrength + weapon.strength * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             };
-        } else if (deity === "Ilios" || deity === "Se'vas" || deity === "Tshaer") {
-            if (weapon.grip === "One Hand") {
-                type = "agility";
+        } else if (deity === ILIOS || deity === SEVAS || deity === TSHAER) {
+            if (weapon.grip === HOLD_TYPES.ONE_HAND) {
+                type = AGILITY;
                 attribute = attributes.totalAgility + weapon.agility * (player.mastery === type ? EFFECT.ONE_TWENTY_FIVE : 1);
             } else {
-                type = "strength";
+                type = STRENGTH;
                 attribute = (attributes.totalStrength + weapon.strength) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
             };
-        } else if (deity === "Chiomyr" || deity === "Kyrisos" || deity === "Shrygei") {
-            type = "kyosir";
+        } else if (deity === CHIOMYR || deity === KYRISOS || deity === SHRYGEI) {
+            type = KYOSIR;
             attribute = (attributes.totalKyosir + weapon.kyosir) * (player.mastery === type ? EFFECT.ONE_FIFTY : EFFECT.ONE_TWENTY_FIVE);
-        } else if (deity === "Lilos" || deity === "Kyr'na" || deity === "Rahvre") {
-            type = "constitution";
+        } else if (deity === LILOS || deity === KYRNA || deity === RAHVRE) {
+            type = CONSTITUTION;
             attribute = (attributes.totalConstitution) * (player.mastery === type ? EFFECT.TWO : EFFECT.ONE_FIFTY);
-        } else if (deity === "Daethos") {
-            if (weapon.grip === "One Hand" || weapon.type === "Bow") {
+        } else if (deity === DAETHOS) {
+            if (weapon.grip === HOLD_TYPES.ONE_HAND || weapon.type === WEAPON_TYPES.BOW) {
                 type = "daethic";
-                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === "achre" || player.mastery === "agility" ? 1 : EFFECT.ONE_FIFTY);
+                attribute = (attributes.totalAchre + weapon.achre + attributes.totalAgility + weapon.agility) / (player.mastery === ACHRE || player.mastery === AGILITY ? 1 : EFFECT.ONE_FIFTY);
             } else {
                 type = "daethic";
-                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === "caeren" || player.mastery === "strength" ? 1 : EFFECT.ONE_FIFTY);
+                attribute = (attributes.totalStrength + weapon.strength + attributes.totalCaeren + weapon.caeren) / (player.mastery === CAEREN || player.mastery === STRENGTH ? 1 : EFFECT.ONE_FIFTY);
             };
         };
+
         attribute = Math.round(attribute * 100) / 100;
+
         return this.intensity = {
             initial: attribute,
             value: attribute,
@@ -511,20 +537,17 @@ export default class StatusEffect {
             governance: type,
         };
     };
+
     setName(deity: string): string {
         return this.name = `Gift of ${deity}`;
     };
-    setTick(combatData: Combat): { start: number; end: number; } {
-        return this.tick = {
-            start: combatData.combatRound,
-            end: combatData.combatRound + this.duration,
-        };
-    };
+
     setRefreshes(prayer: string): boolean {
-        return this.refreshes = (prayer === PRAYERS.HEAL || prayer === PRAYERS.DEBUFF || prayer === PRAYERS.AVARICE || prayer === PRAYERS.DENIAL || prayer === PRAYERS.DISPEL || prayer === PRAYERS.INSIGHT || prayer === PRAYERS.QUICKEN || prayer === PRAYERS.SILENCE) ? true : false;
+        return this.refreshes = REFRESH.includes(prayer);
     };
+
     setStacks(prayer: string): boolean {
-        return this.stacks = (prayer === PRAYERS.BUFF || prayer === PRAYERS.DAMAGE) ? true : false;
+        return this.stacks = STACK.includes(prayer);
     };
 
     setEffect(combat: Combat, player: Ascean, weapon: Equipment, prayer: string) {
@@ -586,13 +609,13 @@ export default class StatusEffect {
             if (this.setSpecial(prayer)) {
                 return this.description = `You channel an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
             };
-            let description = `You channel a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            let description = `You channel a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds.`;
             return this.description = description;    
         } else {
             if (this.setSpecial(prayer)) {
                 return this.description = `${player.name} channels an old, lost prayer from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}.`;
             };
-            let description = `${player.name} channels a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds [Initial].`;
+            let description = `${player.name} channels a gift from ${weapon?.influences?.[0]} through their sigil, ${article} ${weapon.name}, ${prayer === PRAYERS.DEBUFF ? `cursing ${enemy.name}` : prayer === PRAYERS.HEAL ? `renewing ${player.name} for ${Math.round(this.effect.healing as number * 0.33)} per round` : prayer === PRAYERS.DAMAGE ? `damaging ${enemy.name} for ${Math.round(this.effect.damage as number * 0.33)} per tick` : `blessing ${player.name}`} for ${duration} combat rounds.`;
             return this.description = description;
         };
     };

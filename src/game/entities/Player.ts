@@ -12,12 +12,12 @@ import Ascean from "../../models/ascean";
 import NPC from "./NPC";
 import Equipment from "../../models/equipment";
 import { Compiler } from "../../utility/ascean";
-import { ActionButton } from "../phaser/ActionButtons";
 import { Combat } from "../../stores/combat";
 import { BROADCAST_DEATH } from "../../utility/enemy";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { EFFECT } from "../phaser/ScrollingCombatText";
 import { masteryNumber } from "../../utility/styling";
+import { HitLocation } from "../phaser/HitDetection";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -187,6 +187,7 @@ export default class Player extends Entity {
         this.buildActionHandlers();
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
+        this.checkMeleeOrRanged(weapon);
         this.aoeMask = ENTITY_FLAGS.PLAYER;
 
         this.highlight = this.scene.add.graphics()
@@ -228,7 +229,7 @@ export default class Player extends Entity {
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
         });
         this.beam = new Beam(this);
-        
+        this.createShadow(true);
         // this.generateCaerenesis();
 
         scene.registry.set("player", this);
@@ -248,6 +249,37 @@ export default class Player extends Entity {
             tab: this.scene.input.keyboard?.addKeys("TAB"),
             escape: this.scene.input.keyboard?.addKeys("ESC"),
         };
+        this.actionHandlers = [
+            {
+                key: this.inputKeys.action.ONE,
+                action: actions[0]?.toLowerCase(),
+                special: specials[0]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.TWO,
+                action: actions[1]?.toLowerCase(),
+                special: specials[1]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.THREE,
+                action: actions[2]?.toLowerCase(),
+                special: specials[2]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.FOUR,
+                action: actions[3]?.toLowerCase(),
+                special: specials[3]?.toLowerCase()
+            },
+            {
+                key: this.inputKeys.action.FIVE,
+                action: actions[4]?.toLowerCase(),
+                special: specials[4]?.toLowerCase()
+            }
+        ];
+    };
+
+    rebuildActionHandlers = () => {
+        const { actions, specials } = this.scene.hud.settings;
         this.actionHandlers = [
             {
                 key: this.inputKeys.action.ONE,
@@ -354,12 +386,14 @@ export default class Player extends Entity {
             this.setGlow(this.spriteWeapon, true, "weapon");
             this.setGlow(this.spriteShield, true, "shield"); 
             this.adjustSpeed(PLAYER.SPEED.CAERENIC * enhanced);
+            // this.createShadow(false);
             // if (this.checkTalentEnhanced("caerenic")) {this.caerenesis.start();this.glowTalent=true;};
         } else {
             this.setGlow(this, false);
             this.setGlow(this.spriteWeapon, false, "weapon")
             this.setGlow(this.spriteShield, false, "shield"); 
             this.adjustSpeed(-PLAYER.SPEED.CAERENIC * enhanced);
+            // this.createShadow(true);
             // if (this.checkTalentEnhanced("caerenic")) {this.caerenesis.stop();this.glowTalent=false;};
         };
     };
@@ -639,20 +673,19 @@ export default class Player extends Entity {
 
     checkTalentCooldown = (type: string, cooldown: number) => {
         const limit = this.scene.hud.talents.talents[type]?.efficient ? TALENT_COOLDOWN[cooldown] : cooldown;
-        this.setTimeEvent(`${type}Cooldown`, limit);
+        this.scene.hud.setTimeEvent(this, `${type}Cooldown`, limit);
     };
 
     checkTalentEnhanced = (type: string): boolean => {
-        return this.scene.hud.talents.talents[type]?.enhanced;
+        return this.scene.hud.talents.talents?.[type]?.enhanced || false;
     };
 
     checkTalentOptimized = (type: string): boolean => {
-        return this.scene.hud.talents.talents[type]?.efficient;
+        return this.scene.hud.talents.talents?.[type]?.efficient || false;
     };
 
     checkTalentFrame = (type: string, current: number, potential: number): number => {
-        const frame = this.scene.hud.talents.talents[type].enhanced ? potential : current;
-        // console.log({frame});
+        const frame = this.scene.hud.talents.talents?.[type].enhanced ? potential : current;
         return frame;
     };
 
@@ -707,6 +740,9 @@ export default class Player extends Entity {
         const distance = direction.length();
         direction.normalize();
         this.flipX = direction.x < 0;
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, true);
+        const leapStartY = this.y;
+        const arcHeight = 75; // Adjust this value for higher/lower arcs
         this.scene.tweens.add({
             targets: this,
             scale: 1.2,
@@ -724,14 +760,29 @@ export default class Player extends Entity {
                 this.isAttacking = true;
                 screenShake(this.scene);
                 this.scene.sound.play("leap", { volume: this.scene.hud.settings.volume });
-                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
+                this.anims.play(FRAMES.GRAPPLE_ROLL, true);
+            },
+            onUpdate: (tween) => {
+                const progress = tween.progress;
+                // const progress = this.scene.tweens.getTweensOf(this)[0]?.progress || 0;
+                const currentArc = Math.sin(progress * Math.PI) * arcHeight;
+                
+                this.y = leapStartY + (this.y - leapStartY) - currentArc;
             },
             onComplete: () => { 
                 screenShake(this.scene);
                 this.isLeaping = false; 
                 const special = this.checkTalentEnhanced(States.LEAP);
-                if (this.touching.length > 0) {
-                    for (let i = 0; i < this.touching.length; ++i) {
+                this.spriteWeapon.setVisible(true);
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
+                const length = this.touching.length;
+                if (length > 0) {
+                    this.lastHitLocation = {
+                        location: HitLocation.CHEST,
+                        hitPoint: {x:0,y:0},
+                        relativePosition: {x:0,y:0}
+                    };
+                    for (let i = 0; i < length; ++i) {
                         const enemy = this.touching[i];
                         this.scene.combatManager.playerMelee(enemy.enemyID, "leap");
                         if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
@@ -762,6 +813,7 @@ export default class Player extends Entity {
         const direction = target.subtract(this.position);
         direction.normalize();
         this.flipX = direction.x < 0;
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, true);
         this.scene.tweens.add({
             targets: this,
             alpha: 0.25,
@@ -781,8 +833,15 @@ export default class Player extends Entity {
             },
             onComplete: () => {
                 const special = this.checkTalentEnhanced(States.RUSH);
-                if (this.rushedEnemies.length > 0) {
-                    for (let i = 0; i < this.rushedEnemies.length; ++i) {
+                const rush = this.rushedEnemies.length;
+                const touch = this.touching.length;
+                if (rush > 0) {
+                    this.lastHitLocation = {
+                        location: HitLocation.CHEST,
+                        hitPoint: {x:0,y:0},
+                        relativePosition: {x:0,y:0}
+                    };
+                    for (let i = 0; i < rush; ++i) {
                         const enemy = this.rushedEnemies[i];
                         if (enemy.health <= 0) return;
                         if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
@@ -796,8 +855,8 @@ export default class Player extends Entity {
                         this.scene.combatManager.playerMelee(enemy.enemyID, "rush");
                         if (special) this.scene.combatManager.slow(enemy.enemyID);
                     };
-                } else if (this.touching.length > 0) {
-                    for (let i = 0; i < this.touching.length; ++i) {
+                } else if (touch > 0) {
+                    for (let i = 0; i < touch; ++i) {
                         const enemy = this.touching[i];
                         if (enemy.health <= 0) return;
                         if (!this.isAstrifying && (enemy.isWarding || enemy.isShielding || enemy.isProtecting)) {
@@ -1126,50 +1185,18 @@ export default class Player extends Entity {
         };
     };
 
-    setTimeEvent = (cooldown: string, limit = 30000) => {
-        if (this.isComputer) return;
-        const evasion = cooldown === "rollCooldown" || cooldown === "dodgeCooldown";
-        if (evasion === false) (this as any)[cooldown] = limit;
-        let type = cooldown.split("Cooldown")[0];
-        
-        if (type === "luckout") {
-            type = `${type} ${this.luckoutLock}`
-        } else if (type === "persuasion") {
-            type = `${type} ${this.persuasionLock}`
-        };
-
-        this.scene.hud.actionBar.setCurrent(0, limit, type);
-        const button = this.scene.hud.actionBar.getButton(type);
-
-        if (this.inCombat || type) { // type === "blink" ||
-            this.scene.hud.time.delayedCall(limit, () => {
-                this.scene.hud.actionBar.setCurrent(limit, limit, type);
-                this.scene.hud.actionBar.animateButton(button as ActionButton);
-                if (evasion === false) {
-                    (this as any)[cooldown] = 0;
-                };
-            }, undefined, this); 
-        } else {
-            this.scene.hud.actionBar.setCurrent(limit, limit, type);
-            if (!evasion) {
-                (this as any)[cooldown] = 0;
-            };
-        };
-    };
-    
-    swingReset = (type: string, primary = false) => {
+    swingReset = (type: string) => {
         this.canSwing = false;
         const time = this.swingTime(type);
         const button = this.scene.hud.actionBar.getButton(type);
-        this.scene.hud.actionBar.setCurrent(0, time, type);
+        if (!button) return;
+        this.scene.hud.setTimeEvent(this, `${type}Cooldown`, time);
         this.scene.time.delayedCall(time, () => {
             this.canSwing = true;
-            this.scene.hud.actionBar.setCurrent(time, time, type);
-            if (primary === true) this.scene.hud.actionBar.animateButton(button as ActionButton);
         }, undefined, this);
     };
 
-    swingTime = (type: string): number => (type === "dodge" || type === "parry" || type === "roll") ? 750 : this.swingTimer;
+    swingTime = (type: string): number => (type === "dodge" || type === "parry" || type === "roll") ? 1000 : this.swingTimer;
 
     checkCaerenic = (caerenic: boolean) => {
         this.isGlowing = caerenic;
@@ -1340,10 +1367,6 @@ export default class Player extends Entity {
                     this.scene.combatManager.stun(this.attackedTarget.enemyID);
                 };
             };
-            // if (action === States.GRAPPLING_HOOK) {
-            //     this.hook(this.attackedTarget, 1500);
-            //     return;
-            // };
             if (action === States.HOOK) {
                 this.hook(this.attackedTarget, 1500);
                 if (this.checkTalentEnhanced(States.HOOK)) {
@@ -1453,8 +1476,9 @@ export default class Player extends Entity {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
-        let duration = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DURATION * 2 : PLAYER.DODGE.DURATION;
-        let distance = this.checkTalentOptimized(States.DODGE) ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
+        const optimized = this.checkTalentOptimized(States.DODGE);
+        let duration = optimized ? PLAYER.DODGE.DURATION * 2 : PLAYER.DODGE.DURATION;
+        let distance = optimized ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
         const weapon = this.scene.state.weapons[0];
         const dodge = 1 + (weapon.dodge / 100);
         // console.log({ dodge, duration, distance });
@@ -1531,18 +1555,22 @@ export default class Player extends Entity {
         };
     };
 
-    playerRoll = (): void => {
-        this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
+    playerRoll = (roll: boolean): void => {
+        // this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
-        const duration = this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DURATION * 2 : PLAYER.ROLL.DURATION;
-        const distance = this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DISTANCE * 2 : PLAYER.ROLL.DISTANCE;
+        const duration = roll 
+            ? (this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DURATION * 2 : PLAYER.ROLL.DURATION)
+            : this.grappleTime;
+        const distance = roll 
+            ? (this.checkTalentOptimized(States.ROLL) ? PLAYER.ROLL.DISTANCE * 2 : PLAYER.ROLL.DISTANCE)
+            : Math.max(100, this.grappleTime / 2);
         const rollLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;
             if (progress >= duration || currentDistance >= distance) {
                 this.spriteWeapon.setVisible(true);
-                this.rollCooldown = 0;
+                // this.rollCooldown = 0;
                 this.isRolling = false;
                 return;
             };

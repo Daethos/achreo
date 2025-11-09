@@ -3,6 +3,28 @@ import { getAscean, updateAscean } from "../assets/db/db";
 import Statistics from "./statistics";
 import { EventBus } from "../game/EventBus";
 
+export const DAETHOS = "Daethos";
+export const ACHREO = "Achreo";
+export const AHNVE = "Ahn've";
+export const ASTRA = "Astra";
+export const CAMBIRE = "Cambire";
+export const CHIOMYR = "Chiomyr";
+export const FYER = "Fyer";
+export const ILIOS = "Ilios";
+export const KYNGI = "Kyn'gi";
+export const KYRISOS = "Kyrisos";
+export const KYRNA = "Kyr'na";
+export const LILOS = "Lilos";
+export const MAANRE = "Ma'anre";
+export const NYROLUS = "Nyrolus";
+export const QUOREI = "Quor'ei";
+export const RAHVRE = "Rahvre";
+export const SENARI = "Senari";
+export const SEDYRO = "Se'dyro";
+export const SEVAS = "Se'vas";
+export const SHRYGEI = "Shrygei";
+export const TSHAER = "Tshaer";
+
 export const DEITIES = {
     "Daethos": {
         name: "Daethos",

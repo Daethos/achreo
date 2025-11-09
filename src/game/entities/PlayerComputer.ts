@@ -37,13 +37,13 @@ export default class PlayerComputer extends Player {
             tertiary: fetchTrait(this.scene.hud.gameState?.traits.tertiary.name),
         };
         const potential = [traits.primary.name, traits.secondary.name, traits.tertiary.name];
-        let mastery = SPECIAL[ascean.mastery as keyof typeof SPECIAL];
+        let mastery = SPECIAL[ascean.mastery];
         mastery = mastery.filter((m) => {
             return m !== "Mark" && m !== "Recall" && m !== "Consume";
         })
         let extra: any[] = [];
         for (let i = 0; i < 3; i++) {
-            const trait = TRAIT_SPECIALS[potential[i] as keyof typeof TRAIT_SPECIALS];
+            const trait = TRAIT_SPECIALS[potential[i]];
             if (trait && trait.length > 0) {
                 extra = [ ...extra, ...trait ]
             };
@@ -195,7 +195,7 @@ export default class PlayerComputer extends Player {
         } else { // Special State 1-20
             action = States.CONTEMPLATE;
         };
-        let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase() as keyof typeof PLAYER.STAMINA]);
+        let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase()]);
         if (check.success === true && this.playerMachine.stateMachine.isState(action)) {
             this.playerMachine.stateMachine.setState(action);
         } else {

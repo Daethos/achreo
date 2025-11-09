@@ -99,7 +99,7 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
                     <div style={{ color: "#fdf6d8", "margin-top": dims.WIDTH > 1200 ? "13.5%" : "10%", "font-size": dims.WIDTH > 1200 ? "1.25em" : "0.875em" }}>
                         Level <span class="gold">{state().computer?.level}</span> | Mastery <span class="gold">{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                     </div>
-                    <div class="" style={{ transform: "scale(0.875)", "margin-top": dims.WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dims.WIDTH > 1200 ? "7.5%" : "3%" }}>
+                    <div style={{ transform: "scale(0.875)", "margin-top": dims.WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dims.WIDTH > 1200 ? "7.5%" : "3%" }}>
                         <AttributeCompiler ascean={enemy as Accessor<Ascean>} setAttribute={setAttribute} show={attributeShow} setShow={setAttributeShow} setDisplay={setAttributeDisplay} />
                     </div>
                     <div style={{ "margin-top": dims.WIDTH > 1200 ? "" 
@@ -236,7 +236,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
             <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Create Prayer</div>
         </button> */}
         <Show when={state().computerEffects?.length > 0 && state().combatEngaged === true}>
-            <div class="combatEffects" style={{ position: "fixed", right: "7vw", top: "14vh", "height": "13vh", width: "auto", transform: "scale(0.5)" }}>
+            <div class="combatEffects" style={{ position: "fixed", right: "7vw", top: "14vh", "height": "13vh", width: "auto", transform: "scale(0.6)" }}>
                 <For each={state().computerEffects}>{((effect) => ( 
                     <PrayerEffects combat={state} effect={effect} enemy={true} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
                 ))}</For>

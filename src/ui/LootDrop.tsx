@@ -1,4 +1,4 @@
-import { Setter, Show } from "solid-js";
+import { Accessor, Setter, Show } from "solid-js";
 import Equipment from "../models/equipment";
 import { getRarityColor } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
@@ -6,9 +6,10 @@ interface Props {
     lootDrop: Equipment;
     setShow: Setter<boolean>;
     setLootDrop: Setter<Equipment | undefined>;
+    showTutorial?: Accessor<boolean>;
     x?: boolean;
 };
-export default function LootDrop({ lootDrop, setShow, setLootDrop, x = true }: Props) {
+export default function LootDrop({ lootDrop, setShow, setLootDrop, showTutorial, x = true }: Props) {
     // const article: string = ["a", "e", "i", "o", "u"].includes(lootDrop.type[0].toLowerCase()) ? "an" : "a";
     // const excess: string = lootDrop.type.includes("-") ? "piece of" : "";
     async function saveItem(): Promise<void> {
@@ -31,12 +32,14 @@ export default function LootDrop({ lootDrop, setShow, setLootDrop, x = true }: P
             <img src={lootDrop.imgUrl} alt={lootDrop.name} />
         </button>
         <div>
-            <button class="highlight gold" onClick={() => saveItem()}>
-                Pick up the {lootDrop?.type}
-                {/* <div class="gold">Take the {lootDrop?.name}?</div> */}
-            </button>
+            <Show when={!showTutorial?.()}>
+                <button class="highlight gold" onClick={() => saveItem()}>
+                    Pick up the {lootDrop?.type}
+                    {/* <div class="gold">Take the {lootDrop?.name}?</div> */}
+                </button>
+            </Show>
         </div>
-        <Show when={x}>
+        <Show when={x && !showTutorial?.()}>
             <div class="highlight cornerBR" onClick={() => EventBus.emit("blend-game", { showLoot: false })} style={{ color: "red" }}>X</div>
         </Show>
     </div>;

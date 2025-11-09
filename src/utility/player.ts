@@ -130,9 +130,10 @@ export const TALENT_COOLDOWN: Cooldown = {
     10000: 6000,
     15000: 10000,
 };
-export const PLAYER = {
+export const PLAYER: {[key:string]: {[key:string]: number}} = {
     ACTION_WEIGHT: {
         ATTACK: 60,
+        HURL: 50,
         POSTURE: 45,
         ROLL: 30,
         PARRY: 20,
@@ -168,7 +169,7 @@ export const PLAYER = {
         INITIAL: 1.5, // 1.75
         ACCELERATION: 0.25,
         DECELERATION: 0.1,
-        CAERENIC: 0.6,
+        CAERENIC: 0.4,
         SLOW: 1,
         SNARE: 1.5,
         SPRINT: 1,
@@ -194,6 +195,7 @@ export const PLAYER = {
         // Physical
         ATTACK: 20,
         DODGE: 10, // 25
+        HURL: 15,
         JUMP: 10, // 25
         PARRY: 10,
         POSTURE: 15,
@@ -432,7 +434,7 @@ export const PLAYER = {
 export const STATE = "stateMachine";
 export const POSITIVE = "positiveMachine";
 
-export const PLAYER_INSTINCTS = {
+export const PLAYER_INSTINCTS: {[key:string]: {key:string; value:string;}[]} = {
     "constitution": [
         { // 0 - Critical Heal
             key: STATE,
@@ -708,8 +710,8 @@ export const PLAYER_INSTINCTS = {
 export const BALANCED = "Balance";
 export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
-
-export const BALANCED_INSTINCTS = {
+type INSTINCT = { [key:string]: string[] };
+export const BALANCED_INSTINCTS: INSTINCT = {
     "constitution": [States.INVOKE, States.ILIRECH, States.LIKYR, States.KYNISOS, States.KYRISIAN, States.PARALYZE, States.WARD],
     "strength": [States.INVOKE, States.RECOVER, States.SPRINTING, States.STORM, States.WARD],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING],
@@ -717,7 +719,7 @@ export const BALANCED_INSTINCTS = {
     "caeren": [States.INVOKE, States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
     "kyosir": [States.INVOKE, States.CONFUSE, States.DISPEL, States.KYNISOS, States.SUTURE],
 };
-export const DEFENSIVE_INSTINCTS = {
+export const DEFENSIVE_INSTINCTS: INSTINCT = {
     "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.LIKYR, States.SHIELD, States.SHIRK, States.WARD],
     "strength": [States.INVOKE, States.DESPERATION, States.HOWL, States.SPRINTING, States.WARD],
     "agility": [States.INVOKE, States.DESPERATION, States.ENVELOP, States.RECOVER, States.SHIMMER, States.SNARE],
@@ -725,7 +727,7 @@ export const DEFENSIVE_INSTINCTS = {
     "caeren": [States.INVOKE, States.DESPERATION, States.FEAR, States.HEALING, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
-export const OFFENSIVE_INSTINCTS = {
+export const OFFENSIVE_INSTINCTS: INSTINCT = {
     "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LIKYR, States.PARALYZE],
     "strength": [States.INVOKE, States.LEAP, States.QUOR, States.RECOVER, States.RUSH, States.SPRINTING, States.STORM],
     "agility": [States.INVOKE, States.ACHIRE, States.KYNISOS, States.RECOVER, States.SPRINTING, States.STORM],
@@ -734,14 +736,14 @@ export const OFFENSIVE_INSTINCTS = {
     "kyosir": [States.INVOKE, States.CHIOMISM, States.DISPEL, States.ILIRECH, States.KYRNAICISM, States.MALICE, States.SACRIFICE],
 };
 
-export const STAMINA = ["attack", "posture", "roll", "dodge", "jump", "parry", "thrust"];
+export const STAMINA = ["attack", "posture", "roll", "dodge", "hurl", "jump", "parry", "thrust"];
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };
 };
 
-export const ENEMY_AGGRESSION = -25;
-export const ENEMY_HOSTILE = -10;
+export const ENEMY_AGGRESSION = -15;
+export const ENEMY_HOSTILE = -5;
 const ADHERENT = "Adherent";
 const DEVOTED = "Devoted";
 
@@ -793,7 +795,7 @@ export const SYNAETHI = "Synaethi Spiras";
 export const TORREOUS = "Torreous Ashfyre";
 export const VINCERE = "Vincere";
 
-export const ENEMY_ENEMIES = {
+export const ENEMY_ENEMIES: {[key:string]: string[]} = {
     "Achreon Druid": [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, TSHAERAL_SHAMAN, KINGSMAN, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK],
     "Ahn'are Apostle": [ANASHTRE, ASTRAL_APOSTLE, LIIVI_LEGIONNAIRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SOVERAIN_BLOOD_CLOAK],
     "Anashtre": [AHNARE_APOSTLE, ASTRAL_APOSTLE, DAETHIC_KNIGHT, SOVERAIN_BLOOD_CLOAK, LIIVI_LEGIONNAIRE, DAETHIC_INQUISITOR],

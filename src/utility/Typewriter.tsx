@@ -72,8 +72,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid #fdf6d8",
+        border: "thick groove #fdf6d8",
         "box-shadow": "0 0 3em #fdf6d8",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     godBorderStrength: {
         "margin-bottom": "5%",
@@ -81,8 +82,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid #ff0000",
+        border: "thick groove #ff0000",
         "box-shadow": "0 0 3em #ff0000",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     godBorderAgility: {
         "margin-bottom": "5%",
@@ -90,8 +92,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid #00ff00",
+        border: "thick groove #00ff00",
         "box-shadow": "0 0 3em #00ff00",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     godBorderAchre: {
         "margin-bottom": "5%",
@@ -99,8 +102,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid blue",
+        border: "thick groove blue",
         "box-shadow": "0 0 3em blue",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     godBorderCaeren: {
         "margin-bottom": "5%",
@@ -108,8 +112,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid purple",
+        border: "thick groove purple",
         "box-shadow": "0 0 3em purple",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     godBorderKyosir: {
         "margin-bottom": "5%",
@@ -117,8 +122,9 @@ const styleMap: StyleMap = {
         "margin-left": "-87.5%",
         "margin-top": "5%",
         "border-radius": "50%",
-        border: "2px solid gold",
+        border: "thick groove gold",
         "box-shadow": "0 0 3em gold",
+        animation: "floating 1.2s ease-in-out infinite alternate, flicker 1s ease infinite alternate",
     },
     greenMarkup: {
         color: "#fdf6d8",
@@ -182,7 +188,7 @@ interface TypewriterProps {
     styling?: JSX.CSSProperties;
     performAction: (action: string) => void;
     main?: boolean;
-    noScroll?: boolean
+    noScroll?: boolean;
 };
 
 export default function Typewriter({ stringText, styling, performAction, main, noScroll }: TypewriterProps) {
@@ -205,9 +211,10 @@ export default function Typewriter({ stringText, styling, performAction, main, n
         element.setAttribute("onclick", `handleButton("${functionName}")`);
     };
     
-    function setupScrollObserver(containerSelector: any) {
-        let container = document.querySelector(containerSelector);
+    function setupScrollObserver(containerSelector: string): MutationObserver {
+        let container = document.querySelector(containerSelector); // scrollContainer ? scrollContainer() : 
         if (!container) container = document.querySelector(".deity-type");
+        if (!container) return null as any;
         
         const observer = new MutationObserver(() => {
             if (scrolling()) return;
@@ -236,6 +243,7 @@ export default function Typewriter({ stringText, styling, performAction, main, n
         traverseElement(doc.body);
         return doc.body.innerHTML;
     };
+
     createEffect(() => {
         if (typed) (typed as Typed).destroy();
         if (el()) {
@@ -250,6 +258,7 @@ export default function Typewriter({ stringText, styling, performAction, main, n
             if (!noScroll) observer?.disconnect();
         });
     });
+
     function typewriter(text: string | Accessor<string>) {
         const check = typeof text === "function" ? text() : text;
         const clean = styleHTML(check);
@@ -258,7 +267,7 @@ export default function Typewriter({ stringText, styling, performAction, main, n
             typeSpeed: 30,
             backSpeed: 0,
             showCursor: false,
-            onBegin: () => (isTyping = true),
+            onBegin: () => isTyping = true,
             onComplete: () => {
                 if (main) EventBus.emit("typing-complete");
                 isTyping = false;
@@ -295,5 +304,5 @@ export default function Typewriter({ stringText, styling, performAction, main, n
         });
     });
 
-    return <div id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>;
+    return <div class="typewriter" id="typewriter" onClick={skipTyping} ref={setEl} style={{"text-align": "left", ...styling}}></div>;
 };

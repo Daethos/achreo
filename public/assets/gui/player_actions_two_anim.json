@@ -220,10 +220,6 @@
                 },
                 {
                     "key": "player_actions_two",
-                    "frame": "player_run_5"
-                },
-                {
-                    "key": "player_actions_two",
                     "frame": "player_run_6"
                 },
                 {

@@ -25,11 +25,9 @@ import { Store } from "solid-js/store";
 import Steal from "./Steal";
 import { usePhaserEvent } from "../utility/hooks";
 import Talents from "../utility/talents";
-// import { PRAYERS } from "./CombatSettings";
+// import { faithSuccess } from "../utility/combat";
+// import { faithSuccess } from "../utility/combat";
 // import { addSpecial, addStance } from "../utility/abilities";
-// import { CombatAttributes } from "../utility/combat";
-// import Equipment from "../models/equipment";
-// import Ascean, { initAscean } from "../models/ascean";
 interface Props {
     ascean: Accessor<Ascean>;
     state: Accessor<Combat>;
@@ -214,28 +212,24 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     };
 
     // function createPrayer() {
-    //     const computer = initAscean;
-    //     const exists = new StatusEffect(
-    //         state(), 
-    //         state().player as Ascean, 
-    //         computer as Ascean, 
-    //         state().weapons[0] as Equipment, 
-    //         state().playerAttributes as CombatAttributes, 
-    //         state().playerBlessing
-    //     );
-    //     EventBus.emit("create-prayer", exists);
+    //     const combat = faithSuccess(state(), "player", state().weapons[0], 0);
+    //     console.log("Prayer Created");
+    //     EventBus.emit("blend-combat", { ...combat });
     // };
 
     usePhaserEvent("lockpick", checkLockpick);
     usePhaserEvent("combatHud", () => {
-        setException(!exception());
+        setTimeout(() => {
+            setException(!exception());
+        }, 100);
     });
     return <div class="playerCombatUi" classList={{
         "animate-texty": previousHealth().show && previousHealth().positive,
         "animate-flicker": previousHealth().show && !previousHealth().positive,
-        "reset-animation": !previousHealth().show,
-        "tutorial-highlight": exception(),
-      }} style={{ "--glow-color": "violet", transition: "all 0.75s ease" }}>
+        "reset-animation": !previousHealth().show && !exception(),
+        "tutorial-highlight": exception(), // player-explode-in
+        "float-ui": exception(),
+      }} style={{ "--base-shadow": "#000", "--glow-color": "violet", "--mastery-color":"gold", transition: "all 0.75s ease" }}>
             <div class={`playerHealthBar`} classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
@@ -291,7 +285,20 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <PrayerEffects combat={state} effect={effect} enemy={false} game={game} show={prayerShow} setShow={setPrayerShow} setEffect={setEffect as Setter<StatusEffect>} /> 
             )}</For>
         </div>
-        </Show> 
+        </Show>
+        
+        {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => (instance.scene as Play).experienceManager.testExperience()}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Test Experience</div>
+        </button> */}
+
+        
+        {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => {
+            EventBus.emit("update-ascean", { ...ascean(), experience: ascean().experience + 100 });
+            (instance.scene as Play).experienceManager.testExperience();
+        }}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Gain Experience</div>
+        </button> */}
+
         <Show when={state().isStealth && state().computer}> 
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => disengage()}>
                 <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
@@ -381,8 +388,8 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             </Show>
         </Portal>
 
-        {/* <button class="highlight center" onClick={() => createPrayer()} style={{ }}>
-            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>
+        {/* <button class="disengage highlight combatUiAnimation" onClick={createPrayer} style={{ top: "15vh", left: "30vw" }}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>
                 Create Prayer
             </div>
         </button> */}

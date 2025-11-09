@@ -13,6 +13,7 @@ type TalentSchema = {
     persuasion: Talent;
     attack: Talent;
     dodge: Talent;
+    hurl: Talent;
     jump: Talent;
     parry: Talent;
     posture: Talent;
@@ -108,6 +109,7 @@ const initTalentSchema: TalentSchema = {
         persuasion: initTalent,
         attack: initTalent,
         dodge: initTalent,
+        hurl: initTalent,
         jump: initTalent,
         parry: initTalent,
         posture: initTalent,

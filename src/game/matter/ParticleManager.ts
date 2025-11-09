@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 export const PARTICLES = ["achire", "earth",  "fire",  "frost", "grappling hook", "hook", "lightning", "righteous", "quor", "sorcery", "spooky", "wild", "wind"];
-const TIME = { quor: 3000, achire: 2000, attack: 1500, "grappling hook": 1750, hook: 1750, thrust: 1000, posture: 1750, roll: 1500, special: 2000 };
-const VELOCITY = { quor: 4.5, achire: 6, attack: 5, "grappling hook": 6, hook: 6, thrust: 6.5, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
+const TIME = { quor: 3000, achire: 2000, attack: 1500, "grappling hook": 1750, hook: 1750, hurl: 2000, thrust: 1000, posture: 1750, roll: 1500, special: 2000 };
+const VELOCITY = { quor: 4.5, achire: 6, attack: 5, "grappling hook": 6, hook: 6, hurl: 4, thrust: 6.5, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
 import Entity, { ENEMY } from "../entities/Entity";
@@ -10,6 +10,7 @@ import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import { COLORS } from "../phaser/AoE";
 import { hitLocationDetector } from "../phaser/HitDetection";
+import { ACTION_TYPES } from "../../utility/combatTypes";
 // @ts-ignore
 const { Bodies } = Phaser.Physics.Matter.Matter;
 const MAGIC = ["earth","fire","frost","lightning","righteous","sorcery","spooky","wild","wind"];
@@ -84,7 +85,6 @@ export class Particle {
         this.pID = player.particleID;
         this.action = action;
         this.effect = this.spriteMaker(this.scene, player, idKey, particle, special); 
-        // console.log({ effect: this.effect });
         this.isParticle = particle;
         this.key = idKey; // particle === true ? idKey : key;
         this.magic = MAGIC.includes(key);
@@ -132,7 +132,13 @@ export class Particle {
             callback: (other: any) => {
                 const distSq = (this.effect.x - attacker.x) ** 2 + (this.effect.y - attacker.y) ** 2;
                 if (distSq < MIN_DISTANCE) return;
-                if (other.gameObjectB?.properties?.wall === true) {
+
+                const target = other.gameObjectB;
+                if (!target) return;
+
+                const properties = other.gameObjectB?.properties;
+
+                if (properties?.wall === true && this.action !== "hurl") {
                     this.collided = true;
                     if (this.action === "grappling hook") {
                         attacker.grapplingHook(this.effect.x, this.effect.y);
@@ -140,7 +146,7 @@ export class Particle {
                     return;
                 };
 
-                if (other.gameObjectB?.properties?.collides && this.action === "grappling hook") {
+                if (properties?.collides && this.action === "grappling hook") {
                     this.collided = true;
                     attacker.grapplingHook(this.effect.x, this.effect.y);
                     return;
@@ -148,8 +154,6 @@ export class Particle {
                 
                 if (!attacker.particleEffect) return;
 
-                const target = other.gameObjectB;
-                if (!target) return;
                 
                 const bodyB = other.bodyB.label;
                 if (bodyB !== "body" && bodyB !== "legs") return;
@@ -236,15 +240,29 @@ export class Particle {
 
     spriteMaker(scene: Play, player: Player | Enemy | Entity | Party, key: string, particle: boolean, special: boolean): Phaser.Physics.Matter.Sprite {
         const weapon = player.spriteWeapon;
-        const halfWidth = weapon.width * weapon.scaleX;
-        const dx = halfWidth * Math.cos(weapon.rotation); 
-        const dy = halfWidth * Math.sin(weapon.rotation);
+        const rotationAngle = weapon.rotation; // e.g., -1.3089969... (in radians)
+
+        const TIP_X_TL = weapon.width; // Right edge
+        const TIP_Y_TL = weapon.height / 2; // Vertical center
+
+        const dx_sprite = TIP_X_TL - weapon.displayOriginX;
+        const dy_sprite = TIP_Y_TL - weapon.displayOriginY;
+
+        const dx_scaled = dx_sprite * weapon.scaleX;
+        const dy_scaled = dy_sprite * weapon.scaleY;
+
+        const cos = Math.cos(rotationAngle);
+        const sin = Math.sin(rotationAngle);
+
+        const dx = dx_scaled * cos - dy_scaled * sin;
+        const dy = dx_scaled * sin + dy_scaled * cos;
+
         const tipX = weapon.x + dx;
         const tipY = weapon.y + dy;
-        // console.log({ console: "spriteMaker", x: player.x, y: player.y, tipX, tipY });
+
         return new Phaser.Physics.Matter.Sprite(scene.matter.world, tipX, tipY, key)
             .setScale(this.scaler(particle, special, this.action))
-            .setOrigin(0.5, 0.5).setDepth(player.depth + 1).setVisible(false);    
+            .setDepth(player.depth + 1).setVisible(false);    
     };
 };
 
@@ -324,30 +342,143 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.stop();
         particle.effect.setActive(false);
         particle.effect.setVisible(false);
-        // this.context.tweens.killTweensOf(particle.effect);
         particle.effect.world.remove(particle.effect.body!);
         if (!particle.triggered) this.impactEffect(particle);
         if (!particle.triggered && particle.magic) {
             particle.triggered = true;
             if (particle.player.isDeleting) return;
-            particle.player.particleAoe(particle);
+            particle.player.particleAoe(particle);    
+        } else if (!particle.triggered && particle.player.name === "player" && particle.key === "arrow_effect") {
+            particle.player.explodeAoe(particle);
         };
     };
 
-    spawnEffect(particle: Particle) {
+    spawnEffect(particle: Particle) {        
         const weapon = particle.player.spriteWeapon;
-        const halfWidth = weapon.width * weapon.scaleX;
-        const dx = halfWidth * Math.cos(weapon.rotation); 
-        const dy = halfWidth * Math.sin(weapon.rotation);
+
+        const rotationAngle = weapon.rotation; // e.g., -1.3089969... (in radians)
+
+        const TIP_X_TL = weapon.width; // Right edge
+        const TIP_Y_TL = weapon.height / 2; // Vertical center
+
+        const dx_sprite = TIP_X_TL - weapon.displayOriginX;
+        const dy_sprite = TIP_Y_TL - weapon.displayOriginY;
+
+        const dx_scaled = dx_sprite * weapon.scaleX;
+        const dy_scaled = dy_sprite * weapon.scaleY;
+
+        const cos = Math.cos(rotationAngle);
+        const sin = Math.sin(rotationAngle);
+
+        const dx = dx_scaled * cos - dy_scaled * sin;
+        const dy = dx_scaled * sin + dy_scaled * cos;
+
         const tipX = weapon.x + dx;
         const tipY = weapon.y + dy;
-        // console.log({ console: "spawnEffect", pX: particle.player.x, pY: particle.player.y, tipX, tipY });
 
         particle.effect.setActive(true);
         particle.effect.setVisible(true);
         particle.effect.setPosition(tipX, tipY);
-        // particle.effect.setPosition(particle.player.x, particle.player.y);
         particle.effect.world.add(particle.effect.body!);
+    };
+
+    quadraticBezier(p0: number, p1: number, p2: number, t: number): number {
+        return (1 - t) * (1 - t) * p0 + 2 * (1 - t) * t * p1 + t * t * p2;
+    };
+
+    smartArcedTween(particle: Particle, duration: number, startX: number, startY: number) {
+        const talents = this.context.hud.talents.talents;
+        const velocity = talents?.hurl?.efficient ? particle.velocity * 1.5 : particle.velocity;
+        const maxDistance = velocity * (duration / 1000) * 60;
+        const target = this.context.getWorldPointer();
+        
+        // Calculate actual target position based on player's aim
+        // const intendedTargetX = startX + particle.target.x * maxDistance;
+        // const intendedTargetY = startY + particle.target.y * maxDistance;
+        
+        // Check if we have a manual target (from mouse/pointer targeting)
+        const finalTargetX = target.x;
+        const finalTargetY = target.y;
+        
+        const actualDistance = Phaser.Math.Distance.Between(startX, startY, finalTargetX, finalTargetY);
+        const clampedDistance = Math.min(actualDistance, maxDistance);
+        const adjustedDuration = (clampedDistance / maxDistance) * duration;
+        
+        // Recalculate the final target based on clamped distance and original direction
+        const directionX = particle.target.x;
+        const directionY = particle.target.y;
+        const finalAdjustedTargetX = startX + directionX * clampedDistance;
+        const finalAdjustedTargetY = startY + directionY * clampedDistance;
+        
+        const arcHeight = clampedDistance * 0.3; // Scale arc height with distance
+        const originalScale = particle.effect.scale;
+
+        const customEase = (progress: number) => {
+            return progress;
+            // if (progress < 0.80) {
+            //     // First 80% - normal arc ascent and peak
+            //     return progress / 0.80 * 0.80; // Scale to 0-0.80 range
+            // } else {
+            //     // Last 25% - fast descent
+            //     const descentProgress = (progress - 0.80) / 0.4;
+            //     return 0.80 + (descentProgress * descentProgress * 0.4); // Quadratic acceleration
+            // };
+        };
+
+        this.context.tweens.add({
+            targets: { progress: 0 },
+            progress: 1,
+            duration: adjustedDuration, // Use the calculated duration
+            ease: customEase,
+            onUpdate: (tween: Phaser.Tweens.Tween, target: any) => {
+                const progress = target.progress;
+                
+                const controlX = (startX + finalAdjustedTargetX) / 2;
+                const controlY = Math.min(startY, finalAdjustedTargetY) - arcHeight;
+                
+                const currentX = this.quadraticBezier(startX, controlX, finalAdjustedTargetX, progress);
+                const currentY = this.quadraticBezier(startY, controlY, finalAdjustedTargetY, progress);
+                const scale = originalScale * (1 - progress * 0.675);
+
+                particle.effect.setPosition(currentX, currentY);
+                particle.effect.setScale(scale); //  * 0.325
+                particle.effect.setAlpha(1 - progress * 0.5); //  * 0.5
+                
+                if (particle.collided && !particle.kill) {
+                    particle.kill = true;
+                    tween.stop();
+                    this.despawnEffect(particle);
+                };
+            },
+            onComplete: () => {
+                if (!particle.kill) {
+                    this.despawnEffect(particle);
+                };
+            }
+        });
+    };
+
+    straightTween(particle: Particle, duration: number, startX: number, startY: number) {
+        const distance = particle.velocity * (duration / 1000) * 60;
+        const x = startX + particle.target.x * distance;
+        const y = startY + particle.target.y * distance;
+
+        this.context.tweens.add({
+            targets: particle.effect,
+            x, y,
+            scale: particle.effect.scale * 0.675,
+            alpha: 0.5,
+            duration,
+            onUpdate: () => {
+                if (particle.collided && !particle.kill) {
+                    particle.kill = true;
+                    const tw = this.context.tweens.getTweensOf(particle.effect);
+                    tw.forEach(t => t.stop());
+                    this.despawnEffect(particle);
+                    return false;
+                };
+            },
+        });
     };
 
     addEffect(action: string, player: Player | Enemy | Entity, key: string, special = false) {
@@ -370,31 +501,12 @@ export default class ParticleManager extends Phaser.Scene {
         const startX = particle.effect.x;
         const startY = particle.effect.y;
 
-        const distance = particle.velocity * (duration / 1000) * 60; 
+        if (action === ACTION_TYPES.HURL) {
+            this.smartArcedTween(particle, duration, startX, startY);
+        } else {
+            this.straightTween(particle, duration, startX, startY);
+        };
 
-        const x = startX + particle.target.x * distance;
-        const y = startY + particle.target.y * distance;
-
-        // console.log({ console: "Add Effect", startX, startY, playerX: particle.player.x, playerY: particle.player.y });
-
-        // console.log({ x, y, duration, startX, startY, dir: particle.target });
-        this.context.tweens.add({
-            targets: particle.effect,
-            x, y,
-            scale: particle.effect.scale * 0.675,
-            alpha: 0.5, // Fade out slightly
-            duration, // Same or different duration based on your preference
-            // ease: "Quad.easeOut", // Easing for smooth effect
-            onUpdate: () => {
-                if (particle.collided && !particle.kill) {
-                    particle.kill = true;
-                    const tw = this.context.tweens.getTweensOf(particle.effect);
-                    tw.forEach(t => t.stop());
-                    this.despawnEffect(particle);
-                    return false;
-                };
-            },
-        });
         return particle;
     };
 

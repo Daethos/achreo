@@ -688,7 +688,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     
     applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
-        if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting)) return;
+        if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting || !target.position)) return;
         force *= 0.4; // 0.35
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
@@ -1199,7 +1199,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             const alternative = this.isClimbing || this.inWater;
 
             if (this.movingDown()) {
-                this.spriteShield?.setDepth(this.depth - ((this.isStalwart || alternative) ? -1 : 1));
+                this.spriteShield?.setDepth(this.depth - ((this.isStalwart || this.isClimbing) ? -1 : 1));
                 this.spriteWeapon?.setDepth(this.depth + 1);
             } else {
                 this.spriteShield?.setDepth(this.depth + (this.isStalwart && !alternative ? -1 : 1));
@@ -1257,14 +1257,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.spriteShield?.setVisible(true);
             this.spriteShield?.setFlipX(this.flipX);
             
-            // const frameIndex = frame.index;
-            // const configKey = this.hasBow ? BOW : NOBOW;
-            // const config = this.flipX 
-            //     ? WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].flipX 
-            //     : WEAPON_ANIMATION_FRAME_CONFIG.moving[configKey].noFlipX;
-                
-            // applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
-
             if (this.flipX) {
                 if (this.hasBow) {
                     this.spriteWeapon?.setDepth(1);

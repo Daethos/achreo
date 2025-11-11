@@ -279,8 +279,8 @@ export default class ParticleManager extends Phaser.Scene {
         scene.load.animation("fire_anim", "../assets/gui/fire_anim.json");
         scene.load.atlas("frost_effect", "../assets/gui/frost_effect.png", "../assets/gui/frost_json.json");
         scene.load.animation("frost_anim", "../assets/gui/frost_anim.json");
-        scene.load.atlas("grappling hook_effect", "../assets/gui/hook_effect.png", "../assets/gui/hook_atlas.json");
-        scene.load.animation("grappling hook_anim", "../assets/gui/hook_anim.json");
+        // scene.load.atlas("grappling hook_effect", "../assets/gui/hook_effect.png", "../assets/gui/hook_atlas.json");
+        // scene.load.animation("grappling hook_anim", "../assets/gui/hook_anim.json");
         scene.load.atlas("hook_effect", "../assets/gui/hook_effect.png", "../assets/gui/hook_atlas.json");
         scene.load.animation("hook_anim", "../assets/gui/hook_anim.json");
         scene.load.atlas("lightning_effect", "../assets/gui/lightning_effect.png", "../assets/gui/lightning_json.json");

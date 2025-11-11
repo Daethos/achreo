@@ -107,6 +107,7 @@ export class Tutorial extends Phaser.Scene {
     tileCache = new Map<string, {climb:boolean, water:boolean}>();
     climbing: any;
     swimming: any;
+    private treeComposites: { id: string; x: number; y: number; bottomY: number; width: number; height: number; tiles: Phaser.Tilemaps.Tile[] }[] = [];
 
     constructor () {
         super("Tutorial");
@@ -131,13 +132,13 @@ export class Tutorial extends Phaser.Scene {
         const water3 = map.addTilesetImage("Water_tafle_3B", "Water_tafle_3B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
         const water4 = map.addTilesetImage("Water_tafle_4B", "Water_tafle_4B", tileSize, tileSize, 0, 0) as Phaser.Tilemaps.Tileset;
 
-        let layer0 = map.createLayer("Base", [tileSet, waterLayer], 0, 0);
-        let layer1 = map.createLayer("Water Top", [tileSet, waterLayer, water1, water2, water3, water4], 0, 0);
-        let layer2 = map.createLayer("Top", [tileSet, decorative], 0, 0);
-        let layer3 = map.createLayer("Flora Base", decorative, 0, 0);
-        let layer4 = map.createLayer("Flora Top", decorative, 0, 0);
-        let layer5 = map.createLayer("Earth Base", decorative, 0, 0);
-        let layer6 = map.createLayer("Earth Top", decorative, 0, 0);
+        let layer0 = map.createLayer("Base", [tileSet, waterLayer], 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer1 = map.createLayer("Water Top", [tileSet, waterLayer, water1, water2, water3, water4], 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer2 = map.createLayer("Top", [tileSet, decorative], 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer3 = map.createLayer("Flora Base", decorative, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer4 = map.createLayer("Flora Top", decorative, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer5 = map.createLayer("Earth Base", decorative, 0, 0) as Phaser.Tilemaps.TilemapLayer;
+        let layer6 = map.createLayer("Earth Top", [tileSet, decorative], 0, 0) as Phaser.Tilemaps.TilemapLayer;
 
         this.climbing = [layer2, layer5, layer6];
         this.swimming = layer0;
@@ -156,12 +157,15 @@ export class Tutorial extends Phaser.Scene {
             });
         });
 
+        this.buildTreeComposites([layer2, layer3, layer4]);
+
         // const posts = map.getObjectLayer("Posts");
         const triggerLayer = map.getObjectLayer("Triggers");
 
         triggerLayer?.objects.forEach(triggerObj => {
             this.createMatterTrigger(triggerObj);
         });
+
 
         const objectLayer = map.getObjectLayer("navmesh");
         const navMesh = this.navMeshPlugin.buildMeshFromTiled("navmesh", objectLayer, tileSize);
@@ -170,6 +174,8 @@ export class Tutorial extends Phaser.Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(965, 328);
         // if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
+        const bounds = this.player.getBounds();
+        console.log({ bounds, height: this.player.height, y: this.player.y });
 
         (this.sys as any).animatedTiles.init(map);
         
@@ -335,6 +341,107 @@ export class Tutorial extends Phaser.Scene {
             },
             context: this
         });
+    };
+
+
+    private buildTreeComposites(treeLayers: Phaser.Tilemaps.TilemapLayer[]): void {
+        this.treeComposites = [];
+        
+        treeLayers.forEach((layer, layerIndex) => {
+            if (!layer) return;
+            const layerTrees: any[] = [];
+            
+            // Build composites for this layer only
+            layer.forEachTile(tile => {
+                layer.setDepth(2);
+                if (tile.properties?.tree) {
+                    this.addTileToLayerComposite(tile, layerTrees, layerIndex);
+                };
+            });
+        
+            // Add this layer's trees to the main list
+            this.treeComposites.push(...layerTrees);
+        });
+        
+        // console.log(`Built ${this.treeComposites.length} tree composites across all layers`);
+        
+        // console.log("=== FINAL COMPOSITES ===");
+        // this.debugLogTreeComposites();
+    };
+
+    private debugLogTreeComposites(): void {
+        console.log(`=== Tree Composites (${this.treeComposites.length}) ===`);
+        this.treeComposites.forEach((tree, index) => {
+
+            const debugGraphics = this.add.graphics();
+            // Draw the tree bounds in green
+            debugGraphics.lineStyle(2, 0x00ff00);
+            debugGraphics.strokeRect(tree.x, tree.y, tree.width, tree.bottomY - tree.y);
+            
+            // Draw the bottom line in red (the important line for depth sorting)
+            debugGraphics.lineStyle(3, 0xff0000);
+            debugGraphics.lineBetween(tree.x, tree.bottomY, tree.x + tree.width, tree.bottomY);
+            
+            // Draw a label with the index and bottomY value
+            debugGraphics.fillStyle(0xffffff, 1);
+            debugGraphics.fillRect(tree.x, tree.bottomY + 2, 40, 14);
+            debugGraphics.fillStyle(0x000000, 1);
+            this.add.text(tree.x + 3, tree.bottomY, `${index}:${Math.round(tree.bottomY)}`, {
+                font: '10px Arial',
+                color: '#000000'
+            });
+            
+            // Draw each individual tile in the composite with a blue outline
+            tree.tiles.forEach(tile => {
+                debugGraphics.lineStyle(1, 0x0000ff, 0.5);
+                debugGraphics.strokeRect(
+                    tile.getLeft(), 
+                    tile.getTop(), 
+                    tile.width, 
+                    tile.height
+                );
+            });
+        
+            // console.log("Debug graphics drawn - Green: Composite bounds, Red: BottomY, Blue: Individual tiles");
+
+            console.log(`Tree ${index}: [${Math.round(tree.x)},${Math.round(tree.y)}] -> [${Math.round(tree.x + tree.width)},${Math.round(tree.bottomY)}] (${tree.tiles.length} tiles)`);
+        });
+    };
+
+    private addTileToLayerComposite(tile: Phaser.Tilemaps.Tile, layerTrees: any[], layerIndex: number): void {
+        const tileWorldX = tile.getLeft();
+        const tileWorldY = tile.getTop();
+        const tileRight = tile.getRight();
+        const tileBottom = tile.getBottom();
+        
+        // Only merge with trees in the SAME layer
+        let foundComposite = layerTrees.find(tree => 
+            tileWorldX >= tree.x && 
+            tileWorldX <= tree.x + tree.width &&
+            tileWorldY >= tree.y && 
+            tileWorldY <= tree.y + tree.height
+        );
+        
+        if (foundComposite) {
+            foundComposite.tiles.push(tile);
+            foundComposite.x = Math.min(foundComposite.x, tileWorldX);
+            foundComposite.y = Math.min(foundComposite.y, tileWorldY);
+            foundComposite.bottomY = Math.max(foundComposite.bottomY, tileBottom);
+            foundComposite.width = Math.max(foundComposite.width, tileRight - foundComposite.x);
+            foundComposite.height = Math.max(foundComposite.height, tileBottom - foundComposite.y);
+        } else {
+            const newComposite = {
+                id: `tree_layer${layerIndex}_${tileWorldX}_${tileWorldY}`,
+                x: tileWorldX,
+                y: tileWorldY,
+                bottomY: tileBottom,
+                width: tile.width,
+                height: tile.height,
+                tiles: [tile],
+                layer: layerIndex
+            };
+            layerTrees.push(newComposite);
+        };
     };
 
     showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
@@ -664,7 +771,7 @@ export class Tutorial extends Phaser.Scene {
                 this.enemies.push(enemy);
                 
                 if (solo) {
-                    enemy.setPosition(this.player.x + 100, this.player.y);
+                    enemy.setPosition(this.player.x + 50, this.player.y);
                 } else {
                     const x = randomX[Math.floor(Math.random() * randomX.length)];
                     const y = randomY[Math.floor(Math.random() * randomY.length)];
@@ -769,12 +876,67 @@ export class Tutorial extends Phaser.Scene {
         entity.isClimbing = cached.climb;
         entity.inWater = cached.water;
     };
+    
+    private eHeight = 51.2;
+    private eWidth = 12;
+
+    private updateTreeDepthSorting(entity: Player | Enemy): void {
+        if (this.frameCount % 15 !== 0) return;
+        if (!entity) return;
+        const bounds = {
+            left: Math.round(entity.x - this.eWidth / 2),
+            right: Math.round(entity.x + this.eWidth / 2),
+            top: Math.round(entity.y + this.eHeight * 0.25),
+            bottom: Math.round(entity.y + this.eHeight * 0.75),
+        };
+        
+        let entityDepth = 3;
+        let highestBottomY = -Infinity;
+        let overlappingTrees: any[] = [];
+
+        const length = this.treeComposites.length;
+
+        for (let i = 0; i < length; ++i) {
+            const tree = this.treeComposites[i];
+            
+            const treeLeft = tree.x;
+            const treeRight = tree.x + tree.width;
+            const treeTop = tree.y;
+            const treeBottom = tree.bottomY;
+            
+            const overlapsHorizontally = bounds.right > treeLeft && bounds.left < treeLeft + treeRight;
+            const overlapsVertically = bounds.bottom > treeTop && bounds.top < treeBottom;
+            
+            if (overlapsHorizontally && overlapsVertically) {
+                overlappingTrees.push(tree);
+                if (treeBottom > highestBottomY) {
+                    highestBottomY = treeBottom;
+                };
+                // console.log(`OVERLAP with Tree ${i}: [${treeLeft},${treeTop}]->[${treeRight},${treeBottom}] bottomY: ${treeBottom}`);
+            };
+        };
+
+        
+        if (highestBottomY !== -Infinity && bounds.bottom < highestBottomY) {
+            entityDepth = 1;
+            // console.log(`SETTING BEHIND: entityY=${bounds.bottom} < treeBottom=${highestBottomY}`);
+        };
+
+        entity.setDepth(entityDepth);
+
+        // if (this.frameCount % 60 === 0) {
+        //     console.log({bounds});
+        //     console.log(`Overlapping trees: ${overlappingTrees.length}, Highest bottomY: ${highestBottomY}`);
+        //     console.log(`Final depth: ${entityDepth}`);
+        // };
+    };
 
     playerUpdate = (delta: number): void => {
         this.player.update(delta); 
         this.playerLight.setPosition(this.player.x, this.player.y);
         this.setCameraOffset();
         this.checkEnvironment(this.player);
+        this.updateTreeDepthSorting(this.player);
         this.hud.rightJoystick.update();
     };
 
@@ -836,6 +998,7 @@ export class Tutorial extends Phaser.Scene {
             const enemy = this.enemies[i];
             enemy.update(delta);
             this.checkEnvironment(enemy);
+            this.updateTreeDepthSorting(enemy);
             if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
         };
         this.dm.update(delta);

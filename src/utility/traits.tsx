@@ -552,7 +552,7 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
             </button>
         </div>
         </Show>
-        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3%", "--glow-color":"#fdf6d8", "font-size":"1rem", "font-weight": 900 }} onClick={() => setShow(!show())}><span class="gold">[Quests]:</span> You have potential quests available. Would you like to examine them?</button>
+        <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3% auto", "--glow-color":"#fdf6d8", "font-size":"1.15rem", "font-weight": 900 }} onClick={() => setShow(!show())}><span class="gold">[Quests]:</span> You have potential quests available. Would you like to examine them?</button>
         </>
     );
 };

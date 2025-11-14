@@ -172,10 +172,12 @@ export class Tutorial extends Phaser.Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        this.player.setPosition(965, 328);
+        // this.player.setPosition(965, 328);
+        this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
+
         // if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
-        const bounds = this.player.getBounds();
-        console.log({ bounds, height: this.player.height, y: this.player.y });
+        // const bounds = this.player.getBounds();
+        // console.log({ bounds, height: this.player.height, y: this.player.y });
 
         (this.sys as any).animatedTiles.init(map);
         
@@ -188,6 +190,13 @@ export class Tutorial extends Phaser.Scene {
             this.dm = new DM({ scene: this, x: npc.x, y: npc.y, texture: "player_actions", frame: "player_idle_0", npcType: "Tutorial Teacher", id: 12 })
         );
         this.dm.setPosition(1036, 328);
+
+        this.time.addEvent({
+            delay: 10000,
+            loop: true,
+            callback: () => this.hud.updateCoordinates(this.player.x, this.player.y),
+            callbackScope: this           
+        });
 
         this.particleGenerator = new ParticleTextures(this);
 
@@ -225,6 +234,13 @@ export class Tutorial extends Phaser.Scene {
         //     this.enemies.push(e);
         //     e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
         // };
+
+        for (let i = 0; i < 1; i++) {
+            const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+            this.enemies.push(e);
+            e.setPosition(this.player.x + 50, this.player.y);
+            e.stateMachine.setState(States.DEFEATED);
+        };
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom;
@@ -300,7 +316,7 @@ export class Tutorial extends Phaser.Scene {
                         EventBus.emit("alert", {
                             header: "Exit",
                             body: `If you feel comfortable with what you've learned and have a fair understanding of what this game asks of you, feel free to enter the world and explore!`, 
-                            delay: 10000,
+                            delay: 30000,
                             key: "Close",
                             extra: "Enter World"
                         });
@@ -999,7 +1015,7 @@ export class Tutorial extends Phaser.Scene {
             enemy.update(delta);
             this.checkEnvironment(enemy);
             this.updateTreeDepthSorting(enemy);
-            if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
+            // if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
         };
         this.dm.update(delta);
         this.combatManager.combatMachine.process();

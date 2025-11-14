@@ -33,6 +33,10 @@ export class ChatBubble {
             fontFamily: "Centaur",
             fontSize: "16px",
             color: "#fdf6d8",
+            padding: {
+                bottom: 1,
+                // top: 1
+            },
             stroke: "#000000",
             strokeThickness: 1,
             resolution: 2,
@@ -125,7 +129,7 @@ export class ChatBubble {
         const buttonWidth = this.continueButton.width;
 
         const bubbleWidth = Math.max(textBounds.width + (this.PADDING * 2), 100) - (buttonWidth + this.PADDING * 2);
-        const bubbleHeight = textBounds.height - buttonHeight + this.PADDING * 4;
+        const bubbleHeight = textBounds.height - buttonHeight + this.PADDING * 4.5;
 
         const backgroundWidth = buttonWidth + this.PADDING * 2; // Padding on both sides
         const backgroundHeight = buttonHeight + this.PADDING;

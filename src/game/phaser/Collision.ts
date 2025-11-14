@@ -9,9 +9,11 @@ export enum ENTITY_FLAGS {
     LEGS = 1 << 6,    // 64
     UPPER_BODY = 1 << 7, // 128
     PARTICLES = 1 << 8,
+    DEFEATED_ENEMY = 1 << 9,  // 512 - NEW: For defeated enemies
+
     GOOD = PLAYER | PARTY,
     ENTITY = UPPER_BODY | ENEMY | PARTY,
-    ALL = PLAYER | ENEMY | PARTY | LOOT | NPC | WORLD
+    ALL = PLAYER | ENEMY | PARTY | LOOT | NPC | WORLD | DEFEATED_ENEMY,
 };
 
 export type EntityFlag = typeof ENTITY_FLAGS[keyof typeof ENTITY_FLAGS];

@@ -185,11 +185,19 @@ export class Underground extends Scene {
         
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(500, 64);
+        this.player.setPosition(this.hud.settings?.coordinates?.x || 500, this.hud.settings?.coordinates?.y || 64);
 
         this.chatManager = new ChatManager(this);
         this.combatManager = new CombatManager(this);
         this.experienceManager = new ExperienceManager(this);
         this.particleManager = new ParticleManager(this);
+
+        this.time.addEvent({
+            delay: 10000,
+            loop: true,
+            callback: () => this.hud.updateCoordinates(this.player.x, this.player.y),
+            callbackScope: this           
+        });
 
         map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
         map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));

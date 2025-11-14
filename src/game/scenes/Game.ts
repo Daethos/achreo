@@ -200,6 +200,7 @@ export class Game extends Scene {
         for (let i = 0; i < 200; i++) {
             this.scrollingTextPool.release(new ScrollingCombatText(this, this.scrollingTextPool));
         };
+        
         this.time.addEvent({
             delay: 10000,
             loop: true,
@@ -344,36 +345,6 @@ export class Game extends Scene {
             decorationLayers: [layer2, layer3]
         };
     };
-    /*
-        type LAYER_TYPE = {
-            name: string;
-            depth: number;
-            layer: Phaser.Tilemaps.TilemapLayer;
-        };
-
-        private setupLayers(layers: (Tilemaps.TilemapLayer | undefined)[]) {
-            layers.forEach((layer, index) => {
-                if (!layer) return;
-                
-                layer.setCollisionByProperty({ collides: true });
-                this.matter.world.convertTilemapLayer(layer);
-                
-                layer.forEachTile(tile => {
-                    if ((tile.physics as any)?.matterBody) {
-                        (tile.physics as any).matterBody.body.collisionFilter = {
-                            category: ENTITY_FLAGS.WORLD,
-                            mask: 4294967295,
-                            group: 0,
-                        };
-                    };
-                });
-                
-                if (index >= 5) {
-                    layer.setDepth(5);
-                };
-            });    
-        };
-    */
 
     private setupLayerPhysics(layers: (Tilemaps.TilemapLayer | null)[]) {
         layers.forEach((layer, index) => {

@@ -18,6 +18,7 @@ import { ENTITY_FLAGS } from "../phaser/Collision";
 import { EFFECT } from "../phaser/ScrollingCombatText";
 import { masteryNumber } from "../../utility/styling";
 import { HitLocation } from "../phaser/HitDetection";
+import { NetSystem } from "../matter/NetSystem";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -115,6 +116,8 @@ export default class Player extends Entity {
     luckoutLock: string = "";
     persuasionLock: string = "";
     actionHandlers: { key: Phaser.Input.Keyboard.Key, action: string, special: string }[] = [];
+    netSystem: NetSystem;
+    isNetting: boolean = false;
 
     constructor(data: any) {
         const { scene } = data;
@@ -218,6 +221,9 @@ export default class Player extends Entity {
         this.setFixedRotation();   
         this.checkEnemyCollision(playerSensor);
         this.checkWorldCollision(playerSensor);
+        
+        this.netSystem = new NetSystem(this.scene);
+
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
             32, this.height
@@ -228,9 +234,14 @@ export default class Player extends Entity {
             const button = this.scene.hud.smallHud.getButton("info");
             this.scene.hud.smallHud.pressButton(button as Phaser.GameObjects.Image);
         });
+        // this.scene.input.on("pointerup", (pointer: Phaser.Input.Pointer) => {
+        //     const pos = new Phaser.Math.Vector2(this.x, this.y);
+        //     const point = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        //     // const point = this.scene.getWorldPointer();
+        //     this.netSystem.throwNet(pos, point);
+        // });
         this.beam = new Beam(this);
         this.createShadow(true);
-        // this.generateCaerenesis();
 
         scene.registry.set("player", this);
     };
@@ -489,15 +500,18 @@ export default class Player extends Entity {
         });
     };
 
-    highlightTarget = (sprite: Enemy | NPC) => {
-        if (!sprite || !sprite.body) return;
+    highlightTarget = (entity: Enemy | NPC) => {
+        if (!entity || !entity.body) return;
         if (this.highlightAnimation === false) {
             this.highlightAnimation = true;
             this.animateTarget();
         };
-        this.highlight.setPosition(sprite.x, sprite.y);
+        const key = entity.anims.currentAnim?.key;
+        const x = entity.health === 0 && (key !== "grapple_roll" && key !== "player_roll") ? entity.x + 6 : entity.x;
+        const y = (key === "grapple_roll" || key === "player_roll") ? entity.y + 16 : entity.health === 0 ? entity.y + 22 : entity.y;
+        this.highlight.setPosition(x, y);
         this.highlight.setVisible(true);
-        this.scene.targetTarget = sprite;
+        this.scene.targetTarget = entity;
         if (this.scene.target.visible === true) this.scene.target.setPosition(this.scene.targetTarget.x, this.scene.targetTarget.y);
     };
 

@@ -1,4 +1,6 @@
-import { Accessor, createSignal, Setter, Show } from "solid-js";
+import { Accessor, createMemo, createSignal, Setter, Show } from "solid-js";
+import { ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "./player";
+import Ascean from "../models/ascean";
 
 export interface RacialRegion {
     "Ashtre": ["Astralands"];
@@ -36,6 +38,20 @@ export interface Institutions {
         function: string;
         innovations: string;
     };
+};
+type CHECK = {[key:string]: string[]};
+export const INSTITUTIONS_CHECK: CHECK = {
+    Ascea: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE
+    ],
+    Augmentum: [
+        ACHREON_DRUID, CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, 
+        EVRIO, LEAF, MIRIO, VINCERE
+    ],
+    Museum: [
+        AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD,
+        EVRIO, FIEROUS, KRECEUS
+    ]
 };
 
 export interface Whispers {
@@ -78,6 +94,33 @@ export interface Whispers {
     };
 };
 
+export const WHISPER_CHECK: CHECK = {
+    Ancients: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYRIST, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        CYRIAN, DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, LEAF, MIRIO, SERA, SYNAETHI, TORREOUS, VINCERE
+    ],
+    Blood_Moon: [
+        FIRESWORN, MAIER_OCCULTIST, OLD_LIIVI_OCCULTIST,
+        EUGENES, FIEROUS, GARRIS, SYNAETHI
+    ],
+    Black_Sun: [
+        ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST,
+        DORIEN, EVRIO
+    ],
+    Ilire: [
+        ILIRE_OCCULTIST, MAVROSIN_OCCULTIST,
+        EVRIO, LEAF
+    ],
+    "Ma'ier": [
+        FIRESWORN, MAIER_OCCULTIST,
+        DORIEN, EVRIO
+    ],
+    Draochre: [
+        ACHREON_DRUID, CAMBIREN_DRUID,
+        LEAF, VINCERE
+    ]
+};
+
 export interface Region {
     Astralands: string;
     Kingdom: string;
@@ -89,6 +132,41 @@ export interface Region {
     Isles: string; 
 };
 
+export const REGION_CHECK: CHECK = {
+    Astralands: [
+        AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CHIOMIC_JESTER, NYREN, SHRYGEIAN_BARD,
+        DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SYNAETHI
+    ],
+    Kingdom: [
+        ACHREON_DRUID, CAMBIREN_DRUID, CHIOMIC_JESTER, ILIRE_OCCULTIST, KINGSMAN, NORTHREN_WANDERER, NYREN, SHRYGEIAN_BARD,
+        DORIEN, EVRIO, LEAF, VINCERE
+    ],
+    Soverains: [
+        ACHREON_DRUID, CAMBIREN_DRUID, CHIOMIC_JESTER, ILIRE_OCCULTIST, NORTHREN_WANDERER, NYREN, SOVERAIN_BLOOD_CLOAK,
+        DORIEN, EVRIO, LEAF, VINCERE
+    ],
+    Fangs: [
+        CHIOMIC_JESTER, FANG_DUELIST, FANG_MERCENARY, KYRISIAN_OCCULTIST, MARAUDER, NYREN, RAHVREHCUR, SHRYGEIAN_BARD,
+        DORIEN, EVRIO
+    ],
+    Licivitas: [
+        CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, SHRYGEIAN_BARD,
+        DORIEN, EVRIO, LEAF, MIRIO, SERA, VINCERE
+    ],
+    Firelands: [
+        CHIOMIC_JESTER, FANG_DUELIST, FIRESWORN, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, MARAUDER, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, RAHVREHCUR, SEDYRIST, SHRYGEIAN_BARD, SOUTHRON_WANDERER,
+        DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, MIRIO, SYNAETHI, TORREOUS, VINCERE
+    ],
+    Sedyrus: [
+        CHIOMIC_JESTER, KYNGIAN_SHAMAN, MAIER_OCCULTIST, MARAUDER, NYREN, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYREAL_GUARD, SEVA_SHRIEKER, SOUTHRON_WANDERER, TSHAERAL_SHAMAN,
+        CYRIAN, DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, VINCERE
+    ],
+    Isles: [
+        CHIOMIC_JESTER, KYRISIAN_OCCULTIST, NYREN, RAHVREHCUR, SHRYGEIAN_BARD,
+        CYRIAN, DORIEN, EVRIO, VINCERE
+    ],
+};
+
 export interface World_Events {
     Flourishing: string;
     Sundering: string;
@@ -97,6 +175,37 @@ export interface World_Events {
     Age_of_Wars: string;
     Purification_Trials: string;
     False_Prophecy_Wars: string;
+};
+
+export const WORLD_EVENTS_CHECK: CHECK = {
+    Flourishing: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
+    ],
+    Sundering: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
+    ],
+    Last_Rites: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
+    ],
+    Age_of_Darkness: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        DORIEN, EVRIO, KRECEUS, SERA
+    ],
+    Age_of_Wars: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        DORIEN, EVRIO, KRECEUS, SERA
+    ],
+    Purification_Trials: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST,
+        DORIEN, EVRIO, SERA
+    ],
+    False_Prophecy_Wars: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST,
+        DORIEN, EVRIO, SERA
+    ],
 };
 
 export interface SupernaturalEntity {
@@ -140,6 +249,142 @@ export interface SupernaturalEntity {
         Shamanic: string;
     };
 };
+type SUPERNATURAL_CHECK = {[key:string]: {[key:string]: string[]}};
+export const SUPERNATURAL_ENTITY_CHECK: SUPERNATURAL_CHECK = {
+    Hybrida: {
+        Preamble: [
+            ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE
+        ],
+        "Ahn'are": [ // HARPIES
+            AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, TSHAERAL_SHAMAN,
+            FIEROUS, GARRIS, KRECEUS, SYNAETHI
+        ],
+        Cerchre: [ // WEREELK
+            ACHREON_DRUID, CAMBIREN_DRUID, ILIRE_OCCULTIST, MAVROSIN_OCCULTIST,
+            DORIEN, LEAF, VINCERE
+        ],
+        Chioba: [ // GOBLINS
+            ACHREON_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FANG_DUELIST, FANG_MERCENARY, FIRESWORN, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, SHRYGEIAN_BARD,
+            DORIEN, EVRIO, FIEROUS, GARRIS, LEAF
+        ],
+        Cragore: [ // ORCS
+            ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, KINGSMAN, LIIVI_LEGIONNAIRE, MAVROSIN_OCCULTIST, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK,
+            DORIEN, EVRIO, KRECEUS, LEAF, VINCERE
+        ],
+        Dwarves: [
+            AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CHIOMIC_JESTER, ILIRE_OCCULTIST, LIIVI_LEGIONNAIRE, MARAUDER, NORTHREN_WANDERER, SEDYRIST, SOVERAIN_BLOOD_CLOAK,
+            DORIEN, EVRIO, KRECEUS, LEAF, MIRIO, VINCERE
+        ],
+        Gatshyr: [ // RAKSHASA
+            CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FANG_DUELIST, FANG_MERCENARY, FIRESWORN, FYERS_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MARAUDER, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, TSHAERAL_SHAMAN,
+            CYRIAN, DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, SYNAETHI, TORREOUS
+        ],
+        Ilire: [ // WEREWOLVES
+            ACHREON_DRUID, ANASHTRE, CAMBIREN_DRUID, FYERS_OCCULTIST, ILIRE_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST,
+            DORIEN, EVRIO, LEAF, VINCERE
+        ],
+        "Ma'ier": [ // VAMPIRES
+            ANASHTRE, FIRESWORN, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, RAHVREHCUR, TSHAERAL_SHAMAN,
+            EUGENES, FIEROUS, GARRIS, SYNAETHI
+        ],
+        Morath: [ // WEREBEARS
+            ACHREON_DRUID, ANASHTRE, CAMBIREN_DRUID, KINGSMAN, SOVERAIN_BLOOD_CLOAK,
+            DORIEN, LEAF, MIRIO, VINCERE
+        ],
+        Quoros: [ // SOMEWHAT AN OGRE
+            ACHREON_DRUID, CAMBIREN_DRUID, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYREAL_GUARD, SEVA_SHRIEKER, TSHAERAL_SHAMAN,
+            CYRIAN, FIEROUS, GARRIS
+        ],
+        "Re'vas": [ // REVENANTS
+            CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SHRYGEIAN_BARD,
+            DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA
+        ],
+        Shyr: [ // SATYRS
+            ACHREON_DRUID, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD, TSHAERAL_SHAMAN,
+            CYRIAN, DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, LEAF, MIRIO, SYNAETHI, VINCERE
+        ],
+        Tavore: [ // MINOTAURS
+            ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, MAVROSIN_OCCULTIST,
+            DORIEN, KRECEUS, SYNAETHI
+        ],
+        Tshios: [ // SOMEWHAT A TROLL
+            ACHREON_DRUID, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, FIRESWORN, ILIRE_OCCULTIST, KINGSMAN, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+            CYRIAN, DORIEN, EVRIO, KRECEUS, LEAF, VINCERE
+        ],
+    },
+    Specificus: {
+        Preamble: [
+            ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE
+        ],
+        Anashtre: [ // WILD LIGHTNING
+            ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+            DORIEN, FIEROUS, KRECEUS, SYNAETHI, VINCERE
+        ],
+        Aphyero: [ // WILD FIRE
+            ACHREON_DRUID, CAMBIREN_DRUID, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST,
+            FIEROUS, TORREOUS, VINCERE
+        ],
+        Chyrolus: [ // WILD WATER
+            ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, NYREN, RAHVREHCUR,
+            KRECEUS, VINCERE
+        ],
+        Draochre: [ // WILD FLORA
+            ACHREON_DRUID, CAMBIREN_DRUID, ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, SOVERAIN_BLOOD_CLOAK,
+            DORIEN, LEAF, VINCERE
+        ],
+        Fyrash: [ // FIRE LIGHTNING
+            ANASHTRE, ASTRAL_APOSTLE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, FYERS_OCCULTIST, MAVROSIN_OCCULTIST,
+            FIEROUS, KRECEUS, SYNAETHI, TORREOUS
+        ],
+        "Ky'myr": [ // LICH
+            CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, MAVROSIN_OCCULTIST, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SHRYGEIAN_BARD,
+            CYRIAN, DORIEN, EVRIO, SERA
+        ],
+        Nyrae: [ // HYDRA
+            CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SHRYGEIAN_BARD,
+            DORIEN, FIEROUS, GARRIS
+        ],
+        "Quor'eo": [ // WILD EARTH
+            ACHREON_DRUID, CAMBIREN_DRUID, KYNGIAN_SHAMAN, QUOREITE_OCCULTIST, QUOREITE_STALKER, SEDYRIST, SEDYREAL_GUARD, SEVA_SHRIEKER, TSHAERAL_SHAMAN,
+            CYRIAN, FIEROUS, LEAF, SYNAETHI, VINCERE
+        ],
+        Sinacyn: [ // GORGON
+            CHIOMIC_JESTER, FANG_DUELIST, FANG_MERCENARY, FIRESWORN, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, SHRYGEIAN_BARD,
+            DORIEN, EVRIO, GARRIS, MIRIO
+        ],
+        Tshiathail_Kon: [ // Skeleton Knight King
+            ILIRE_OCCULTIST, KINGSMAN, MAVROSIN_OCCULTIST, NORTHREN_WANDERER, SOVERAIN_BLOOD_CLOAK,
+            DORIEN, EVRIO, FIEROUS
+        ],
+    },
+    Animalis: {
+        Preamble: [
+            ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE
+        ],
+        Canire: [
+            DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, LIIVI_LEGIONNAIRE, SEDYRIST,
+            CYRIAN, DORIEN, EVRIO, MIRIO
+        ],
+        Carrier_Birds: [
+            DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, LIIVI_LEGIONNAIRE, NYREN, SEDYRIST, SEDYREAL_GUARD, SEVA_SHRIEKER, SOVERAIN_BLOOD_CLOAK,
+            CYRIAN, DORIEN, FIEROUS, GARRIS, LEAF, MIRIO, SYNAETHI, TORREOUS, VINCERE
+        ],
+        Kraken: [
+            CHIOMIC_JESTER, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SHRYGEIAN_BARD,
+        ],
+        "Rana'vas": [ // FROGGER
+            ACHREON_DRUID, CAMBIREN_DRUID, FANG_MERCENARY, FIRESWORN, KINGSMAN, KYNGIAN_SHAMAN, MARAUDER, NORTHREN_WANDERER, QUOREITE_STALKER, SEVA_SHRIEKER, TSHAERAL_SHAMAN
+        ],
+        Phoenix: [
+            FIRESWORN, FYERS_OCCULTIST, MAVROSIN_OCCULTIST, RAHVREHCUR,
+            FIEROUS, GARRIS, SYNAETHI, TORREOUS
+        ],
+        Shamanic: [
+            DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, KYNGIAN_SHAMAN, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, QUOREITE_STALKER, SOUTHRON_WANDERER, TSHAERAL_SHAMAN,
+            CYRIAN, EUGENES, EVRIO, FIEROUS, GARRIS, LEAF, VINCERE
+        ],
+    }
+};
 
 export interface SupernaturalPhenomena {
     Shifting: string;
@@ -148,6 +393,33 @@ export interface SupernaturalPhenomena {
     Vielo: string;
     Scrying: string;
     Insight: string;
+};
+
+export const SUPERNATURAL_PHENOMENA_CHECK: CHECK = {
+    Shifting: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, ILIRE_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, TSHAERAL_SHAMAN,
+        EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA
+    ],
+    Splitting: [
+        ACHREON_DRUID, AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, TSHAERAL_SHAMAN,
+        EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA
+    ],
+    Charm: [
+        CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SHRYGEIAN_BARD,
+        EVRIO, FIEROUS, GARRIS, SERA  
+    ],
+    Vielo: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, 
+        CYRIAN, EVRIO, FIEROUS, SERA
+    ],
+    Scrying: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, MIRIO, SERA
+    ],
+    Insight: [
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        CYRIAN, EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, MIRIO, SERA, SYNAETHI
+    ],
 };
 
 export const institutions: Institutions = {
@@ -259,20 +531,36 @@ export const institutions: Institutions = {
             Sedyren Lens: Cut and ornate measured to allow magnification of sight, sometimes can be held as is in the hand and traced over writing for better clarity and legibility. Can be utilized through tubing to allow further sight gained favor."`,
     },
 };
-export const IntstitutionalButtons = ({ current, options, handleConcept, handleInstitution }: { current: any, options: any, handleConcept: (con: string) => void, handleInstitution: any }) => {
+export const IntstitutionalButtons = ({ enemy, current, options, handleConcept, handleInstitution }: { enemy: Accessor<Ascean>; current: any, options: any, handleConcept: (con: string) => void, handleInstitution: any }) => {
     const [show, setShow] = createSignal<boolean>(false);
-    const buttons = Object.keys(options).map((o: any) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(institution => {
+            const allowedEnemies = INSTITUTIONS_CHECK[institution];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleInstitution(o);}}>{o}</button>
             <Show when={current() === o && show()}>
-                <SubConceptButtons options={institutions[o as keyof typeof institutions]} handleConcept={handleConcept} />
+                <SubConceptButtons enemy={enemy} options={institutions[o as keyof typeof institutions]} handleConcept={handleConcept} />
             </Show>
         </div>;
     });
     return <>{buttons}</>;
 };
-export const SubConceptButtons = ({ options, handleConcept }: { options: any, handleConcept: any }) => {
-    const buttons = Object.keys(options).map((o: any) => {
+export const SubConceptButtons = ({ enemy, options, handleConcept, step = true }: { enemy: Accessor<Ascean>; options: any, handleConcept: any; step?: boolean }) => {
+    const filteredOptions = createMemo(() => {
+        if (step) return Object.keys(options);
+        
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(subOptionKey => {
+            const allowedEnemies = FLAT_ENTITY_CHECK_MAP.get(subOptionKey);
+            return allowedEnemies ? allowedEnemies.includes(enemyName) : false;
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         if (o === "Preamble") return;
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
@@ -538,7 +826,7 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
             "They are as follows: 
                 - Gray Parrots of the Astralands, 
                 - Ilian Eagles of the Daethic Kingdom, 
-                - Long Dobes of Licivitas, 
+                - Long Doves of Licivitas, 
                 - Prime Owls of the Soverains, 
                 - Rainbow Parrots and Harpy Eagles of the Alluring Isles, 
                 - Burnished Crows of the West Fangs, 
@@ -580,15 +868,50 @@ function checkShow(current: Accessor<string>, option: string, show: Accessor<boo
         setShow(true);
     };
 };
+function createFlatCheckMap(nestedCheck: SUPERNATURAL_CHECK): Map<string, string[]> {
+    const flatMap = new Map<string, string[]>();
+    
+    for (const topLevelKey in nestedCheck) {
+        const nestedObject = nestedCheck[topLevelKey];
+        
+        for (const subKey in nestedObject) {
+            const enemyList = nestedObject[subKey];
+            if (Array.isArray(enemyList)) {
+                flatMap.set(subKey, enemyList);
+            };
+        };
+    };
+    return flatMap;
+};
 
-export const SupernaturalEntityButtons = ({ current, options, handleEntity, handleConcept }: { current: any, options: any, handleEntity: any, handleConcept: (con: string) => void }) => {
+export const FLAT_ENTITY_CHECK_MAP = createFlatCheckMap(SUPERNATURAL_ENTITY_CHECK);
+
+export const SupernaturalEntityButtons = ({ enemy, current, options, handleEntity, handleConcept }: { enemy: Accessor<Ascean>; current: any, options: any, handleEntity: any, handleConcept: (con: string) => void }) => {
     const [show, setShow] = createSignal<boolean>(false);
-    const buttons = Object.keys(options).map((o: any) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(entityKey => {
+            const nestedEnemyChecks = SUPERNATURAL_ENTITY_CHECK[entityKey];
+            if (!nestedEnemyChecks) {
+                return false;
+            };
+
+            const allEnemyLists = Object.values(nestedEnemyChecks);
+            const isEnemyAllowed = allEnemyLists.some(enemyList => {
+                const isArray = Array.isArray(enemyList);
+                const includesName = isArray && enemyList.includes(enemyName);
+                return includesName;
+            });
+            
+            return isEnemyAllowed;
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleEntity(o);}}>{text}</button>
             <Show when={current() === o && show()}>
-                <SubConceptButtons options={SupernaturalEntityLore[o as keyof typeof SupernaturalEntityLore]} handleConcept={handleConcept} />
+                <SubConceptButtons enemy={enemy} options={SupernaturalEntityLore[o as keyof typeof SupernaturalEntityLore]} handleConcept={handleConcept} step={false} />
             </Show>
         </div>;
     });
@@ -633,8 +956,15 @@ export const SupernaturalPhenomenaLore: SupernaturalPhenomena = {
         "Said to be marked with a gift of Kyr'na, and interestingly some espouse Lilos, an Ancient whose nature remained most mysterious through annals of recorded history."`,
 };
 
-export const SupernaturalPhenomenaButtons = ({ options, handlePhenomena }: { options: any, handlePhenomena: any }) => {
-    const buttons = Object.keys(options).map((o: any) => {
+export const SupernaturalPhenomenaButtons = ({ enemy, options, handlePhenomena }: { enemy: Accessor<Ascean>; options: any, handlePhenomena: any }) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(phenomena => {
+            const allowedEnemies = SUPERNATURAL_PHENOMENA_CHECK[phenomena];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handlePhenomena(o)}>{o}</button>
         </div>;
@@ -717,9 +1047,16 @@ export const localLore: Region = { // Localized, Smaller Concerned Knowledge of 
         "Folk from the Alluring Isles whose ancestry is infused with Sedyren blood are referred to as Slabs, referring to their worship of Quor'ei and Se'dyro alike, and neither are fit for Island and sailing like. Quite derogatory."`
 };
 
-export const LocalLoreButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
+export const LocalLoreButtons = ({ enemy, options, handleRegion }: { enemy: Accessor<Ascean>; options: any, handleRegion: any }) => {
     const [show, setShow] = createSignal<boolean>(false);
-    const buttons = Object.keys(options).map((o: any) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(region => {
+            const allowedEnemies = REGION_CHECK[region];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {handleRegion(o); setShow(!show())}}>{o}</button>
         </div>;
@@ -836,14 +1173,21 @@ export const whispers: Whispers = { // Localized Provincial Lore
             "One disturbing practice of the Druids of old was to sacrifice a human and input his soul into the desired animal companion. The following hunt, it would show itself to the recipient and become his Familiar henceforth, sharing a bond with the animal and torturing the sacrificed as penance for his crimes, till the animal itself were put to rest."`,
     } 
 };
-export const WhispersButtons = ({ current, options, handleConcept, handleWhisper }: { current: any, options: any, handleConcept: (con: string) => void, handleWhisper: any }) => {
+export const WhispersButtons = ({ enemy, current, options, handleConcept, handleWhisper }: { enemy: Accessor<Ascean>; current: any, options: any, handleConcept: (con: string) => void, handleWhisper: any }) => {
     const [show, setShow] = createSignal<boolean>(false);
-    const buttons = Object.keys(options).map((o: any) => {
+        const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(whisper => {
+            const allowedEnemies = WHISPER_CHECK[whisper];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => {checkShow(current, o, show, setShow); handleWhisper(o);}}>{text}</button>
             <Show when={current() === o && show()}>
-                <SubConceptButtons options={whispers[o as keyof typeof whispers]} handleConcept={handleConcept} />
+                <SubConceptButtons enemy={enemy} options={whispers[o as keyof typeof whispers]} handleConcept={handleConcept} />
             </Show>
         </div>;
     });
@@ -926,8 +1270,15 @@ export const worldLore: World_Events = { // Old World Lore of each Province
         The Sixth False Prophecy War of 279 AD
         The Seventh False Prophecy War of 58 AE"`
 };
-export const WorldLoreButtons = ({ options, handleWorld }: { options: any, handleWorld: any }) => {
-    const buttons = Object.keys(options).map((o: any) => {
+export const WorldLoreButtons = ({ enemy, options, handleWorld }: { enemy: Accessor<Ascean>; options: any, handleWorld: any }) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(world => {
+            const allowedEnemies = WORLD_EVENTS_CHECK[world];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         const text = o.split("_").join(" ");
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handleWorld(o)}>{text}</button>
@@ -946,8 +1297,15 @@ export const provincialInformation: Region = { // Current Provincial Knowledge
     Sedyrus: `"The Sedyren Sun, Cyrian Shyne, has reached an agreement with a lesser Quor'ator to betrothe his firstborn son to one of their daughters, hoping to stem general unrest from the cooling tempers of various families being uprooted of the Quor'eite, who lost a surprise war against their neighboring Sedyreal some decades past--the province solidifying after centuries of a Sedyrus/Quor'eia split into Sedyrus. Would you believe those that say this will leads toward a more peaceful future?"`, 
     Isles: `"The Alluring Isles is its own world, gigantic and terrifying despite its grandeur isolated by strange tides. The land itself a shade of this world, yet what can allow a man to travel a fortnight here, and a day there? I've heard about the size of the animals that stalk those jungles and swim in the waters, hard to believe anyone can sustain themselves there. Would you wish to see this place?"`,
 };
-export const ProvincialWhispersButtons = ({ options, handleRegion }: { options: any, handleRegion: any }) => {
-    const buttons = Object.keys(options).map((o: any) => {
+export const ProvincialWhispersButtons = ({ enemy, options, handleRegion }: { enemy: Accessor<Ascean>; options: any, handleRegion: any }) => {
+    const filteredOptions = createMemo(() => {
+        const enemyName = enemy().name;
+        return Object.keys(options).filter(region => {
+            const allowedEnemies = REGION_CHECK[region];
+            return allowedEnemies?.includes(enemyName);
+        });
+    });
+    const buttons = filteredOptions().map((o: any) => {
         return <div style={{ margin: "5%"}}>
             <button class='highlight dialog-buttons juiceSub' style={{ "font-size": "0.85rem" }} onClick={() => handleRegion(o)}>{o}</button>
         </div>;

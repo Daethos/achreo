@@ -58,6 +58,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [showPickpocketItems, setShowPickpocketItems] = createSignal<boolean>(false); // setShowPickpocketItems
     const [prayer, setPrayer] = createSignal<string>("");
     const [exception, setException] = createSignal<boolean>(false);
+    const [thrownNet, setThrownNet] = createSignal<boolean>(false);
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, false);
     const [stealAnimation, setStealAnimation] = createSignal<{ item: any, player: number, enemy: number, dialog: any, on: boolean, cancel: boolean, rolling: boolean, step: number }>({
         item: {imgUrl:"", name:""},
@@ -218,6 +219,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     // };
 
     usePhaserEvent("lockpick", checkLockpick);
+    usePhaserEvent("net-thrown", (thrown: boolean) => setThrownNet(thrown));
     usePhaserEvent("combatHud", () => {
         setTimeout(() => {
             setException(!exception());
@@ -247,38 +249,34 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             <div class="healthbarPosition" onClick={changeDisplay} style={{ width: `${healthPercentage()}%`, "background": state()?.isStealth ? "linear-gradient(#000, #444)" : "linear-gradient(gold, #fdf6d8)", transition: "width 0.5s ease-out", 
             "--glow-color": "gold" }}></div>
         </div>
-            <p class="playerName" classList={{
-                "animate-texty": previousHealth().show && previousHealth().positive,
-                "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show,
-                "tutorial-highlight": exception(),
-            }} style={{
-                top: top(state().player?.name.length as number), 
-                "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
-                "--glow-color": state().isStealth ? "#fdf6d8" : "gold",
-                "font-size": size(state().player?.name.length as number), "font-family":"Centaur", "z-index": 0 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
+        <p class="playerName" classList={{
+            "animate-texty": previousHealth().show && previousHealth().positive,
+            "animate-flicker": previousHealth().show && !previousHealth().positive,
+            "reset-animation": !previousHealth().show,
+            "tutorial-highlight": exception(),
+        }} style={{
+            top: top(state().player?.name.length as number), 
+            "color": `${state().isStealth ? "#fdf6d8" : "gold"}`, "text-shadow": `0.1em 0.1em 0.1em ${state().isStealth ? "#444" : "#000"}`, 
+            "--glow-color": state().isStealth ? "#fdf6d8" : "gold",
+            "font-size": size(state().player?.name.length as number), "font-family":"Centaur", "z-index": 0 }} onClick={() => showPlayer()}>{state()?.player?.name}</p>
         <img id="playerHealthbarBorder" src={"../assets/gui/player-healthbar.png"} alt="Health Bar" onClick={changeDisplay} style={{ "z-index": -1 }} />
         <StaminaBubble stamina={stamina} show={staminaShow} setShow={setStaminaShow} settings={settings} />
         <Show when={settings().specials.length}>
             <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
         </Show>
-        {/* left: "30.5vw" : "37.25vw" */}
         <div class="combatUiWeapon" classList={{
                 "animate-texty": previousHealth().show && previousHealth().positive,
                 "animate-flicker": previousHealth().show && !previousHealth().positive,
                 "reset-animation": !previousHealth().show,
-                // "tutorial-highlight": exception(),
             }} onClick={() => setShow(show => !show)} style={{...caerenic(state().caerenic.active, state().isStealth) as any, left: settings().specials.length ? "37.25vw" : "31.5vw", border: `1mm groove ${borderColor(state()?.playerBlessing)}`}}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
         <Show when={state().stalwart.active}>
-        {/* left: "43vw" */}
         <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} 
         style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), left: settings().specials.length ? "43vw" : "37.25vw", border: `1mm groove ${getRarityColor(ascean().shield?.rarity as string)}` }}>
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>
-        {/* && state().combatEngaged === true */}
         <Show when={state().playerEffects.length > 0}>
         <div class="combatEffects" style={{ left: "-3vw", top: "15vh", "height": "14vh", width: "auto", transform: "scale(0.75)" }}>
             <For each={state().playerEffects}>{(effect) => ( 
@@ -288,37 +286,46 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         </Show>
         
         {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => (instance.scene as Play).experienceManager.testExperience()}>
-            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Test Experience</div>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Test Experience</div>
         </button> */}
-
         
         {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => {
             EventBus.emit("update-ascean", { ...ascean(), experience: ascean().experience + 100 });
             (instance.scene as Play).experienceManager.testExperience();
         }}>
-            <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Gain Experience</div>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Gain Experience</div>
         </button> */}
 
         <Show when={state().isStealth && state().computer}> 
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => disengage()}>
-                <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Disengage</div>
+                <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Disengage</div>
             </button>
             <Show when={state().newComputerHealth > 0 && touching().includes(state().enemyID)}>
                 <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "10vw" }} onClick={checkPickpocket}>
-                    <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Steal</div>
+                    <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Steal</div>
                 </button>
             </Show>
         </Show>
         <Show when={lockpick().interacting}>
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
-                <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Lockpick</div>
+                <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Lockpick</div>
+            </button>
+        </Show>
+        <Show when={thrownNet()}>
+            <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => EventBus.emit("retrieve-net")}>
+                <div style={{ "font-size":"0.75rem" }}>Retrieve Net</div>
+            </button>
+        </Show>
+        <Show when={state().enemyID && state().newComputerHealth === 0 && !thrownNet()}>
+            <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => EventBus.emit("throw-net")}>
+                <div style={{ "font-size":"0.75rem" }}>Throw Net</div>
             </button>
         </Show>
         {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0.5vw" }}>
-            <div style={{ "font-size": "0.75em" }} onClick={() => addSpecial(settings, "Consume")}>Add Special</div>
+            <div style={{ "font-size": "0.75rem" }} onClick={() => addSpecial(settings, "Consume")}>Add Special</div>
         </button>
         <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "12.5vw" }}>
-            <div style={{ "font-size": "0.75em" }} onClick={() => addStance(settings, "caerenic")}>Add Stance</div>
+            <div style={{ "font-size": "0.75rem" }} onClick={() => addStance(settings, "caerenic")}>Add Stance</div>
         </button> */}
         {/* <Show when={(instance.scene?.scene.key === "Arena" || instance.scene?.scene.key === "Gauntlet") && state().computer}>
             <button class="disengage highlight" onClick={engage} style={{ top: "15vh", left: "25vw" }}>

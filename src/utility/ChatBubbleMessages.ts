@@ -57,14 +57,14 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     "Your physical actions are all that is available in the beginning, but is more than enough to tackle your enemies.", 
                     "Physically, everyone is capable of swinging their weapon and shooting projectiles, in addition to forms of evasion with dodge and roll.",
                     "Your right joystick will capture your conceptual gaze, and where you manually aim your ranged attacks and eventually, specials.",
-                    "When dealing with enemies, they're quite easy to spot as they are tinted red ... as you will soon see.",
+                    "When dealing with enemies, they're quite easy to spot as they are tinted red, as you will soon see.",
                     "You won't have a training dummy ... but they're about as close as you will get.",
                     // "I would be beleaguered if you actually fail to defeat them, as I have been assured it's nigh impossible.",
                     // "Unless of course you stand idly by and allow them to vanquish you, which is your prerogrative. I don't judge.",
                     // "I do actually, and would be rather disappointed you didn't participate and take your training more seriously.",
                     // "At the very least give me a heads up and allow me to place a wager against you. May as well make the most of things.",
                     "Nevertheless, prepare for combat, {name}, you can't hope to stay level {level} and win the Ascea.",
-                    "You may end up fighting against the likes of myself ... (level {speaker.level}), so I suggest you get started."
+                    "You may end up fighting against the likes of myself ({speaker.name} is level {speaker.level}), so I suggest you get started."
                 ],
                 nextStage: "resolution",
                 specials: [{}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "joystick-right"}],
@@ -75,8 +75,8 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
             },
             resolution: {
                 messages: [
-                    "Powerful, you survived, I hope it wasn't too much trouble, though ... you are at {health.current} health right now.",
-                    "Seems quite low to me ({speaker.name} has {speaker.health.max} health, forgive him and his great constitution).", 
+                    "Powerful, you survived, I hope it wasn't too much trouble, though you are at {health.current} health right now.",
+                    "Seems quite low to me ({speaker.name} has {speaker.health.max} health, forgive him and his great constitution!).", 
                     "But you do have a flask that'll aid in revitalizing you, which is in your player menu's inventory section.",
                     "Either way, you won't need be worried about any more enemies ... less you wander back into the fray.",
                     "Venture North and I'll meet you there, I have a couple more concepts for you to familiarize yourself with.",
@@ -107,7 +107,7 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
             final: {
                 messages: [
                     "Well, well, well. You thought you could escape me. You thought you outmaneuvered me. And where did it bring you?",
-                    "BACK TO THE BEGINNING, {name.toUpperCase()}! ... ... Nifty little circuit, eh?",
+                    "BACK TO THE BEGINNING, {name.toUpperCase()}! ... Nifty little circuit, eh?",
                     "Which makes my job easier, since instead of chasing you down, I can get you in shape, {sex.toLowerCase()}.",
                     "You're becoming quite the adventurer already, though you still appear a vagrant. I don't judge, we all start somewhere.",
                     "Back to serious matters ... to the North you have your exit to this world, where you take with you all you've learned--",

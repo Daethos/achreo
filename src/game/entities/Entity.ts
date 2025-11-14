@@ -315,7 +315,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     id: number;
     debugger: any;
     grappleTime: number = 0;
-    shadow: Phaser.GameObjects.Graphics; // Phaser.FX.Shadow | 
+    // shadow: Phaser.FX.Shadow; // Phaser.GameObjects.Graphics |
+    shadow: Phaser.GameObjects.Sprite;  
     visionCache: { canSeeEntity: boolean; timestamp: number; } = { canSeeEntity: false, timestamp: 0 };
     visionCacheTime: number = 200;
     lastRaycastFrame: number = 0;
@@ -464,14 +465,26 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     createShadow(create: boolean) {
         if (create) {
-            // this.shadow = this.postFX?.addShadow(0.1, 4, 0.025, 1, 0x000000); // 16
-            this.shadow = this.scene.add.graphics();
-            this.shadow.fillStyle(0x000000, 0.3);
-            this.shadow.fillEllipse(0, 0, 20, 10); // Wide, flat ellipse
-            this.shadow.setDepth(1); // Behind player
-            this.shadow.setPosition(this.x, this.y + 25);
+            // this.shadow? = this.postFX?.addShadow(0.1, 4, 0.025, 1, 0x000000); // 16
+
+            // this.shadow?.flipY(true);
+            // this.shadow?.y = -this.shadow?.y;
+
+            this.shadow = this.scene.add.sprite(this.x, this.y, this.texture.key, this.frame.name);
+            this.shadow.setFlipY(true);
+            this.shadow.setTint(0x000000);
+            this.shadow.setAlpha(0.2);
+            this.shadow.setDepth(this.depth - 1);
+            this.shadow.setPosition(this.x, this.y + 33);
+            this.shadow.scaleY = 0.25;
+
+            // this.shadow? = this.scene.add.graphics();
+            // this.shadow?.fillStyle(0x000000, 0.3);
+            // this.shadow?.fillEllipse(0, 0, 20, 10); // Wide, flat ellipse
+            // this.shadow?.setDepth(1); // Behind player
+            // this.shadow?.setPosition(this.x, this.y + 25);
         } else {
-            // this.postFX?.remove(this.shadow);
+            // this.postFX?.remove(this.shadow?);
         };
     };
 
@@ -771,7 +784,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.healthbar) this.healthbar.update(this);
         if (this.reactiveBubble) this.reactiveBubble.update(x, y);
         if (this.negationBubble) this.negationBubble.update(x, y);
-        if (this.shadow) this.shadow.setPosition(x, y + 25);
+        if (this.shadow) {
+            this.shadow.setPosition(x, y + 33);
+            this.shadow.setTexture(this.texture.key, this.frame.name);
+            // this.shadow?.setFrame(this.frame.name);
+            this.shadow.setFlipX(this.flipX);
+        };
     };
 
     xCheck = () => this.velocity?.x !== 0;
@@ -1100,6 +1118,15 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     getFrame = (anim: any): string => FRAME_KEYS[anim.key];
 
     startHandlers: Record<string, (frame: any) => void> = {
+        death: () => {
+            this.setDepth(-1);
+            if (this.shadow) {
+                this.shadow.setPosition(this.x, this.y + 57);
+                this.shadow.setTexture(this.texture.key, this.frame.name);
+                this.shadow.setFlipX(this.flipX);
+            };
+        },
+
         prayingCasting: (frame) => {
             const frameIndex = frame.index;
             const config = this.flipX
@@ -1109,6 +1136,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.spriteWeapon.setDepth(this.depth + 1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             this.setVelocity(0);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         parry: (frame) => {
@@ -1124,6 +1152,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             if (this.name === "player" && (this as unknown as Player).checkTalentEnhanced(States.PARRY)) {
                 this.scene.combatManager.combatMachine.input(ACTION, States.PARRY);
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         thrust: (frame) => {
@@ -1134,6 +1163,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_ANIMATION_FRAME_CONFIG.thrusting[configKey].noFlipX;
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         posture: (frame) => {
@@ -1158,6 +1188,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             };
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
             applyShieldFrameSettings(this.spriteShield, shieldConfig, frameIndex);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         attack: (frame) => {
@@ -1169,6 +1200,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             
             this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         hurl: (frame) => {
@@ -1180,11 +1212,18 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
             this.spriteWeapon.setDepth(1);
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
-        dodge: () => this.spriteShield?.setVisible(false),
+        dodge: () => {
+            this.spriteShield?.setVisible(false);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
+        },
 
-        roll: () => this.spriteShield?.setVisible(false),
+        roll: () => {
+            this.spriteShield?.setVisible(false);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
+        },
 
         "grappling roll": () => {
             this.spriteShield?.setVisible(false);
@@ -1251,6 +1290,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     };
                 };
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         moving: () => {
@@ -1302,6 +1342,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteShield?.setDepth(this.depth - 1);
                 };
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         idle: () => {
@@ -1349,10 +1390,23 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteShield?.setOrigin(0.75, 0.5);
                 };
             };
+            if (this.shadow) {
+                this.shadow.setPosition(this.x, this.y + 33);
+                this.shadow.setTexture(this.texture.key, this.frame.name);
+            };
         }
     };
 
     updateHandlers: Record<string, (frame: any) => void> = {
+        death: () => {
+            this.setDepth(-1);
+            if (this.shadow) {
+                this.shadow.setPosition(this.x, this.y + 57);
+                this.shadow.setTexture(this.texture.key, this.frame.name);
+                this.shadow.setFlipX(this.flipX);
+            };
+        },
+
         prayingCasting: (frame) => {
             const frameIndex = frame.index;
             const config = this.flipX
@@ -1360,6 +1414,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 : WEAPON_ANIMATION_FRAME_CONFIG.prayingCasting.noFlipX;
 
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         parry: (frame) => {
@@ -1546,6 +1601,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
             applyWeaponFrameSettings(this.spriteWeapon, config, frameIndex);
         },
+
+        idle: () => {
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
+        }
     };
 
     animationUpdate = () => {

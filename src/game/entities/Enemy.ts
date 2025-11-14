@@ -120,6 +120,7 @@ export default class Enemy extends Entity {
     combatContext: CombatContext | undefined = undefined;
     acc: 0;
     isHostile: boolean;
+    isNetted: boolean = false;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -346,8 +347,8 @@ export default class Enemy extends Entity {
             });
         this.scene.time.delayedCall(1000, () => {
             this.setVisible(true);
-            this.spriteWeapon.setVisible(true);
-            this.spriteShield.setVisible(true);
+            this.spriteWeapon.setVisible(!this.isDefeated);
+            this.spriteShield.setVisible(!this.isDefeated);
             this.originPoint = new Phaser.Math.Vector2(this.x, this.y);
             this.createShadow(true);
         });
@@ -1500,7 +1501,7 @@ export default class Enemy extends Entity {
         if (this.isDeleting) return;
         this.stateMachine.clearStates();
         this.anims.play(FRAMES.DEATH, true);
-        this.defeatedTime = 120000;
+        this.defeatedTime = 60000;
         if (this.isShimmering) {
             this.isShimmering = false;
             this.stealthEffect(false);
@@ -1527,8 +1528,11 @@ export default class Enemy extends Entity {
         this.spriteWeapon.setVisible(false);
         this.spriteShield.setVisible(false);
         this.healthbar.setVisible(false);
-        const body = this.body as MatterJS.Body;
-        this.scene.matter.world.remove(body, false);
+        this.setStatic(true);
+        this.scene.matter.setCollisionCategory(this.body as any, ENTITY_FLAGS.DEFEATED_ENEMY);
+        this.scene.matter.setCollidesWith(this.body as any, 
+            ENTITY_FLAGS.WORLD | ENTITY_FLAGS.DEFEATED_ENEMY
+        );
         this.enemies = [];
         this.clearStatuses();
         if (Math.random() > 0.9 && this.scene.hud.currScene === "Game") {
@@ -1547,21 +1551,28 @@ export default class Enemy extends Entity {
     onDefeatedUpdate = (dt: number) => {
         if (this.isDeleting || this.isDying) return;
         this.defeatedTime -= dt;
-        if (this.defeatedTime <= 0 && !this.stateMachine.isCurrentState(States.IDLE)) this.stateMachine.setState(States.IDLE);
+        if (this.defeatedTime <= 0 && !this.stateMachine.isCurrentState(States.IDLE) && !this.isNetted) this.stateMachine.setState(States.IDLE);
     };
     onDefeatedExit = () => {
         if (this.isDeleting) return;
         this.anims.playReverse(FRAMES.DEATH);
         if (this.isDying) return;
         this.isDefeated = false;
-        this.defeatedTime = 120000;
+        this.defeatedTime = 60000;
+        this.setDepth(1);
         this.health = this.ascean.health.max;
         this.updateHealthBar(this.ascean.health.max);
         this.computerCombatSheet.newComputerHealth = this.ascean.health.max;
         this.isAggressive = this.startedAggressive;
         this.spriteWeapon.setVisible(true);
-        const body = this.body as MatterJS.Body;
-        this.scene.matter.world.add(body);
+        this.setStatic(false);
+        this.currentTargetCheck();
+        if (this.isCurrentTarget) this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: this.health, id: this.enemyID, type: "heals" }, type: HEALTH });
+
+        this.scene.matter.setCollisionCategory(this.body as any, ENTITY_FLAGS.ENEMY);
+        this.scene.matter.setCollidesWith(this.body as any, 
+            ENTITY_FLAGS.ALL
+        );
         const texts = [`${this.weapons[0].influences[0]} be praised! I live again.`, `${this.weapons[0].influences[0]}, you have my caeren. Thank you for this change once more.`, "Alright, I feel better again.", "Well, that was unpleasant.", "Thank goodness that's over.", "Good as new!", "Hopefully, that's the end of that nonsense.", "My word, I didn't expect that to happen."];
         const text = texts[Math.floor(Math.random() * texts.length)];
         this.scene.showCombatText(this, text, 1500, EFFECT, false, true);

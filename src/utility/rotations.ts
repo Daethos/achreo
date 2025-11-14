@@ -3,6 +3,7 @@ import { States } from "../game/phaser/StateMachine";
 type FRAME = {[key: string]: string;};
 
 export const FRAME_KEYS: FRAME = {
+    "player_death": States.DEATH,
     "player_climb": "movingVertical",
     "player_crouch_idle": States.IDLE,
     "player_idle": States.IDLE,

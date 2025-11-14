@@ -322,7 +322,10 @@ export default class DM extends Entity {
 
     onIdleEnter = () => {
         this.anims.play("player_idle", true);
-        if (this.shadow) this.shadow.setPosition(x, y + 25);
+        if (this.shadow) {
+            this.shadow.setPosition(x, y + 40);
+            this.shadow.setFlipX(this.flipX);
+        };
     };
     
     onAwarenessEnter = () => {
@@ -341,7 +344,10 @@ export default class DM extends Entity {
     onAwarenessExit = () => {
         this.scene.hud.showDialog(false);
         this.scene.chatManager.stopSpeaking(this.particleID);
-        if (this.shadow) this.shadow.setPosition(x, y + 25);
+        if (this.shadow) {
+            this.shadow.setPosition(x, y + 40);
+            this.shadow.setFlipX(this.flipX);
+        };
     };
 
     update = (delta: number) => this.stateMachine.update(delta || 16);

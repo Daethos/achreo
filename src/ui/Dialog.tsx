@@ -295,7 +295,7 @@ const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any })
         };
         return (
             <div style={{ margin: "1%" }}>
-                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "1rem", "font-weight": 900, margin: "5% auto" }}>{o}</button>
+                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "1rem", "font-weight": 900, margin: "5% auto", color: "#0f0" }}>{o}</button>
             </div>
         );
     });
@@ -337,20 +337,20 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [enemyDescriptionArticle, setEnemyDescriptionArticle] = createSignal<any>("");
     const [merchantTable, setMerchantTable] = createSignal<any>({});
     const [blacksmithSell, setBlacksmithSell] = createSignal<boolean>(false);
-    const [concept, setConcept] = createSignal<any>(institutions["Ascea"].preamble);
-    const [currentInstitution, setCurrentInstitution] = createSignal<any>("Ascea");
-    const [institution, setInstitution] = createSignal<any>(institutions["Ascea"]);
-    const [local, setLocal] = createSignal<any>(localLore["Astralands"]);
-    const [region, setRegion] = createSignal<any>(provincialInformation["Astralands"]);
+    const [concept, setConcept] = createSignal<any>("");//(institutions["Ascea"].preamble);
+    const [currentInstitution, setCurrentInstitution] = createSignal<any>("");//("Ascea");
+    const [institution, setInstitution] = createSignal<any>("");//(institutions["Ascea"]);
+    const [local, setLocal] = createSignal<any>("");//(localLore["Astralands"]);
+    const [region, setRegion] = createSignal<any>("");//(provincialInformation["Astralands"]);
     const [entity, setEntity] = createSignal<any>(SupernaturalEntityLore["Hybrida"]);
     const [entityPreamble, setEntityPreamble] = createSignal<any>(SupernaturalEntityLore["Hybrida"].Preamble);
-    const [currentEntity, setCurrentEntity] = createSignal<any>("Ahn'are");
-    const [entityConcept, setEntityConcept] = createSignal<any>(SupernaturalEntityLore["Hybrida"]["Ahn'are"]);
+    const [currentEntity, setCurrentEntity] = createSignal<any>("");//("Ahn'are"); // ("")
+    const [entityConcept, setEntityConcept] = createSignal<any>("");//(SupernaturalEntityLore["Hybrida"]["Ahn'are"]); // ("");
     const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
-    const [currentWhisper, setCurrentWhisper] = createSignal<any>("Ancients");
-    const [whisper, setWhisper] = createSignal<any>(whispers["Ancients"]);
-    const [whisperConcept, setWhisperConcept] = createSignal<any>(whispers["Ancients"].history);
-    const [world, setWorld] = createSignal<any>(worldLore["Age_of_Darkness"])
+    const [currentWhisper, setCurrentWhisper] = createSignal<any>("");//("Ancients");
+    const [whisper, setWhisper] = createSignal<any>("");//(whispers["Ancients"]);
+    const [whisperConcept, setWhisperConcept] = createSignal<any>("");//(whispers["Ancients"].history);
+    const [world, setWorld] = createSignal<any>("");//(worldLore["Age_of_Darkness"])
     const [showSell, setShowSell] = createSignal<boolean>(false);
     const [sellItem, setSellItem] = createSignal<Equipment | undefined>(undefined);
     const [showItem, setShowItem] = createSignal<boolean>(false);
@@ -389,7 +389,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
     const [enemy, setEnemy] = createSignal(combat().computer as Ascean);
-    const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
+    // const capitalize = (word: string): string => word === "a" ? word?.charAt(0).toUpperCase() : word?.charAt(0).toUpperCase() + word?.slice(1);
     const getItemKey = (item: Equipment) => `${item._id}-${item.name}`;
     const getItemStyle = (rarity: string): JSX.CSSProperties => {
         return {
@@ -1459,25 +1459,25 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             <div class="story-dialog-options" style={{ height: "97.5%", left: "84%", top: "0%", "z-index": 3 }}>
                 <DialogButtons options={fetchOptions()} setIntent={handleIntent} />
                 <Show when={game().currentIntent === "institutions"}>
-                    <IntstitutionalButtons current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
+                    <IntstitutionalButtons enemy={enemy} current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
                 </Show>
                 <Show when={game().currentIntent === "localLore"}>
-                    <LocalLoreButtons options={localLore} handleRegion={handleLocal}  />
+                    <LocalLoreButtons enemy={enemy} options={localLore} handleRegion={handleLocal}  />
                 </Show>
                 <Show when={game().currentIntent === "provinces"}>
-                    <ProvincialWhispersButtons options={provincialInformation} handleRegion={handleRegion}  />
+                    <ProvincialWhispersButtons enemy={enemy} options={provincialInformation} handleRegion={handleRegion}  />
                 </Show>
                 <Show when={game().currentIntent === "entities"}>
-                    <SupernaturalEntityButtons current={currentEntity} options={SupernaturalEntityLore} handleEntity={handleEntity} handleConcept={handleEntityConcept} />
+                    <SupernaturalEntityButtons enemy={enemy} current={currentEntity} options={SupernaturalEntityLore} handleEntity={handleEntity} handleConcept={handleEntityConcept} />
                 </Show>
                 <Show when={game().currentIntent === "phenomena"}>
-                    <SupernaturalPhenomenaButtons options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                    <SupernaturalPhenomenaButtons enemy={enemy} options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
                 </Show>
                 <Show when={game().currentIntent === "whispers"}>
-                    <WhispersButtons current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
+                    <WhispersButtons enemy={enemy} current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
                 </Show>
                 <Show when={game().currentIntent === "worldLore"}>
-                    <WorldLoreButtons options={worldLore} handleWorld={handleWorld} />
+                    <WorldLoreButtons enemy={enemy} options={worldLore} handleWorld={handleWorld} />
                 </Show>
             </div>
         </Show>
@@ -1620,7 +1620,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: "#fdf6d8" }}>
                                         You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
                                     </>
                                 ) : ( "" ) }
                             </div>
@@ -1633,7 +1633,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: "#fdf6d8" }}>
                                         You lucked out against {namedEnemy() ? "" : ` the`} {combat().computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
                                     </>
                                 ) : ( "" ) }    
                             </div>   
@@ -1687,17 +1687,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Show when={luckout()}> 
                                     <>
                                         <Show when={luckoutShow()} fallback={
-                                            <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1rem", "font-weight": 900 }}><span class="gold">[Luckout]:</span> Show Luckout Scenarios</button>
+                                            <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1.15rem", "font-weight": 900, margin: "3% auto" }}><span class="gold">[Luckout]:</span> You are capable of lucking out the enemy. Show scenarios?</button>
                                         }>
-                                            <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1rem", "font-weight": 900 }}><span class="gold">[Luckout]:</span> Hide Scenarios</button>
+                                            <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1.15rem", "font-weight": 900, margin: "3% auto" }}><span class="gold">[Luckout]:</span> Hide Scenarios</button>
                                         </Show>
-                                        {/* <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1rem", "font-weight": 900 }}>{luckoutShow() ? "Hide Scenarios" : "Show Luckout Scenarios"}</button><br />
-                                        <button class="highlight" onClick={() => setLuckoutShow(!luckoutShow())} style={{ "font-size":"1rem", "font-weight": 900 }}>{luckoutShow() ? "Hide Scenarios" : "Show Luckout Scenarios"}</button> */}
                                         <br />
                                         <Show when={luckoutShow()}>
                                             <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} /> 
                                         </Show>
-                                        {/* <LuckoutModal traits={luckoutTraits} callback={attemptLuckout} name={combat()?.computer?.name as string} influence={influence as Accessor<string>} show={luckoutModalShow} setShow={setLuckoutModalShow} />  */}
                                     </>
                                 </Show>
                             </div>
@@ -1734,7 +1731,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: "#fdf6d8" }}>
                                         You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
                                     </>
                                 ) : ( "" ) }
                             </div>
@@ -1747,7 +1744,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: "#fdf6d8" }}>
                                         You lucked out against {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
                                     </>
                                 ) : ( "" ) }    
                             </div>   
@@ -1764,7 +1761,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         ) : combat().computerWin ? (
                             <>
                                 <Typewriter styling={TYPEWRITER} stringText={`"If you weren't entertaining in defeat I'd have a mind to simply snuff you out here and now. Seek refuge, ${combat().player?.name}, your frailty wears on my caer."`} performAction={hollowClick} />
-                                <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
+                                <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Feign scamperping away to hide your shame and wounds. There's always another chance, perhaps.</button>
                             </>
                         ) : !combat().isHostile ? (
                             <>
@@ -1774,7 +1771,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter styling={TYPEWRITER} stringText={`The ${combat()?.computer?.name}'s mild flicker of thought betrays their stance, lighter and relaxed.`} performAction={hollowClick} />
                             ) }
                                 <br />
-                                <button class="highlight" onClick={clearDuel}>Keep moving.</button>
+                                <button class="highlight" onClick={clearDuel} style={{ "font-size":"1.15rem" }} >Keep moving.</button>
                             </>
                         ) : (
                             <></>
@@ -1791,7 +1788,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "localLore" ? (
                     <>
-                        <Typewriter styling={{ "font-size": "1.15rem", margin: "0 auto", width: "95%" }} stringText={`"Which province's formation do you wish to understand a little more?"`} performAction={hollowClick} />
+                        <Typewriter styling={TYPEWRITER} stringText={`"Which province's formation do you wish to understand a little more?"`} performAction={hollowClick} />
                         <br />
                             <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={local} performAction={hollowClick} />
                     </>
@@ -1801,9 +1798,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             <Typewriter styling={TYPEWRITER} stringText={`"I sure do love being ${combat()?.computer?.faith} now! Thank you so much for showing me the proper path, ${ascean().name}. Don't tell anyone though, my old comrades may not take kind to me if they find out about my new faith."`} performAction={hollowClick} />
                         </Show>
                         { combat().playerWin ? (
-                            <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path, perhaps words will work next time.</button>
+                            <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path, perhaps words will work next time.</button>
                         ) : combat().computerWin ? (
-                            <button class="highlight" style={{ color: "red", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path, there's nothing left to say now.</button>
+                            <button class="highlight" style={{ color: "red", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path, there's nothing left to say now.</button>
                         ) : persuasion() && !combat().persuasionScenario ? (
                                 <>
                                 <Show when={persuasionShow()} fallback={
@@ -1827,7 +1824,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         <p style={{ color: "#fdf6d8" }}>
                                         You persuaded {namedEnemy() ? "" : ` the`} {combat()?.computer?.name} to forego hostilities. You may now travel freely through this area.
                                         </p>
-                                        <button class="highlight" style={{ color: "teal", "font-size":"1rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
+                                        <button class="highlight" style={{ color: "teal", "font-size":"1.15rem", "font-weight": 900 }} onClick={clearDuel}>Continue moving along your path.</button>
                                     </>
                                 </Show>
                             </div>
@@ -1882,17 +1879,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </>
                 ) : game().currentIntent === "provinces" ? (
                     <>
-                        {/* { combat().playerWin || combat().enemyPersuaded ? (
-                            <> */}
-                                <Typewriter styling={TYPEWRITER} stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} performAction={hollowClick} />
-                                <br />
-                                <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={region} performAction={hollowClick} />
-                            {/* </>
-                        ) : combat().computerWin ? (
-                            <Typewriter stringText={`"Those whispers must wait another day, then."`} performAction={hollowClick} />
-                        ) : ( 
-                            <Typewriter stringText={`"What is it you wish to hear? If you can best me in combat, I will tell you what I know in earnest."`} performAction={hollowClick} />                            
-                        ) } */}
+                        <Typewriter styling={TYPEWRITER} stringText={`"There's concern in places all over, despite what has been said about steadying tides of war amongst the more civilized. Of where are you inquiring?"`} performAction={hollowClick} />
+                        <br />
+                        <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={region} performAction={hollowClick} />
+
                     </>
                 ) : game().currentIntent === "entities" ? (
                     <>

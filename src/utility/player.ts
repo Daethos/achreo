@@ -152,11 +152,11 @@ export const PLAYER: {[key:string]: {[key:string]: number}} = {
         CHASE: 75,
         RANGED_ALIGNMENT: 25,
         RANGED_MULTIPLIER: 3,
-        DODGE: 1152, // 2304
-        ROLL: 960, // 1920
+        DODGE: 1056, // 1152
+        ROLL: 960, // 960
     },
     DODGE: { // 8*
-        DISTANCE: 240, // 2800, // 126 || 2304
+        DISTANCE: 200, // 2800, // 126 || 2304
         DURATION: 350, // 18 || 288
         MULTIPLIER: 8, //9,
     },

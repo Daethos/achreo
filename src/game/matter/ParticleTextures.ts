@@ -309,7 +309,8 @@ export class ParticleTextures {
 
         const direction = this.scene.player.position.subtract(entity.position);
         entity.setFlipX(direction.x < 0);
-        entity.shadow.setPosition(entity.x, entity.y + 25);
+        entity.shadow.setPosition(entity.x, entity.y + 33);
+        entity.shadow.setFlipX(entity.flipX);
     };
 
     public destroy(): void {

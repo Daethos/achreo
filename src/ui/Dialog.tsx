@@ -1,9 +1,12 @@
-import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX, Switch, Match, batch, Suspense } from "solid-js"
+import { createSignal, createEffect, Setter, Accessor, Show, onMount, For, JSX, Switch, Match, batch, Suspense, createMemo } from "solid-js"
 import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
-import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore } from "../utility/regions";
+import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore,
+    INSTITUTIONS_CHECK, WHISPER_CHECK, REGION_CHECK, WORLD_EVENTS_CHECK, SUPERNATURAL_ENTITY_CHECK, SUPERNATURAL_PHENOMENA_CHECK,
+    FLAT_ENTITY_CHECK_MAP, 
+ } from "../utility/regions";
 import { LUCKOUT, LuckoutModal, PERSUASION, PersuasionModal, QuestModal, checkTraits } from "../utility/traits";
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import Typewriter from "../utility/Typewriter";
@@ -33,8 +36,10 @@ import { addSpecial, SPECIAL } from "../utility/abilities";
 import { ACTION_ORIGIN } from "../utility/actions";
 import AsceanImageCard from "../components/AsceanImageCard";
 import { Puff } from "solid-spinner";
+
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
+
 const GET_ETCH_COST = {
     Common: 0.1,
     Uncommon: 0.25,
@@ -87,6 +92,7 @@ const SANITIZE = {
 const TYPEWRITER = { 
     "font-size": "1.15rem", margin: "0 auto", width: "95%", "white-space": "pre-wrap", padding: "0.5rem 0" , height: "auto"
 };
+
 interface DialogOptionProps {
     currentIndex: Accessor<number>;
     dialogNodes: any;
@@ -277,31 +283,6 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     );
 };
 
-const DialogButtons = ({ options, setIntent }: { options: any, setIntent: any }) => {
-    const filteredOptions = Object.keys(options);
-    const buttons = filteredOptions.map((o: any) => {
-        switch (o) {
-            case "localLore":
-                o = "Local Lore";
-                break;
-            case "worldLore":
-                o = "World Lore";
-                break;
-            case "localWhispers":
-                o = "Local Whispers";
-                break;
-            default:
-                break;
-        };
-        return (
-            <div style={{ margin: "1%" }}>
-                <button class="highlight dialog-buttons juiceSmall" onClick={() => setIntent(o)} style={{ background: "#000", "font-size": "1rem", "font-weight": 900, margin: "5% auto", color: "#0f0" }}>{o}</button>
-            </div>
-        );
-    });
-    return <div>{buttons}</div>;
-};
-
 interface StoryDialogProps {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -346,7 +327,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [entityPreamble, setEntityPreamble] = createSignal<any>(SupernaturalEntityLore["Hybrida"].Preamble);
     const [currentEntity, setCurrentEntity] = createSignal<any>("");//("Ahn'are"); // ("")
     const [entityConcept, setEntityConcept] = createSignal<any>("");//(SupernaturalEntityLore["Hybrida"]["Ahn'are"]); // ("");
-    const [phenomena, setPhenomena] = createSignal<any>(SupernaturalPhenomenaLore["Charm"]);
+    const [phenomena, setPhenomena] = createSignal<any>("");//(SupernaturalPhenomenaLore["Charm"]);
     const [currentWhisper, setCurrentWhisper] = createSignal<any>("");//("Ancients");
     const [whisper, setWhisper] = createSignal<any>("");//(whispers["Ancients"]);
     const [whisperConcept, setWhisperConcept] = createSignal<any>("");//(whispers["Ancients"].history);
@@ -1451,34 +1432,110 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
         return game().dialog;
     };
+    
+    const dialogOptionKeys = createMemo(() => {
+        const baseOptions = Object.keys(fetchOptions());
+        const enemyName = enemy().name;
 
+        // 3. Filter the base options
+        return baseOptions.filter(optionKey => {
+            switch (optionKey) {
+                case "institutions":
+                    return Object.keys(institutions).some(instKey => {
+                        const allowedEnemies = INSTITUTIONS_CHECK[instKey];
+                        return allowedEnemies && allowedEnemies.includes(enemyName);
+                    });
+
+                case "entities":
+                    return Array.from(FLAT_ENTITY_CHECK_MAP.values()).some(allowedEnemiesList => {
+                        // We only check arrays that are truthy (not undefined/null)
+                        return allowedEnemiesList && allowedEnemiesList.includes(enemyName);
+                    });
+
+                case "phenomena":
+                    return Object.keys(SupernaturalPhenomenaLore).some(phenomKey => {
+                        const allowedEnemies = SUPERNATURAL_PHENOMENA_CHECK[phenomKey];
+                        return allowedEnemies && allowedEnemies.includes(enemyName);
+                    });
+
+                case "localLore":
+                    return Object.keys(localLore).some(loreKey => {
+                        const allowedEnemies = REGION_CHECK[loreKey];
+                        return allowedEnemies && allowedEnemies.includes(enemyName);
+                    });
+                case "worldLore":
+                    return Object.keys(worldLore).some(worldKey => {
+                        const allowedEnemies = WORLD_EVENTS_CHECK[worldKey];
+                        return allowedEnemies && allowedEnemies.includes(enemyName);
+                    });
+                case "whispers":
+                    return Object.keys(whispers).some(whisperKey => {
+                        const allowedEnemies = WHISPER_CHECK[whisperKey];
+                        return allowedEnemies && allowedEnemies.includes(enemyName);
+                    });
+                    
+                // --- Default Case ---
+                default:
+                    // For buttons that don't need filtering (like "challenge", "persuasion", "farewell"), just let them through.
+                    return true; 
+            };
+        });
+    });
+    
     return (
         <Show when={combat().computer}>
         {/* <<---------- ENEMY DIALOG TABS ---------->> */}
         <Show when={combat().isEnemy}>
             <div class="story-dialog-options" style={{ height: "97.5%", left: "84%", top: "0%", "z-index": 3 }}>
-                <DialogButtons options={fetchOptions()} setIntent={handleIntent} />
-                <Show when={game().currentIntent === "institutions"}>
-                    <IntstitutionalButtons enemy={enemy} current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
-                </Show>
-                <Show when={game().currentIntent === "localLore"}>
-                    <LocalLoreButtons enemy={enemy} options={localLore} handleRegion={handleLocal}  />
-                </Show>
-                <Show when={game().currentIntent === "provinces"}>
-                    <ProvincialWhispersButtons enemy={enemy} options={provincialInformation} handleRegion={handleRegion}  />
-                </Show>
-                <Show when={game().currentIntent === "entities"}>
-                    <SupernaturalEntityButtons enemy={enemy} current={currentEntity} options={SupernaturalEntityLore} handleEntity={handleEntity} handleConcept={handleEntityConcept} />
-                </Show>
-                <Show when={game().currentIntent === "phenomena"}>
-                    <SupernaturalPhenomenaButtons enemy={enemy} options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
-                </Show>
-                <Show when={game().currentIntent === "whispers"}>
-                    <WhispersButtons enemy={enemy} current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
-                </Show>
-                <Show when={game().currentIntent === "worldLore"}>
-                    <WorldLoreButtons enemy={enemy} options={worldLore} handleWorld={handleWorld} />
-                </Show>
+                <For each={dialogOptionKeys()}>{(optionKey) => {
+                        let buttonText = optionKey;
+                        switch (optionKey) {
+                            case "localLore":     buttonText = "Local Lore";     break;
+                            case "worldLore":     buttonText = "World Lore";     break;
+                            case "localWhispers": buttonText = "Local Whispers"; break;
+                            default: break;
+                        };
+                        return (
+                            <div class="dialog-topic-group"> 
+                                
+                                {/* 1. The Main Button */}
+                                <div style={{ margin: "1%" }}>
+                                    <button class="highlight dialog-buttons juiceSmall" onClick={() => handleIntent(optionKey)} 
+                                        style={{ background: "#000", "font-size": "1rem", "font-weight": 900, margin: "5% auto", color: "#0f0" }}
+                                    >
+                                        {buttonText}
+                                    </button>
+                                </div>
+
+                                {/* 2. The Sub-Menu (renders right below the button) */}
+                                <Show when={game().currentIntent === optionKey}>
+                                    <Switch>
+                                        <Match when={optionKey === "institutions"}>
+                                            <IntstitutionalButtons enemy={enemy} current={currentInstitution} options={institutions} handleConcept={handleInstitutionalConcept} handleInstitution={handleInstitution}  />
+                                        </Match>
+                                        <Match when={optionKey === "localLore"}>
+                                            <LocalLoreButtons enemy={enemy} options={localLore} handleRegion={handleLocal}  />
+                                        </Match>
+                                        <Match when={optionKey === "provinces"}>
+                                            <ProvincialWhispersButtons enemy={enemy} options={provincialInformation} handleRegion={handleRegion}  />
+                                        </Match>
+                                        <Match when={optionKey === "entities"}>
+                                            <SupernaturalEntityButtons enemy={enemy} current={currentEntity} options={SupernaturalEntityLore} handleEntity={handleEntity} handleConcept={handleEntityConcept} />
+                                        </Match>
+                                        <Match when={optionKey === "phenomena"}>
+                                            <SupernaturalPhenomenaButtons enemy={enemy} options={SupernaturalPhenomenaLore} handlePhenomena={handlePhenomena} />
+                                        </Match>
+                                        <Match when={optionKey === "whispers"}>
+                                            <WhispersButtons enemy={enemy} current={currentWhisper} options={whispers} handleConcept={handleWhisperConcept} handleWhisper={handleWhisper} />
+                                        </Match>
+                                        <Match when={optionKey === "worldLore"}>
+                                            <WorldLoreButtons enemy={enemy} options={worldLore} handleWorld={handleWorld} />
+                                        </Match>
+                                    </Switch>
+                                </Show>
+                            </div>
+                        );
+                }}</For>
             </div>
         </Show>
         {/* <<---------- DIALOG WINDOW ---------->> */} {/* "55%" : "70%" height: "97.5%", left: "0%", top: "0%", width: combat().isEnemy && combat().computer ? "83%" : "99%" */}

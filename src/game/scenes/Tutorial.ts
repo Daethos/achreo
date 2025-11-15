@@ -235,12 +235,12 @@ export class Tutorial extends Phaser.Scene {
         //     e.setPosition(Phaser.Math.Between(200, 800), Phaser.Math.Between(200, 800));
         // };
 
-        for (let i = 0; i < 1; i++) {
-            const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
-            this.enemies.push(e);
-            e.setPosition(this.player.x + 50, this.player.y);
-            e.stateMachine.setState(States.DEFEATED);
-        };
+        // for (let i = 0; i < 1; i++) {
+        //     const e = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined });
+        //     this.enemies.push(e);
+        //     e.setPosition(this.player.x + 50, this.player.y);
+        //     e.stateMachine.setState(States.DEFEATED);
+        // };
 
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom;
@@ -1015,7 +1015,7 @@ export class Tutorial extends Phaser.Scene {
             enemy.update(delta);
             this.checkEnvironment(enemy);
             this.updateTreeDepthSorting(enemy);
-            // if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
+            if ((enemy.isDefeated || enemy.isTriumphant) && !enemy.isDeleting) this.destroyEnemy(enemy);
         };
         this.dm.update(delta);
         this.combatManager.combatMachine.process();

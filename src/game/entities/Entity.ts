@@ -1119,9 +1119,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     startHandlers: Record<string, (frame: any) => void> = {
         death: () => {
-            this.setDepth(-1);
+            this.setDepth(1);
             if (this.shadow) {
-                this.shadow.setPosition(this.x, this.y + 57);
+                this.shadow.setPosition(this.x, this.y + 33);
                 this.shadow.setTexture(this.texture.key, this.frame.name);
                 this.shadow.setFlipX(this.flipX);
             };
@@ -1399,9 +1399,9 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     updateHandlers: Record<string, (frame: any) => void> = {
         death: () => {
-            this.setDepth(-1);
+            this.setDepth(1);
             if (this.shadow) {
-                this.shadow.setPosition(this.x, this.y + 57);
+                this.shadow.setPosition(this.x, this.y + 33);
                 this.shadow.setTexture(this.texture.key, this.frame.name);
                 this.shadow.setFlipX(this.flipX);
             };

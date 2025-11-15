@@ -304,7 +304,8 @@ export class PhysicsNet {
     
     private drawConstraints(): void {
         this.graphics.clear();
-        this.graphics.lineStyle(1, 0xfdf6d8);
+        const color = this.capturedEnemies.length > 0 ? 0xffd700 : 0xfdf6d8
+        this.graphics.lineStyle(1, color);
         this.graphics.setDepth(5);
         this.constraints.forEach(constraint => {
             if (constraint.bodyA && constraint.bodyB) {
@@ -452,7 +453,7 @@ export class PhysicsNet {
                 frameRate: 12,
                 repeat: 0,
             }, true);
-            enemy.spriteWeapon.setVisible(true);
+            // enemy.spriteWeapon.setVisible(true);
             enemy.setStatic(true);
         });
         

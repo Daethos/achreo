@@ -42,14 +42,14 @@ export interface Institutions {
 type CHECK = {[key:string]: string[]};
 export const INSTITUTIONS_CHECK: CHECK = {
     Ascea: [
-        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE
+        CHIOMIC_JESTER, CYRIAN, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, EVRIO, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, GARRIS, KINGSMAN, KRECEUS, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SERA, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, SYNAETHI, TORREOUS, VINCERE
     ],
     Augmentum: [
-        ACHREON_DRUID, CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, 
+        ACHREON_DRUID, CHIOMIC_JESTER, LIIVI_LEGIONNAIRE, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, 
         EVRIO, LEAF, MIRIO, VINCERE
     ],
     Museum: [
-        AHNARE_APOSTLE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD,
+        CHIOMIC_JESTER, FYERS_OCCULTIST, KYRISIAN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD,
         EVRIO, FIEROUS, KRECEUS
     ]
 };
@@ -179,23 +179,23 @@ export interface World_Events {
 
 export const WORLD_EVENTS_CHECK: CHECK = {
     Flourishing: [
-        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
         CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
     ],
     Sundering: [
-        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
         CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
     ],
     Last_Rites: [
-        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
+        ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FYERS_OCCULTIST, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, RAHVREHCUR, SEDYREAL_GUARD, SEDYRIST, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOVERAIN_BLOOD_CLOAK, TSHAERAL_SHAMAN,
         CYRIAN, DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA, VINCERE
     ],
     Age_of_Darkness: [
-        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, 
         DORIEN, EVRIO, KRECEUS, SERA
     ],
     Age_of_Wars: [
-        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, 
         DORIEN, EVRIO, KRECEUS, SERA
     ],
     Purification_Trials: [
@@ -260,7 +260,7 @@ export const SUPERNATURAL_ENTITY_CHECK: SUPERNATURAL_CHECK = {
             FIEROUS, GARRIS, KRECEUS, SYNAETHI
         ],
         Cerchre: [ // WEREELK
-            ACHREON_DRUID, CAMBIREN_DRUID, ILIRE_OCCULTIST, MAVROSIN_OCCULTIST,
+            ACHREON_DRUID, CAMBIREN_DRUID, ILIRE_OCCULTIST, KINGSMAN, MAVROSIN_OCCULTIST,
             DORIEN, LEAF, VINCERE
         ],
         Chioba: [ // GOBLINS
@@ -300,7 +300,7 @@ export const SUPERNATURAL_ENTITY_CHECK: SUPERNATURAL_CHECK = {
             DORIEN, EVRIO, FIEROUS, GARRIS, KRECEUS, SERA
         ],
         Shyr: [ // SATYRS
-            ACHREON_DRUID, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, ILIRE_OCCULTIST, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD, TSHAERAL_SHAMAN,
+            ACHREON_DRUID, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, FIRESWORN, ILIRE_OCCULTIST, KINGSMAN, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, SEDYRIST, SHRYGEIAN_BARD, TSHAERAL_SHAMAN,
             CYRIAN, DORIEN, EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, LEAF, MIRIO, SYNAETHI, VINCERE
         ],
         Tavore: [ // MINOTAURS
@@ -409,15 +409,15 @@ export const SUPERNATURAL_PHENOMENA_CHECK: CHECK = {
         EVRIO, FIEROUS, GARRIS, SERA  
     ],
     Vielo: [
-        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, 
+        ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KYRISIAN_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, 
         CYRIAN, EVRIO, FIEROUS, SERA
     ],
     Scrying: [
-        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, ILIRE_OCCULTIST, MAIER_OCCULTIST, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, SEVA_SHRIEKER,
         EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, MIRIO, SERA
     ],
     Insight: [
-        DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR,
+        ANASHTRE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, MAVROSIN_OCCULTIST, NYREN, OLD_LIIVI_OCCULTIST, RAHVREHCUR, SEDYRIST, 
         CYRIAN, EUGENES, EVRIO, FIEROUS, GARRIS, KRECEUS, MIRIO, SERA, SYNAETHI
     ],
 };
@@ -587,7 +587,7 @@ export const SupernaturalEntityLore: SupernaturalEntity = {
             "Only seen as a man, with a large rack of antlers, no accounts mention those bare and without, unless they have been broken or severed recently. Their mouth has a dangerous bite with a large row of sawn, flat-edged teeth, esaily capable of crunching the bones of a foe, it is unknown for sure whether they devour or simply kill man. They have been said to go into a fervor and break apart their antlers to use as a multi-edged weapon, increasing its reach in a bloodthirsty attempt to kill or main whatever is in its path, leaving blood stumps to adorn its head until they grow anew. \n 
             "It is a mystery where exactly these may live, though most stories come near the Eye and its surrounding parts, where very few venture, fewer return, and the fewest of all have their wits about them to retell any misfortunes their eyes were desieged with. Rare and in legend, folk are not certain if they breed with elk or human women, though tales recount the disappearances of fair maidens where they have been known to reside. \n
             "Commonly associated with Tshaer, and perhaps were creations by the most devout followers submitting themselves to be physically transformed or have their consciousness placed into beasts to defend nature during the War of the Ancients, and Kyn’gi, for its nature to prey on man and take maiden’s as rights of conquest or ceding to a carnal lust. \n 
-            "Another belief is that it’s more natural, pure cousin was captured long ago, and The Dachreon of Druids would sacrifice it on an altar or brazier to the spirits of nature and Achreo, spilling forth its contents and climbing inside to awaken his inner animal, and mend itself into the creature, becoming one and transforming. "`,
+            "Another belief is that it’s more natural, pure cousin was captured long ago, and The Dachreon of Druids would sacrifice it on an altar or brazier to the spirits of nature and Achreo, spilling forth its contents and climbing inside to awaken his inner animal, and mend itself into the creature, becoming one and transforming."`,
         
         Chioba: `The Chioba \n
             "Much has been discussed ove the ages as to what exactly these creatures are: dwarven cousins, stunted Tshios, a runaway strain of human that severed their connection long ago? Regardless, the agreements remain the same, Chioba live in the destittue cohabitations on the brink of society, found in various regions South of the Northren Soverain. \n
@@ -1311,271 +1311,4 @@ export const ProvincialWhispersButtons = ({ enemy, options, handleRegion }: { en
         </div>;
     });
     return <>{buttons}</>;
-};
-
-// Info Based on Race
-export interface RegionInformation {
-    Astralands: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Cerchre: string;
-                Chioba: string;
-                Dwarves: string;
-                Gatshyr: string;
-                Quoros: string;
-                Tavore: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Anashtre: string;
-                Sinacyn: string;
-                Tshiathail_Kon: string; // Skeleton Knight King
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                "Rana'vas": string;
-            };
-        };
-        SupernaturalPhenomena: {
-            Insight: string;
-            Dreamshivers: string;
-            Keening: string;
-        };
-        Institutions: {
-            Ascea: {};
-        };
-        Region:{
-
-        };
-        World_Events: {
-
-        };
-    };
-    Kingdom: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Cerchre: string;
-                Chioba: string;
-                Cragore: string;
-                Dwarves: string;
-                Gatshyr: string;
-                Ilire: string;
-                "Ma'ier": string;
-                Morath: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Chyrolus: string;
-                Draochre: string;
-                Sinacyn: string;
-                Tshiathail_Kon: string; // Skeleton Knight King
-            };
-
-            Animalis: {
-                Preamble: string;  
-                Carrier_Birds: string;
-                "Rana'vas": string;
-            };
-        };
-        Phenomena: {
-            Shifting: string;
-            Vielo: string;
-            Insight: string;
-        };
-    };
-    Soverains: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Cerchre: string;
-                Chioba: string;
-                Dwarves: string;
-                Gatshyr: string;
-                Ilire: string;
-                Morath: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tavore: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Draochre: string;
-                Nyrae: string;
-                Sinacyn: string;
-                Tshiathail_Kon: string; // Skeleton Knight King
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                "Rana'vas": string;
-            };
-        };
-    };
-    Fangs: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Chioba: string;
-                Gatshyr: string;
-                Morath: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tavore: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Chyrolus: string;
-                Fyrash: string;
-                "Ky'myr": string;
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                Kraken: string;
-                "Rana'vas": string;
-            };
-        };
-
-    };
-    Licivitas: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Chioba: string;
-                Cragore: string;
-                Dwarves: string;
-                Gatshyr: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Chyrolus: string;
-                Fyrash: string;
-                "Ky'myr": string;
-                Nyrae: string;
-                Sinacyn: string;
-            };
-            Animalis: {
-                Preamble: string;
-                Canire: string;
-                Carrier_Birds: string;
-                "Rana'vas": string;
-            };
-        };
-
-    };
-    Firelands: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Chioba: string;
-                Dwarves: string;
-                Gatshyr: string;
-                "Ma'ier": string;
-                "Re'vas": string;
-                Shyr: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Chyrolus: string;
-                Fyrash: string;
-                Nyrae: string;
-                "Quor'eo": string;
-                Sinacyn: string;
-                Tshiathail_Kon: string; // Skeleton Knight King
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                Kraken: string;
-                "Rana'vas": string;
-                Phoenix: string;
-            };
-        };
-
-    };
-    Sedyrus: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Chioba: string;
-                Gatshyr: string;
-                "Ma'ier": string;
-                Quoros: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Aphyero: string;
-                Chyrolus: string;
-                Fyrash: string;
-                "Ky'myr": string;
-                Nyrae: string;
-                "Quor'eo": string;
-                Sinacyn: string;
-                Tshiathail_Kon: string; // Skeleton Knight King
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                "Rana'vas": string;
-                Shamanic: string;
-            };
-        };
-
-    };
-    Isles: {
-        SupernaturalEntity: {
-            Hybrida: {
-                Preamble: string;
-                "Ahn'are": string;
-                Chioba: string;
-                Gatshyr: string;
-                "Re'vas": string;
-                Shyr: string;
-                Tavore: string;
-                Tshios: string;
-            };
-            Specificus: {
-                Preamble: string;
-                Chyrolus: string;
-                Fyrash: string;
-                Nyrae: string;
-                Sinacyn: string;
-            };
-            Animalis: {
-                Preamble: string;
-                Carrier_Birds: string;
-                Kraken: string;
-                "Rana'vas": string;
-                Shamanic: string;
-            };
-        };
-
-    };
 };

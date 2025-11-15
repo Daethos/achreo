@@ -32,7 +32,7 @@ export class NetSystem {
         const pos = new Phaser.Math.Vector2(player.position);
 
         const enemy = this.scene.combatManager.combatant(this.scene.state.enemyID);
-        const target = new Phaser.Math.Vector2(enemy.position.x, enemy.position.y + 24);
+        const target = new Phaser.Math.Vector2(enemy.x, enemy.y + 24);
 
         this.throwNet(pos, target);
     };

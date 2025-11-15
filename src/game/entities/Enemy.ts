@@ -1559,7 +1559,6 @@ export default class Enemy extends Entity {
         if (this.isDying) return;
         this.isDefeated = false;
         this.defeatedTime = 60000;
-        this.setDepth(1);
         this.health = this.ascean.health.max;
         this.updateHealthBar(this.ascean.health.max);
         this.computerCombatSheet.newComputerHealth = this.ascean.health.max;

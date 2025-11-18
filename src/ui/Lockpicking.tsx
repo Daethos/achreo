@@ -1,4 +1,4 @@
-import { Accessor, createEffect, createSignal, onMount, Setter, Show } from "solid-js";
+import { Accessor, createEffect, createMemo, createSignal, onMount, Setter, Show } from "solid-js";
 import { load } from "../App";
 import Ascean from "../models/ascean";
 import Settings from "../models/settings";
@@ -8,6 +8,8 @@ import { IRefPhaserGame } from "../game/PhaserGame";
 import { font } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
 import { Play } from "../game/main";
+import { GameState } from "../stores/game";
+import { Item } from "../models/item";
 var picking = new Audio("../assets/sounds/lockpick-sound.mp3");
 var success = new Audio("../assets/sounds/lockpick-success.mp3");
 const PLAYING = "PLAYING";
@@ -38,7 +40,7 @@ const COLORS: {[key:string]: string} = {
     <<---------- LOCKPICKING ---------->> 
 */
 
-export default function Lockpicking({ ascean, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; lockpick: Accessor<{id: string; interacting: boolean; type: string;}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
+export default function Lockpicking({ ascean, game, lockpick, settings, setLockpicking, instance }: { ascean: Accessor<Ascean>; game: Accessor<GameState>; lockpick: Accessor<{id: string; interacting: boolean; type: string;}>; settings: Accessor<Settings>; setLockpicking: Setter<boolean>; instance: Store<IRefPhaserGame>; }) {
     const [angle, setAngle] = createSignal(0); // Lockpick rotation (0-360°)
     const [tension, setTension] = createSignal(115); // Wrench rotation (0-360°)
     const [lockDifficulty, setLockDifficulty] = createSignal(LOCKPICK[settings()?.lockpick?.difficulty] || LOCKPICK["Easy"]); // Easy/medium/hard
@@ -46,7 +48,7 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     const [sweetSpotStart, setSweetSpotStart] = createSignal<number>(0);
     const [sweetSpotEnd, setSweetSpotEnd] = createSignal<number>(0);
     const [showManual, setShowManual] = createSignal<boolean>(false);
-    const [lockpicks, setLockpicks] = createSignal<number>(settings()?.lockpick?.count || 5);
+    // const [lockpicks, setLockpicks] = createSignal<number>(0); //(settings()?.lockpick?.count || 5);
     const [debugMode, setDebugMode] = createSignal<boolean>(false);
     const [rumble, setRumble] = createSignal(false);
     const [broke, setBroke] = createSignal(false);
@@ -59,6 +61,12 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
     const [tumblerDown, setTumblerDown] = createSignal<boolean>(false);
 
     createEffect(() => setLockDifficulty(LOCKPICK[settings()?.lockpick?.difficulty] || LOCKPICK["Easy"]));
+
+    const lockpicks = createMemo(() => {
+        const lockpicks = game().specialInventory?.inventory.filter((item: Item) => item.name === "Lockpick");
+        const number = lockpicks?.reduce((acc: number, item: Item) => acc + item.quantity, 0) || 0;
+        return number;
+    });
 
     async function changeDifficulty() {
         try {
@@ -95,7 +103,8 @@ export default function Lockpicking({ ascean, lockpick, settings, setLockpicking
         setTotalRotation(0);
         setTimeout(() => {
             setBroke(false);
-            setLockpicks(prev => Math.max(prev - 1, 0));
+            // setLockpicks(prev => Math.max(prev - 1, 0));
+            EventBus.emit("break-lockpick");
             if (lockpicks() > 0) {
                 setPickDurability(100);
                 setAngle(0);

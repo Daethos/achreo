@@ -11,13 +11,16 @@ import { Inventory, Party, Reputation } from "../../utility/player";
 import Statistics from "../../utility/statistics";
 import Talents, { createTalents } from "../../utility/talents";
 import Quest, { createQuests } from "../../utility/quests";
+import { Item, SpecialInventory } from "../../models/item";
 var db = new PseudoBase("db");
 const EQUIPMENT = "Equipment";
+const ITEM = "Item";
 const ASCEANS = "Asceans";
 const SETTINGS = "Settings";
 const QUESTS = "Quests";
 const REPUTATION = "Reputation";
 const INVENTORY = "Inventory";
+const SPECIAL_INVENTORY = "Special Inventory";
 const STATISTICS = "Statistics";
 const TALENTS = "Talents";
 const PARTY = "Party";
@@ -94,7 +97,7 @@ export const deleteAscean = async (id: string) => {
     const equipment = [ascean.weaponOne, ascean.weaponTwo, ascean.weaponThree, ascean.shield, ascean.helmet, ascean.chest, ascean.legs, ascean.ringOne, ascean.ringTwo, ascean.amulet, ascean.trinket];
     const items = await getInventoryIds(id);
     equipment.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
-    items.forEach(async (item: string) => await db.collection(EQUIPMENT).doc({ _id: item }).delete());
+    items.forEach(async (item: string) => await db.collection(ITEM).doc({ _id: item }).delete());
     await db.collection(ASCEANS).doc({ _id: id }).delete();
     const quests = await db.collection(QUESTS).doc({ _id: id }).get();
     if (quests) await db.collection(QUESTS).doc({ _id: id }).delete();
@@ -110,6 +113,8 @@ export const deleteAscean = async (id: string) => {
     if (talents) await db.collection(TALENTS).doc({ _id: id }).delete();
     const party = await db.collection(PARTY).doc({ _id: id }).get();
     if (party) await db.collection(PARTY).doc({ _id: id }).delete();
+    const specialInventory = await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).get();
+    if (specialInventory) await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).delete();
 };
 
 export const blessAscean = async (id: string, entry: any): Promise<any> => {
@@ -546,4 +551,63 @@ export const equipmentRemove = async (data: any) => {
     } catch (error) {
         console.error(error);
     };
+};
+
+export const addItem = async (item: Item, id: string): Promise<void> => {
+    let inventory = await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).get();
+    const duplicate = inventory.inventory.find((invItem: Item) => invItem.name === item.name);
+    if (duplicate) { // Add to quantity if duplicate, rather than adding new item wholecloth
+        duplicate.quantity += item.quantity;
+        await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).update(inventory);
+        await db.collection(ITEM).doc({ _id: duplicate._id}).update(duplicate);
+        return;
+    }; // No duplicate found, proceed to add new item to IndexedDB
+    await db.collection(ITEM).add(item);
+};
+export const deleteItemData = async (id: string): Promise<void> => await db.collection(ITEM).doc({ _id: id }).delete();
+export const getItems = async (id: string): Promise<Item> => await db.collection(ITEM).doc({ _id: id }).get();
+export const updateItemData = async (item: Item): Promise<void> => await db.collection(ITEM).doc({ _id: item._id }).update(item);
+export const itemRemove = async (data: any) => {
+    try {
+        let inv = await db.collection(SPECIAL_INVENTORY).doc({ _id: data.id }).get();
+        let inventory = inv.inventory;
+        const itemId = data.item._id;
+        const itemIndex = inv.inventory.indexOf(itemId);
+        inventory.splice(itemIndex, 1);
+        inv.inventory = inventory;
+
+        await db.collection(SPECIAL_INVENTORY).doc({ _id: data.id }).update(inv);
+        await db.collection(ITEM).doc({ _id: itemId }).delete();
+        return inv.inventory;
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+export const getSpecialInventory = async (id: string) => {
+    let inventory: SpecialInventory = await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).get();
+    if (!inventory) {
+       const newInventory = new Inventory(id);
+       await db.collection(SPECIAL_INVENTORY).add(newInventory);
+       return newInventory 
+    };
+    const populated = Promise.all(inventory.inventory.map(async (item: Item) => {
+        const equipment = await db.collection(ITEM).doc({ _id: item }).get();
+        return equipment;
+    }));
+    inventory.inventory = await populated as unknown as Item[];
+    return inventory;
+};
+
+export const getSpecialInventoryIds = async (id: string) => {
+    const inventory = await db.collection(SPECIAL_INVENTORY).doc({ _id: id }).get();
+    if (!inventory) return [];
+    return inventory.inventory;
+};
+
+export const updateSpecialInventory = async (inventory: SpecialInventory) => {
+    const cleanInventory = inventory.inventory.filter((item: Item | undefined) => item && item._id !== '').map((item: Item) => item._id);
+    const clean = { ...inventory, inventory: cleanInventory };
+    const res = await db.collection(SPECIAL_INVENTORY).doc({ _id: inventory._id }).update(clean);
+    return res;
 };

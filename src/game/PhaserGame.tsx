@@ -11,7 +11,7 @@ import { Combat, initCombat } from "../stores/combat";
 import { EnemySheet, fetchEnemy } from "../utility/enemy";
 import { GameState, initGame } from "../stores/game";
 import { Compiler, LevelSheet, asceanCompiler } from "../utility/ascean";
-import { deleteEquipment, getAscean, getInventory, populate, updateSettings } from "../assets/db/db";
+import { deleteEquipment, deleteItemData, getAscean, getInventory, populate, updateItemData, updateSettings } from "../assets/db/db";
 import { getNpcDialog } from "../utility/dialog";
 import { getAsceanTraits, Traits } from "../utility/traits";
 import { fetchDm, getNodesForNPC, npcIds } from "../utility/DialogNode";
@@ -22,6 +22,7 @@ import { Puff } from "solid-spinner";
 import Talents from "../utility/talents";
 import QuestManager, { Quest } from "../utility/quests";
 import { addStance } from "../utility/abilities";
+import { getSpecificItem, Item, SpecialInventory } from "../models/item";
 const BaseUI = lazy(async () => await import("../ui/BaseUI"));
 
 const RARITY_GOLD_MAP: {[key:string]: number} = {
@@ -68,6 +69,8 @@ interface IProps {
     ascean: Accessor<Ascean>;
     inventory: Accessor<Inventory>;
     setInventory: Setter<Inventory>;
+    specialInventory: Accessor<SpecialInventory>;
+    setSpecialInventory: Setter<SpecialInventory>;
     quests: Accessor<QuestManager>;
     reputation: Accessor<Reputation>;
     setReputation: Setter<Reputation>;
@@ -213,6 +216,33 @@ export default function PhaserGame (props: IProps) {
 
     function masteryCheck(attribute: string, mastery: string): number {
         return attribute === mastery ? 1.07 : 1.04;
+    };
+
+    async function purchaseSpecialItem(purchase: {item: Item; cost: { silver: number; gold: number; };}) {
+        try {
+            let inventory = JSON.parse(JSON.stringify(game().specialInventory.inventory));
+            const duplicate = inventory.find((it: Item) => it.name === purchase.item.name);
+            if (duplicate) { // just add to quantity rather than creating and pushing new item
+                duplicate.quantity += purchase.item.quantity;
+                await updateItemData(duplicate);
+            } else { // no duplicate, create new item and push into inventory
+                const newItem = await getSpecificItem(purchase.item.name, props.ascean()._id);
+                inventory.push(newItem);
+            };
+            const clean = { ...game().specialInventory, inventory };
+            let cost = {
+                silver: props.ascean().currency.silver - purchase.cost.silver,
+                gold: props.ascean().currency.gold - purchase.cost.gold
+            };
+            cost = rebalanceCurrency(cost);
+            const update = { ...props.ascean(), currency: cost, health: { current: combat().newPlayerHealth, max: combat().playerHealth } };
+            setGame({ ...game(), specialInventory: clean });
+            EventBus.emit("update-ascean", update);
+            EventBus.emit("update-special-inventory", clean);
+            EventBus.emit("purchase-sound");
+        } catch (err) {
+            console.warn("Error Purchasing Special Item", err);
+        };
     };
 
     function purchaseItem(purchase: {item: Equipment; cost: { silver: number; gold: number; }; }) {
@@ -946,7 +976,10 @@ export default function PhaserGame (props: IProps) {
         });
         setStamina(stats.attributes.stamina as number);
         setGrace(stats.attributes.grace as number);
-        setGame({ ...game(), inventory: props.inventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
+        setGame({ ...game(), inventory: props.inventory(), specialInventory: props.specialInventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
+        
+        console.log({ game: game() });
+        
         instance.game?.registry.set("ascean", stats.ascean);
         instance.game?.registry.set("combat", combat());
         instance.game?.registry.set("game", game());
@@ -1026,7 +1059,7 @@ export default function PhaserGame (props: IProps) {
         setGrace(res?.attributes?.grace as number);
         const inventory = await getInventory(id);
         const traits = getAsceanTraits(props.ascean());
-        setGame({ ...game(), inventory: inventory, traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
+        setGame({ ...game(), inventory, specialInventory: props.specialInventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         EventBus.emit("update-total-stamina", res?.attributes.stamina as number);
         getStances(traits);
     };
@@ -1248,7 +1281,6 @@ export default function PhaserGame (props: IProps) {
                 setGame({
                     ...game(),
                     showLootIds: updatedShowLootIds.length > 0 ? updatedShowLootIds : [],
-                    // showLoot: updatedShowLootIds.length > 0,
                     lootTag: updatedShowLootIds.length > 0,
                 });
             };
@@ -1258,6 +1290,11 @@ export default function PhaserGame (props: IProps) {
             const clean = {...game().inventory, inventory: e};
             setGame({ ...game(), inventory: clean });
             EventBus.emit("update-inventory", clean);
+        });
+        EventBus.on("refresh-special-inventory", async (specialInventory: Item[]) => {
+            const clean = { ...game().specialInventory, inventory: specialInventory };
+            setGame({ ...game(), specialInventory: clean });
+            EventBus.emit("update-special-inventory", clean);
         });
         EventBus.on("selectPrayer", (e: any) => setGame({ ...game(), selectedPrayerIndex: e.index, selectedHighlight: e.highlight }));
         EventBus.on("selectDamageType", (e: any) => setGame({ ...game(), selectedDamageTypeIndex: e.index, selectedHighlight: e.highlight }));
@@ -1344,6 +1381,7 @@ export default function PhaserGame (props: IProps) {
         EventBus.on("create-prayer", (e: any) => setCombat({ ...combat(), playerEffects: combat().playerEffects.length > 0 ? [...combat().playerEffects, e] : [e] }));
         EventBus.on("create-enemy-prayer", (e: any) => setCombat({ ...combat(), computerEffects: combat().computerEffects.length > 0 ? [...combat().computerEffects, e] : [e] }));
         EventBus.on("purchase-item", purchaseItem);
+        EventBus.on("purchase-special-item", purchaseSpecialItem);
         EventBus.on("sell-item", sellItem);
         EventBus.on("sell-items", sellItems);
         EventBus.on("buy-items", buyItems);
@@ -1398,6 +1436,26 @@ export default function PhaserGame (props: IProps) {
                 }
             });
         });
+        EventBus.on("break-lockpick", async () => {
+            const specialInventory = JSON.parse(JSON.stringify(game().specialInventory));
+            const lockpickIndex = specialInventory.inventory.findIndex((item: Item) => item.name === "Lockpick");
+            if (lockpickIndex !== -1) {
+                if (specialInventory.inventory[lockpickIndex].quantity > 1) {
+                    specialInventory.inventory[lockpickIndex].quantity -= 1;
+                    await updateItemData(specialInventory.inventory[lockpickIndex]);
+                } else {
+                    const itemToDelete = specialInventory.inventory[lockpickIndex];
+                    await deleteItemData(itemToDelete._id);
+                    specialInventory.inventory.splice(lockpickIndex, 1);
+                };
+                setGame({ ...game(), specialInventory });
+                EventBus.emit("update-special-inventory", specialInventory);
+            };
+        });
+        EventBus.on("set-special-inventory", (specialInventory: SpecialInventory) => {
+            setGame({ ...game(), specialInventory });
+            EventBus.emit("update-special-inventory", specialInventory);
+        });
 
         onCleanup(() => {
             if (instance.game) {
@@ -1437,6 +1495,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("initiate-input");
             EventBus.removeListener("luckout");
             
+            EventBus.removeListener("purchase-special-item");
             EventBus.removeListener("purchase-item");
             EventBus.removeListener("persuasion");
             EventBus.removeListener("sell-items");
@@ -1483,6 +1542,8 @@ export default function PhaserGame (props: IProps) {
 
             EventBus.removeListener("special-combat-text");
             EventBus.removeListener("enemy-combat-text");
+            EventBus.removeListener("break-lockpick");
+            EventBus.removeListener("set-special-inventory");
         });
     });
 

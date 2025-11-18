@@ -1,5 +1,6 @@
+import { initSpecialInventory, SpecialInventory } from "../models/item";
 import { DialogNode, DialogNodeOption } from "../utility/DialogNode";
-import { Inventory } from "../utility/player";
+import { initInventory, Inventory } from "../utility/player";
 
 export interface GameState {
     player: any;
@@ -36,6 +37,7 @@ export interface GameState {
 
     currentIntent: string;
     inventory: Inventory;
+    specialInventory: SpecialInventory;
     lootDrops: any[];
     merchantEquipment: any[];
     repurchase: any[];
@@ -95,7 +97,8 @@ export const initGame: GameState = {
     showLoot: false,
     showPlayer: false,
 
-    inventory: {_id:'', inventory:[]},
+    inventory: initInventory,
+    specialInventory: initSpecialInventory,
     lootDrops: [],
     merchantEquipment: [],
     repurchase: [],

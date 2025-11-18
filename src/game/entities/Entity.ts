@@ -787,7 +787,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.shadow) {
             this.shadow.setPosition(x, y + 33);
             this.shadow.setTexture(this.texture.key, this.frame.name);
-            // this.shadow?.setFrame(this.frame.name);
             this.shadow.setFlipX(this.flipX);
         };
     };
@@ -1442,6 +1441,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                 if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", (this as unknown as Enemy).enemyID);
                 this.isParrying = false;
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         thrust: (frame) => {
@@ -1467,6 +1467,11 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 3 && !this.isRanged) {
                 this.checkActionSuccess();
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
+        },
+
+        dodge: () => {
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         roll: (frame) => {
@@ -1528,6 +1533,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         attack: (frame) => {
@@ -1564,6 +1570,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 8 && !this.isRanged) {
                 this.checkActionSuccess();
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
         
         hurl: (frame) => {
@@ -1580,6 +1587,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             } else if (frameIndex === 4 && this.hasMagic) { // 6
                 this.particleEffect = this.scene.particleManager.addEffect(States.HURL, this, this.currentDamageType);
             };
+            this.shadow?.setTexture(this.texture.key, this.frame.name);
         },
 
         movingVertical: (frame) => {

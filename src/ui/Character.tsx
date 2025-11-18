@@ -29,6 +29,8 @@ import QuestManager, { Quest, replaceChar } from "../utility/quests";
 import Currency from "../utility/Currency";
 import { usePhaserEvent } from "../utility/hooks";
 import { roundToTwoDecimals } from "../utility/combat";
+import SpecialInventoryPouch from "./SpecialInventoryPouch";
+import SpecialItemModal from "../components/SpecialItemModal";
 const AsceanImageCard = lazy(async () => await import("../components/AsceanImageCard"));
 const ExperienceBar = lazy(async () => await import("./ExperienceBar"));
 const Firewater = lazy(async () => await import("./Firewater"));
@@ -132,15 +134,18 @@ interface Props {
 const Character = ({ quests, reputation, settings, setSettings, statistics, talents, ascean, asceanState, game, combat }: Props) => {
     const [playerTraitWrapper, setPlayerTraitWrapper] = createSignal<any>({});
     const [dragAndDropInventory, setDragAndDropInventory] = createSignal(game()?.inventory.inventory);
+    const [dragAndDropSpecialInventory, setDragAndDropSpecialInventory] = createSignal(game()?.specialInventory.inventory);
     const [canUpgrade, setCanUpgrade] = createSignal<boolean>(false);
     const [forgeModalShow, setForgeModalShow] = createSignal(false); 
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
+    const [equipmentInventory, setEquipmentInventory] = createSignal<boolean>(true);
     const [inventoryType, setInventoryType] = createSignal<string>("");
     const [highlighted, setHighlighted] = createSignal<{ item: Equipment | undefined; comparing: boolean; type: string }>({ item: undefined, comparing: false, type: "" });
     const [show, setShow] = createSignal<boolean>(false);
     const [actions, setActions] = createSignal<any[]>([]);
     const [specials, setSpecials] = createSignal<any[]>([]);
+    const [itemShow, setItemShow] = createSignal<any>({ show: false, item: undefined });
     const [inspectModalShow, setInspectModalShow] = createSignal<boolean>(false);
     const [inspectItems, setInspectItems] = createSignal<{ item: Equipment | undefined; type: string; } | any[]>([]);
     const [attrShow, setAttrShow] = createSignal<boolean>(false);
@@ -197,7 +202,12 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
     createEffect(() => {
         setDragAndDropInventory(game().inventory.inventory);
         checkHighlight();
-    }); 
+    });
+
+    createEffect(() => {
+        // console.log("Special Inventory Changed:", game().specialInventory.inventory);
+        setDragAndDropSpecialInventory(game().specialInventory.inventory);
+    });
 
     function checkSpecials() {
         const potential = [playerTraitWrapper().primary.name, playerTraitWrapper().secondary.name, playerTraitWrapper().tertiary.name];
@@ -1156,8 +1166,15 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <button class="highlight" classList={{
                 "tutorial-highlight": highlighter() === "stats-display",
                 "animate": highlighter() === "stats-display",
-            }} onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "", right: "20vw", "z-index": 1 }}>
-                <div>{expandedCharacter() === true ? "Player Stats" : "Equipment"}</div>
+            }} onClick={() => setEquipmentInventory(!equipmentInventory())} style={{ position: "fixed", top: "", right: "20vw", "z-index": 1 }}>
+                <div>{equipmentInventory() ? "Equipment Inventory" : "Special Inventory"}</div>
+            </button>
+
+            <button class="highlight" classList={{
+                "tutorial-highlight": highlighter() === "stats-display",
+                "animate": highlighter() === "stats-display",
+            }} onClick={() => showExpandedCharacter(!expandedCharacter())} style={{ position: "fixed", top: "", left: "20vw", "z-index": 1 }}>
+                <div>{expandedCharacter() ? "Player Stats" : "Equipment"}</div>
             </button>
 
             <div class="center" style={{ position: "fixed", top: "-0.25vh", right: "5.5vw", height: "10vh", width: "15vw", background: "#000", "scale": "0.8", border: `1px solid ${masteryColor(ascean().mastery)}` }}>
@@ -1585,9 +1602,15 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         {characterInfo()}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
-                    <Suspense fallback={<Puff color="gold"/>}>
-                        <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
-                    </Suspense>
+                    <Show when={equipmentInventory()} fallback={
+                        <Suspense fallback={<Puff color="gold"/>}>
+                            <SpecialInventoryPouch specialInventory={dragAndDropSpecialInventory} setSpecialInventory={setDragAndDropSpecialInventory} setItemShow={setItemShow} />
+                        </Suspense>
+                    }>
+                        <Suspense fallback={<Puff color="gold"/>}>
+                            <InventoryPouch ascean={ascean} setRingCompared={setRingCompared} highlighted={highlighted} setHighlighted={setHighlighted} setInventoryType={setInventoryType} setWeaponCompared={setWeaponCompared} setDragAndDropInventory={setDragAndDropInventory} dragAndDropInventory={dragAndDropInventory} />
+                        </Suspense>
+                    </Show>
                 ) : settings().asceanViews === VIEWS.SETTINGS ? (
                     <div style={{ "scrollbar-width": "none", overflow: "scroll" }}> 
                         <div class="center" style={{ padding: "5%", "font-size": "0.75em" }}>
@@ -1608,6 +1631,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <Suspense fallback={<Puff color="gold"/>}>
                 <LevelUp ascean={ascean} asceanState={asceanState} show={levelUpModalShow} setShow={setLevelUpModalShow} />
             </Suspense>
+        </Show>
+        <Show when={itemShow().show}>
+            <div class="modal" onClick={() => setItemShow({ show: false, item: undefined })}>
+                <Suspense fallback={<Puff color="gold"/>}>
+                    <SpecialItemModal item={itemShow().item} />
+                </Suspense>
+            </div>
         </Show>
         <Show when={show()}>
             <div class="modal" onClick={() => setShow(!show)}>

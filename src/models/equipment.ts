@@ -84,7 +84,7 @@ const CRITICAL_MUTATION_RANGES = [
 
 COLLECTION.forEach(deepFreeze);
 
-function deepFreeze<T>(obj: T): T {
+export function deepFreeze<T>(obj: T): T {
     Object.freeze(obj);
     Object.getOwnPropertyNames(obj).forEach(prop => {
         const value = (obj as any)[prop];
@@ -105,12 +105,6 @@ export function getSpecificItem(name: string, rarity: string) {
         if (found) return Object.freeze(found);
     };
 };
-
-// export function getGeneralItem(...args: any) {
-//     console.log(args, "Arguments?");
-//     for (const collection of COLLECTION) {
-//     };
-// };
 
 export function randomIntFromInterval(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min);

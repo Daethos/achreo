@@ -3,10 +3,7 @@ import { EventBus } from "../game/EventBus";
 import { Combat } from "../stores/combat";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
-import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore,
-    INSTITUTIONS_CHECK, WHISPER_CHECK, REGION_CHECK, WORLD_EVENTS_CHECK, SUPERNATURAL_ENTITY_CHECK, SUPERNATURAL_PHENOMENA_CHECK,
-    FLAT_ENTITY_CHECK_MAP, 
- } from "../utility/regions";
+import { Institutions, IntstitutionalButtons, LocalLoreButtons, ProvincialWhispersButtons, Region, SupernaturalEntity, SupernaturalEntityButtons, SupernaturalEntityLore, SupernaturalPhenomena, SupernaturalPhenomenaButtons, SupernaturalPhenomenaLore, Whispers, WhispersButtons, WorldLoreButtons, World_Events, institutions, localLore, provincialInformation, whispers, worldLore, INSTITUTIONS_CHECK, WHISPER_CHECK, REGION_CHECK, WORLD_EVENTS_CHECK, SUPERNATURAL_PHENOMENA_CHECK, FLAT_ENTITY_CHECK_MAP } from "../utility/regions";
 import { LUCKOUT, LuckoutModal, PERSUASION, PersuasionModal, QuestModal, checkTraits } from "../utility/traits";
 import { DialogNode, DialogNodeOption, getNodesForEnemy, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import Typewriter from "../utility/Typewriter";
@@ -36,6 +33,16 @@ import { addSpecial, SPECIAL } from "../utility/abilities";
 import { ACTION_ORIGIN } from "../utility/actions";
 import AsceanImageCard from "../components/AsceanImageCard";
 import { Puff } from "solid-spinner";
+import { ITEMS } from "../assets/db/items";
+import { Item } from "../models/item";
+import SpecialItemModal from "../components/SpecialItemModal";
+
+function itemCostConverter(cost: number) {
+    const convert = cost * 100;
+    const gold = Math.floor(convert / 100);
+    const silver = Math.floor(convert % 100);
+    return { gold, silver };
+};
 
 export type Currency = {gold:number; silver:number;};
 export type Purchase = {item: Equipment;cost: Currency;};
@@ -349,6 +356,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [massLootSell, setMassLootSell] = createSignal<{id:string;rarity:string;}[]>([]);
     const [massLootBuy, setMassLootBuy] = createSignal<{id:string;cost:Currency}[]>([]);
     const [merchantSell, setMerchantSell] = createSignal<boolean>(false);
+    const [itemShow, setItemShow] = createSignal<any>({ show: false, item: undefined });
     const [forge, setForge] = createSignal<Equipment | undefined>(undefined);
     const [forgeSee, setForgeSee] = createSignal<boolean>(false);
     const [etchings, setEtchings] = createSignal<{show:boolean; items:Equipment[];}>({show:false,items:[]});
@@ -361,7 +369,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], wager: { silver: 0, gold: 0, multiplier: 0 }, party: false, result: false, win: false, map: "ARENA", gauntlet: { opponents: 1, type: "RANDOMIZED", round: 1 } });
     const [rep, setRep] = createSignal<FACTION>(initFaction);
     const [party, setParty] = createSignal(false);
-    const [registry, setRegistry] = createSignal(false);
+    const [registry, setRegistry] = createSignal(false); // setShowTools
+    const [showTools, setShowTools] = createSignal(false); // setShowTools
     const [itemCosts, setItemCosts] = createSignal<Record<string, {silver: number, gold: number}>>({});
     const [popupReward, setPopupReward] = createSignal<any>(null); // Holds the reward object/text to display
     const [rewardQueue, setRewardQueue] = createSignal<any[]>([]); // Holds the list of remaining rewards
@@ -398,6 +407,30 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         checkParty();
     });
 
+    const tools = createMemo(() => {
+        const toolItems = ITEMS.filter((item: Item) => item.type === "Tool");
+
+        const soldTools: Item[] = [];
+        for (let i = 0; i < toolItems.length; ++i) {
+            let tool = toolItems[i];
+            const duplicate = uniqueItem(tool);
+            if (!duplicate) {
+                soldTools.push(tool);
+            };
+        };
+
+        return soldTools.sort((a: Item, b: Item) => {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+        });
+    });
+
+    function uniqueItem(item: Item) {
+        const isUnique = game().specialInventory.inventory.find((i: Item) => i.name === item.name && i.isUnique);
+        return isUnique !== undefined;
+    };
+
     const KEYS = {
         "Traveling Senarian":"magical-weapon",
         "Traveling Sevasi":"physical-weapon",
@@ -427,6 +460,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         setReetchSee: () => {checkEtchings(); setForgeSee(false); setForgings({...forgings(), show:false});},
         setReforgeSee: () => {checkForgings(); setForgeSee(false); setEtchings({...etchings(), show:false});},
         setRegistry: () => setRegistry(true),
+        setTools: () => setShowTools(true),
         setRoster: () => setArena({ ...arena(), show: true }),
         getTutorialMovement: () => EventBus.emit("highlight", "joystick"),
         getTutorialEnemy: () => fetchTutorialEnemyPrompt(), 
@@ -1398,6 +1432,25 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         };
     };
 
+    async function purchaseItem(item: Item) {
+        try {
+            setItemShow({ show: false, item: undefined });
+            let asceanTotal = 0;
+            let costTotal = 0;
+            asceanTotal = ascean().currency.silver + (ascean().currency.gold * 100);
+            costTotal = item.value * 100;
+            if (costTotal > asceanTotal) {
+                EventBus.emit("alert", { header: "Insufficient Funds", body: `You do not have enough money. You require ${costTotal - asceanTotal} more silver to purchase the ${item.name}.` });
+                return;
+            };
+            const cost = itemCostConverter(item.value);
+            EventBus.emit("alert", { header: `Purchasing ${item.name}`, body: `You have purchased the ${item.name} for ${cost.gold}g, ${cost.silver}s.` });
+            EventBus.emit("purchase-special-item", { item, cost });
+        } catch (err) {
+            console.warn(err, "Error Purchasing Item");
+        };
+    };
+
     // function addFunds() {
     //     const update = {
     //         ...ascean(),
@@ -1415,7 +1468,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function fetchOptions() {
         const currentRep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name.split("(Converted)")[0].trim()) as FACTION;
-        // console.log({ currentRep });
+        // console.log({ currentRep, isEnemy: combat().isEnemy, isHostile: combat().isHostile });
+        if (!currentRep) {
+            return {};
+        };
         if (combat().isHostile) {
             return {
                 challenge: {},
@@ -1481,7 +1537,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
         });
     });
-    
     return (
         <Show when={combat().computer}>
         {/* <<---------- ENEMY DIALOG TABS ---------->> */}
@@ -1549,27 +1604,38 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <div class="dialog-window" style={{ width: combat().isEnemy && combat().computer ? "83%" : "99%", "text-align": "center" }}>
             {/* <div class="dialog-tab wrap">  */}
                 <Show when={combat().npcType}>
-                    <button class="highlight cornerBR" onClick={clearDuel} style={{ position: "fixed" }}>Goodbye</button>
+                    <button class="highlight cornerBR" onClick={clearDuel} style={{ position: "fixed", bottom: "1vh", right: "0.5vw" }}>Goodbye</button>
                 </Show>
             {/* Uncommon: Achiom, Rare: Senic, Epic: Kyr, Legendary: Sedyreal */}
             { combat().npcType === "Merchant-Smith" ? ( <>
-                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already.
-                    <br /><br />
-                    "Also, if you wish to find some companion to engage in your journey, I've a registry of those looking to venture and find treasure in this world."
-                    <p class="gold">
-                    Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality. <br />
-                    </p>
-                    <p class="greenMarkup">[Uncommon - 1g]</p>
-                    <p class="blueMarkup">[Rare - 3g]</p>
-                    <p class="purpleMarkup">[Epic - 12g]</p>
-                    <p class="darkorangeMarkup">[Legendary - 60g]</p>
-                    <br /><button class="highlight" data-function-name="setRegistry">Check the Registry.</button> 
-                    <br /><button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater.</button>
-                    <br /><button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess.</button>
-                    <br /><button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry.</button>
-                    <br /><button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith.</button>
-                `} styling={{ margin: "auto", width: "90%", overflow: "auto", "scrollbar-width": "none", "font-size":"1.15rem" }} performAction={performAction} noScroll={true} />
+                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already.\n\n"Also, if you wish to find some companion to engage in your journey, I've a registry of those looking to venture and find treasure in this world."
+                    <p class="gold">Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality.</p>
+                                    <p class="greenMarkup">[Uncommon - 1g]</p> <p class="blueMarkup">[Rare - 3g]</p> <p class="purpleMarkup">[Epic - 12g]</p> <p class="darkorangeMarkup">[Legendary - 60g]</p></br />
+        <button class="highlight" data-function-name="setRegistry">Check the Registry.</button>
+        <button class="highlight" data-function-name="setTools">Purchase Tools.</button>
+        <button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater.</button>
+        <button class="highlight" data-function-name="setReforgeSee">Reforge an item you possess.</button>
+        <button class="highlight" data-function-name="setReetchSee">Etch new primal influences on your weapons or jewelry.</button>
+        <button class="highlight" data-function-name="getSell">Sell your equipment to the Traveling Blacksmith.</button>
+                `} styling={TYPEWRITER} performAction={performAction} noScroll={true} />
                 <br />
+                <Show when={showTools()}>
+                    <div>
+                        <Currency ascean={ascean} />
+                    </div>
+                    <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%" }}>
+                        <For each={tools()}>{(item: Item, _index: Accessor<number>) => {
+                            // if (uniqueItem(item)) return;
+                            const cost = itemCostConverter(item.value);
+                            return (
+                                <div class="center" onClick={() => setItemShow({ show: true, item })}>
+                                    <img src={item.imgUrl} alt={item.name} style={{ ...getItemStyle(item.rarity), margin: "5%" }} />
+                                    <div><span class="gold">{cost.gold}g</span> <span class="silver">{cost.silver}s</span></div>
+                                </div>
+                            )
+                        }}</For>
+                    </div>
+                </Show>
                 <Switch>
                     <Match when={forgeSee() && upgradeItems()}>
                         <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%" }}> 
@@ -1983,6 +2049,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
         <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
+        <Show when={itemShow().show}>
+            <div class="modal" style={{ "z-index": 99 }}>
+                <SpecialItemModal item={itemShow().item} />
+                <button class="highlight cornerTR animate" style={{ right: "1vw", top: "2vh", "font-size": "1rem" }} onClick={() => purchaseItem(itemShow().item)}>Purchase {itemShow().item.name}</button>
+                <button class="highlight cornerBR" style={{ right: "1vw", bottom: "2vh", "font-size": "1rem", color: "red" }} onClick={() => setItemShow({ show: false, item: undefined })}>X</button>
+            </div>
+        </Show>
         <Show when={reforge().show}> 
             <div class="modal" style={{ "z-index": 99 }}>
                 <div class="border left moisten" style={{width: "48%", height: "95%" }}>

@@ -1,4 +1,4 @@
-import { Accessor, JSX, Match, Setter, Switch, createEffect, createSignal } from "solid-js"
+import { Accessor, JSX, Match, Setter, Switch, createEffect, createMemo, createSignal } from "solid-js"
 import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
 import { border, borderColor, getRarityColor, itemStyle, masteryColor } from "../utility/styling";
@@ -25,6 +25,7 @@ import { Store } from "solid-js/store";
 import Steal from "./Steal";
 import { usePhaserEvent } from "../utility/hooks";
 import Talents from "../utility/talents";
+import { Item } from "../models/item";
 // import { faithSuccess } from "../utility/combat";
 // import { faithSuccess } from "../utility/combat";
 // import { addSpecial, addStance } from "../utility/abilities";
@@ -52,6 +53,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     const [highlight, setHighlight] = createSignal<Equipment | undefined>(undefined);
     const [lockpicking, setLockpicking] = createSignal<boolean>(false); // setShowPickpocketItems
     const [lockpick, setLockpick] = createSignal({id:"", interacting: false, type: ""});
+    const [canLockpick, setCanLockpick] = createSignal<boolean>(false);
     const [pickpocketItems, setPickpocketItems] = createSignal<any[]>([]);
     const [pickpocketEnemy, setPickpocketEnemy] = createSignal<string>("");
     const [showPickpocket, setShowPickpocket] = createSignal<boolean>(false); // setShowPickpocketItems
@@ -119,10 +121,18 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         };
     });
 
+    const hasNet = createMemo(() => {
+        const net = game().specialInventory.inventory.find((item: Item) => item.name === "Net");
+        return net !== undefined;
+    });
+
     createEffect(() => setPrayer(settings().prayer));
 
     function checkLockpick(e: { id: string; interacting: boolean; type: string; }) {
         setLockpick(e);
+        const pick = game().specialInventory.inventory.find((item: Item) => item.name === "Lockpick");
+        const wrench = game().specialInventory.inventory.find((item: Item) => item.name === "Tension Wrench");
+        setCanLockpick(pick && wrench && pick.quantity > 0);
     };
     function checkPickpocket() {
         if (pickpocketItems().length === 0 || state().computer?.name !== pickpocketEnemy()) {
@@ -306,7 +316,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 </button>
             </Show>
         </Show>
-        <Show when={lockpick().interacting}>
+        <Show when={lockpick().interacting && canLockpick()}>
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => setLockpicking(true)}>
                 <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Lockpick</div>
             </button>
@@ -316,7 +326,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
                 <div style={{ "font-size":"0.75rem" }}>Retrieve Net</div>
             </button>
         </Show>
-        <Show when={state().enemyID && state().newComputerHealth === 0 && !thrownNet()}>
+        <Show when={state().enemyID && state().newComputerHealth === 0 && !thrownNet() && hasNet()}>
             <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "17.5vw" }} onClick={() => EventBus.emit("throw-net")}>
                 <div style={{ "font-size":"0.75rem" }}>Throw Net</div>
             </button>
@@ -366,7 +376,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             </div>
             </Show>
             <Show when={lockpicking()}>
-                <Lockpicking ascean={ascean} lockpick={lockpick} settings={settings} setLockpicking={setLockpicking} instance={instance} />
+                <Lockpicking ascean={ascean} game={game} lockpick={lockpick} settings={settings} setLockpicking={setLockpicking} instance={instance} />
             </Show>
             <Show when={pickpocketItems().length > 0 && showPickpocketItems()}>
                 <div class="modal">

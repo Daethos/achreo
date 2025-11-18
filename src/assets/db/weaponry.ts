@@ -5,7 +5,7 @@ const GRIP = { ONE_HAND: "One Hand", TWO_HAND: "Two Hand" };
 const ATTACK_TYPE = { MAGICAL: "Magic", PHYSICAL: "Physical" };
 const RARITY = { DEFAULT: "Default", COMMON: "Common", UNCOMMON: "Uncommon", RARE: "Rare", EPIC: "Epic", LEGENDARY: "Legendary" };
 const TYPE = { ANCIENT_SHARD: "Ancient Shard", AXE: "Axe", BOW: "Bow", CURVED_SWORD: "Curved Sword", DAGGER: "Dagger", GREATAXE: "Greataxe", GREATBOW: "Greatbow", GREATMACE: "Greatmace", GREATSWORD: "Greatsword", LONG_SWORD: "Long Sword", MACE: "Mace", POLEARM: "Polearm", SHORT_SWORD: "Short Sword", SCYTHE: "Scythe" };
-export let Weapons = [
+export const Weapons = [
     {
         _id: "",
         name: "Moontear",

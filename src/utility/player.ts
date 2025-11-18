@@ -1323,3 +1323,211 @@ export class Party<T> {
 };
 
 export const initParty: Party<Ascean> = new Party("party");
+
+/*
+    Effect Type Example:
+    Agility Potion to increase Agility by 25 for 300 seconds
+    effects: [{
+        "agility": 25,
+        "duration": 300    
+    }]
+
+    Experience Potion to increase Experience by 1000 instantly
+    effects: [{
+        "experience": 1000
+    }]
+
+    Heal Potion to heal 5% of max health every 3 seconds for 30 seconds
+    effects: [{
+        "healPercent": 5,
+        "healInterval": 3,
+        "duration": 30
+    }]
+
+
+*/
+
+/*
+    Special Inventory Item Example:
+
+    Lockpicks
+    {
+        _id: "uuidv4()",
+        name: "Lockpick",
+        description: "A small, slender tool used to unlock contraptions without a key.",
+        type: "Tool",
+        imgUrl: "../assets/images/lockpick.png",
+        quantity: 10,
+        
+        effects: [],
+
+        isConsumable: false,
+        isQuestItem: false,
+        isSellable: true,
+        isUnique: false,
+
+        value: 0.1, // 10 Silver, per item, so quantity 10 would be 1 Gold,
+        weight: 0.01, // 0.01 lbs per item, 1/100th 
+        rarity: "Common",
+        
+        maxStack: 50,
+        systemTrigger: "" // This is a mini-game and handled in-game
+    }
+
+    Tension Wrench
+    {
+        _id: "uuidv4()",
+        name: "Tension Wrench",
+        description: "A small tool used to apply tension to locks while picking them.",
+        type: "Tool",
+        imgUrl: "../assets/images/tension_wrench.png",
+        quantity: 1,
+        
+        effects: [],
+
+        isConsumable: false,
+        isQuestItem: false,
+        isSellable: true,
+        isUnique: true,
+
+        value: 1, // 1 Gold
+        weight: 0.01, // 0.01 lbs, 1/100th 
+        rarity: "Unique",
+
+        // systemTrigger: "" // This is a mini-game and handled in-game
+    }
+
+    Net 
+    {
+        _id: "uuidv4()",
+        name: "Net",
+        description: "A sturdy net used to capture dead bodies for transport.",
+        type: "Tool",
+        imgUrl: "../assets/images/net.png",
+        quantity: 1,
+
+        effects: [],
+
+        isConsumable: false,
+        isQuestItem: false,
+        isSellable: true,
+        isUnique: true,
+
+        value: 1, // 1 Gold
+        weight: 3, // 3 lbs
+        rarity: "Common",
+
+        // systemTrigger: "" // This is physics based and handled in-game
+        
+    }
+
+    Blood Honey 
+    {
+        _id: "uuidv4()",
+        name: "Blood Honey",
+        description: "A sweet honey made from the nectar of rare and fragile blood flowers, it is said. Known for a rich fragrance and crimson hue, this honey is thought to grant a charming allure to those who consume it.",
+        type: "Component",
+        imgUrl: "../assets/images/blood_honey.png",
+        quantity: 1,
+
+        effects: [{
+            trigger: "Buff",
+            statKey: "reputation",
+            value: 25,
+            duration: 600
+        }],
+
+        inConsumable: true,
+        isQuestItem: true,
+        isSellable: false,
+        isUnique: true,
+
+        value: 10, // 10 Gold
+        weight: 0.5, // 0.5 lbs
+        rarity: "Rare",
+
+        systemTrigger: "Ritual"
+    }
+
+    Ritual Component (Unique)
+    {
+        _id: "uuidv4()",
+        name: "Caerenic Shard",
+        description: "A fragment of pure caerenic energy, pulsating with the rhythm of your heartbeat. This shard is said to be a vital component in Ancient rituals long forgotten. Perhaps you can make some use of it?",
+        type: "Component",
+        imgUrl: "../assets/images/caerenic_shard.png",
+        quantity: 1,
+
+        effects: [],
+
+        isConsumable: false,
+        isQuestItem: true,
+        isSellable: false,
+        inUnique: true,
+
+        value: 50, // 50 Gold
+        weight: 0.1, // 0.1 lbs
+        rarity: "Legendary",
+
+        systemTrigger: "Ritual"
+    }
+
+    "Generic Consumable Item"
+    { // Example: Agility Potion
+        _id: "uuidv4()",
+        name: "Alacrity Elixir",
+        description: "A sparkling elixir that invigorates the drinker, enhancing their agility and reflexes for a short duration.",
+        type: "Consumeable",
+        imgUrl: "../assets/images/alacrity_elixir.png",
+        quantity: 1,
+
+        effects: [{
+            "trigger": "Buff",
+            "statKey": "agility",
+            "value": 25,
+            "duration": 300    
+        }],
+
+        isConsumable: true,
+        isQuestItem: false,
+        isSellable: true,
+        isUnique: false,
+
+        value: 1, // 1 Gold,
+        weight: 0.2, // 0.2 lbs,
+        rarity: "Uncommon",
+
+        maxStack: 10,
+        // systemTrigger: "" // Handled in-game, may be a thing that is used in quests and/or rituals, etc.
+    }
+
+    { // Example: Health Potion
+        _id: "uuidv4()",
+        name: "Health Potion",
+        description: "A red potion that restores a portion of the drinker's health over time.",
+        type: "Consumable",
+        imgUrl: "../assets/images/health_potion.png",
+        quantity: 1,
+
+        effects: [{
+            "trigger": "Periodic",
+            "resourceKey": "health",
+            "value": 5,
+            "interval": 3,
+            "duration": 30,
+            "isPercent": true
+        }],
+
+        isConsumable: true,
+        isQuestItem: false,
+        isSellable: true,
+        isUnique: false,
+
+        value: 0.5, // 50 Silver,
+        weight: 0.2, // 0.2 lbs,
+        rarity: "Common",
+
+        maxStack: 10,
+        // systemTrigger: "" // Handled in-game, may be a thing that is used in quests and/or rituals, etc.
+    }
+*/

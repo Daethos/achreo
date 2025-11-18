@@ -9,13 +9,13 @@ import Ascean, { createAscean } from "./models/ascean";
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from "./utility/ascean";
 import { usePhaserEvent } from "./utility/hooks";
 import { EventBus } from "./game/EventBus";
-import { blessAscean, curseAscean, deadEquipment, deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateStatistics, updateTalents } from "./assets/db/db"; 
+import { blessAscean, curseAscean, deadEquipment, deleteAscean, getAscean, getAsceans, getEnemy, getInventory, getParty, getQuests, getReputation, getSettings, getSpecialInventory, getStatistics, getTalents, populate, populateEnemy, scrub, updateInventory, updateParty, updateQuests, updateReputation, updateSettings, updateSpecialInventory, updateStatistics, updateTalents } from "./assets/db/db"; 
 import { TIPS } from "./utility/tips";
 import { Inventory, Reputation, initInventory, initReputation } from "./utility/player";
 import { Puff } from "solid-spinner";
 import type { IRefPhaserGame } from "./game/PhaserGame";
 import Statistics, { initStatistics } from "./utility/statistics";
-import LoadAscean from "./components/LoadAscean";
+// import LoadAscean from "./components/LoadAscean";
 import { Tutorial } from "./game/scenes/Tutorial";
 import Talents, { initTalents } from "./utility/talents";
 import QuestManager, { getQuest, initQuests, Quest } from "./utility/quests";
@@ -23,6 +23,7 @@ import { v4 as uuidv4 } from "uuid";
 import { lightning } from "./utility/lightning";
 import { Button } from "./utility/buttons";
 import { addSpecial } from "./utility/abilities";
+import { initSpecialInventory, SpecialInventory } from "./models/item";
 const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
 const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
@@ -38,9 +39,10 @@ export default function App() {
     const [alert, setAlert] = createSignal<Toast>({ header: "", body: "", delay: 0, key: "", arg: undefined });
     const [ascean, setAscean] = createSignal<Ascean>(undefined as unknown as Ascean);
     const [menu, setMenu] = createSignal<Menu>(initMenu);
-    const [loading, setLoading] = createSignal<boolean>(false);
+    // const [loading, setLoading] = createSignal<boolean>(false);
     const [newAscean, setNewAscean] = createSignal<CharacterSheet>(initCharacterSheet);
     const [inventory, setInventory] = createSignal<Inventory>(initInventory);
+    const [specialInventory, setSpecialInventory] = createSignal<SpecialInventory>(initSpecialInventory);
     const [quests, setQuests] = createSignal<QuestManager>(initQuests);
     const [reputation, setReputation] = createSignal<Reputation>(initReputation);
     const [statistics, setStatistics] = createSignal<Statistics>(initStatistics);
@@ -118,6 +120,7 @@ export default function App() {
         try {
             const asc = await getAscean(id);
             const inv = await getInventory(asc?._id as string);
+            const sInv = await getSpecialInventory(asc?._id as string);
             const pop = await populate(asc);
             const comp = asceanCompiler(pop);
             const full = { ...comp?.ascean }; // , inventory: inv
@@ -126,6 +129,7 @@ export default function App() {
             const quest = await getQuests(id);
             setAscean(full as Ascean);
             setInventory(inv);
+            setSpecialInventory(sInv);
             setStatistics(stats);
             setTalents(tal);
             setQuests(quest);
@@ -141,13 +145,14 @@ export default function App() {
         setShow(true);
         const full = { ...asc }; // , inventory: inv
         setAscean(full);
-        setLoading(true);
+        // setLoading(true);
         await loadAscean(id);
     };
 
     async function loadAscean(id: string): Promise<void> {
         try {
             const inv = await getInventory(id); // This will start lagging a tiny bit when the player"s inventory is hueg
+            const sInv = await getSpecialInventory(id);
             const rep = await getReputation(id);
             const set = await getSettings(id);
             const stat = await getStatistics(id);
@@ -181,6 +186,7 @@ export default function App() {
                 await updateSettings(newSet);
             };
             setInventory(inv);
+            setSpecialInventory(sInv);
             setReputation(rep);
             setSettings(set);
             setStatistics(stat);
@@ -188,7 +194,7 @@ export default function App() {
             if (set.difficulty.tidbits === true) setTips(true);
             setMenu({ ...menu(), choosingCharacter: false, gameRunning: true, playModal: false });
             setStartGame(true);
-            setLoading(false);
+            // setLoading(false);
             phaserRef.game?.registry.set("party", compiledParty);
             phaserRef.game?.registry.set("reputation", reputation());
             phaserRef.game?.registry.set("settings", settings());
@@ -273,6 +279,24 @@ export default function App() {
             await updateInventory(save);
         } catch (err) { 
             console.warn(err, "Error Saving Inventory"); 
+        };
+    };
+
+    async function fetchSpecialInventory() {
+        try {
+            const inv = await getSpecialInventory(ascean()._id);
+            setSpecialInventory(inv);
+        } catch (err) {
+            console.warn(err, "Error Fetching Special Inventory");
+        };
+    };
+
+    async function saveSpecialInventory(save: SpecialInventory) {
+        try {
+            setSpecialInventory(save);
+            await updateSpecialInventory(save);
+        } catch (err) {
+            console.warn(err, "Error Saving Special Inventory");
         };
     };
 
@@ -448,11 +472,13 @@ export default function App() {
         setAscean(asc as Ascean);
         setMenu({ ...menu(), choosingCharacter: false });
         const inv = await getInventory(id);
+        const sInv = await getSpecialInventory(id);
         const rep = await getReputation(id);
         const set = await getSettings(id);
         const stat = await getStatistics(id);
         const tal = await getTalents(id);
         setInventory(inv);
+        setSpecialInventory(sInv);
         setReputation(rep);
         setSettings(set);
         setStatistics(stat);
@@ -503,6 +529,7 @@ export default function App() {
             console.warn(err, "%c <- You have an error in blessing a player", "color: red");
         };
     };
+
     async function rebukePlayer(faith: string): Promise<void> {
         try {
             const entry = {
@@ -522,6 +549,7 @@ export default function App() {
             console.warn(err, "%c <- You have an error in rebuking a player", "color: red");
         };
     };
+
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -565,6 +593,10 @@ export default function App() {
     
     usePhaserEvent("fetch-inventory", fetchInventory);
     usePhaserEvent("update-inventory", saveInventory);
+
+    usePhaserEvent("fetch-special-inventory", fetchSpecialInventory);
+    usePhaserEvent("update-special-inventory", saveSpecialInventory);
+
     usePhaserEvent("update-pause", togglePause);
     
     usePhaserEvent("add-quest", addQuest);
@@ -732,7 +764,7 @@ export default function App() {
             </div>
         )}
         </div>}>
-            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} quests={quests} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
+            <PhaserGame ref={(el: IRefPhaserGame) => phaserRef = el} currentActiveScene={currentScene} menu={menu} setMenu={setMenu} ascean={ascean} inventory={inventory} setInventory={setInventory} specialInventory={specialInventory} setSpecialInventory={setSpecialInventory} quests={quests} reputation={reputation} setReputation={setReputation} settings={settings} setSettings={setSettings} statistics={statistics} scene={scene} talents={talents} />
         </Show>
         <Show when={show()}>
         <Suspense fallback={<Puff color="gold"/>}>

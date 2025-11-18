@@ -26,6 +26,8 @@ import { ChatManager } from "../phaser/ChatManager";
 import { ParticleTextures } from "../matter/ParticleTextures";
 import { fetchTutorial } from "../../utility/enemy";
 import Treasure from "../matter/Treasure";
+import { getSpecificItem, Item } from "../../models/item";
+import { updateItemData } from "../../assets/db/db";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 interface ChunkData {
@@ -578,13 +580,32 @@ export class Tutorial extends Phaser.Scene {
             this.registry.set("enemies", enemy);
             this.createTutorialEnemy();
         });
-        EventBus.on("fetch-treasure-chest", () => {
+        EventBus.on("fetch-treasure-chest", async () => {
             const treasure = new Treasure({
                 scene: this,
                 x: 290,
                 y: 515,
             });
             this.treasures.push(treasure);
+            const game = this.hud.gameState;
+            const specialInventory = JSON.parse(JSON.stringify(game.specialInventory));
+            
+            const index = specialInventory.inventory.findIndex((item: Item) => item.name === "Lockpick");
+            if (index === -1) {
+                let lockpick = await getSpecificItem("Lockpick", this.player.ascean._id);
+                lockpick.quantity = 5;
+                await updateItemData(lockpick);
+                const tensionWrench = await getSpecificItem("Tension Wrench", this.player.ascean._id);
+                specialInventory.inventory.push(lockpick);
+                specialInventory.inventory.push(tensionWrench);
+            } else {
+                const update = specialInventory.inventory[index].quantity < 5;
+                if (update) {
+                    specialInventory.inventory[index].quantity = Math.max(specialInventory.inventory[index].quantity, 5);
+                    await updateItemData(specialInventory.inventory[index]);
+                };
+            };
+            EventBus.emit("set-special-inventory", specialInventory);
         });
     };
 

@@ -160,10 +160,11 @@ export class Particle {
                 
                 for (const [key, rule] of Object.entries(rules)) {
                     if (rule(attacker, target)) { // Special handling if needed (party vs enemy, CvC lookup, etc.)
-                        if (key === "party:enemy" || key === "enemy:enemy") {
-                            const isEnemy = (attacker as Enemy).enemies.find((e: ENEMY) => e.id === target.enemyID);
-                            if (!isEnemy) return;
-                        };
+                        // if (key === "party:enemy" || key === "enemy:enemy") { 
+                        //     // This makes it so if they're not already an enemy, they won't get hit by the projectile, keep it? 
+                        //     const isEnemy = (attacker as Enemy).enemies.find((e: ENEMY) => e.id === target.enemyID);
+                        //     if (!isEnemy) return;
+                        // };
                         
                         const hitResult = hitLocationDetector.detectParticleLocation(sensor, target);
                         // console.log(`${attacker.ascean.name} hit ${target.ascean.name} in the ${hitResult.location}`);

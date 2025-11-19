@@ -174,12 +174,7 @@ export class Tutorial extends Phaser.Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        // this.player.setPosition(965, 328);
         this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
-
-        // if (this.hud.prevScene === "Game") this.player.setPosition(415,697);
-        // const bounds = this.player.getBounds();
-        // console.log({ bounds, height: this.player.height, y: this.player.y });
 
         (this.sys as any).animatedTiles.init(map);
         
@@ -276,7 +271,6 @@ export class Tutorial extends Phaser.Scene {
     createMatterTrigger(obj: any) {
         const type = obj?.properties?.[0]?.value;
         if (!type) return;
-        // console.log({ type });
         const graphics = new Phaser.Physics.Matter.Image(this.matter.world, obj.x, obj.y, "beam");
 
         const trigger = Bodies.rectangle(obj.x + obj.width / 2, obj.y + obj.height / 2, obj.width, obj.height, {
@@ -294,8 +288,6 @@ export class Tutorial extends Phaser.Scene {
             callback: (other: any) => {
                 if (other.gameObjectB?.name !== "player") return;
                 if (other.bodyB.label !== "body") return;
-                // console.log({ label: other.bodyB.label });
-                // console.log("Trigger!", { type });
                 switch(type) {
                     case PROGRESSION.ARENA:
                         if (this.dm.x !== 1125) {
@@ -381,14 +373,10 @@ export class Tutorial extends Phaser.Scene {
             this.treeComposites.push(...layerTrees);
         });
         
-        // console.log(`Built ${this.treeComposites.length} tree composites across all layers`);
-        
-        // console.log("=== FINAL COMPOSITES ===");
-        // this.debugLogTreeComposites();
     };
 
     private debugLogTreeComposites(): void {
-        console.log(`=== Tree Composites (${this.treeComposites.length}) ===`);
+        // console.log(`=== Tree Composites (${this.treeComposites.length}) ===`);
         this.treeComposites.forEach((tree, index) => {
 
             const debugGraphics = this.add.graphics();
@@ -420,9 +408,7 @@ export class Tutorial extends Phaser.Scene {
                 );
             });
         
-            // console.log("Debug graphics drawn - Green: Composite bounds, Red: BottomY, Blue: Individual tiles");
-
-            console.log(`Tree ${index}: [${Math.round(tree.x)},${Math.round(tree.y)}] -> [${Math.round(tree.x + tree.width)},${Math.round(tree.bottomY)}] (${tree.tiles.length} tiles)`);
+            // console.log(`Tree ${index}: [${Math.round(tree.x)},${Math.round(tree.y)}] -> [${Math.round(tree.x + tree.width)},${Math.round(tree.bottomY)}] (${tree.tiles.length} tiles)`);
         });
     };
 
@@ -566,7 +552,6 @@ export class Tutorial extends Phaser.Scene {
         });
         EventBus.on("fetch-arena-combat", () => {
             const amount = Phaser.Math.Between(6, 12);
-            // console.log(`Summoning ${amount} enemies`);
             let enemies = [];
             for (let i = 0; i < amount; ++i) {
                 const enemy = fetchTutorial();
@@ -949,23 +934,15 @@ export class Tutorial extends Phaser.Scene {
                 if (treeBottom > highestBottomY) {
                     highestBottomY = treeBottom;
                 };
-                // console.log(`OVERLAP with Tree ${i}: [${treeLeft},${treeTop}]->[${treeRight},${treeBottom}] bottomY: ${treeBottom}`);
             };
         };
 
         
         if (highestBottomY !== -Infinity && bounds.bottom < highestBottomY) {
             entityDepth = 1;
-            // console.log(`SETTING BEHIND: entityY=${bounds.bottom} < treeBottom=${highestBottomY}`);
         };
 
         entity.setDepth(entityDepth);
-
-        // if (this.frameCount % 60 === 0) {
-        //     console.log({bounds});
-        //     console.log(`Overlapping trees: ${overlappingTrees.length}, Highest bottomY: ${highestBottomY}`);
-        //     console.log(`Final depth: ${entityDepth}`);
-        // };
     };
 
     playerUpdate = (delta: number): void => {
@@ -1002,7 +979,6 @@ export class Tutorial extends Phaser.Scene {
         };
         
         if (prevOffsetX !== this.offsetX || prevOffsetY !== this.offsetY) this.cameras.main.setFollowOffset(this.offsetX, this.offsetY);
-        // console.log({ x: this.player.x, y: this.player.y });
     };
 
     startCombatTimer = (): void => {

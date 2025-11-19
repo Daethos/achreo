@@ -15,6 +15,7 @@ import { svg } from "../utility/settings";
 import QuestManager from "../utility/quests";
 import { Reputation } from "../utility/player";
 import { IRefPhaserGame } from "../game/PhaserGame";
+import { Play } from "../game/main";
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;
@@ -100,8 +101,8 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         EventBus.emit("show-player");
         EventBus.emit("action-button-sound");
         const setShow = !clicked().showPlayer;
-        
-        if (!combat().combatEngaged) EventBus.emit("show-castbar", setShow);
+        const player = (instance?.scene as Play).player;
+        if (!player.isCasting) EventBus.emit("show-castbar", setShow);
         setClicked({ ...clicked(), showPlayer: setShow });
     };
 

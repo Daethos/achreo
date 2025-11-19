@@ -73,7 +73,14 @@ export class ChatBubble {
                 this.typing.stop(true);
             };
         });
-        
+        const spacebar = this.scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        spacebar?.on("down", () => {
+            if (this.typing.isTyping) {
+                this.typing.stop(true);
+            } else if (this.onContinueCallback) {
+                this.continueDialogue();
+            };
+        }, this);
         this.container.add([this.background, this.text, this.pointer, this.continueButton, this.buttonBackground]);
         // this.hide(); // Start hidden
 

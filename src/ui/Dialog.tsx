@@ -1468,7 +1468,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
 
     function fetchOptions() {
         const currentRep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name.split("(Converted)")[0].trim()) as FACTION;
-        // console.log({ currentRep, isEnemy: combat().isEnemy, isHostile: combat().isHostile });
         if (!currentRep) {
             return {};
         };

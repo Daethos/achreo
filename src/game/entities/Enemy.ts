@@ -2364,6 +2364,10 @@ export default class Enemy extends Entity {
 
     instincts = () => {
         if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
+        if (!this.isSpecial) {
+            this.stateMachine.setState(States.CHASE);
+            return;
+        };
         this.scene.time.delayedCall(500, () => {
             if ((this.inCombat === false && this.inComputerCombat === false) || this.health <= 0) return;
             let chance = [1, 2, 3, (!this.isRanged ? 5 : 6)][Math.floor(Math.random() * 4)];

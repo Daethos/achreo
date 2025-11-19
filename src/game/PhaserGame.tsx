@@ -935,6 +935,7 @@ export default function PhaserGame (props: IProps) {
         const newEquipment = item;
         let newAscean = {...props.ascean(), [type]: newEquipment, health: { current: combat().newPlayerHealth, max: combat().playerHealth }};
         let inventory = JSON.parse(JSON.stringify(game().inventory.inventory));
+        // console.log({ inventory, oldEquipment, newEquipment });
         inventory = inventory.filter((inv: any) => inv._id !== newEquipment._id);
         if (!oldEquipment.name.includes("Empty") && !oldEquipment.name.includes("Starter")) {
             inventory.push(oldEquipment);
@@ -978,7 +979,7 @@ export default function PhaserGame (props: IProps) {
         setGrace(stats.attributes.grace as number);
         setGame({ ...game(), inventory: props.inventory(), specialInventory: props.specialInventory(), traits: traits, primary: traits.primary, secondary: traits.secondary, tertiary: traits.tertiary, healthDisplay: props.settings().healthViews });
         
-        console.log({ game: game() });
+        // console.log({ game: game() });
         
         instance.game?.registry.set("ascean", stats.ascean);
         instance.game?.registry.set("combat", combat());

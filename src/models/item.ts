@@ -97,8 +97,6 @@ export class Item {
 
         this.maxStack = item.maxStack;
         this.systemTrigger = item.systemTrigger;
-
-        console.log({ item: this });
     };
 };
 

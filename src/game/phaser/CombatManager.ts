@@ -505,7 +505,8 @@ export class CombatManager {
     magic = (target: Player | Enemy | Party, entity: Player | Enemy | Party): void => {
         if (target.health <= 0) return;
         const ascean = entity.ascean;
-        let damage = Math.round(ascean[ascean.mastery] * 0.5);
+        let damage = Math.round(ascean[ascean.mastery] * (ascean.level / 10)); // Perhaps full but multiplied by ascean.level / 10 ?
+        // let damage = Math.round(ascean[ascean.mastery] * 0.5); // Perhaps full but multiplied by ascean.level / 10 ?
         if (target.name === "player") {
             if (entity.name === "player") {
                 damage *= this.playerCaerenicPro() * this.playerCaerenicNeg();

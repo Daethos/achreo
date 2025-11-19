@@ -364,7 +364,7 @@ export default function Lockpicking({ ascean, game, lockpick, settings, setLockp
                     <div class="center creature-heading wrap">
                         <h1>How to Lockpick</h1>
                         <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling for vibrations of the tumbler setting into place.{" "}
-                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> either clockwise or counter in order to attempt to set the tumblers in place to further move the lockpick into more tumblers.</h2>
+                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> clockwise to set the tumblers in place, allowing you to move the lockpick further into more tumblers.</h2>
                         <p style={font("1em")}><span style={{ color: "red" }}>Warning: </span>You can break the <span class="gold">lockpick</span> from over rotation when feeling around to set in place. You can also break the <span class="gold">lockpick</span> as you rotate the <span style={{ color: "silver" }}>tension wrench</span>, if not set correctly.</p>
                     </div>
                 </div>

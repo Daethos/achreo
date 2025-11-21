@@ -17,7 +17,7 @@ import { HitLocation } from "../phaser/HitDetection";
 import { CacheDirection, CombatContext, MindState, MindStates } from "../phaser/MindState";
 import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
-import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
+import { BONE, CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
 import { specialPositiveMachines, States } from "../phaser/StateMachine";
 import Enemy from "./Enemy";
 import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";
@@ -1487,158 +1487,390 @@ export default class Party extends Entity {
         return this.combatContext;
     };
 
-    getCombatDirection() {
-        try {
-            if (this.cachedDirection && this.cachedDirectionFrame && 
-                (this.scene.frameCount - this.cachedDirectionFrame) < 60) {
+    getCombatDirection = () => {
+        if (!this.currentTarget) return undefined;
+        if (this.cachedDirection && (this.scene.frameCount - this.cachedDirectionFrame) < 60) return this.cachedDirection;
+        const x = this.currentTarget.x - this.x;
+        const y = this.currentTarget.y - this.y;
+        const lengthSq = x * x + y * y;
+        this.cachedDirection = {
+            x,
+            y,
+            lengthSq, // Pre-calculate this once
+            normal: false,
+            ogLengthSq: lengthSq,
+            normalize: () => {
+                const len = Math.sqrt(this.cachedDirection.lengthSq);
+                if (len > 0) {
+                    this.cachedDirection.x = x / len,
+                    this.cachedDirection.y = y / len,
+                    this.cachedDirection.normal = true,
+                    this.cachedDirection.lengthSq = 1 // normalized vector has length 1
+                };
                 return this.cachedDirection;
-            };
-            
-            const dx = ((this.currentTarget as Enemy)?.x - this.x) || 0;
-            const dy = ((this.currentTarget as Enemy)?.y - this.y) || 0;
-            
-            this.cachedDirection = { 
-                x: dx, 
-                y: dy,
-                normalized: false,
-                length: () => Math.sqrt(dx * dx + dy * dy),
-                lengthSq: () => dx * dx + dy * dy,
-                normalize: () => {
-                    const len = Math.sqrt(dx * dx + dy * dy);
-                    if (len > 0) {
-                        this.cachedDirection.x = dx / len;
-                        this.cachedDirection.y = dy / len;
-                    };
-                    this.cachedDirection.normalized = true;
-                    return this.cachedDirection;
-                }
-            };
-            this.cachedDirectionFrame = this.scene.frameCount;
-            
-            return this.cachedDirection;
-        } catch (e) {
-            console.error("Combat direction error:", e);
-            // this.cleanUpCombat();
-            return undefined;
+            }
         };
+        this.cachedDirectionFrame = this.scene.frameCount;  
+        return this.cachedDirection;
     };
+
+    // getCombatDirection() {
+    //     try {
+    //         if (this.cachedDirection && this.cachedDirectionFrame && 
+    //             (this.scene.frameCount - this.cachedDirectionFrame) < 60) {
+    //             return this.cachedDirection;
+    //         };
+            
+    //         const dx = ((this.currentTarget as Enemy)?.x - this.x) || 0;
+    //         const dy = ((this.currentTarget as Enemy)?.y - this.y) || 0;
+            
+    //         this.cachedDirection = { 
+    //             x: dx, 
+    //             y: dy,
+    //             normalized: false,
+    //             length: () => Math.sqrt(dx * dx + dy * dy),
+    //             lengthSq: () => dx * dx + dy * dy,
+    //             normalize: () => {
+    //                 const len = Math.sqrt(dx * dx + dy * dy);
+    //                 if (len > 0) {
+    //                     this.cachedDirection.x = dx / len;
+    //                     this.cachedDirection.y = dy / len;
+    //                 };
+    //                 this.cachedDirection.normalized = true;
+    //                 return this.cachedDirection;
+    //             }
+    //         };
+    //         this.cachedDirectionFrame = this.scene.frameCount;
+            
+    //         return this.cachedDirection;
+    //     } catch (e) {
+    //         console.error("Combat direction error:", e);
+    //         // this.cleanUpCombat();
+    //         return undefined;
+    //     };
+    // };
 
     getNearbyAllies = () => {
         if (!this.currentTarget) return [];
         const allies = this.currentTarget.enemies;
         return allies;
     };
-    
-    evaluateCombatDistance = () => {
-        this.getDirection();
-        const state = this.playerMachine.stateMachine.getCurrentState();
 
-        if (this.health <= 0 && state !== States.DEFEATED) { // this.isDefeated ||
-            this.playerMachine.stateMachine.setState(States.DEFEATED);
-            return;
+    swingCheck = () => {
+        if (this.isSwinging) return;
+        this.isSwinging = true;
+        // if (this.inCombat) console.log("setting delayed call");
+        this.scene.time.delayedCall(this.swingTimer, () => {
+            this.isSwinging = false;
+            this.evaluateCombat();
+            // if (this.inCombat) console.log("SWING!", { action: this.currentAction });
+        }, undefined, this);
+    };
+
+    /* 
+        One Hand: 2500
+        Two Hand: 3000
+        Per Level Reduction: 250 / 300
+        Swing Speed Max: 500 / 600
+    */
+
+    swingTime = (): number => Math.max(0.2, 1 - (this.ascean.level - 1) * 0.1) * this.swingTimer;
+
+    computerEnemyAttacker = () => {
+        const enemy = this.scene.enemies.find((e: Enemy) => e.currentTarget?.enemyID === this.enemyID);
+        return enemy;
+    };
+
+    shouldExitCombat = (): boolean => {
+        if (!this.currentTarget || this.health <= 0) {
+            this.inComputerCombat = false;
+            return true;
         };
 
-        if (!this.inComputerCombat) {
-            if (state !== States.DEFEATED && state !== States.IDLE && state !== States.FOLLOW) {
-                this.playerMachine.stateMachine.setState(States.FOLLOW);
+        if (this.inComputerCombat && this.currentTarget?.health <= 0) {
+            this.clearComputerCombatWin(this.currentTarget.enemyID);
+            this.inComputerCombat = false;
+            return true;
+        };
+
+        return false;
+    };
+
+    cleanUpCombat() {
+        if (this.inComputerCombat && this.currentTarget?.active && this.health > 0) {
+            const enemy = this.computerEnemyAttacker();
+            if (enemy?.active) {
+                this.checkComputerEnemyCombatEnter(enemy);
+                return;
             };
+        };
+        if (this.inComputerCombat) { // Making a pass through
+            this.clearComputerCombatWin("NULL");
+            return; // Trying this out?
+        };
+        if (!this.isValidTarget(this.currentTarget) && this.health > 0 && !this.playerMachine.stateMachine.isCurrentState(States.FOLLOW)) {
+            this.playerMachine.stateMachine.setState(States.FOLLOW);
+        };
+        this.inCombat = false;
+        this.inComputerCombat = false;
+        this.currentAction = "";
+        this.enemies = [];
+    };
+
+    isValidTarget(target: Enemy | undefined) {
+        return target && target.active && target.body?.position && target.health > 0 && !target.isDeleting && !target.isDefeated; // && this.scene?.children.exists(target);
+    };
+
+    canEvaluateCombat = () => {
+        return !this.isCasting && !this.isSuffering() && !this.isHurt && !this.isContemplating && !this.isDeleting && !this.isDefeated; // && this.currentTarget?.body?.position && this.scene?.children.exists(this.currentTarget)
+    };
+
+    evaluateCombatDistance = () => {
+        if (!this.canEvaluateCombat()) return;
+        if (!this.isValidTarget(this.currentTarget)) {
+            this.cleanUpCombat();
             return;
         };
-        
-        if (this.currentTarget) this.highlightTarget(this.currentTarget);
-                
-        if (this.isCasting || this.isPraying || this.isContemplating) {
-            this.isMoving = false;
-            this.setVelocity(0);
-            this.handleIdleAnimations();
-            return;
+
+        const ctx = this.getCombatContext();
+        const mind = this.mindState;
+
+        if (this.isRanged || (mind.keepDistance && this.ascean.level > 3)) {
+            this.handleRangedCombat(ctx, mind);
+        } else {
+            this.handleMeleeCombat(ctx, mind);
         };
-
-        if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
-
-        // if (!this.clearAttacks()) {
-        //     console.log("Action State Detected", { state: this.playerMachine.stateMachine.getCurrentState() });
-        //     return;
-        // };
         
-        const direction = this.getCombatDirection();
-        if (!direction) return;
+        this.handleAbilitiesAndCustomLogic(ctx, mind);
+        this.swingCheck();
+    };
 
-        const distanceY = Math.abs(direction.y);
-        const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
-        const climbingModifier = this.isClimbing ? 0.65 : 1;
+    handleAbilitiesAndCustomLogic = (ctx: CombatContext, mind: MindState) => {
+        if (this.ascean.level < 4) return;
+        if (this.shouldCallForHelp(ctx, mind)) this.useHelpCall();
+        if (this.shouldSummon(mind)) this.castSummon();
+        if (mind.customEvaluate) mind.customEvaluate(this, ctx);
+        if (mind.dynamicSwap) mind.dynamicSwap(this, ctx);
+    };
+
+    handleMeleeCombat = (ctx: CombatContext, mind: MindState) => {
+        const attackThresholdSq = DISTANCE.ATTACK ** 2;
+        const distanceSq = ctx.direction?.ogLengthSq || 0;
+        const chaseThresholdSq = mind.chaseThresholdSq;
         
-        const distanceSq = direction.lengthSq();
-        const chaseThresholdSq = (DISTANCE.CHASE * multiplier) ** 2;
-        
-        if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
-            // this.evasionTimer = 1000;
-            this.playerMachine.stateMachine.setState(States.EVADE);
-            return;
-        } else if (distanceSq >= chaseThresholdSq) { // Switch to CHASE the Enemy
+        if (distanceSq >= chaseThresholdSq) {
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
-        } else if (this.isRanged) { // RANGED ENEMY LOGIC
-            this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-            
-            if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
-                direction.normalize();
-                this.setVelocityY(direction.y * this.speed * climbingModifier + 0.5);
-                this.handleMovementAnimations();
+        };
+        
+        if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT)) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+        
+        if (distanceSq > attackThresholdSq) {
+            this.moveCloser(ctx);
+            this.isPosted = false;
+        } else {
+            this.setVelocity(0);
+            this.isPosted = true;
+            if (!this.currentAction) this.anims.play(FRAMES.IDLE, true);
+        };
+    };
+
+    handleRangedCombat = (ctx: CombatContext, mind: MindState) => {
+        const distance = ctx.direction?.ogLengthSq || 0;
+        const threshold = mind.minDistanceSq * ctx.multiplier;
+        const thresholdMin = mind.minDistanceSq;
+        const chaseThreshold = mind.chaseThresholdSq * ctx.multiplier;
+        
+        if (distance >= chaseThreshold) {
+            // if (this.inCombat) console.log({ distance, chaseThreshold });
+            this.playerMachine.stateMachine.setState(States.CHASE);
+            return;
+        }; 
+        
+        if (!this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_COMBAT) && this.isRanged) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+        
+        if (distance > threshold) { // Move towards target
+            this.moveCloser(ctx);
+        } else if (distance < thresholdMin && !ctx.isTargetRanged) { // Keep distance from melee target
+            this.moveAway(ctx);
+            if (Phaser.Math.Between(1, 250) === 1 && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) this.playerMachine.stateMachine.setState(States.EVADE);
+        } else if (ctx.lineOfSight && !this.playerMachine.stateMachine.isCurrentState(States.EVADE)) {
+            this.playerMachine.stateMachine.setState(States.EVADE);
+        } else if (ctx.distanceY < 15) { // Sweet spot for ranged enemies
+            this.setVelocity(0);
+            this.anims.play(FRAMES.IDLE, true);
+        } else { // Adjust Y Position
+            if (!ctx.direction.normal) ctx.direction.normalize();
+            this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier);
+            this.partyAnimation();
+        };
+    };
+
+    moveAway = (ctx: CombatContext) => {
+        this.partyAnimation();
+        if (!ctx.direction.normal) ctx.direction.normalize();
+        this.setVelocityX(ctx.direction.x * -this.speed * ctx.climbingModifier);
+        this.setVelocityY(ctx.direction.y * -this.speed * ctx.climbingModifier);    
+    };
+
+    moveCloser = (ctx: CombatContext) => {
+        this.partyAnimation();
+        if (!ctx.direction.normal) ctx.direction.normalize();
+        this.setVelocityX(ctx.direction.x * this.speed * ctx.climbingModifier);
+        this.setVelocityY(ctx.direction.y * this.speed * ctx.climbingModifier);
+    };
+
+    partyAnimation = () => {
+        if (this.isClimbing) {
+            if (this.velMoving()) {
+                this.anims.play(FRAMES.CLIMB, true);
+            } else {
+                this.anims.play(FRAMES.CLIMB, true);
+                this.anims.pause();
             };
-            
-            const thresholdSq = (DISTANCE.THRESHOLD * multiplier) ** 2;
-            const thresholdMinSq = DISTANCE.THRESHOLD ** 2;
-            
-            if (distanceSq > thresholdSq) { // Move towards target
-                direction.normalize();
-                this.setVelocityX(direction.x * this.speed * climbingModifier);
-                this.setVelocityY(direction.y * this.speed * climbingModifier);
-                this.handleMovementAnimations();
-            } else if (distanceSq < thresholdMinSq && !this.currentTarget.isRanged) { // Keep distance from melee target
-                if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
-                    // this.evasionTimer = 1000;
-                    this.playerMachine.stateMachine.setState(States.EVADE);
-                    return;
-                };
-                
-                direction.normalize();
-                this.setVelocityX(direction.x * -this.speed * climbingModifier);
-                this.setVelocityY(direction.y * -this.speed * climbingModifier);
-                this.handleMovementAnimations();
-            } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
-                // this.evasionTimer = 1000;
-                this.playerMachine.stateMachine.setState(States.EVADE);
-                return;
-            } else if (distanceY < 15) { // Sweet spot for ranged enemies
-                this.setVelocity(0);
-                if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
-            } else { // Adjust Y position
-                direction.normalize();
-                this.setVelocityY(direction.y * this.speed * climbingModifier);
-                this.handleMovementAnimations();
+        } else if (this.inWater) {
+            if (this.velocity?.y as number > 0) {
+                this.anims.play(FRAMES.SWIM_DOWN, true);
+            } else {
+                this.anims.play(FRAMES.SWIM_UP, true);
             };
-            
-        } else { // MELEE ENEMY LOGIC
-            if (state !== States.COMPUTER_COMBAT) {
-                this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-                return;
-            };
-            const attackThresholdSq = DISTANCE.ATTACK ** 2;
-            
-            if (distanceSq > attackThresholdSq) {
-                direction.normalize();
-                this.setVelocityX(direction.x * this.speed * climbingModifier);
-                this.setVelocityY(direction.y * this.speed * climbingModifier);
-                this.isPosted = false;
-                this.handleMovementAnimations();
-            } else { // Inside melee range
-                this.setVelocity(0);
-                this.isPosted = true;
-                if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
+        } else {
+            if (this.velMoving()) {
+                this.anims.play(FRAMES.RUNNING, true);
+            } else {
+                this.anims.play(FRAMES.IDLE, true);
             };
         };
     };
+
+    useHelpCall = () => {
+        ++this.summons;
+        this.scene.showCombatText(this, `${this.ascean.name} is calling for help!`, DURATION.TEXT, BONE, false, true);
+        this.playerMachine.stateMachine.setState(States.HELP);
+    };
+    shouldCallForHelp = (ctx: CombatContext, mind: MindState) => {
+        return this.summons <= 3 && ctx.allies.length > 1 && mind.callHelp && (this.health / this.ascean.health.max < 0.35) && !this.playerMachine.stateMachine.isCurrentState(States.HELP) && this.scene.scene.key === "Game";
+    };
+
+    castSummon = () => {
+        ++this.summons;
+        this.scene.showCombatText(this, `${this.ascean.name} is summoning help!`, DURATION.TEXT, BONE, false, true);
+        this.playerMachine.stateMachine.setState(States.SUMMON);
+    };
+    shouldSummon = (mind: MindState) => {
+        return mind.summon && this.summons === 0 && (this.health / this.ascean.health.max < 0.5) && !this.playerMachine.stateMachine.isCurrentState(States.SUMMON) && this.scene.scene.key === "Game";
+    };
+    
+    // evaluateCombatDistance = () => {
+    //     this.getDirection();
+    //     const state = this.playerMachine.stateMachine.getCurrentState();
+
+    //     if (this.health <= 0 && state !== States.DEFEATED) { // this.isDefeated ||
+    //         this.playerMachine.stateMachine.setState(States.DEFEATED);
+    //         return;
+    //     };
+
+    //     if (!this.inComputerCombat) {
+    //         if (state !== States.DEFEATED && state !== States.IDLE && state !== States.FOLLOW) {
+    //             this.playerMachine.stateMachine.setState(States.FOLLOW);
+    //         };
+    //         return;
+    //     };
+        
+    //     if (this.currentTarget) this.highlightTarget(this.currentTarget);
+                
+    //     if (this.isCasting || this.isPraying || this.isContemplating) {
+    //         this.isMoving = false;
+    //         this.setVelocity(0);
+    //         this.handleIdleAnimations();
+    //         return;
+    //     };
+
+    //     if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
+
+    //     // if (!this.clearAttacks()) {
+    //     //     console.log("Action State Detected", { state: this.playerMachine.stateMachine.getCurrentState() });
+    //     //     return;
+    //     // };
+        
+    //     const direction = this.getCombatDirection();
+    //     if (!direction) return;
+
+    //     const distanceY = Math.abs(direction.y);
+    //     const multiplier = this.rangedDistanceMultiplier(PLAYER.DISTANCE.RANGED_MULTIPLIER);
+    //     const climbingModifier = this.isClimbing ? 0.65 : 1;
+        
+    //     const distanceSq = direction.lengthSq();
+    //     const chaseThresholdSq = (DISTANCE.CHASE * multiplier) ** 2;
+        
+    //     if (this.isUnderRangedAttack()) { //  && this.evasionTimer === 0 // Switch to EVADE the Enemy
+    //         // this.evasionTimer = 1000;
+    //         this.playerMachine.stateMachine.setState(States.EVADE);
+    //         return;
+    //     } else if (distanceSq >= chaseThresholdSq) { // Switch to CHASE the Enemy
+    //         this.playerMachine.stateMachine.setState(States.CHASE);
+    //         return;
+    //     } else if (this.isRanged) { // RANGED ENEMY LOGIC
+    //         this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+            
+    //         if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
+    //             direction.normalize();
+    //             this.setVelocityY(direction.y * this.speed * climbingModifier + 0.5);
+    //             this.handleMovementAnimations();
+    //         };
+            
+    //         const thresholdSq = (DISTANCE.THRESHOLD * multiplier) ** 2;
+    //         const thresholdMinSq = DISTANCE.THRESHOLD ** 2;
+            
+    //         if (distanceSq > thresholdSq) { // Move towards target
+    //             direction.normalize();
+    //             this.setVelocityX(direction.x * this.speed * climbingModifier);
+    //             this.setVelocityY(direction.y * this.speed * climbingModifier);
+    //             this.handleMovementAnimations();
+    //         } else if (distanceSq < thresholdMinSq && !this.currentTarget.isRanged) { // Keep distance from melee target
+    //             if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
+    //                 // this.evasionTimer = 1000;
+    //                 this.playerMachine.stateMachine.setState(States.EVADE);
+    //                 return;
+    //             };
+                
+    //             direction.normalize();
+    //             this.setVelocityX(direction.x * -this.speed * climbingModifier);
+    //             this.setVelocityY(direction.y * -this.speed * climbingModifier);
+    //             this.handleMovementAnimations();
+    //         } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
+    //             // this.evasionTimer = 1000;
+    //             this.playerMachine.stateMachine.setState(States.EVADE);
+    //             return;
+    //         } else if (distanceY < 15) { // Sweet spot for ranged enemies
+    //             this.setVelocity(0);
+    //             if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
+    //         } else { // Adjust Y position
+    //             direction.normalize();
+    //             this.setVelocityY(direction.y * this.speed * climbingModifier);
+    //             this.handleMovementAnimations();
+    //         };
+            
+    //     } else { // MELEE ENEMY LOGIC
+    //         if (state !== States.COMPUTER_COMBAT) {
+    //             this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+    //             return;
+    //         };
+    //         const attackThresholdSq = DISTANCE.ATTACK ** 2;
+            
+    //         if (distanceSq > attackThresholdSq) {
+    //             direction.normalize();
+    //             this.setVelocityX(direction.x * this.speed * climbingModifier);
+    //             this.setVelocityY(direction.y * this.speed * climbingModifier);
+    //             this.isPosted = false;
+    //             this.handleMovementAnimations();
+    //         } else { // Inside melee range
+    //             this.setVelocity(0);
+    //             this.isPosted = true;
+    //             if (this.clearAttacks()) this.anims.play(FRAMES.IDLE, true);
+    //         };
+    //     };
+    // };
     
     evaluateCombat = () => {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
@@ -1731,6 +1963,7 @@ export default class Party extends Entity {
 
     handleComputerConcerns = () => {
         this.syncPositions();
+        this.getDirection();
         if (this.scene.combat === true && (!this.currentTarget || !this.inComputerCombat)) this.findEnemy();
         this.particleCheck();
     };
@@ -1806,7 +2039,6 @@ export default class Party extends Entity {
 
     update(dt: number) {
         this.handleComputerConcerns();
-        this.evaluateCombatDistance();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

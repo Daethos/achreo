@@ -4,7 +4,7 @@ import { FRAMES, MOVEMENT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
-import { HELP, RANGE } from "../../utility/enemy";
+import { HELP } from "../../utility/enemy";
 import { Play } from "../main";
 import { BALANCED, DEFENSIVE, OFFENSIVE, PARTY_BALANCED_INSTINCTS, PARTY_DEFENSIVE_INSTINCTS, PARTY_INSTINCTS, PARTY_OFFENSIVE_INSTINCTS, PARTY_OFFSET } from "../../utility/party";
 import { PLAYER } from "../../utility/player";
@@ -39,9 +39,10 @@ export default class PlayerMachine {
         this.player = player;
         this.stateMachine = new StateMachine(this, "party");
         this.stateMachine
+            .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
             .addState(States.MOVING, { onEnter: this.onMovingEnter, onUpdate: this.onMovingUpdate, onExit: this.onMovingExit })
-            .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter }) // , onUpdate: this.onComputerCombatUpdate
+            .addState(States.COMPUTER_COMBAT, { onEnter: this.onComputerCombatEnter, onUpdate: this.onComputerCombatUpdate }) // , onUpdate: this.onComputerCombatUpdate
             .addState(States.LULL, { onEnter: this.onLullEnter }) // onUpdate: this.onLullUpdate
             .addState(States.HURT, { onEnter: this.onHurtEnter, onUpdate: this.onHurtUpdate, onExit: this.onHurtExit })
             .addState(States.CHASE, { onEnter: this.onChaseEnter, onUpdate: this.onChaseUpdate, onExit: this.onChaseExit })
@@ -175,6 +176,7 @@ export default class PlayerMachine {
 
     onChaseEnter = () => {
         if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
+        this.player.partyAnimation();
         // this.scene.navMesh.enableDebug();
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
@@ -225,48 +227,79 @@ export default class PlayerMachine {
         });
     }; 
     onChaseUpdate = (_dt: number) => {
-        if (!this.player.currentTarget || !this.player.currentTarget.body || !this.player.currentTarget.position) return;
-        const rangeMultiplier = this.player.rangedDistanceMultiplier(3);
-        const direction = this.player.currentTarget.position.subtract(this.player.position);
-        const distance = direction.length();
-        if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || 
-            Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || 
-            !this.player.inComputerCombat || distance > RANGE.LEASH * rangeMultiplier) {
-            this.stateMachine.setState(States.FOLLOW);
-            return;
-        };
-        if (distance >= 150 * rangeMultiplier) { // was 75 || 100
-            if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
-            } else {
-                if (this.player.isPathing) this.player.isPathing = false;
-                direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
-            };
-            this.player.handleMovementAnimations();
-        } else if (distance >= 60 * rangeMultiplier) { // was 75 || 100
-            if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
-            } else {
-                if (this.player.isPathing) this.player.isPathing = false;
-                direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
-            };
-            if (!this.player.chasing) {
-                this.player.chasing = true;
-                this.scene.time.delayedCall(1000, () => {
-                    this.player.chasing = false;
-                    if (Math.random() > 0.5 && !this.player.isRolling && !this.player.isDodging) {
-                        this.player.isRolling = true;
-                    } else if (!this.player.isDodging && !this.player.isRolling) {
-                        this.player.isDodging = true;
-                    };
-                }, undefined, this);
-            };
-            this.player.handleMovementAnimations();
-        } else {
+        const target = this.player.currentTarget;
+        if (!target || !target.body || !target.position) return;
+        
+        const ctx = this.player.getCombatContext();
+        const mind = this.player.mindState;
+        const distance = ctx.direction.ogLengthSq;
+        const threshold = mind.minDistanceSq * ctx.multiplier;
+        // const rangeMultiplier = this.player.rangedDistanceMultiplier(3);
+
+        // const direction = target.position.subtract(this.player.position);
+        // const distance = direction.length();
+
+        // if (Math.abs(this.player.originPoint.x - this.player.position.x) > RANGE.LEASH * rangeMultiplier || 
+        //     Math.abs(this.player.originPoint.y - this.player.position.y) > RANGE.LEASH * rangeMultiplier || 
+        //     !this.player.inComputerCombat || distance > RANGE.LEASH * rangeMultiplier) {
+        //     this.stateMachine.setState(States.FOLLOW);
+        //     return;
+        // };
+        // console.log({ ctx, distance, threshold });
+        if (distance < threshold) {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
+            return;        
         };
+
+        let moveDirection = this.pathingVector();
+
+        // if (distance >= 150 * rangeMultiplier) { // was 75 || 100
+        //     if (this.player.path && this.player.path.length > 1) {
+        //         this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
+        //     } else {
+        //         if (this.player.isPathing) this.player.isPathing = false;
+        //         direction.normalize();
+        //         this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
+        //     };
+        //     this.player.handleMovementAnimations();
+        // } else if (distance >= 60 * rangeMultiplier) { // was 75 || 100
+        //     if (this.player.path && this.player.path.length > 1) {
+        //         this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
+        //     } else {
+        //         if (this.player.isPathing) this.player.isPathing = false;
+        //         direction.normalize();
+        //         this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
+        //     };
+        //     if (!this.player.chasing) {
+        //         this.player.chasing = true;
+        //         this.scene.time.delayedCall(1000, () => {
+        //             this.player.chasing = false;
+        //             if (Math.random() > 0.5 && !this.player.isRolling && !this.player.isDodging) {
+        //                 this.player.isRolling = true;
+        //             } else if (!this.player.isDodging && !this.player.isRolling) {
+        //                 this.player.isDodging = true;
+        //             };
+        //         }, undefined, this);
+        //     };
+        //     // this.player.handleMovementAnimations();
+        // } else {
+        //     this.stateMachine.setState(States.COMPUTER_COMBAT);
+        // };
+
+        if (!moveDirection) {
+            if (ctx.direction.normal) {
+                moveDirection = new Phaser.Math.Vector2(ctx.direction.x, ctx.direction.y);
+            } else {
+                const normal = ctx.direction.normalize();
+                moveDirection = new Phaser.Math.Vector2(normal.x, normal.y);
+            };
+        };
+
+        this.player.setVelocity(
+            moveDirection.x * (this.player.speed + 0.5) * ctx.climbingModifier,
+            moveDirection.y * (this.player.speed + 0.5) * ctx.climbingModifier
+        );
+        this.player.partyAnimation();
     };
     onChaseExit = () => {
         // this.scene.navMesh.debugDrawClear();
@@ -274,7 +307,7 @@ export default class PlayerMachine {
         this.player.path = [];
         this.player.isPathing = false;
         this.player.setVelocity(0);
-        // this.player.personalAnimation();
+        this.player.partyAnimation();
         if (this.player.chaseTimer) {
             this.player.chaseTimer?.remove(false);
             this.player.chaseTimer.destroy();
@@ -282,7 +315,32 @@ export default class PlayerMachine {
         };
     };
 
+        pathingVector = () => {
+        if (!this.player.path || this.player.path.length <= 1) {
+            if (this.player.isPathing) this.player.isPathing = false;
+            return undefined;
+        };
+
+        if (!this.player.isPathing) this.player.isPathing = true;
+        let nextPoint = this.player.path[1];
+        const distanceToNextPoint = Phaser.Math.Distance.Between(this.player.position.x, this.player.position.y, nextPoint.x, nextPoint.y);
+
+        if (distanceToNextPoint < 10) {
+            this.player.path.shift();
+            if (this.player.path.length <= 1) {
+                this.player.isPathing = false;
+                return undefined;
+            };
+            nextPoint = this.player.path[1];
+        };
+        
+        return new Phaser.Math.Vector2(nextPoint.x, nextPoint.y)
+            .subtract(this.player.position)
+            .normalize();
+    };
+
     onLeashEnter = () => {
+        this.player.partyAnimation();
         this.player.inComputerCombat = false;
         this.player.healthbar.setVisible(false);
         this.scene.showCombatText(this.player, "Leashing", 1500, EFFECT, false, true);
@@ -343,10 +401,11 @@ export default class PlayerMachine {
                 direction.normalize();
                 this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
             };
-            this.player.handleMovementAnimations();
         } else {
             this.stateMachine.setState(States.FOLLOW);
         };
+        this.player.partyAnimation();
+        // this.player.handleMovementAnimations();
     };
     onLeashExit = () => {
         this.player.path = [];
@@ -407,12 +466,12 @@ export default class PlayerMachine {
     };
     onEvasionUpdate = (dt: number) => {
         this.player.evasionTime -= dt;
-        if ((!this.player.isDodging && !this.player.isRolling) || this.player.evasionTime <= 0) {
-            this.player.evasionTime = 0;
-            this.player.isDodging = false;
-            this.player.isRolling = false;
-            this.stateMachine.setState(States.COMPUTER_COMBAT);
-        };
+        // if ((!this.player.isDodging && !this.player.isRolling) || this.player.evasionTime <= 0) {
+        //     this.player.evasionTime = 0;
+        //     this.player.isDodging = false;
+        //     this.player.isRolling = false;
+        //     this.stateMachine.setState(States.COMPUTER_COMBAT);
+        // };
         if (this.player.evadeRight) {
             this.player.setVelocityX(((this.player.speed * this.player.handleTerrain()) - 0.25));
         } else {
@@ -423,6 +482,7 @@ export default class PlayerMachine {
         } else {
             this.player.setVelocityY(-((this.player.speed * this.player.handleTerrain()) - 0.25));
         };
+        this.player.combatChecker(this.player.isDodging || this.player.isRolling);
     };
     onEvasionExit = () => {}; // this.player.evaluateCombatDistance()
 
@@ -527,6 +587,7 @@ export default class PlayerMachine {
         this.player.isContemplating = true;
         this.player.isMoving = false;
         this.player.setVelocity(0);
+        // this.player.contemplationTime = 500;
         this.player.contemplationTime = Phaser.Math.Between(250, 750);
     };
     onContemplateUpdate = (dt: number) => {
@@ -535,7 +596,6 @@ export default class PlayerMachine {
             this.player.isContemplating = false;
             this.stateMachine.setState(States.CLEAN);
         };
-        // if (!this.player.isContemplating) this.stateMachine.setState(States.CLEAN);
     };
     onContemplateExit = () => {
         this.player.isContemplating = false;
@@ -606,7 +666,7 @@ export default class PlayerMachine {
         };
     };
     onHelpExit = () => {
-        // this.player.enemyAnimation();
+        this.player.partyAnimation();
         this.player.spriteWeapon.setVisible(true);
         if (this.player.isStalwart) this.player.spriteShield.setVisible(true);
         if (this.player.fearTimer) {
@@ -624,11 +684,11 @@ export default class PlayerMachine {
         this.player.isRolling = false;
         this.player.currentAction = ""; 
         if (!this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(true);
-        // this.player.enemyAnimation();
+        this.player.partyAnimation();
     };
     onPushbackUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onPushbackExit = () => {
-        // this.player.enemyAnimation();
+        this.player.partyAnimation();
         if (this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(false);
         if (this.player.currentTarget) {
             // this.player.scene.showCombatText(this.player, "Pushing Back", DURATION.TEXT, DAMAGE, false, true);
@@ -640,19 +700,17 @@ export default class PlayerMachine {
     onSummonEnter = () => { 
         this.scene.showCombatText(this.player, "Summoning Ally", DURATION.TEXT, DAMAGE, false, true);
         this.player.isPraying = true;
-        // this.player.spriteShield.setVisible(false);
         this.player.isAttacking = false;
         this.player.isParrying = false;
         this.player.isPosturing = false;
         this.player.isRolling = false;
         this.player.currentAction = ""; 
         if (!this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(true);
-        // this.player.enemyAnimation();
+        this.player.partyAnimation();
     };
     onSummonUpdate = (_dt: number) => this.player.combatChecker(this.player.isPraying);
     onSummonExit = () => {
-        // this.player.enemyAnimation();
-        // EventBus.emit("summon-help", this);
+        this.player.partyAnimation();
         this.scene.combatManager.summon(this.player);
         if (this.player.isGlowing && !this.player.isCaerenic) this.player.checkCaerenic(false);
     };
@@ -792,7 +850,8 @@ export default class PlayerMachine {
     onIdleEnter = () => {
         this.player.setVelocity(0);
         this.player.currentRound = 0;
-        if (this.player.isComputer && this.player.inCombat && !this.player.computerAction) {
+        this.player.partyAnimation();
+        if (this.player.inComputerCombat && !this.player.computerAction) {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
         };
     };
@@ -813,7 +872,7 @@ export default class PlayerMachine {
 
     onMovingEnter = () => {
         this.player.isMoving = true;
-        if (this.player.isComputer && this.player.inCombat && !this.player.computerAction) {
+        if (this.player.inComputerCombat && !this.player.computerAction) {
             this.stateMachine.setState(States.COMPUTER_COMBAT);
             // return;
         };
@@ -840,31 +899,13 @@ export default class PlayerMachine {
         }, undefined, this);
     };
     
-    onComputerCombatEnter = () => {  
-        if (this.player.inComputerCombat === false || this.player.health <= 0) {
-            this.player.inComputerCombat = false;
-            this.stateMachine.setState(States.IDLE);
-            return;
-        };
-
-        if (this.player.isSuffering()) return;
-        
-        if (this.player.isCasting || this.player.isPraying || this.player.isContemplating || this.player.computerAction) {
-            this.player.setVelocity(0);
-            this.player.isMoving = false;
-            return;
-        };
-        if (this.player.moving()) {
-            this.player.handleMovementAnimations();
-        } else {
-            this.player.handleIdleAnimations();
-        };
-        this.player.computerAction = true; // Phaser.Math.Between(750, 1250)
-        this.scene.time.delayedCall(this.player.swingTimer, () => {
-            this.player.computerAction = false;
-            this.player.evaluateCombat();
-        }, undefined, this);
+    onComputerCombatEnter = () => {
+        if (this.player.shouldExitCombat()) return;
+        this.player.anims.stop();
+        this.player.partyAnimation();
+        this.player.swingCheck();
     };
+    onComputerCombatUpdate = (_dt: number) => this.player.evaluateCombatDistance();
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
@@ -872,13 +913,12 @@ export default class PlayerMachine {
         this.player.attack();
     };
     onComputerAttackUpdate = (_dt: number) => {
-        // if (!this.player.isAttacking) this.player.evaluateCombatDistance(); 
         this.player.combatChecker(this.player.isAttacking);
     };
     onComputerAttackExit = () => {
         this.player.currentAction = "";
         this.player.computerAction = false;
-        // if (!this.player.isRanged) this.player.anims.play("player_idle", true);
+        this.player.computerCombatSheet.computerAction = "";
     };
 
     onComputerParryEnter = () => {
@@ -895,46 +935,41 @@ export default class PlayerMachine {
         };
     };
     onComputerParryUpdate = (_dt: number) => {
-        // if (!this.player.isParrying) this.player.evaluateCombatDistance();
         this.player.combatChecker(this.player.isParrying);
     };
     onComputerParryExit = () => {
         this.player.isParrying = false;
         this.player.currentAction = "";
         this.player.computerAction = false;    
-        // if (!this.player.isRanged) this.player.anims.play("player_idle", true);
+        this.player.computerCombatSheet.computerAction = "";
     };
 
     onComputerPostureEnter = () => {
-        // this.player.currentAction = "";
         this.player.isPosturing = true;
         this.player.posture();
         this.player.setStatic(true);
     };
     onComputerPostureUpdate = (_dt: number) => {
-        // if (!this.player.isPosturing) this.player.evaluateCombatDistance();
         this.player.combatChecker(this.player.isPosturing);
     };
     onComputerPostureExit = () => {
         this.player.currentAction = "";
         this.player.computerAction = false;
-        // if (!this.player.isRanged) this.player.anims.play("player_idle", true);
         this.player.setStatic(false);
+        this.player.computerCombatSheet.computerAction = "";
     };
 
     onComputerThrustEnter = () => {
         this.player.isThrusting = true;
         this.player.thrustAttack();
-        // this.player.currentAction = "";
     };
     onComputerThrustUpdate = (_dt: number) => {
-        // if (!this.player.isThrusting) this.player.evaluateCombatDistance();
         this.player.combatChecker(this.player.isThrusting);
     };
     onComputerThrustExit = () => {
         this.player.computerAction = false;
         this.player.currentAction = "";
-        // if (!this.player.isRanged) this.player.anims.play("player_idle", true);
+        this.player.computerCombatSheet.computerAction = "";
     };
 
     onDodgeEnter = () => {
@@ -1028,6 +1063,7 @@ export default class PlayerMachine {
         this.player.currentAction = "";
         this.player.spriteWeapon.setVisible(true);
         this.player.rollCooldown = 0; 
+        this.player.computerCombatSheet.computerAction = "";
         this.player.computerAction = false;
         this.player.isRolling = false;
         const body = (this.player.body as any).parts[3];
@@ -1529,7 +1565,7 @@ export default class PlayerMachine {
         this.player.enemySound("absorb", true);
     };
     heal = (pow: number) => {
-        const heal = this.player.computerCombatSheet.computerHealth * pow;
+        const heal = Math.round(this.player.computerCombatSheet.computerHealth * pow);
         this.player.health = Math.min(this.player.health + heal, this.player.computerCombatSheet.computerHealth);
         this.player.updateHealthBar(this.player.health);
         this.player.computerCombatSheet.newComputerHealth = this.player.health;
@@ -2620,8 +2656,6 @@ export default class PlayerMachine {
     };
     onConfusedUpdate = (_dt: number) => {
         if (!this.player.isConfused) this.player.combatChecker(this.player.isConfused);
-        this.player.playerVelocity.x = this.player.confuseVelocity.x;
-        this.player.playerVelocity.y = this.player.confuseVelocity.y;
         this.player.setVelocity(this.player.confuseVelocity.x, this.player.confuseVelocity.y);
         if (Math.abs(this.player.velocity?.x as number) > 0) {
             this.player.getDirection();
@@ -2638,6 +2672,7 @@ export default class PlayerMachine {
     };
     onConfusedExit = () => { 
         if (this.player.isConfused) this.player.isConfused = false;
+        this.player.partyAnimation();
         this.player.spriteWeapon.setVisible(true);
         if (this.player.confuseTimer) {
             this.player.confuseTimer.destroy();
@@ -2689,11 +2724,23 @@ export default class PlayerMachine {
         }); 
     };
     onFearedUpdate = (_dt: number) => {
-        if (!this.player.isFeared) this.player.combatChecker(this.player.isFeared);
-        this.player.playerVelocity.x = this.player.fearVelocity.x;
-        this.player.playerVelocity.y = this.player.fearVelocity.y;
+        this.player.combatChecker(this.player.isFeared);
+        this.player.setVelocity(this.player.fearVelocity.x, this.player.fearVelocity.y);
+        if (Math.abs(this.player.velocity?.x as number) > 0) {
+            this.player.getDirection();
+            this.player.anims.play(FRAMES.RUNNING, true);
+        } else if (this.player.velocity?.y as number > 0) {
+            this.player.getDirection();
+            this.player.anims.play(FRAMES.RUN_DOWN, true);
+        } else if (this.player.velocity?.y as number < 0) {
+            this.player.getDirection();
+            this.player.anims.play(FRAMES.RUN_UP, true);
+        } else {
+            this.player.anims.play(FRAMES.IDLE, true);
+        };
     };
     onFearedExit = () => {
+        this.player.partyAnimation();
         this.player.isFeared = false;
         this.player.fearCount = 0;
         this.player.spriteWeapon.setVisible(true);
@@ -2808,6 +2855,7 @@ export default class PlayerMachine {
         this.player.anims.play(`rabbit_${this.player.polymorphMovement}_${this.player.polymorphDirection}`);
     };
     onPolymorphedExit = () => { 
+        this.player.partyAnimation();
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
         this.player.setTint(0x00FF00);

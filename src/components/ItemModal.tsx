@@ -87,12 +87,19 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                     {item?.rarity}
                 </div>
                 <Show when={prayer}>
-                    <p style={{ "font-size": "0.75em", margin: caerenic ? "-2% auto 2%" : "-2% auto 4%" }}>
+                    <p style={{ "font-size": "0.85rem", margin: caerenic ? "-2% auto 2%" : "-2% auto 4%" }}>
                         [<span class="gold">{prayer?.()}</span>]: {specialDescription[prayer?.() as string]}
                     </p>
                 </Show>
+                <Show when={caerenic}>
+                    <p style={{ "font-size": "0.85rem", margin: "2% auto 4%" }}>
+                        {/* You attempt to harness your caer with your achre. */}
+                        [<span class="gold">Caerenic</span>]: {talents?.().talents.caerenic.enhanced ? "+25%" : "+15%"} Offense. {talents?.().talents.caerenic.efficient ? "-15%" : "-25%"} Defense. 
+                        {(talents?.().talents.caerenic.enhanced && talents?.().talents.caerenic.efficient) ? "+0.8" : (talents?.().talents.caerenic.enhanced || talents?.().talents.caerenic.efficient) ? "+0.6" : "+0.4"} Speed. 
+                    </p>
+                </Show>
                 <Show when={stalwart}>
-                    <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
+                    <p style={{ "font-size": "0.85rem", margin: "2% auto 4%" }}>
                         [<span class="gold">Stalwart</span>]: 
                         {/* You are engaged in combat with your shield raised, adding it to your passive defense.  */}
                         {/* You receive 50% less poise damage.  */}
@@ -100,15 +107,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                         {talents?.().talents.stalwart.efficient ? "Can Dodge and Roll" : "Cannot Dodge or Roll"}.
                     </p>
                 </Show>
-                <Show when={caerenic}>
-                    <p style={{ "font-size": "0.75em", margin: "2% auto 2%" }}>
-                        {/* You attempt to harness your caer with your achre. */}
-                        [<span class="gold">Caerenic</span>]: {talents?.().talents.caerenic.enhanced ? "+25%" : "+15%"} Offense. {talents?.().talents.caerenic.efficient ? "-15%" : "-25%"} Defense. 
-                        {(talents?.().talents.caerenic.enhanced && talents?.().talents.caerenic.efficient) ? "+0.8" : (talents?.().talents.caerenic.enhanced || talents?.().talents.caerenic.efficient) ? "+0.6" : "+0.4"} Speed. 
-                    </p>
-                </Show>
             </div> 
-            
             </Show>
             {/* <div class="gold">{item.gameplay}</div> */}
         </div>

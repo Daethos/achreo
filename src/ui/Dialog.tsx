@@ -14,7 +14,7 @@ import { font, getRarityColor, masteryColor, sellRarity } from "../utility/styli
 import ItemModal, { attrSplitter } from "../components/ItemModal";
 import QuestManager, { Condition, getQuests, Quest, QUEST_TEMPLATES, replaceChar } from "../utility/quests";
 import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
-import Thievery from "./Thievery";
+// import Thievery from "./Thievery";
 import Merchant from "./Merchant";
 import Roster from "./Roster";
 import { ArenaRoster } from "./BaseUI";

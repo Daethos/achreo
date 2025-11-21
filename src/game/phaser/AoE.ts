@@ -346,15 +346,19 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
 
     private partyAoe(type: string, positive: boolean, party: Party, target: Target | undefined) {
         const callback = () => {
-            this.sensor = this.setupSensor(target ? target.x : party.x, target ? target.y : party.y, RADIUS, "aoeSensor");
+            this.sensor = this.setupSensor(
+                target ? target.x : party.x, 
+                target ? target.y : party.y, RADIUS, "aoeSensor"
+            );
             this.setupPartyListener(party);
+            this.scene.time.delayedCall(16, () => {
+                this.baseCount(type, positive, party, {
+                    hit: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID, party.enemyID),
+                    bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID)
+                });
+            });
         };
         this.scalingTimer(target ? target : party, callback, SCALE, Y_OFFSET, REPEAT);
-        this.baseCount(type, positive, party, {
-            hit: (target) => (this.scene.combatManager as any)[type]((target as Enemy).enemyID, party.enemyID),
-            bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID)
-            
-        });
     };
 
     private playerAoe(type: string, positive: boolean, manual: boolean, target: Target | undefined) {
@@ -367,7 +371,6 @@ export default class AoE extends Phaser.Physics.Matter.Sprite {
             );
             this.setupPlayerListener();
             this.scene.time.delayedCall(16, () => {
-
                 this.baseCount(type, positive, this.scene.player, {
                     concern: () => type === "fyerus" && (this.scene as Player_Scene).player.moving(),
                     bless: (target) => (this.scene.combatManager as any)[type]((target as Player | Party).playerID), 

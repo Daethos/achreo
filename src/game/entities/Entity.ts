@@ -210,6 +210,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     isSlowed: boolean = false;
     isSnared: boolean = false;
     isStunned: boolean = false;
+    isSwinging: boolean = false;
 
     isDetected: boolean = false;
     
@@ -941,7 +942,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const weaponBounds = this.weaponHitbox.getBounds();
         const targetBounds = target.getBounds();
 
-        
+
         
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, targetBounds)) {
             const hitResult = hitLocationDetector.detectHitLocation(this.weaponHitbox, target);
@@ -1392,6 +1393,63 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.spriteShield?.setAlpha(0.75);
                     this.spriteShield?.setScale(0.4, 0.6);
                     this.spriteShield?.setOrigin(0.75, 0.5);
+                };
+            };
+            if (this.shadow) {
+                this.shadow.setPosition(this.x, this.y + 33);
+                this.shadow.setTexture(this.texture.key, this.frame.name);
+            };
+        },
+
+        stealth: () => {
+            this.spriteShield?.setVisible(true);
+            this.spriteShield?.setAngle(0);
+            this.spriteShield?.setDepth(this.depth - (this.isStalwart && !this.isClimbing ? -1 : 1));
+            if (this.flipX) {
+                if (this.hasBow) {
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.15, 0.85);
+                    this.spriteWeapon?.setAngle(90);
+                } else {
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(-0.25, 1.2);
+                    this.spriteWeapon?.setAngle(-250);
+                };
+                this.spriteShield?.setFlipX(true);
+                if (this.isStalwart && !this.isClimbing) {
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(1, 0);
+                    // this.spriteShield?.setOrigin(0.25, 0.3);
+                    this.spriteShield?.setScale(0.6);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setAngle(-30);
+                    this.spriteShield?.setOrigin(0.35, 0.15);
+                    // this.spriteShield?.setOrigin(0.25, 0.5);
+                    this.spriteShield?.setScale(0.4, 0.6);
+                };
+            } else {
+                if (this.hasBow) {
+                    this.spriteWeapon?.setDepth(this.depth + 1);
+                    this.spriteWeapon?.setOrigin(0.85, 0.1);
+                    this.spriteWeapon?.setAngle(0);
+                } else {
+                    this.spriteWeapon?.setDepth(1);
+                    this.spriteWeapon?.setOrigin(-0.15, 1.3);
+                    this.spriteWeapon?.setAngle(-195);
+                };
+                this.spriteShield?.setFlipX(false);
+                if (this.isStalwart && !this.isClimbing) {
+                    this.spriteShield?.setAlpha(1);
+                    this.spriteShield?.setOrigin(0, 0);
+                    // this.spriteShield?.setOrigin(0.25, 0.3);
+                    this.spriteShield?.setScale(0.6);
+                } else {
+                    this.spriteShield?.setAlpha(0.75);
+                    this.spriteShield?.setAngle(30);
+                    this.spriteShield?.setOrigin(0.65, 0.15);
+                    // this.spriteShield?.setOrigin(0.25, 0.5);
+                    this.spriteShield?.setScale(0.4, 0.6);
                 };
             };
             if (this.shadow) {

@@ -75,7 +75,6 @@ export default class Enemy extends Entity {
     patrolDelay: number;
     wasFlipped: boolean = false;
     channelCount: number = 0;
-    isSwinging: boolean = false;
     isDiseasing: boolean = false;
     reactiveName: string = "";
     isHowling: boolean = false;
@@ -1606,7 +1605,6 @@ export default class Enemy extends Entity {
     onIdleExit = () => this.anims.stop();
  
     onPatrolEnter = () => {
-        // this.enemyAnimation();
         this.patrolPath = this.generatePatrolPath(); // Generate patrol points via navmesh
         if (!this.patrolPath || this.patrolPath.length < 2) {
             this.stateMachine.setState(States.IDLE);
@@ -1982,7 +1980,7 @@ export default class Enemy extends Entity {
         } else {
             this.setVelocityY(-this.speed);
         };
-        this.combatChecker(this.isDodging && this.isRolling);
+        this.combatChecker(this.isDodging || this.isRolling);
     }; 
     onEvasionExit = () => {};
 
@@ -2132,9 +2130,7 @@ export default class Enemy extends Entity {
         this.handleAnimations();
         this.currentAction = "";
     };
-    onRollUpdate = (_dt: number) => { 
-        this.combatChecker(this.isRolling);
-    };
+    onRollUpdate = (_dt: number) => this.combatChecker(this.isRolling);
     onRollExit = () => {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
@@ -2206,7 +2202,6 @@ export default class Enemy extends Entity {
                     this.pathDirection.subtract(this.position);
                     this.pathDirection.normalize();
                     this.setVelocity(this.pathDirection.x * this.speed, this.pathDirection.y * this.speed);
-                    // this.enemyAnimation();
                     const distanceToNextPoint = Math.sqrt((this.nextPoint.x - this.position.x) ** 2 + (this.nextPoint.y - this.position.y) ** 2);
                     if (distanceToNextPoint < 10) {
                         this.path.shift();
@@ -4321,9 +4316,15 @@ export default class Enemy extends Entity {
     onFearedUpdate = (_dt: number) => {
         this.combatChecker(this.isFeared);
         this.setVelocity(this.fearVelocity.x, this.fearVelocity.y);
-        if (Math.abs(this.velocity?.x as number) > 0 || Math.abs(this.velocity?.y as number) > 0) {
+        if (Math.abs(this.velocity?.x as number) > 0) {
             this.getDirection();
             this.anims.play(FRAMES.RUNNING, true);
+        } else if (this.velocity?.y as number > 0) {
+            this.getDirection();
+            this.anims.play(FRAMES.RUN_DOWN, true);
+        } else if (this.velocity?.y as number < 0) {
+            this.getDirection();
+            this.anims.play(FRAMES.RUN_UP, true);
         } else {
             this.anims.play(FRAMES.IDLE, true);
         };
@@ -4817,7 +4818,7 @@ export default class Enemy extends Entity {
         this.enemies = [];
     };
 
-    getCombatDirection() {
+    getCombatDirection = () => {
         if (!this.currentTarget) return undefined;
         if (this.cachedDirection && (this.scene.frameCount - this.cachedDirectionFrame) < 60) return this.cachedDirection;
         const x = this.currentTarget.x - this.x;

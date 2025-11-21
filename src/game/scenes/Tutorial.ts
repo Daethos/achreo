@@ -380,42 +380,42 @@ export class Tutorial extends Phaser.Scene {
         
     };
 
-    private debugLogTreeComposites(): void {
-        // console.log(`=== Tree Composites (${this.treeComposites.length}) ===`);
-        this.treeComposites.forEach((tree, index) => {
+    // private debugLogTreeComposites(): void {
+    //     // console.log(`=== Tree Composites (${this.treeComposites.length}) ===`);
+    //     this.treeComposites.forEach((tree, index) => {
 
-            const debugGraphics = this.add.graphics();
-            // Draw the tree bounds in green
-            debugGraphics.lineStyle(2, 0x00ff00);
-            debugGraphics.strokeRect(tree.x, tree.y, tree.width, tree.bottomY - tree.y);
+    //         const debugGraphics = this.add.graphics();
+    //         // Draw the tree bounds in green
+    //         debugGraphics.lineStyle(2, 0x00ff00);
+    //         debugGraphics.strokeRect(tree.x, tree.y, tree.width, tree.bottomY - tree.y);
             
-            // Draw the bottom line in red (the important line for depth sorting)
-            debugGraphics.lineStyle(3, 0xff0000);
-            debugGraphics.lineBetween(tree.x, tree.bottomY, tree.x + tree.width, tree.bottomY);
+    //         // Draw the bottom line in red (the important line for depth sorting)
+    //         debugGraphics.lineStyle(3, 0xff0000);
+    //         debugGraphics.lineBetween(tree.x, tree.bottomY, tree.x + tree.width, tree.bottomY);
             
-            // Draw a label with the index and bottomY value
-            debugGraphics.fillStyle(0xffffff, 1);
-            debugGraphics.fillRect(tree.x, tree.bottomY + 2, 40, 14);
-            debugGraphics.fillStyle(0x000000, 1);
-            this.add.text(tree.x + 3, tree.bottomY, `${index}:${Math.round(tree.bottomY)}`, {
-                font: '10px Arial',
-                color: '#000000'
-            });
+    //         // Draw a label with the index and bottomY value
+    //         debugGraphics.fillStyle(0xffffff, 1);
+    //         debugGraphics.fillRect(tree.x, tree.bottomY + 2, 40, 14);
+    //         debugGraphics.fillStyle(0x000000, 1);
+    //         this.add.text(tree.x + 3, tree.bottomY, `${index}:${Math.round(tree.bottomY)}`, {
+    //             font: '10px Arial',
+    //             color: '#000000'
+    //         });
             
-            // Draw each individual tile in the composite with a blue outline
-            tree.tiles.forEach(tile => {
-                debugGraphics.lineStyle(1, 0x0000ff, 0.5);
-                debugGraphics.strokeRect(
-                    tile.getLeft(), 
-                    tile.getTop(), 
-                    tile.width, 
-                    tile.height
-                );
-            });
+    //         // Draw each individual tile in the composite with a blue outline
+    //         tree.tiles.forEach(tile => {
+    //             debugGraphics.lineStyle(1, 0x0000ff, 0.5);
+    //             debugGraphics.strokeRect(
+    //                 tile.getLeft(), 
+    //                 tile.getTop(), 
+    //                 tile.width, 
+    //                 tile.height
+    //             );
+    //         });
         
-            // console.log(`Tree ${index}: [${Math.round(tree.x)},${Math.round(tree.y)}] -> [${Math.round(tree.x + tree.width)},${Math.round(tree.bottomY)}] (${tree.tiles.length} tiles)`);
-        });
-    };
+    //         // console.log(`Tree ${index}: [${Math.round(tree.x)},${Math.round(tree.y)}] -> [${Math.round(tree.x + tree.width)},${Math.round(tree.bottomY)}] (${tree.tiles.length} tiles)`);
+    //     });
+    // };
 
     private addTileToLayerComposite(tile: Phaser.Tilemaps.Tile, layerTrees: any[], layerIndex: number): void {
         const tileWorldX = tile.getLeft();
@@ -958,7 +958,6 @@ export class Tutorial extends Phaser.Scene {
         this.checkEnvironment(this.player);
         this.updateTreeDepthSorting(this.player);
         this.hud.rightJoystick.update();
-        // console.log(Math.round(this.player.x), Math.round(this.player.y));
     };
 
     setCameraOffset = () => {

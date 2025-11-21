@@ -13,7 +13,8 @@ import { Particle } from "../matter/ParticleManager";
 import CastingBar from "../phaser/CastingBar";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import HealthBar from "../phaser/HealthBar";
-import { CombatContext, MindState, MindStates } from "../phaser/MindState";
+import { HitLocation } from "../phaser/HitDetection";
+import { CacheDirection, CombatContext, MindState, MindStates } from "../phaser/MindState";
 import PartyMachine from "../phaser/PartyMachine";
 import { vibrate } from "../phaser/ScreenShake";
 import { CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
@@ -49,7 +50,7 @@ const ORIGIN = {
 };
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
-
+const PARTY_ATTACK_STATES = [States.COMPUTER_ATTACK, States.COMPUTER_PARRY, States.COMPUTER_POSTURE, States.COMPUTER_THRUST, States.DODGE, States.ROLL];
 export const COLOR = 0x00FF00;
 const TARGET_COLOR = 0xFFC700;
 export default class Party extends Entity {
@@ -122,6 +123,8 @@ export default class Party extends Entity {
     cachedDirection: any;
     mindState: MindState;
     mindStateName: string;
+    combatContext: CombatContext | undefined = undefined;
+    combatContextFrame: number = 0;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
@@ -209,7 +212,7 @@ export default class Party extends Entity {
         this.rushedEnemies = [];
         this.playerStateListener();
         this.setFixedRotation();   
-        this.checkEnemyCollision(partySensor);
+        this.collision(partySensor);
         this.setInteractive(new Phaser.Geom.Rectangle(
             48, 0,
             32, this.height
@@ -323,7 +326,7 @@ export default class Party extends Entity {
         return newSheet;
     };
 
-    callToArms = (enemy: Enemy) => {
+    callToArms = (enemy: Enemy): void => {
         this.checkComputerEnemyCombatEnter(enemy);
         for (let i = 0; i < this.scene.party.length; i++) {
             const p = this.scene.party[i];
@@ -333,7 +336,7 @@ export default class Party extends Entity {
         };
     };
 
-    checkComputerEnemyCombatEnter = (enemy: Enemy) => {
+    checkComputerEnemyCombatEnter = (enemy: Enemy): void => {
         if (enemy.isDefeated || enemy.health <= 0) return;
         this.currentTarget = enemy;
         this.inComputerCombat = true;
@@ -371,21 +374,30 @@ export default class Party extends Entity {
         };
     };
 
-    isNewComputerEnemy = (enemy: Enemy) => {
+    isNewComputerEnemy = (enemy: Enemy): boolean => {
         const newEnemy = this.enemies.every(obj => obj.id !== enemy.enemyID);
         return newEnemy;
     };
 
-    playerInCombat = (enemy: Enemy) => enemy && enemy.name === "enemy" && this.scene.combat;
+    playerInCombat = (enemy: Enemy): boolean => enemy && enemy.name === "enemy" && this.scene.combat;
 
-    checkEnemyCollision(partySensor: any) {
+    checkTouch = (entity: any, add: boolean) => {
+        if (entity.bodyB.label !== "body") return;
+        if (add) {
+            this.touching.push(entity.gameObjectB);
+        } else {
+            this.touching = this.touching.filter(obj => obj !== entity.gameObjectB);
+        };
+    };
+
+    collision = (partySensor: any): void => {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [partySensor],
             callback: (other: any) => {
-                if (this.isDeleting) return;
-                if (other.gameObjectB?.isDeleting) return;
+                if (this.isDeleting || !other.gameObjectB || !other.gameObjectB.isDeleting) return;
                 this.isValidRushEnemy(other.gameObjectB);
-                if (other.gameObjectB?.name === "enemy") this.touching.push(other.gameObjectB);
+                if (other.gameObjectB?.name === "enemy") this.checkTouch(other, true);
+                // if (other.gameObjectB?.name === "enemy") this.touching.push(other.gameObjectB);
                 if ((this.isValidEnemyCollision(other) || this.playerInCombat(other.gameObjectB)) && this.potentialEnemies.includes(other.gameObjectB.ascean.name)) {
                     const isNewEnemy = this.isNewEnemy(other.gameObjectB);
                     if (!isNewEnemy) return;
@@ -411,8 +423,9 @@ export default class Party extends Entity {
         this.scene.matterCollision.addOnCollideEnd({
             objectA: [partySensor],
             callback: (other: any) => {
-                if (this.isDeleting) return;
-                if (other.gameObjectB?.name === "enemy") this.touching = this.touching.filter((target) => target !== other.gameObjectB);
+                if (this.isDeleting || !other.gameObjectB) return;
+                if (other.gameObjectB.name === "enemy") this.checkTouch(other, false);
+                // if (other.gameObjectB?.name === "enemy") this.touching = this.touching.filter((target) => target !== other.gameObjectB);
             },
             context: this.scene,
         });
@@ -506,13 +519,20 @@ export default class Party extends Entity {
         };
     };
 
+    checkHurt = () => {
+        if (this.isCasting || this.isFeared || this.isStunned || this.isParalyzed || this.isPraying) return; // this.isTrying() || 
+        this.isHurt = true;
+        this.playerMachine.stateMachine.setState(States.HURT);
+    };
+
     computerCombatUpdate = (e: ComputerCombat) => {
         const { enemyID, newComputerHealth } = e;
         
         if (this.health > newComputerHealth) {
             let damage: number | string = Math.round(this.health - newComputerHealth);
             this.scene.showCombatText(this, `${damage}`, 1500, EFFECT, e.computerEnemyCriticalSuccess, false);
-            if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
+            this.checkHurt();
+            // if (!this.isSuffering() && !this.isTrying() && !this.isCasting && !this.isContemplating) this.isHurt = true;
             if (this.isFeared) {
                 const chance = Math.random() < 0.1 + this.fearCount;
                 if (chance) {
@@ -664,11 +684,13 @@ export default class Party extends Entity {
 
     combatChecker = (state: boolean) => {
         if (state) return;
-        if (this.inComputerCombat) {
-            this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-        } else {
-            this.playerMachine.stateMachine.setState(States.IDLE);
-        };
+            this.playerMachine.stateMachine.setState(States.CHASE);
+        // if (this.inComputerCombat) {
+        //     this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
+        // } else {
+        //     this.playerMachine.stateMachine.setState(States.CHASE);
+        //     // this.playerMachine.stateMachine.setState(States.IDLE);
+        // };
     };
 
     caerenicUpdate = (caerenic: boolean) => {
@@ -681,6 +703,7 @@ export default class Party extends Entity {
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic);
         this.setGlow(this.spriteShield, caerenic);
+        this.shadow?.setVisible(!caerenic);
     };
 
     stalwartUpdate = (stalwart: boolean) => {
@@ -696,6 +719,7 @@ export default class Party extends Entity {
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon");
         this.setGlow(this.spriteShield, caerenic, "shield");
+        this.shadow?.setVisible(!caerenic);
     };
 
     flickerCaerenic = (duration: number) => {
@@ -805,6 +829,7 @@ export default class Party extends Entity {
         if (channel === true) this.castbar.setTime(duration);
         if (this.isCaerenic === false && this.isGlowing === false) this.checkCaerenic(true);
         this.setVelocity(0);
+        this.anims.play(FRAMES.CAST, true);
     };
 
     stopCasting = () => {
@@ -832,33 +857,64 @@ export default class Party extends Entity {
     leap = () => {
         this.timeElapsed = 0;
         this.isLeaping = true;
-        const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
+        if (!this.currentTarget) {
+            
+            return;
+        };
+        const target = new Phaser.Math.Vector2(this.currentTarget.x, this.currentTarget.y);
         const direction = target.subtract(this.position);
         const distance = direction.length();
+        const buffer = this.currentTarget.hMoving() ? 40 : 0;
+        let leap = Math.min(distance + buffer, 200);
         direction.normalize();
         this.flipX = direction.x < 0;
+        // this.attack();
+        const leapStartY = this.y;
+        const arcHeight = 75; // Adjust this value for higher/lower arcs
+        this.scene.combatManager.hitFeedbackSystem.trailing(this, true);
         this.scene.tweens.add({
             targets: this,
-            x: this.x + (direction.x * Math.min(distance, 200)),
-            y: this.y + (direction.y * Math.min(distance, 200)),
-            duration: 900,
+            scale: 1.2,
+            duration: 400,
+            ease: Phaser.Math.Easing.Back.InOut,
+            yoyo: true,
+        });
+
+        this.scene.tweens.add({
+            targets: this,
+            x: this.x + (direction.x * leap),
+            y: this.y + (direction.y * leap),
+            duration: 800,
             ease: Phaser.Math.Easing.Back.InOut,
             onStart: () => {
                 this.isAttacking = true;
                 this.enemySound("leap", true);
-                this.flickerCaerenic(900); 
+                this.anims.play(FRAMES.GRAPPLE_ROLL, true);
             },
-            onComplete: () => { 
+            onUpdate: (tween) => {
+                const progress = tween.progress;
+                const currentArc = Math.sin(progress * Math.PI) * arcHeight;
+                this.y = leapStartY + (this.y - leapStartY) - currentArc;
+            },
+            onComplete: () => {
+                this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
                 this.isLeaping = false; 
-                if (this.touching.length > 0) {
-                    for (let i = 0; i < this.touching.length; ++i) {
-                        this.scene.combatManager.partyAction({enemyID: this.touching[i].enemyID, action: "leap", origin: this.enemyID});
+                const length = this.touching.length;
+                if (length > 0) {
+                    this.lastHitLocation = {
+                        location: HitLocation.CHEST,
+                        hitPoint: {x:0,y:0},
+                        relativePosition: {x:0,y:0}
+                    };
+                    for (let i = 0; i < length; ++i) {
+                        this.scene.combatManager.partyAction({action: "leap", origin: this.enemyID, enemyID: this.touching[i].enemyID });
                     };
                 };
+                if (this.health > 0) this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
             },
-        });       
+        });
         EventBus.emit("party-combat-text", {
-            playerSpecialDescription: `You launch yourself through the air!`
+            playerSpecialDescription: `${this.ascean.name} launches themself through the air!`
         });
     };
 
@@ -867,52 +923,69 @@ export default class Party extends Entity {
         this.isRushing = true;
         this.isThrusting = true;
         this.enemySound("stealth", true);
+
         const target = this.currentTarget ? this.currentTarget.position : this.scene.getWorldPointer();
         const direction = target.subtract(this.position);
         direction.normalize();
+        
         this.flipX = direction.x < 0;
+
+        this.scene.tweens.add({
+            targets: this,
+            alpha: 0.25,
+            ease: Phaser.Math.Easing.Quintic.InOut,
+            duration: 300,
+            yoyo: true
+        });
         this.scene.tweens.add({
             targets: this,
             x: this.x + (direction.x * 300),
             y: this.y + (direction.y * 300),
             duration: 600,
             ease: "Circ.easeOut",
-            onStart: () => {
-                this.flickerCaerenic(600);  
-            },
-            onComplete: () => {
-                if (this.rushedEnemies.length > 0) {
-                    for (let i = 0; i < this.rushedEnemies.length; ++i) {
-                        const enemy = this.rushedEnemies[i];
-                        if (enemy.health <= 0) return;
-                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
-                            if (enemy.isShielding) enemy.shield();
-                            if (enemy.isWarding) enemy.ward(this.enemyID);
-                            return;
-                        };
-                        if (enemy.isMenacing) enemy.menace(this.enemyID);
-                        if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
-                        if (enemy.isMystifying) enemy.mystify(this.enemyID);
-                        this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: "rush", origin: this.enemyID});
-                    };
-                } else if (this.touching.length > 0) {
-                    for (let i = 0; i < this.touching.length; ++i) {
-                        const enemy = this.touching[i];
-                        if (enemy.health <= 0) return;
-                        if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
-                            if (enemy.isShielding) enemy.shield();
-                            if (enemy.isWarding) enemy.ward(this.enemyID);
-                            return;
-                        };
-                        if (enemy.isMenacing) enemy.menace(this.enemyID);
-                        if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
-                        if (enemy.isMystifying) enemy.mystify(this.enemyID);
-                        this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: "rush", origin: this.enemyID});
-                    };
+            onComplete: () => this.rushComplete(),
+        });
+    };
+
+    rushComplete = () => {
+        const rush = this.rushedEnemies.length;
+        if (rush > 0) {
+            this.lastHitLocation = {
+                location: HitLocation.CHEST,
+                hitPoint: {x:0,y:0},
+                relativePosition: {x:0,y:0}
+            };
+            for (let i = 0; i < rush; ++i) {
+                const enemy = this.rushedEnemies[i];
+                if (enemy.health <= 0) continue;
+                if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                    if (enemy.isShielding) enemy.shield();
+                    if (enemy.isWarding) enemy.ward(this.enemyID);
+                    continue;
                 };
-                this.isRushing = false;
-            },
-        });         
+                if (enemy.isMenacing) enemy.menace(this.enemyID);
+                if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
+                if (enemy.isMystifying) enemy.mystify(this.enemyID);
+                this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: "rush", origin: this.enemyID});
+            }; 
+        } else {
+            const touch = this.touching.length;
+            for (let i = 0; i < touch; ++i) {
+                const enemy = this.touching[i];
+                if (enemy.health <= 0) return;
+                if (enemy.isWarding || enemy.isShielding || enemy.isProtecting) {
+                    if (enemy.isShielding) enemy.shield();
+                    if (enemy.isWarding) enemy.ward(this.enemyID);
+                    return;
+                };
+                if (enemy.isMenacing) enemy.menace(this.enemyID);
+                if (enemy.isMultifaring) enemy.multifarious(this.enemyID);
+                if (enemy.isMystifying) enemy.mystify(this.enemyID);
+                this.scene.combatManager.partyAction({enemyID: enemy.enemyID, action: "rush", origin: this.enemyID});
+            };
+        };
+        this.isRushing = false;
+        if (this.health > 0) this.playerMachine.stateMachine.setState(States.CHASE);
     };
 
     storm = () => {
@@ -1344,6 +1417,8 @@ export default class Party extends Entity {
     };
 
     clearAttacks = () => {
+        const state = this.playerMachine.stateMachine.getCurrentState();
+        return PARTY_ATTACK_STATES.includes(state as string);
         return(
             !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_ATTACK) &&
             !this.playerMachine.stateMachine.isCurrentState(States.COMPUTER_PARRY) &&
@@ -1354,25 +1429,50 @@ export default class Party extends Entity {
         );
     };
 
+    dummyDirection = (): CacheDirection => {
+        const x = this?.x || 0;
+        const y = this?.y || 0;
+        return {
+            x,
+            y,
+            lengthSq: 0,
+            ogLengthSq: 0,
+            normal: false,
+            normalize: () => {
+                const len = 0;
+                if (len > 0) {
+                    this.cachedDirection.x = x / len,
+                    this.cachedDirection.y = y / len,
+                    this.cachedDirection.normal = true,
+                    this.cachedDirection.lengthSq = 1 // normalized vector has length 1
+                };
+                return this.cachedDirection;
+            }
+        };
+    };
+
     getCombatContext(): CombatContext {
+        if (this.combatContext && (this.scene.frameCount - this.combatContextFrame) < 90) return this.combatContext;
         const direction = this.getCombatDirection();
         if (!direction) {
-            return {
-                direction,
+            this.combatContext = {
+                direction: this.dummyDirection(),
                 multiplier: 1,
                 climbingModifier: 1,
                 allies: [],
                 isTargetRanged: false,
                 lineOfSight: true,
                 distanceY: 0,
-            } as CombatContext;
+            };
+            return this.combatContext;
         };
+
         const distanceY = Math.abs(direction.y);
         const climbingModifier = this.isClimbing ? 0.65 : 1;
         const allies = this.getNearbyAllies();
         const multiplier = this.rangedDistanceMultiplier(DISTANCE.RANGED_MULTIPLIER);
-        
-        return {
+
+        this.combatContext = {
             direction,
             multiplier,
             distanceY,
@@ -1380,7 +1480,11 @@ export default class Party extends Entity {
             allies,
             isTargetRanged: this.currentTarget?.isRanged || false,
             lineOfSight: this.checkLineOfSight()
-        } as CombatContext;
+        };
+
+        this.combatContextFrame = this.scene.frameCount;
+        
+        return this.combatContext;
     };
 
     getCombatDirection() {
@@ -1390,8 +1494,8 @@ export default class Party extends Entity {
                 return this.cachedDirection;
             };
             
-            const dx = (this.currentTarget as Enemy).x - this.x;
-            const dy = (this.currentTarget as Enemy).y - this.y;
+            const dx = ((this.currentTarget as Enemy)?.x - this.x) || 0;
+            const dy = ((this.currentTarget as Enemy)?.y - this.y) || 0;
             
             this.cachedDirection = { 
                 x: dx, 
@@ -1446,10 +1550,16 @@ export default class Party extends Entity {
         if (this.isCasting || this.isPraying || this.isContemplating) {
             this.isMoving = false;
             this.setVelocity(0);
+            this.handleIdleAnimations();
             return;
         };
 
         if (this.isSuffering() || !this.currentTarget || !this.currentTarget.body || state === States.CHASE || state === States.EVADE) return;
+
+        // if (!this.clearAttacks()) {
+        //     console.log("Action State Detected", { state: this.playerMachine.stateMachine.getCurrentState() });
+        //     return;
+        // };
         
         const direction = this.getCombatDirection();
         if (!direction) return;
@@ -1469,11 +1579,12 @@ export default class Party extends Entity {
             this.playerMachine.stateMachine.setState(States.CHASE);
             return;
         } else if (this.isRanged) { // RANGED ENEMY LOGIC
-            this.playerMachine.stateMachine.setState(States.COMBAT);
+            this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
             
             if (distanceY > DISTANCE.RANGED_ALIGNMENT) {
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed * climbingModifier + 0.5);
+                this.handleMovementAnimations();
             };
             
             const thresholdSq = (DISTANCE.THRESHOLD * multiplier) ** 2;
@@ -1483,6 +1594,7 @@ export default class Party extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * this.speed * climbingModifier);
                 this.setVelocityY(direction.y * this.speed * climbingModifier);
+                this.handleMovementAnimations();
             } else if (distanceSq < thresholdMinSq && !this.currentTarget.isRanged) { // Keep distance from melee target
                 if (Phaser.Math.Between(1, 250) === 1 && state !== States.EVADE) { //  && this.evasionTimer === 0
                     // this.evasionTimer = 1000;
@@ -1493,6 +1605,7 @@ export default class Party extends Entity {
                 direction.normalize();
                 this.setVelocityX(direction.x * -this.speed * climbingModifier);
                 this.setVelocityY(direction.y * -this.speed * climbingModifier);
+                this.handleMovementAnimations();
             } else if (this.checkLineOfSight() && state !== States.EVADE) { //  && this.evasionTimer === 0
                 // this.evasionTimer = 1000;
                 this.playerMachine.stateMachine.setState(States.EVADE);
@@ -1503,6 +1616,7 @@ export default class Party extends Entity {
             } else { // Adjust Y position
                 direction.normalize();
                 this.setVelocityY(direction.y * this.speed * climbingModifier);
+                this.handleMovementAnimations();
             };
             
         } else { // MELEE ENEMY LOGIC
@@ -1517,6 +1631,7 @@ export default class Party extends Entity {
                 this.setVelocityX(direction.x * this.speed * climbingModifier);
                 this.setVelocityY(direction.y * this.speed * climbingModifier);
                 this.isPosted = false;
+                this.handleMovementAnimations();
             } else { // Inside melee range
                 this.setVelocity(0);
                 this.isPosted = true;
@@ -1544,11 +1659,25 @@ export default class Party extends Entity {
             action = States.CONTEMPLATE;
         };
         if (this.playerMachine.stateMachine.isState(action)) {
+            // console.log("Setting Action State", { action });
             this.playerMachine.stateMachine.setState(action);
         };
     };
 
-    playerDodge = () => {
+    handleAnimations = () => {
+        if (this.isDodging) {
+            this.anims.play(FRAMES.DODGE, true);
+            this.spriteWeapon.setVisible(false);
+            if (this.dodgeCooldown === 0) this.dodge();
+        };
+        if (this.isRolling) {
+            this.anims.play(FRAMES.ROLL, true);
+            this.spriteWeapon.setVisible(false);
+            if (this.rollCooldown === 0) this.roll();
+        }; 
+    };
+
+    dodge = () => {
         this.dodgeCooldown = 50; // Was a 6x Mult for Dodge Prev aka 1728
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
@@ -1574,7 +1703,7 @@ export default class Party extends Entity {
         requestAnimationFrame(dodgeLoop);
     };
 
-    playerRoll = () => {
+    roll = () => {
         this.rollCooldown = 50; // Was a x7 Mult for Roll Prev aka 2240
         let currentDistance = 0;
         this.spriteWeapon.setVisible(false);
@@ -1598,43 +1727,6 @@ export default class Party extends Entity {
         };
         let startTime: any = undefined;
         requestAnimationFrame(rollLoop);
-    };
-
-    handlePartyAnimations = () => {
-        if (this.isDefeated) return;
-        if (this.isPolymorphed) {
-            this.anims.play(`rabbit_${this.polymorphMovement}_${this.polymorphDirection}`, true);
-        } else if (this.isConfused || this.isFeared) {
-            if (this.moving()) {
-                this.handleMovementAnimations();
-            } else {
-                this.handleIdleAnimations();
-            };
-        } else if (this.isParrying) {
-            this.anims.play(FRAMES.ATTACK, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
-        } else if (this.isThrusting) {
-            this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isThrusting = false);
-        } else if (this.isDodging) { 
-            this.anims.play(FRAMES.DODGE, true);
-            if (this.dodgeCooldown === 0) this.playerDodge();
-        } else if (this.isRolling) {
-            this.anims.play(FRAMES.ROLL, true);
-            if (this.rollCooldown === 0) this.playerRoll();
-        } else if (this.isPosturing) {
-            this.anims.play(FRAMES.POSTURE, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isPosturing = false);
-        } else if (this.isAttacking) {
-            this.anims.play(FRAMES.THRUST, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isAttacking = false);
-        } else if (this.moving()) { // && this.computerActionsClear()
-            this.handleMovementAnimations();
-            this.isMoving = true;
-        } else if (this.isCasting) {
-            this.anims.play(FRAMES.CAST, true);
-        } else if (this.isPraying) {
-            this.anims.play(FRAMES.PRAY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isPraying = false);
-        } else { //  if (this.computerActionsClear())
-            this.isMoving = false;
-            this.handleIdleAnimations();
-        };
     };
 
     handleComputerConcerns = () => {
@@ -1715,7 +1807,6 @@ export default class Party extends Entity {
     update(dt: number) {
         this.handleComputerConcerns();
         this.evaluateCombatDistance();
-        this.handlePartyAnimations();
         this.playerMachine.stateMachine.update(dt);
         this.playerMachine.positiveMachine.update(dt);
         this.playerMachine.negativeMachine.update(dt);

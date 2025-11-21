@@ -136,9 +136,9 @@ export default function Thievery({ ascean, game, setThievery, stealing, setSteal
             console.warn(err.message, "Error Stealing Item!"); 
         };
     };
-    return <div>
+    return <div style={{ "z-index": 99 }}>
         <Show when={thieveryAnimation().on}>
-            <div class="modal" style={{ "z-index": 99 }}>
+            <div class="modal">
             <div class="button superCenter" style={{ "background-color": "black", width: "30%" }}>
                 <div class="wrap" style={{ margin: "5%" }}>
 

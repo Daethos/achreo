@@ -96,8 +96,8 @@ const SANITIZE = {
     kyosir: "Kyosir",
     influences: "Influences",
 };
-const TYPEWRITER = { 
-    "font-size": "1.15rem", margin: "0 auto", width: "95%", "white-space": "pre-wrap", padding: "0.5rem 0" , height: "auto"
+const TYPEWRITER = { // "font-family": "Centaur", 
+    "font-family": "Centaur", "font-size": "1.5rem", margin: "0 auto", width: "95%", "white-space": "pre-wrap", padding: "0.5rem 0" , height: "auto"
 };
 
 interface DialogOptionProps {
@@ -1721,7 +1721,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Show when={party()}>
                         <>
                             <br />
-                            <Typewriter styling={{ color: "gold", "font-size": "1.15rem" }} stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} performAction={hollowClick} />
+                            <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} performAction={hollowClick} />
                             <br />
                             <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
                         </>
@@ -1827,9 +1827,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Typewriter styling={TYPEWRITER} stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of${checkConditions()}."`} performAction={hollowClick} />
                     <br />
                     {rep()?.reputation >= 25 && party() ? (
-                        <div style={{ color: "gold", "font-size":"1.15rem" }}>
-                            [Congratulations, you are capable of recruiting this enemy to your party, endearing themself to your journey and protecting you with their life. Do you wish to recruit this enemy to your party? This is {enemyArticle()} {combat().computer?.name}. They are {enemyDescriptionArticle()} {combat().computer?.description}. You are allowed to have up to 3 party members accompanying you on your journey. Choose wisely.]
-                            <br />
+                        <div style={{ "font-size":"1.5rem", "font-family":"Centaur" }}>
+                            [Congratulations! You have endeared yourself to this {combat().computer?.name}, and are capable of recruiting them to your party. They will join you on your journey and protect you with their life. Do you wish to recruit this enemy to your party? They are {enemyDescriptionArticle()} {combat().computer?.description}. You are allowed to have up to 3 party members accompanying you on your journey. Choose wisely.]
+                            <br /><br />
                             <button class="highlight" onClick={changeEnemyToParty}>
                                 <Typewriter styling={{ "font-size": "1.15rem" }} stringText={`Recruit ${rep().name} to join your party.`} performAction={hollowClick} />
                             </button>
@@ -2045,7 +2045,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </div>
         {/* <<---------- MODAL WINDOWS ---------->> */}
         <Merchant ascean={ascean} />
-        <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} />
+        {/* <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} /> */}
         <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={itemShow().show}>

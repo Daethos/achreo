@@ -185,7 +185,9 @@ export class Underground extends Scene {
         
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(500, 64);
-        this.player.setPosition(this.hud.settings?.coordinates?.x || 500, this.hud.settings?.coordinates?.y || 64);
+        if (this.hud.prevScene !== "Game") {
+            this.player.setPosition(this.hud.settings?.coordinates?.x || 500, this.hud.settings?.coordinates?.y || 64);
+        };
 
         this.chatManager = new ChatManager(this);
         this.combatManager = new CombatManager(this);
@@ -227,7 +229,7 @@ export class Underground extends Scene {
         const party = this.registry.get("party");
         if (party.length) {
             for (let i = 0; i < party.length; i++) {
-                const p = new Party({scene:this,x: this.centerX, y: 64,texture:"player_actions",frame:"player_idle_0",data:party[i],position:i});
+                const p = new Party({scene:this, x: 200, y: 200, texture:"player_actions", frame:"player_idle_0", data:party[i], position:i});
                 p.setPosition(500, 64);
                 this.party.push(p);
             };
@@ -345,6 +347,7 @@ export class Underground extends Scene {
         };
         this.matter.resume();
         this.scene.wake();
+        this.hud.updateCoordinates(this.player.x, this.player.y);
         EventBus.emit("current-scene-ready", this);
     };
 

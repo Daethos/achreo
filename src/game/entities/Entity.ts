@@ -729,8 +729,10 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         };
     };
 
+    getAttack = () => this.isAttacking || this.isParrying || this.isPosturing || this.isRolling || this.isThrusting;
+
     handleIdleAnimations = () => {
-        if (this.isCasting || this.isPraying) return;
+        if (this.isCasting || this.isPraying) return; //  || this.getAttack()
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
             this.anims.pause();
@@ -742,6 +744,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleMovementAnimations = () => {
+        // if (this.getAttack()) return;
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
         } else if (this.inWater) {
@@ -937,6 +940,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         
         const weaponBounds = this.weaponHitbox.getBounds();
         const targetBounds = target.getBounds();
+
+        
         
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, targetBounds)) {
             const hitResult = hitLocationDetector.detectHitLocation(this.weaponHitbox, target);

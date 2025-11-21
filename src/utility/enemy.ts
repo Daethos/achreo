@@ -270,7 +270,7 @@ export const DISTANCE = {
     MIN: 0,
     ATTACK: 50,
     MOMENTUM: 0.75,
-    THRESHOLD: 65,
+    THRESHOLD: 60,
     CHASE: 125,
     COMBAT: 60,
     RANGED_ALIGNMENT: 25,

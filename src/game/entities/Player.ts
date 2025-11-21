@@ -407,6 +407,7 @@ export default class Player extends Entity {
             // this.createShadow(true);
             // if (this.checkTalentEnhanced("caerenic")) {this.caerenesis.stop();this.glowTalent=false;};
         };
+        this.shadow?.setVisible(!this.isCaerenic);
     };
 
     stalwartUpdate = (stalwart: boolean) => {
@@ -1108,7 +1109,7 @@ export default class Player extends Entity {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [playerSensor],
             callback: (other: any) => {
-                if (other.gameObjectB && other.gameObjectB?.properties?.name === "duel") {
+                if (other.gameObjectB && other.gameObjectB?.properties?.name === "duel" && !this.inCombat) {
                     EventBus.emit("alert", {
                         header: "Ancient Eulex",
                         body: `You have the option of summoning enemies to the dueling grounds. \n\n Would you like to see the roster?`, 
@@ -1217,6 +1218,7 @@ export default class Player extends Entity {
         this.setGlow(this, caerenic);
         this.setGlow(this.spriteWeapon, caerenic, "weapon");
         this.setGlow(this.spriteShield, caerenic, "shield");
+        this.shadow?.setVisible(!caerenic);    
     };
 
     flickerCaerenic = (duration: number) => {
@@ -1691,7 +1693,7 @@ export default class Player extends Entity {
 
     handleMovement = () => {
         const suffering = this.isSuffering();
-        if (this.isDefeated || suffering) return;
+        if (this.isDefeated) return; //  || suffering
         
         const isDesktop = this.scene.hud.settings.desktop;
         const input = isDesktop ? this.inputKeys : this.scene.hud.joystickKeys;
@@ -1791,5 +1793,6 @@ export default class Player extends Entity {
         this.handleConcerns();
         this.handleMovement();
         this.updatePositionHistory();
+        // if (!this.isConfused) this.playerMachine.stateMachine.setState(States.CONFUSED);
     };
 };

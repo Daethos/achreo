@@ -222,7 +222,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         */
         
         const speaking = playerTraitWrapper();
-        let extra: any[] = []; // ["Lightning"]; // Testing
+        let extra: any[] = ["Leap"]; // ["Lightning"]; // Testing
         let physical = JSON.parse(JSON.stringify(ACTIONS));
 
         if (ascean().level >= 4) {

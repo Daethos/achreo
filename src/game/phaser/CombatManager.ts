@@ -388,11 +388,9 @@ export class CombatManager {
     public playerCaerenicPro = () => this.context.player.isCaerenic ? (this.context.hud.talents.talents.caerenic.enhanced ? 1.25 : 1.15) : 1;
     public playerStalwart = () => this.context.player.isStalwart ? (this.context.hud.talents.talents.stalwart.efficient ? 0.75 : 0.85) : 1;
 
-    public computerCaerenicNeg = (entity: Enemy | Party) => entity.isCaerenic ? 1.25 : 1;
-
-    public computerCaerenicPro = (entity: Enemy | Party) => entity.isCaerenic ? 1.15 : 1;
-
-    public computerStalwart = (entity: Enemy | Party) => entity.isStalwart ? 0.85 : 1;
+    public computerCaerenicNeg = (entity: Enemy | Party) => entity?.isCaerenic ? 1.25 : 1;
+    public computerCaerenicPro = (entity: Enemy | Party) => entity?.isCaerenic ? 1.15 : 1;
+    public computerStalwart = (entity: Enemy | Party) => entity?.isStalwart ? 0.85 : 1;
 
     public computerCaerenicNegID = (id: string) =>{
         const entity = this.combatant(id);

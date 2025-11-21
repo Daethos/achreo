@@ -60,8 +60,8 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
     };
 
     return <Show when={show()}>
-        <div class="modal">
-            <div class="left" style={{...partialStyle(ascean().mastery), left: "1%"}}>
+        <div class="modal" style={{ "z-index": 99 }}>
+            <div class="left" style={{...partialStyle(ascean().mastery), left: "0", top: "", height: "97.5%", width: "49%"}}>
             <div class="creature-heading center">
                     <h1>Current Party ({party().length})</h1>
                     <For each={party()}>{(party) => {
@@ -97,7 +97,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                     </div>
                 </div>
             </div>
-            <div class="right" style={{...partialStyle(ascean().mastery), left: "50.5%"}}>
+            <div class="right" style={{...partialStyle(ascean().mastery), left: "50%", top: "", height: "97.5%", width: "49%"}}>
                 <div class="creature-heading center">
                     {/* <p style={{ color: "gold", "font-size": "0.75em", "margin": "0" }}>{party().length}</p> */}
                     <h1>Potential Recruits</h1>
@@ -113,13 +113,14 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
             <button class="highlight cornerBR" onClick={() => setShow(false)} style={{ color: "red" }}>X</button>
         </div>
         <Show when={addShow()}>
-            <div class="modal">
-                <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
-                    <p style={{ color: "gold" }}>Add {view()?.name}?</p>
-                    <h2>{view()?.description}</h2>
-                    <p>Level: <span class="gold">{view()?.level}</span> | Mastery: <span class="gold">{(view()?.mastery as string)?.charAt(0).toUpperCase() + view()?.mastery?.slice(1)}</span></p>
-                    
-                    <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
+            <div class="modal" style={{ "z-index": 99 }}>
+                <div class="center creature-heading" style={{...fullStyle(ascean().mastery), top: "4%", height: "90%"}}>
+                    <h1 style={{ color: "gold", "font-size": "1.5rem" }}>{view()?.name}</h1>
+                    <h2 style={{ "font-size": "1.25rem" }}>{view()?.description}</h2>
+                    <h3 style={{ "font-size": "1.1rem", "margin-bottom": "0" }}>Level: <span class="gold">{view()?.level}</span> | Mastery: <span class="gold">{(view()?.mastery as string)?.charAt(0).toUpperCase() + view()?.mastery?.slice(1)}</span></h3>
+                    <div style={{ transform: "scale(0.9)" }}>
+                        <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
+                    </div>
                 </div>
                 
                 <Show when={total() < 3}>
@@ -130,14 +131,16 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
             </div>
         </Show>
         <Show when={removeShow()}>
-            <div class="modal">
-                <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
-                    <p style={{ color: "red", "font-size":"1.5em", margin: "2% auto" }}>Remove {view()?.name}?</p>
-                    <h2>{view()?.description}</h2>
-                    <p>Level: <span class="gold">{view()?.level}</span> | Mastery: <span class="gold">{(view()?.mastery as string)?.charAt(0).toUpperCase() + view()?.mastery?.slice(1)}</span></p>
-                    <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
+            <div class="modal" style={{ "z-index": 99 }}>
+                <div class="center creature-heading"style={{...fullStyle(ascean().mastery), top: "4%", height: "90%"}}>
+                    <h1 style={{ color: "gold", "font-size": "1.5rem" }}>{view()?.name}</h1>
+                    <h2 style={{ "font-size": "1.25rem" }}>{view()?.description}</h2>
+                    <h3 style={{ "font-size": "1.1rem", "margin-bottom": "0" }}>Level: <span class="gold">{view()?.level}</span> | Mastery: <span class="gold">{(view()?.mastery as string)?.charAt(0).toUpperCase() + view()?.mastery?.slice(1)}</span></h3>
+                    <div style={{ transform: "scale(0.9)" }}>
+                        <AsceanImageCard ascean={view as Accessor<Ascean>} show={itemShow} setShow={setItemShow} setEquipment={setEquipment} />
+                    </div>
                 </div>
-                <button class="highlight cornerTR animate" onClick={removeFromParty}>Remove From Party</button>
+                <button class="highlight cornerTR animate" onClick={removeFromParty}>Remove From <br /> Your Party</button>
                 <button class="highlight cornerBR" onClick={() => {setRemoveShow(false); setView(undefined);}} style={{ color: "red" }}>Cancel</button>
             </div>
         </Show>

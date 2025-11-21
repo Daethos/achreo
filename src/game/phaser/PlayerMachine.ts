@@ -3240,6 +3240,7 @@ export default class PlayerMachine {
                 EventBus.emit("outside-stance", "stealth");
             };
         };
+        this.player.shadow.setVisible(!stealth);
         this.scene.sound.play("stealth", { volume: this.scene.hud.settings.volume });
     };
 
@@ -3589,6 +3590,7 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "?c .on-f-u`SeD~", DURATION.TEXT, EFFECT, false, true);
         this.player.spriteWeapon.setVisible(false);
         this.player.spriteShield.setVisible(false);
+        this.player.isConfused = true;
         this.player.confuseDirection = "down";
         this.player.confuseVelocity = { x: 0, y: 0 };
         this.player.isAttacking = false;

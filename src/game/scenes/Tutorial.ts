@@ -174,7 +174,12 @@ export class Tutorial extends Phaser.Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
-        this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
+        this.player.setPosition(965, 328);
+        if (this.hud.prevScene !== "Game") {
+            this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
+        } else if (this.hud.prevScene === "Game") {
+            this.player.setPosition(1024, 104);
+        };
 
         (this.sys as any).animatedTiles.init(map);
         
@@ -608,6 +613,7 @@ export class Tutorial extends Phaser.Scene {
         };
         this.matter.resume();
         this.scene.wake();
+        this.hud.updateCoordinates(this.player.x, this.player.y);
         EventBus.emit("current-scene-ready", this);
     };
 
@@ -952,6 +958,7 @@ export class Tutorial extends Phaser.Scene {
         this.checkEnvironment(this.player);
         this.updateTreeDepthSorting(this.player);
         this.hud.rightJoystick.update();
+        // console.log(Math.round(this.player.x), Math.round(this.player.y));
     };
 
     setCameraOffset = () => {

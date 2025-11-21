@@ -454,7 +454,7 @@ export class HitFeedbackSystem {
             follow: this.scene.player,
             followOffset: {x: 0, y: 16},
             lifespan: 250,
-            scale: { start: 0.5, end: 0 },
+            scale: { start: 0.25, end: 0 },
             alpha: { start: 0.6, end: 0 },
             tint: masteryNumber(this.scene.player.ascean.master),
             blendMode: "ADD",

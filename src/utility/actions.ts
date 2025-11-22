@@ -9,7 +9,7 @@ type ACTION = {
     special: string;
     svg: string;
     talent: string;
-}
+};
 
 export const ACTION_ORIGIN: {[key:string]: ACTION} = {
     ATTACK: {

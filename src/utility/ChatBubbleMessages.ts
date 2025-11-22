@@ -57,7 +57,7 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     "Your physical actions are all that is available in the beginning, but is more than enough to tackle your enemies.", 
                     "Physically, everyone is capable of swinging their weapon and shooting projectiles, in addition to forms of evasion with dodge and roll.",
                     "Your right joystick will capture your conceptual gaze, and where you manually aim your ranged attacks and eventually, specials.",
-                    "When dealing with enemies, they're quite easy to spot as they are tinted red, as you will soon see.",
+                    "When dealing with enemies, they're quite easy to spot as they are tinted red (or perhaps green if you gain their favor!), as you will soon see.",
                     "You won't have a training dummy ... but they're about as close as you will get.",
                     // "I would be beleaguered if you actually fail to defeat them, as I have been assured it's nigh impossible.",
                     // "Unless of course you stand idly by and allow them to vanquish you, which is your prerogrative. I don't judge.",

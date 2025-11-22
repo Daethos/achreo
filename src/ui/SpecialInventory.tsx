@@ -37,7 +37,7 @@ export default function SpecialInventory({ item, index, setItemShow, dragStart, 
         ontouchstart={(e) => touchStart(e)}
         ontouchend={(e) => touchEnd(e)}
         ontouchmove={(e) => touchMove(e, item, index())}
-        >
+    >
         <img src={item?.imgUrl} alt={item?.name} style={{ "pointer-events":"none", "padding-top": "5%" }} />
     </div>;
 };

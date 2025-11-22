@@ -3,7 +3,7 @@ import Enemy from "../entities/Enemy";
 import { EventBus } from "../EventBus";
 import Player from "../entities/Player";
 import { Play } from "../main";
-import StatusEffect, { PRAYERS } from "../../utility/prayer";
+import StatusEffect, { PRAYERS } from "../../models/prayer";
 import { computerCombatCompiler } from "../../utility/computerCombat";
 import Party from "../entities/PartyComputer";
 import { States } from "./StateMachine";

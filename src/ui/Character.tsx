@@ -14,23 +14,23 @@ import { Modal } from "../utility/buttons";
 import { font, getRarityColor, masteryColor } from "../utility/styling";
 import { dimensions } from "../utility/dimensions";
 import { Attributes } from "../utility/attributes";
-import { Reputation, FACTION } from "../utility/player";
 import { playerTraits } from "../utility/ascean";
 import { ACTIONS, addStance, TRAIT_SPECIALS } from "../utility/abilities"; // SPECIALS, TRAITS
 import { DEITIES } from "../utility/deities";
 import { Puff } from "solid-spinner";
 import PhaserSettings from "./PhaserSettings";
-import Statistics from "../utility/statistics";
+import Statistics from "../models/statistics";
 import { DAMAGE_LOOKUP, DAMAGE_TYPE_DIALOG, deriveArmorTypeToArrayLocation, FAITH_RARITY } from "../utility/combatTypes";
-import Talents from "../utility/talents";
+import Talents from "../models/talents";
 import { ACTION_ORIGIN } from "../utility/actions";
 import { svg } from "../utility/settings";
-import QuestManager, { Quest, replaceChar } from "../utility/quests";
+import QuestManager, { Quest, replaceChar } from "../models/quests";
 import Currency from "../utility/Currency";
 import { usePhaserEvent } from "../utility/hooks";
 import { roundToTwoDecimals } from "../utility/combat";
 import SpecialInventoryPouch from "./SpecialInventoryPouch";
 import SpecialItemModal from "../components/SpecialItemModal";
+import { Reputation, FACTION } from "../models/reputation";
 const AsceanImageCard = lazy(async () => await import("../components/AsceanImageCard"));
 const ExperienceBar = lazy(async () => await import("./ExperienceBar"));
 const Firewater = lazy(async () => await import("./Firewater"));
@@ -298,7 +298,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
 
     const checkHighlight = () => {
         if (highlighted()?.item) {
-            const item = game().inventory.inventory.find((item) => item?._id === highlighted()?.item?._id);
+            const item = game().inventory.inventory.find((item: Equipment) => item?._id === highlighted()?.item?._id);
             if (!item) setHighlighted({ item: undefined, comparing: false, type: "" });
         };
     };
@@ -1082,7 +1082,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
 
     async function removeItem(id: string): Promise<void> {
         await deleteEquipment(id);
-        const newInventory = game().inventory.inventory.filter((item) => item._id !== id);
+        const newInventory = game().inventory.inventory.filter((item: Equipment) => item._id !== id);
         EventBus.emit("refresh-inventory", newInventory);
         setRemoveModalShow(false);
     }; 

@@ -1,6 +1,6 @@
 import { Accessor, Setter, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
 import { borderColor } from "../utility/styling";
-import StatusEffect, { PRAYERS } from "../utility/prayer";
+import StatusEffect, { PRAYERS } from "../models/prayer";
 import { Combat } from "../stores/combat";
 import { GameState } from "../stores/game";
 import { EventBus } from "../game/EventBus";

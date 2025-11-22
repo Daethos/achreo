@@ -19,6 +19,7 @@ import { EFFECT } from "../phaser/ScrollingCombatText";
 import { masteryNumber } from "../../utility/styling";
 import { HitLocation } from "../phaser/HitDetection";
 import { NetSystem } from "../matter/NetSystem";
+import { DAGGER, ONE_HAND, TWO_HAND } from "../../utility/weaponTypes";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const DURATION = {
@@ -130,16 +131,16 @@ export default class Player extends Entity {
         this.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
-        if (weapon.grip === "One Hand") {
-            if (weapon.type === "Dagger") {
+        if (weapon.grip === ONE_HAND) {
+            if (weapon.type === DAGGER) {
                 this.spriteWeapon.setScale(PLAYER.SCALE.DAGGER);    
             } else {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             };
-            this.swingTimer = SWING_TIME["One Hand"];
+            this.swingTimer = SWING_TIME[ONE_HAND];
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = SWING_TIME["Two Hand"];
+            this.swingTimer = SWING_TIME[TWO_HAND];
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
@@ -652,15 +653,17 @@ export default class Player extends Entity {
         if (this.currentWeaponSprite !== assetSprite(weapon)) {
             this.currentWeaponSprite = assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (weapon.grip === "One Hand") {
-                if (weapon.type === "Dagger") {
+            if (weapon.grip === ONE_HAND) {
+                if (weapon.type === DAGGER) {
                     this.spriteWeapon.setScale(PLAYER.SCALE.DAGGER);
                 } else {
                     this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
                 };
+                this.swingTimer = SWING_TIME[ONE_HAND];
             } else {
                 staminaModifier += 2;
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
+                this.swingTimer = SWING_TIME[TWO_HAND];
             };
         };
         if (this.currentShieldSprite !== assetSprite(shield)) {

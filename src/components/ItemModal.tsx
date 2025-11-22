@@ -4,7 +4,7 @@ import { dimensions } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 import { roundToTwoDecimals } from "../utility/combat";
 import { specialDescription } from "../ui/CombatSettings";
-import Talents from "../utility/talents";
+import Talents from "../models/talents";
 
 export function attrSplitter(string: string, value: number) {
     if (value <= 0) return "";

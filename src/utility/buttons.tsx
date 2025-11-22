@@ -2,7 +2,7 @@ import { borderColor, font } from "./styling";
 import { SCREENS } from "./screens";
 import { Accessor, Setter } from "solid-js";
 import Equipment from "../models/equipment";
-import StatusEffect from "./prayer";
+import StatusEffect from "../models/prayer";
 import { EventBus } from "../game/EventBus";
 import { specialDescription } from "../ui/CombatSettings";
 const specials = ["Avarice", "Dispel", "Denial", "Insight", "Quicken", "Silence"]; // Slow, Fear, Confuse, Charm

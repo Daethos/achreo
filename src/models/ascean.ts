@@ -5,7 +5,7 @@ import { Amulets, Rings, Trinkets } from "../assets/db/jewelry";
 import { Skills, initCharacter, initSkills } from "../utility/ascean"; 
 import { v4 as uuidv4 } from "uuid";
 import { addAscean } from "../assets/db/db";
-import Quest from "../utility/quests";
+import Quest from "./quests";
 
 export default class Ascean {
     _id: string = uuidv4();

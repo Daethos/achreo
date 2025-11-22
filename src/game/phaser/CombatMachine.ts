@@ -2,7 +2,7 @@ import * as Dispatcher from "./Dispatcher";
 import { EventBus } from "../EventBus";
 import { CombatManager } from "./CombatManager";
 import { Combat } from "../../stores/combat";
-import StatusEffect from "../../utility/prayer";
+import StatusEffect from "../../models/prayer";
 import { HitLocationResult } from "./HitDetection";
 
 type ActionHandler = (data: any) => void;

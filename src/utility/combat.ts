@@ -3,7 +3,7 @@ import Ascean, { initAscean } from "../models/ascean";
 import Equipment, { initEquipment } from "../models/equipment";
 import { Combat } from "../stores/combat";
 import { ARMOR_WEIGHT, ARMORS, ACTION_TYPES, ATTACKS, DAMAGE, ENEMY_ATTACKS, HOLD_TYPES, STRONG_ATTACKS, STRONG_TYPES, ATTACK_TYPES, MASTERY, WEAPON_TYPES, DEITIES, FAITH_RARITY, DEFENSE_TYPE_TO_NUM, DAMAGE_TYPE_NUMS, DAMAGE_TYPE_TO_NUM, LOCATION_TO_NUM, DAMAGE_LOOKUP, ATTACK_LOOKUP, DUAL_ELIGIBILITY, ACTION_MULTIPLIER_LOOKUP, ENEMY_PRAYERS, THRESHOLD } from "./combatTypes";
-import StatusEffect, { EFFECT, PRAYERS } from "./prayer";
+import StatusEffect, { EFFECT, PRAYERS } from "../models/prayer";
 
 export type CombatAttributes = {
     rawConstitution: number;

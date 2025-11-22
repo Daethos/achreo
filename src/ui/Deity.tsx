@@ -8,10 +8,10 @@ import { EventBus } from "../game/EventBus";
 import { NPC } from "../utility/npc";
 import { DialogTree } from "./Dialog";
 import { evaluateDeity } from "../utility/deities";
-import Statistics from "../utility/statistics";
-import { Reputation } from "../utility/player";
+import Statistics from "../models/statistics";
 import { addSpecial, addStance } from "../utility/abilities";
 import Settings from "../models/settings";
+import { Reputation } from "../models/reputation";
 
 // enum DEITIES {
 //     DAETHOS,

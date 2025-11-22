@@ -1,6 +1,6 @@
 import { KVI } from "./CombatMachine";
 import { EventBus } from "../EventBus";
-import StatusEffect from "../../utility/prayer";
+import StatusEffect from "../../models/prayer";
 const INITIATE = "initiate-combat";
 const UPDATE = "update-combat-state";
 const ActionTypes = {

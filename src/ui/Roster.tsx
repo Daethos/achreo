@@ -1,8 +1,10 @@
-/*  <<------------------ ROSTER ------------------>>
-    Two panel modal pop-up, allowing the player
-    to choose the type of arena and duel schema
-    they wish to perform in, with gambling.
-    <<------------------ ROSTER ------------------>> */
+/*  
+*    <<------------------ ROSTER ------------------>>
+*    Two panel modal pop-up, allowing the player
+*    to choose the type of arena and duel schema
+*    they wish to perform in, with gambling.
+*    <<------------------ ROSTER ------------------>> 
+*/
 import { Accessor, createSignal, For, Match, onMount, Setter, Show, Switch } from "solid-js";
 import { ARENA_ENEMY, fetchArena } from "../utility/enemy";
 import Ascean from "../models/ascean";

@@ -1,6 +1,6 @@
-import { initSpecialInventory, SpecialInventory } from "../models/item";
+import { Inventory, initInventory } from "../models/inventory";
+import { SpecialInventory, initSpecialInventory } from "../models/specialInventory";
 import { DialogNode, DialogNodeOption } from "../utility/DialogNode";
-import { initInventory, Inventory } from "../utility/player";
 
 export interface GameState {
     player: any;

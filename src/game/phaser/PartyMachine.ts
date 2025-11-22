@@ -1,6 +1,6 @@
-import Party, { COLOR } from "../entities/PartyComputer";
+import Party from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAMES, MOVEMENT } from "../entities/Entity";
+import { FRAMES, GOLD_COLOR_MATRIX, MOVEMENT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
@@ -170,7 +170,7 @@ export default class PlayerMachine {
     };
     onHurtExit = () => {
         this.player.isHurt = false;
-        this.player.setTint(COLOR);
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.setStatic(false);
     };
 
@@ -1182,25 +1182,38 @@ export default class PlayerMachine {
 
     onBlinkEnter = () => {
         this.player.enemySound("caerenic", true);
-        if (this.player.velocity?.x as number > 0) {
-            this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
-        } else if (this.player.velocity?.x as number < 0) {
-            this.player.setPosition(Math.max(this.player.x - PLAYER.SPEED.BLINK, 0), this.player.y);
+        if (this.scene.scene.key === "Game") {
+            if (this.player.velocity?.x as number > 0) {
+                this.player.setPosition(this.player.x + PLAYER.SPEED.BLINK, this.player.y);
+            } else if (this.player.velocity?.x as number < 0) {
+                this.player.setPosition(this.player.x - PLAYER.SPEED.BLINK, this.player.y);
+            };
+            if (this.player.velocity?.y as number > 0) {
+                this.player.setPosition(this.player.x, this.player.y + PLAYER.SPEED.BLINK);
+            } else if (this.player.velocity?.y as number < 0) {
+                this.player.setPosition(this.player.x, this.player.y - PLAYER.SPEED.BLINK);
+            };
+        } else {
+            if (this.player.velocity?.x as number > 0) {
+                this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
+            } else if (this.player.velocity?.x as number < 0) {
+                this.player.setPosition(Math.max(this.player.x - PLAYER.SPEED.BLINK, 0), this.player.y);
+            };
+            if (this.player.velocity?.y as number > 0) {
+                this.player.setPosition(this.player.x, Math.min(this.player.y + PLAYER.SPEED.BLINK, this.scene.map.heightInPixels));
+            } else if (this.player.velocity?.y as number < 0) {
+                this.player.setPosition(this.player.x, Math.max(this.player.y - PLAYER.SPEED.BLINK, 0));
+            };
+            const mapBounds = {
+                minX: 32,
+                maxX: this.scene.map.widthInPixels - 32,
+                minY: 32,
+                maxY: this.scene.map.heightInPixels - 32
+            };
+            const clampedX = Phaser.Math.Clamp(this.player.x, mapBounds.minX, mapBounds.maxX);
+            const clampedY = Phaser.Math.Clamp(this.player.y, mapBounds.minY, mapBounds.maxY);
+            this.player.setPosition(clampedX, clampedY);
         };
-        if (this.player.velocity?.y as number > 0) {
-            this.player.setPosition(this.player.x, Math.min(this.player.y + PLAYER.SPEED.BLINK, this.scene.map.heightInPixels));
-        } else if (this.player.velocity?.y as number < 0) {
-            this.player.setPosition(this.player.x, Math.max(this.player.y - PLAYER.SPEED.BLINK, 0));
-        };
-        const mapBounds = {
-            minX: 32,
-            maxX: this.scene.map.widthInPixels - 32,
-            minY: 32,
-            maxY: this.scene.map.heightInPixels - 32
-        };
-        const clampedX = Phaser.Math.Clamp(this.player.x, mapBounds.minX, mapBounds.maxX);
-        const clampedY = Phaser.Math.Clamp(this.player.y, mapBounds.minY, mapBounds.maxY);
-        this.player.setPosition(clampedX, clampedY);
         this.player.flickerCaerenic(750); 
     };
     onBlinkUpdate = (_dt: number) => this.player.combatChecker(false);
@@ -2410,7 +2423,7 @@ export default class PlayerMachine {
             clearStealth(this.player);
             clearStealth(this.player.spriteWeapon);
             clearStealth(this.player.spriteShield);
-            this.player.setTint(0x00FF00);
+            this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         };
         this.player.shadow.setVisible(!stealth);
         this.player.enemySound("stealth", true);
@@ -2790,7 +2803,7 @@ export default class PlayerMachine {
     onParalyzedExit = () => {
         this.player.isParalyzed = false;
         this.player.paralyzeDuration = DURATION.PARALYZED;
-        this.player.setTint(0x00FF00);
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.setStatic(false);
         this.player.anims.resume();
     };
@@ -2858,7 +2871,7 @@ export default class PlayerMachine {
         this.player.partyAnimation();
         if (this.player.isPolymorphed) this.player.isPolymorphed = false;
         this.player.clearAnimations();
-        this.player.setTint(0x00FF00);
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.spriteWeapon.setVisible(true);
         if (this.player.polymorphTimer) {
             this.player.polymorphTimer.destroy();
@@ -2878,7 +2891,7 @@ export default class PlayerMachine {
 
     onSlowedExit = () => {
         this.player.clearTint();
-        this.player.setTint(0x00FF00);
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.adjustSpeed((PLAYER.SPEED.SLOW - 0.25));
     };
 
@@ -2894,7 +2907,7 @@ export default class PlayerMachine {
     };
     onSnaredExit = () => { 
         this.player.clearTint(); 
-        this.player.setTint(0x00FF00); 
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX); 
         this.player.adjustSpeed((PLAYER.SPEED.SNARE - 0.25));
     };
 
@@ -2918,7 +2931,7 @@ export default class PlayerMachine {
     onStunnedExit = () => {
         this.player.isStunned = false;
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
-        this.player.setTint(0x00FF00);
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.setStatic(false);
         this.player.anims.resume();
     };

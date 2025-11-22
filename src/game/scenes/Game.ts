@@ -24,7 +24,6 @@ import { PhaserNavMeshPlugin } from "phaser-navmesh";
 // @ts-ignore
 import AnimatedTiles from "phaser-animated-tiles-phaser3.5/dist/AnimatedTiles.min.js";
 import { PARTY_OFFSET } from "../../utility/party";
-import { FACTION } from "../../utility/player";
 import { AoEPool } from "../phaser/AoE";
 import { ENTITY_FLAGS } from "../phaser/Collision";
 import Treasure from "../matter/Treasure";
@@ -32,6 +31,7 @@ import WeatherManager from "../matter/Weather";
 import { Entity } from "../main";
 import { ExperienceManager } from "../phaser/ExperienceManager";
 import { ChatManager } from "../phaser/ChatManager";
+import { FACTION } from "../../models/reputation";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 562500; // 640000; 750 / 800

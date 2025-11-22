@@ -12,8 +12,8 @@ import Equipment, { determineMutation, getArmorEquipment, getClothEquipment, get
 import { LevelSheet } from "../utility/ascean";
 import { font, getRarityColor, masteryColor, sellRarity } from "../utility/styling";
 import ItemModal, { attrSplitter } from "../components/ItemModal";
-import QuestManager, { Condition, getQuests, Quest, QUEST_TEMPLATES, replaceChar } from "../utility/quests";
-import { ENEMY_ENEMIES, FACTION, initFaction, namedNameCheck, Reputation } from "../utility/player";
+import QuestManager, { Condition, getQuests, Quest, QUEST_TEMPLATES, replaceChar } from "../models/quests";
+import { ENEMY_ENEMIES, namedNameCheck } from "../utility/player";
 // import Thievery from "./Thievery";
 import Merchant from "./Merchant";
 import Roster from "./Roster";
@@ -36,6 +36,7 @@ import { Puff } from "solid-spinner";
 import { ITEMS } from "../assets/db/items";
 import { Item } from "../models/item";
 import SpecialItemModal from "../components/SpecialItemModal";
+import { ENEMY_FRIENDLY, FACTION, initFaction, Reputation } from "../models/reputation";
 
 function itemCostConverter(cost: number) {
     const convert = cost * 100;
@@ -1826,7 +1827,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <>
                     <Typewriter styling={TYPEWRITER} stringText={`"If you wish to elevate yourself in mine and my other's eyes, it would serve you well to quell nature of${checkConditions()}."`} performAction={hollowClick} />
                     <br />
-                    {rep()?.reputation >= 25 && party() ? (
+                    {rep()?.reputation >= ENEMY_FRIENDLY && party() ? (
                         <div style={{ "font-size":"1.5rem", "font-family":"Centaur" }}>
                             [Congratulations! You have endeared yourself to this {combat().computer?.name}, and are capable of recruiting them to your party. They will join you on your journey and protect you with their life. Do you wish to recruit this enemy to your party? They are {enemyDescriptionArticle()} {combat().computer?.description}. You are allowed to have up to 3 party members accompanying you on your journey. Choose wisely.]
                             <br /><br />
@@ -1834,7 +1835,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Typewriter styling={{ "font-size": "1.15rem" }} stringText={`Recruit ${rep().name} to join your party.`} performAction={hollowClick} />
                             </button>
                         </div>
-                    ) : rep()?.reputation >= 25 && !party() ? (
+                    ) : rep()?.reputation >= ENEMY_FRIENDLY && !party() ? (
                         <div style={{ color: "gold", "font-size":"1.15rem" }}>
                             [You have reached maximum party size. The {combat().computer?.name} is not capable of being recruited to your party. You must remove a current party member in order to recruit them for your journey.]
                         </div>

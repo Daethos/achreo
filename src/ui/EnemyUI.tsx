@@ -13,7 +13,7 @@ import { Combat } from "../stores/combat";
 import { Attributes } from "../utility/attributes";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-import StatusEffect from "../utility/prayer";
+import StatusEffect from "../models/prayer";
 import { PrayerModal } from "../utility/buttons";
 import { GameState } from "../stores/game";
 import { EnemySheet } from "../utility/enemy";

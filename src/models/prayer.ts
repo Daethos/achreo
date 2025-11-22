@@ -1,10 +1,10 @@
-import Ascean from "../models/ascean";
-import Equipment from "../models/equipment";
+import Ascean from "./ascean";
+import Equipment from "./equipment";
 import { Combat } from "../stores/combat";
-import { CombatAttributes } from "./combat";
+import { CombatAttributes } from "../utility/combat";
 import { v4 as uuidv4 } from "uuid";
-import { ACHREO, AHNVE, ASTRA, CAMBIRE, CHIOMYR, DAETHOS, FYER, ILIOS, KYNGI, KYRISOS, KYRNA, LILOS, MAANRE, NYROLUS, QUOREI, RAHVRE, SEDYRO, SENARI, SEVAS, SHRYGEI, TSHAER } from "./deities";
-import { ACHRE, AGILITY, CAEREN, CONSTITUTION, HOLD_TYPES, KYOSIR, STRENGTH, WEAPON_TYPES } from "./combatTypes";
+import { ACHREO, AHNVE, ASTRA, CAMBIRE, CHIOMYR, DAETHOS, FYER, ILIOS, KYNGI, KYRISOS, KYRNA, LILOS, MAANRE, NYROLUS, QUOREI, RAHVRE, SEDYRO, SENARI, SEVAS, SHRYGEI, TSHAER } from "../utility/deities";
+import { ACHRE, AGILITY, CAEREN, CONSTITUTION, HOLD_TYPES, KYOSIR, STRENGTH, WEAPON_TYPES } from "../utility/combatTypes";
 
 export type Effect = { 
     physicalDamage?: number;

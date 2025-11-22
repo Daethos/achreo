@@ -6,6 +6,7 @@ import { ENEMY_ATTACKS } from "../../utility/combatTypes";
 import { BROADCAST_DEATH, DISTANCE, HEALS, MIND_STATES } from "../../utility/enemy";
 import { PARTY_AOE, PARTY_RANGED, PARTY_SPECIAL } from "../../utility/party";
 import { ENEMY_ENEMIES, PLAYER } from "../../utility/player";
+import { ONE_HAND, TWO_HAND } from "../../utility/weaponTypes";
 import { EventBus } from "../EventBus";
 import { Play } from "../main";
 import Beam from "../matter/Beam";
@@ -20,7 +21,7 @@ import { vibrate } from "../phaser/ScreenShake";
 import { BONE, CAST, DAMAGE, EFFECT, HEAL, HUSH, TENDRIL } from "../phaser/ScrollingCombatText";
 import { specialPositiveMachines, States } from "../phaser/StateMachine";
 import Enemy from "./Enemy";
-import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";
+import Entity, { assetSprite, calculateThreat, ENEMY, FRAMES, GOLD_COLOR_MATRIX, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE, SWING_TIME } from "./Entity";
 import { v4 as uuidv4 } from "uuid";
 
 // @ts-ignore
@@ -51,8 +52,6 @@ const ORIGIN = {
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 const PARTY_ATTACK_STATES = [States.COMPUTER_ATTACK, States.COMPUTER_PARRY, States.COMPUTER_POSTURE, States.COMPUTER_THRUST, States.DODGE, States.ROLL];
-export const COLOR = 0x00FF00;
-const TARGET_COLOR = 0xFFC700;
 export default class Party extends Entity {
     playerID: string;
     computerAction: boolean = false;
@@ -125,6 +124,7 @@ export default class Party extends Entity {
     mindStateName: string;
     combatContext: CombatContext | undefined = undefined;
     combatContextFrame: number = 0;
+    colorMatrix: Phaser.FX.ColorMatrix;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler, position: number }) {
         const { scene } = data;
@@ -138,15 +138,18 @@ export default class Party extends Entity {
         this.partyPosition = data.position; 
         this.computerCombatSheet = this.createComputerCombatSheet(data.data);
         const weapon = this.weapons[0];
-        this.setTint(COLOR);
+        this.colorMatrix = this.postFX.addColorMatrix();
+        this.colorMatrix.brightness(0.5);
+        this.colorMatrix.set(GOLD_COLOR_MATRIX);
+        // this.setTint(COLOR);
         this.currentWeaponSprite = assetSprite(weapon);
         this.spriteWeapon = new Phaser.GameObjects.Sprite(this.scene, 0, 0, this.currentWeaponSprite);
-        if (weapon.grip === "One Hand") {
+        if (weapon.grip === ONE_HAND) {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
-            this.swingTimer = SWING_TIME["One Hand"];
+            this.swingTimer = SWING_TIME[ONE_HAND];
         } else {
             this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
-            this.swingTimer = SWING_TIME["Two Hand"];
+            this.swingTimer = SWING_TIME[TWO_HAND];
         };
         this.spriteWeapon.setOrigin(0.25, 1);
         this.scene.add.existing(this);
@@ -192,7 +195,7 @@ export default class Party extends Entity {
         this.aoeMask = ENTITY_FLAGS.PARTY;
 
         this.highlight = this.scene.add.graphics()
-            .lineStyle(4, 0xFFc700)
+            .lineStyle(4, 0xffd700)
             .setScale(0.2)
             .strokeCircle(0, 0, 12)
             .setDepth(99);
@@ -202,7 +205,7 @@ export default class Party extends Entity {
         this.highlight.setVisible(false);
 
         this.mark = this.scene.add.graphics()
-            .lineStyle(4, 0xfdf6d8)
+            .lineStyle(4, 0xffd700)
             .setScale(0.5)
             .strokeCircle(0, 0, 12);
         this.mark.setVisible(false);
@@ -223,16 +226,16 @@ export default class Party extends Entity {
                     this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 };
                 if (this.scene.player.isComputer) return;
-                this.clearTint();
-                this.setTint(TARGET_COLOR);
+                // this.clearTint();
+                // this.setTint(TARGET_COLOR);
                 this.ping();
                 vibrate();
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
                 this.scene.player.setCurrentTarget(this);
             })
             .on("pointerout", () => {
-                this.clearTint();
-                this.setTint(COLOR);
+                // this.clearTint();
+                // this.setTint(COLOR);
             });
         this.scene.time.delayedCall(1000, () => {
             this.setVisible(true);
@@ -254,10 +257,6 @@ export default class Party extends Entity {
         if (this.mindState.startup) this.mindState.startup(this, this.getCombatContext());
 
         this.checkSpecials(ascean);
-        // scene.time.delayedCall(3000, () => {
-        //     if (this.scene.state.caerenic.active) this.caerenicUpdate();
-        //     if (this.scene.state.stalwart.active) this.stalwartUpdate(this.scene.state.stalwart.active);
-        // }, undefined, this);
     };
 
     ping = () => {
@@ -270,18 +269,11 @@ export default class Party extends Entity {
         };
     };
 
-    // computerBroadcast = (e: { id: string; key: string; value: number; }) => {
-    //     if (this.computerCombatSheet.enemyID !== e.id) return;
-    //     (this.computerCombatSheet as any)[e.key] = e.value;
-    // };
-
     cleanUp() {
         EventBus.off(BROADCAST_DEATH, this.clearComputerCombatWin);
         EventBus.off("engage", this.engage);
         EventBus.off("speed", this.speedUpdate);
         EventBus.off("update-stealth", this.stealthUpdate);
-        // EventBus.off("update-caerenic", this.caerenicUpdate);
-        // EventBus.off("update-stalwart", this.stalwartUpdate);
         if (this.isGlowing) this.checkCaerenic(false);
         if (this.isShimmering) {
             this.isShimmering = false;
@@ -304,8 +296,6 @@ export default class Party extends Entity {
         EventBus.on("engage", this.engage);
         EventBus.on("speed", this.speedUpdate);
         EventBus.on("update-stealth", this.stealthUpdate);
-        // EventBus.on("update-caerenic", this.caerenicUpdate);
-        // EventBus.on("update-stalwart", this.stalwartUpdate);
     }; 
 
     createComputerCombatSheet = (e: Compiler): ComputerCombat => {
@@ -597,10 +587,12 @@ export default class Party extends Entity {
         if (this.currentWeaponSprite !== assetSprite(weapon)) {
             this.currentWeaponSprite = assetSprite(weapon);
             this.spriteWeapon.setTexture(this.currentWeaponSprite);
-            if (weapon.grip === "One Hand") {
+            if (weapon.grip === ONE_HAND) {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
+                this.swingTimer = SWING_TIME[ONE_HAND];
             } else {
                 this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
+                this.swingTimer = SWING_TIME[TWO_HAND];
             };
         };
         if (this.currentShieldSprite !== assetSprite(shield)) {
@@ -684,13 +676,7 @@ export default class Party extends Entity {
 
     combatChecker = (state: boolean) => {
         if (state) return;
-            this.playerMachine.stateMachine.setState(States.CHASE);
-        // if (this.inComputerCombat) {
-        //     this.playerMachine.stateMachine.setState(States.COMPUTER_COMBAT);
-        // } else {
-        //     this.playerMachine.stateMachine.setState(States.CHASE);
-        //     // this.playerMachine.stateMachine.setState(States.IDLE);
-        // };
+        this.playerMachine.stateMachine.setState(States.CHASE);
     };
 
     caerenicUpdate = (caerenic: boolean) => {
@@ -730,7 +716,6 @@ export default class Party extends Entity {
             }, undefined, this);
         };
     };
-
 
     setMindState = (mind: string) => {
         this.mindStateName = mind;
@@ -1566,13 +1551,6 @@ export default class Party extends Entity {
             // if (this.inCombat) console.log("SWING!", { action: this.currentAction });
         }, undefined, this);
     };
-
-    /* 
-        One Hand: 2500
-        Two Hand: 3000
-        Per Level Reduction: 250 / 300
-        Swing Speed Max: 500 / 600
-    */
 
     swingTime = (): number => Math.max(0.2, 1 - (this.ascean.level - 1) * 0.1) * this.swingTimer;
 

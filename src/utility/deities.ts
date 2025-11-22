@@ -1,6 +1,6 @@
 import { Accessor } from "solid-js";
 import { getAscean, updateAscean } from "../assets/db/db";
-import Statistics from "./statistics";
+import Statistics from "../models/statistics";
 import { EventBus } from "../game/EventBus";
 
 export const DAETHOS = "Daethos";

@@ -12,10 +12,10 @@ import { LevelSheet } from "../utility/ascean";
 import Settings from "../models/settings";
 import { partyText, text } from "../utility/text";
 import { svg } from "../utility/settings";
-import QuestManager from "../utility/quests";
-import { Reputation } from "../utility/player";
+import QuestManager from "../models/quests";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { Play } from "../game/main";
+import { Reputation } from "../models/reputation";
 interface Props {
     ascean: Accessor<Ascean>;
     asceanState: Accessor<LevelSheet>;

@@ -24,6 +24,7 @@ import { ATTACK, BOW, NOBOW, POSTURE, ROLL, THRUST } from "../../utility/abiliti
 import { PLAYER } from "../../utility/player";
 import { hitLocationDetector, HitLocationResult } from "../phaser/HitDetection";
 import { ACTION_TYPES } from "../../utility/combatTypes";
+import { ONE_HAND } from "../../utility/weaponTypes";
 
 export function assetSprite(asset: Equipment) {
     return asset.imgUrl.split("/")[3].split(".")[0];
@@ -36,6 +37,48 @@ export function calculateThreat(damage: number, currentHealth: number, totalHeal
     return relative;
 };
 
+export const RED_COLOR_MATRIX = [
+    1, 1, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 1, 0
+]; // RED
+export const GOLD_COLOR_MATRIX = [
+    1, 0, 0, 0, 0, 
+    0.843, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 1, 0
+]; 
+export const DREAD_COLOR_MATRIX = [
+    0.545, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 1, 0
+];
+export const GREEN_COLOR_MATRIX = [
+    0, 0, 0, 0, 0, 
+    0, 1, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 1, 0
+];
+export const BLUE_COLOR_MATRIX = [
+    0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 
+    0, 0, 1, 0, 0, 
+    0, 0, 0, 1, 0
+];
+export const GRAY_COLOR_MATRIX = [
+    0.33, 0.33, 0.33, 0, 0,  // Mix all colors to create Red channel (at ~53% brightness)
+    0.33, 0.33, 0.33, 0, 0,  // Mix all colors to create Green channel
+    0.33, 0.33, 0.33, 0, 0,  // Mix all colors to create Blue channel
+    0, 0, 0, 1, 0
+];
+export const TEAL_COLOR_MATRIX = [
+    0, 0, 0, 0, 0,          // Red Output: Always 0
+    0.5, 0.5, 0.5, 0, 0,    // Green Output: Map existing brightness to 50% Green
+    0.5, 0.5, 0.5, 0, 0,    // Blue Output: Map existing brightness to 50% Blue
+    0, 0, 0, 1, 0
+];
 export const MOVEMENT: {[key:string]: {x:number;y:number;};} = {
     "up": { x: 0, y: -5 },
     "down": { x: 0, y: 5 },
@@ -72,7 +115,6 @@ export const FRAMES = {
 export type ENEMY = {id:string; threat:number};
 const ACTION = "action";
 const COMPUTER_ACTION = "computerAction";
-const ONE_HAND = "One Hand";
 
 export const ENEMY_SWING_TIME: {[key: string]: number} = { "One Hand": 2500, "Two Hand": 3000 }; // 750, 1250 [old]
 export const SWING_TIME: {[key: string]: number} = { "One Hand": 1250, "Two Hand": 1500 }; // 750, 1250 [old]
@@ -663,7 +705,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         this.clearTint();
         this.anims.play(FRAMES.HURT, true).once(FRAMES.ANIMATION_COMPLETE, () => {
             this.isHurt = false;
-            if (this.name === "enemy") this.setTint(0xFF0000);
+            if (this.name === "enemy") (this as unknown as Enemy).colorMatrix.set((this as unknown as Enemy).getTint());
             if (this.name === "party") this.setTint(0x00FF00);
         }); 
     };

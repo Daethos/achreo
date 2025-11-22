@@ -3,7 +3,7 @@ import { createStore } from "solid-js/store";
 import Ascean from "../models/ascean";
 import Equipment, { getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
 import Settings from "../models/settings";
-import Statistics from "../utility/statistics";
+import Statistics from "../models/statistics";
 import StartGame, { Play } from "./main";
 import { EventBus } from "./EventBus";
 import { Menu } from "../utility/screens";
@@ -17,12 +17,15 @@ import { getAsceanTraits, Traits } from "../utility/traits";
 import { fetchDm, getNodesForNPC, npcIds } from "../utility/DialogNode";
 import { fetchNpc } from "../utility/npc";
 import { checkDeificConcerns } from "../utility/deities";
-import { ENEMY_AGGRESSION, ENEMY_ENEMIES, Inventory, Reputation, FACTION, ENEMY_HOSTILE } from "../utility/player";
+import { ENEMY_ENEMIES } from "../utility/player";
 import { Puff } from "solid-spinner";
-import Talents from "../utility/talents";
-import QuestManager, { Quest } from "../utility/quests";
+import Talents from "../models/talents";
+import QuestManager, { Quest } from "../models/quests";
 import { addStance } from "../utility/abilities";
-import { getSpecificItem, Item, SpecialInventory } from "../models/item";
+import { getSpecificItem, Item } from "../models/item";
+import { Inventory } from "../models/inventory";
+import { Reputation, FACTION, ENEMY_AGGRESSION, ENEMY_FRIENDLY, ENEMY_HOSTILE } from "../models/reputation";
+import { SpecialInventory } from "../models/specialInventory";
 const BaseUI = lazy(async () => await import("../ui/BaseUI"));
 
 const RARITY_GOLD_MAP: {[key:string]: number} = {
@@ -581,21 +584,28 @@ export default function PhaserGame (props: IProps) {
         if (!enemies) return newReputation;
         newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {
-                faction.reputation = Math.min(faction.reputation + 1, 50);
+                faction.reputation = Math.min(faction.reputation + 1, 35);
                 if (faction.reputation > ENEMY_HOSTILE && faction.hostile) {
                     faction.hostile = false;
                 };
                 if (faction.reputation > ENEMY_AGGRESSION && faction.aggressive) {
                     faction.aggressive = false;
                 };
+                if (faction.reputation > ENEMY_FRIENDLY && !faction.friendly) {
+                    faction.friendly = true;
+                };
             };
             if (faction.name === computer.name) {
-                faction.reputation = Math.max(-100, faction.reputation - 3);
+                const loss = faction.friendly ? 5 : faction.aggressive ? 4 : faction.hostile ? 3 : 2;
+                faction.reputation = Math.max(-100, faction.reputation - loss);
                 if (faction.reputation <= ENEMY_HOSTILE && !faction.hostile) {
                     faction.hostile = true;
                 };
                 if (faction.reputation <= ENEMY_AGGRESSION && !faction.aggressive) {
                     faction.aggressive = true;
+                };
+                if (faction.reputation <= ENEMY_FRIENDLY && faction.friendly) {
+                    faction.friendly = false;
                 };
             };
         });

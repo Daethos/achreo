@@ -2,7 +2,7 @@ import { HitLocation, HitLocationResult } from "../game/phaser/HitDetection";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { CombatAttributes, Defense } from "../utility/combat";
-import StatusEffect from "../utility/prayer";
+import StatusEffect from "../models/prayer";
 
 export interface ComputerCombat {
     computer: Ascean | undefined;

@@ -12,6 +12,7 @@ const config = {
     gold: [255, 215, 0], 
     purple: [128, 0, 128], 
 };
+
 export const lightning = () => {
     const canvas = document.getElementById('lightning') as HTMLCanvasElement;
     const ctx = canvas?.getContext('2d');

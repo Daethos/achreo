@@ -1,5 +1,6 @@
 import { STARTING_MASTERY_UI } from "../utility/abilities";
 import { initTutorial, Tutorial } from "../utility/tutorial";
+
 export default class Settings {
     public _id: string;
     public map: string;

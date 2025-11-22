@@ -2,7 +2,7 @@ import { HitLocation, HitLocationResult } from "../game/phaser/HitDetection";
 import Ascean, { initAscean } from "../models/ascean";
 import Equipment, { initEquipment } from "../models/equipment";
 import { CombatAttributes, Defense, initCombatAttributes, initDefense } from "../utility/combat";
-import StatusEffect from "../utility/prayer";
+import StatusEffect from "../models/prayer";
 
 export interface Combat {
     player: Ascean;

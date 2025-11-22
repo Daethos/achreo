@@ -1,5 +1,5 @@
 import Equipment from "../models/equipment";
-import { PRAYERS } from "./prayer";
+import { PRAYERS } from "../models/prayer";
 
 export const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
 export const ATTACKS = {

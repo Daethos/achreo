@@ -1,9 +1,9 @@
-import Entity, { calculateThreat, ENEMY, FRAMES, Player_Scene, SWING_FORCE, SWING_FORCE_ATTRIBUTE } from "./Entity"; 
+import Entity, { BLUE_COLOR_MATRIX, calculateThreat, ENEMY, FRAMES, GRAY_COLOR_MATRIX, GREEN_COLOR_MATRIX, Player_Scene, RED_COLOR_MATRIX, SWING_FORCE, SWING_FORCE_ATTRIBUTE, TEAL_COLOR_MATRIX } from "./Entity"; 
 import StateMachine, { specialPositiveMachines, States } from "../phaser/StateMachine";
 import HealthBar from "../phaser/HealthBar";
 import { EventBus } from "../EventBus";
 import { v4 as uuidv4 } from "uuid";
-import { PLAYER, ENEMY_ENEMIES, FACTION } from "../../utility/player";
+import { PLAYER, ENEMY_ENEMIES } from "../../utility/player";
 import CastingBar from "../phaser/CastingBar";
 import Bubble from "../phaser/Bubble";
 import { BROADCAST_DEATH, DISTANCE, DURATION, ENEMY_AOE, ENEMY_RANGED, ENEMY_SPECIAL, getAnEnemy, GRIP_SCALE, HEALS, HELP, INSTINCTS, MIND_STATES, RANGE } from "../../utility/enemy";
@@ -16,7 +16,7 @@ import Beam from "../matter/Beam";
 import { Play } from "../main";
 import { ComputerCombat, initComputerCombat } from "../../stores/computer";
 import { ArenaView } from "../scenes/ArenaCvC";
-import StatusEffect from "../../utility/prayer";
+import StatusEffect from "../../models/prayer";
 import Party from "./PartyComputer";
 import { BONE, CAST, DAMAGE, EFFECT, HEAL } from "../phaser/ScrollingCombatText";
 import { ENTITY_FLAGS } from "../phaser/Collision";
@@ -24,13 +24,12 @@ import { CHUNK_SIZE } from "../scenes/Game";
 import { CacheDirection, CombatContext, MindState, MindStates } from "../phaser/MindState";
 import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 import { HitLocation } from "../phaser/HitDetection";
+import { FACTION } from "../../models/reputation";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
 const NAME = "enemy";
 const COMPUTER_ACTION = "computerAction";
-const ENEMY_COLOR = 0xFF0000;
-const TARGET_COLOR = 0xFFFF00;
 const MAX_HEARING_DISTANCE = 500;
 const MIN_HEARING_DISTANCE = 100;
 
@@ -118,8 +117,10 @@ export default class Enemy extends Entity {
     mindStateName: string;
     combatContext: CombatContext | undefined = undefined;
     acc: 0;
+    isFriendly: boolean;
     isHostile: boolean;
     isNetted: boolean = false;
+    colorMatrix: Phaser.FX.ColorMatrix;
 
     constructor(data: { scene: Play, x: number, y: number, texture: string, frame: string, data: Compiler | undefined }) {
         super({ ...data, name: NAME, ascean: undefined, health: 1 }); 
@@ -142,7 +143,6 @@ export default class Enemy extends Entity {
             this.computerCombatSheet = this.createComputerCombatSheet(data.data);
             this.potentialEnemies = ENEMY_ENEMIES[this.ascean.name] || [];
         };
-        this.setTint(ENEMY_COLOR);
         this.stateMachine = new StateMachine(this, NAME);
         this.stateMachine
             .addState(States.IDLE, { onEnter: this.onIdleEnter, onUpdate: this.onIdleUpdate, onExit: this.onIdleExit })
@@ -280,6 +280,10 @@ export default class Enemy extends Entity {
         this.chunkY = this.scene.playerChunkY;
         this.acc = 0;
         this.isHostile = this.setHostility();
+        this.isFriendly = this.setFriendliness();
+        this.colorMatrix = this.postFX.addColorMatrix();
+        this.colorMatrix.brightness(0.5);
+        this.colorMatrix.set(this.getTint());
         this.lastHitLocation = { location: HitLocation.HEAD, hitPoint: { x: 0, y: 0 }, relativePosition: { x: 0, y: 0 } };
 
         const mindStates = MIND_STATES[this.ascean.mastery];
@@ -326,8 +330,6 @@ export default class Enemy extends Entity {
                 // if (this.currentTarget) this.scene.hud.logger.log(`Console: ${this.ascean.name} is currently attacking ${this.currentTarget.ascean.name}`);
                 this.ping();
                 vibrate();
-                this.clearTint();
-                this.setTint(TARGET_COLOR);
                 if (this.enemyID !== this.scene.state.enemyID) this.scene.hud.setupEnemy(this);
                 this.scene.hud.showDialog(this.checkTouching());
                 if (this.scene.player) {
@@ -339,10 +341,6 @@ export default class Enemy extends Entity {
                 } else {
                     (this.scene as ArenaView).setNewTarget(this);
                 };
-            })
-            .on("pointerout", () => {
-                this.clearTint();
-                this.setTint(ENEMY_COLOR);
             });
         this.scene.time.delayedCall(1000, () => {
             this.setVisible(true);
@@ -456,9 +454,21 @@ export default class Enemy extends Entity {
         };
     };
 
+    getTint = (): number[] => this.inCombat ? RED_COLOR_MATRIX : this.isFriendly ? GREEN_COLOR_MATRIX : RED_COLOR_MATRIX;
+
+    setFriendliness = () => {
+        const reputation = this.scene.hud.reputation;
+        const faction = reputation.factions.find((f: FACTION) => f.name === this.ascean.name);
+        if (faction?.friendly) {
+            return faction.friendly;
+        };
+        return false;
+        
+    };
+
     setHostility = () => {
         const reputation = this.scene.hud.reputation;
-        const faction = reputation.factions.find(f => f.name === this.ascean.name);
+        const faction = reputation.factions.find((f: FACTION) => f.name === this.ascean.name);
         if (faction) {
             return faction.hostile;
         };
@@ -555,6 +565,7 @@ export default class Enemy extends Entity {
     updatePlayerTarget(target: Player) {
         this.currentTarget = target;
         this.inCombat = true;
+        this.colorMatrix.set(this.getTint());
         if (this.healthbar.visible === false) this.healthbar.setVisible(true);
         this.stateMachine.setState(States.CHASE);
         this.scene.showCombatText(this, "Player Engaged!", 1000, EFFECT, false, true);
@@ -844,6 +855,7 @@ export default class Enemy extends Entity {
     jumpIntoCombat = () => {
         this.currentTarget = this.scene.player;
         this.inCombat = true;
+        this.colorMatrix.set(this.getTint());
         this.setSpecialCombat(true);
         if (this.healthbar) this.healthbar.setVisible(true);
         this.originPoint = new Phaser.Math.Vector2(this.x, this.y).clone();
@@ -857,6 +869,7 @@ export default class Enemy extends Entity {
     checkEnemyCombatEnter = () => {
         this.currentTarget = this.scene.player;
         this.inCombat = true;
+        this.colorMatrix.set(this.getTint());
         const newEnemy = this.isNewEnemy(this.scene.player);
         if (newEnemy) this.scene.player.targets.push(this);
         this.setSpecialCombat(true);
@@ -911,15 +924,6 @@ export default class Enemy extends Entity {
 
         if (!enemy.inComputerCombat) {
             enemy.checkComputerEnemyCombatEnter(this);
-        };
-    };
-
-    setEnemyColor = () => {
-        this.currentTargetCheck();
-        if (this.isCurrentTarget === true) {
-            return ENEMY_COLOR;
-        } else {
-            return ENEMY_COLOR;
         };
     };
 
@@ -1110,6 +1114,7 @@ export default class Enemy extends Entity {
             collision.gameObjectB.inCombat = true;
             this.scene.combatEngaged(true);
         };
+        this.colorMatrix.set(this.getTint());
         this.scene.showCombatText(this, "!", 1000, EFFECT, true, true);
         this.scene.hud.showCombatHud(`${this.ascean.name} Engaged`, EFFECT);
         this.ping();
@@ -1523,7 +1528,7 @@ export default class Enemy extends Entity {
         this.inCombat = false;
         this.inComputerCombat = false;
         this.setSpecialCombat(false);
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         this.currentTarget = undefined;
         this.isAggressive = false;
         this.currentAction = "";
@@ -1580,7 +1585,7 @@ export default class Enemy extends Entity {
     };
 
     onDestroyEnter = () => {
-        this.clearTint(); 
+        this.colorMatrix.reset(); 
         this.setStatic(true);
     };
 
@@ -1985,7 +1990,6 @@ export default class Enemy extends Entity {
     onEvasionExit = () => {};
 
     onAttackEnter = () => {
-        this.setTint(TARGET_COLOR);
         this.isAttacking = true;
         this.currentAction = "";
         this.attack();
@@ -1997,12 +2001,10 @@ export default class Enemy extends Entity {
     onAttackExit = () => {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
-        this.setTint(ENEMY_COLOR);
         this.currentAction = "";
     };
 
     onParryEnter = () => {
-        this.setTint(TARGET_COLOR);
         this.isParrying = true;
         this.currentAction = "";
         this.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.isParrying = false);
@@ -2016,11 +2018,9 @@ export default class Enemy extends Entity {
         this.currentAction = "";
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
-        this.setTint(ENEMY_COLOR);
     };
 
     onThrustEnter = () => {
-        this.setTint(TARGET_COLOR);
         this.isThrusting = true;
         this.thrustAttack();
         this.currentAction = "";
@@ -2032,13 +2032,11 @@ export default class Enemy extends Entity {
     onThrustExit = () => {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
-        this.setTint(ENEMY_COLOR);
         this.currentAction = "";
     };
 
     onDodgeEnter = () => {
         this.isDodging = true; 
-        this.setTint(TARGET_COLOR);
         this.wasFlipped = this.flipX;
         (this.body as any).parts[1].position.y += PLAYER.SENSOR.DISPLACEMENT;
         (this.body as any).parts[1].circleRadius = PLAYER.SENSOR.EVADE;
@@ -2088,7 +2086,6 @@ export default class Enemy extends Entity {
         legs.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[0].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
         legs.vertices[1].x -= this.wasFlipped ? PLAYER.COLLIDER.DISPLACEMENT / 2 : -PLAYER.COLLIDER.DISPLACEMENT / 2;
-        this.setTint(ENEMY_COLOR);
     };
 
     onPostureEnter = () => {
@@ -2103,14 +2100,13 @@ export default class Enemy extends Entity {
         if (this.inComputerCombat) this.computerCombatSheet.computerAction = "";
         if (this.scene.state.computerAction !== "" && this.isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, "", this.enemyID);
         this.spriteShield.setVisible(false);
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         this.currentAction = "";
         this.setStatic(false);
     };
 
     onRollEnter = () => {
         this.isRolling = true; 
-        this.setTint(TARGET_COLOR);
         const body = (this.body as any).parts[3];
         if (!body.isSensor) {
             body.vertices[0].y += PLAYER.COLLIDER.DISPLACEMENT;
@@ -2150,13 +2146,12 @@ export default class Enemy extends Entity {
         (this.body as any).parts[2].vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[0].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
         body.vertices[1].y -= PLAYER.COLLIDER.DISPLACEMENT / 2;
-        this.setTint(ENEMY_COLOR);
         this.currentAction = "";
     };
 
     onLeashEnter = () => {
         this.enemyAnimation();
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         if ((this.inComputerCombat || this.currentTarget) && !this.shouldLeash()) {
             const enemy = this.computerEnemyAttacker();
             if (enemy) {
@@ -2551,8 +2546,8 @@ export default class Enemy extends Entity {
     onBlinkEnter = () => {
         const ctx = this.getCombatContext();
         const x = ctx.direction.lengthSq < this.mindState.minDistanceSq 
-            ? this.flipX ? -35 : 35
-            : this.flipX ? 35 : -35;
+            ? this.flipX ? -50 : 50
+            : this.flipX ? 50 : -50;
         this.setVelocityX(x);
         this.flickerCaerenic(500);
         this.scene.time.delayedCall(500, () => {
@@ -4121,13 +4116,13 @@ export default class Enemy extends Entity {
                 if (!object) return;
                 this.scene.tweens.killTweensOf(object);
                 object.setAlpha(1);
-                object.clearTint();
                 object.setBlendMode(Phaser.BlendModes.NORMAL);
             };
+            this.colorMatrix.reset();
             clearStealth(this);
             clearStealth(this.spriteWeapon);
             clearStealth(this.spriteShield);
-            this.setTint(ENEMY_COLOR);
+            this.colorMatrix.set(this.getTint());
         };
         this.shadow?.setVisible(!stealth);
         this.enemySound("stealth", true);
@@ -4244,7 +4239,7 @@ export default class Enemy extends Entity {
 
     onCounterSpelledEnter = () => {
         this.clearAnimations();
-        this.clearTint();
+        this.colorMatrix.reset();
         this.scene.time.delayedCall(1000, () => {
             this.isCounterSpelled = false;
         }, undefined, this);
@@ -4259,7 +4254,7 @@ export default class Enemy extends Entity {
             };
         };
     };
-    onCounterSpelledExit = () => this.setTint(ENEMY_COLOR);
+    onCounterSpelledExit = () => this.colorMatrix.set(this.getTint());
 
     onFearedEnter = () => { 
         this.scene.showCombatText(this, "F̶e̷a̴r̷e̵d̴", DURATION.TEXT, DAMAGE, false, true);
@@ -4343,7 +4338,7 @@ export default class Enemy extends Entity {
         if (this.isDeleting) return;
         this.scene.showCombatText(this, "Frozen", DURATION.TEXT, CAST, false, true);
         this.anims.play(FRAMES.IDLE, true);
-        this.setTint(0x0000FF); // 0x888888
+        this.colorMatrix.set(BLUE_COLOR_MATRIX);
         this.setVelocity(0);
         // this.setStatic(true);
         this.scene.time.addEvent({
@@ -4368,8 +4363,8 @@ export default class Enemy extends Entity {
     }; // this.combatChecker(this.isFrozen); 
     onFrozenExit = () => {
         if (this.isDeleting) return;
-        this.clearTint();
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.reset();
+        this.colorMatrix.set(this.getTint());
         // this.setStatic(false);
     };
 
@@ -4395,7 +4390,7 @@ export default class Enemy extends Entity {
     };
     onHurtExit = () => {
         if (this.isDeleting) return;
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         this.isHurt = false;
         // this.setStatic(false);
     };
@@ -4411,7 +4406,7 @@ export default class Enemy extends Entity {
         this.isDodging = false;
         this.currentAction = ""; 
         this.anims.pause();
-        this.setTint(0x888888); // 0x888888
+        this.colorMatrix.set(GRAY_COLOR_MATRIX);
         // this.setStatic(true);
         this.setVelocity(0);
         this.scene.time.delayedCall(this.paralyzeDuration, () => {
@@ -4427,7 +4422,7 @@ export default class Enemy extends Entity {
     onParalyzedUpdate = (_dt: number) => this.combatChecker(this.isParalyzed); 
     onParalyzedExit = () => {
         if (this.isDeleting) return;
-        this.setTint(this.setEnemyColor());
+        this.colorMatrix.set(this.getTint());
         // this.setStatic(false);
         this.anims.resume();
     };
@@ -4436,7 +4431,8 @@ export default class Enemy extends Entity {
         this.isPolymorphed = true;
         this.scene.showCombatText(this, "Polymorphed", DURATION.TEXT, EFFECT, false, true);
         this.clearAnimations();
-        this.clearTint();
+        // this.clearTint();
+        this.colorMatrix.reset();
         this.anims.pause();
         this.anims.play("rabbit_idle_down", true);
         this.anims.resume();
@@ -4511,7 +4507,7 @@ export default class Enemy extends Entity {
         if (this.isPolymorphed) this.isPolymorphed = false;
         this.clearAnimations();
         this.enemyAnimation();
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         this.spriteWeapon.setVisible(true);
         if (this.polymorphTimer) {
             this.polymorphTimer.destroy();
@@ -4529,7 +4525,7 @@ export default class Enemy extends Entity {
         this.isRolling = false;
         this.currentAction = ""; 
         this.anims.pause();
-        this.setTint(0x888888); // 0x888888
+        this.colorMatrix.set(GRAY_COLOR_MATRIX);
         // this.setStatic(true);
         this.setVelocity(0);
 
@@ -4550,7 +4546,7 @@ export default class Enemy extends Entity {
     };
     onStunnedExit = () => { 
         if (this.isDeleting) return;
-        this.setTint(this.setEnemyColor());
+        this.colorMatrix.set(this.getTint());
         // this.setStatic(false);
         this.anims.resume();
     };
@@ -4561,7 +4557,7 @@ export default class Enemy extends Entity {
     onRootedEnter = () => {
         if (this.isDeleting) return;
         this.scene.showCombatText(this, "Rooted", DURATION.TEXT, EFFECT, false, true);
-        this.setTint(0x888888); // 0x888888
+        this.colorMatrix.set(GRAY_COLOR_MATRIX);
         this.setVelocity(0);
         // this.setStatic(true);
         this.scene.time.delayedCall(DURATION.ROOTED, () => {
@@ -4583,15 +4579,14 @@ export default class Enemy extends Entity {
     };
     onRootedExit = () => {
         if (this.isDeleting) return;
-        this.clearTint();
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         // this.setStatic(false);
         this.stateMachine.setState(States.CHASE);
     };
 
     onSlowedEnter = () => {
         this.scene.showCombatText(this, "Slowed", DURATION.TEXT, EFFECT, false, true);
-        this.setTint(0xFFC700); // 0x888888
+        this.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.slowDuration, () => {
             this.count.slowed -= 1;
@@ -4606,15 +4601,14 @@ export default class Enemy extends Entity {
         }, undefined, this);
     };
     onSlowedExit = () => {
-        this.clearTint();
-        this.setTint(ENEMY_COLOR);
+        this.colorMatrix.set(this.getTint());
         this.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
     onSnaredEnter = () => {
         this.scene.showCombatText(this, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.snareDuration = DURATION.SNARED;
-        this.setTint(0x0000FF); // 0x888888
+        this.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.snareDuration, () => {
             this.count.snared -= 1;
@@ -4628,9 +4622,8 @@ export default class Enemy extends Entity {
             };
         }, undefined, this);
     };
-    onSnaredExit = () => { 
-        this.clearTint();
-        this.setTint(ENEMY_COLOR);
+    onSnaredExit = () => {
+        this.colorMatrix.set(this.getTint());
         this.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 

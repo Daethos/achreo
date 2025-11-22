@@ -1,7 +1,7 @@
 import { Accessor, Setter, Show } from "solid-js";
 import Ascean from "../models/ascean";
 import { GameState } from "../stores/game";
-import Quest from "./quests";
+import Quest from "../models/quests";
 import { font } from "./styling";
 import { EventBus } from "../game/EventBus";
 

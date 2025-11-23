@@ -70,8 +70,6 @@ export class ExperienceManager {
 
         this.experience.start();
 
-        // this.experience.explode(25, this.target.x, this.target.y + 6);
-        
         this.scene.tweens.add({
             targets: this.target,
             duration: 2000,

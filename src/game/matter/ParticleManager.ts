@@ -4,7 +4,7 @@ const TIME = { quor: 3000, achire: 2000, attack: 1500, "grappling hook": 1750, h
 const VELOCITY = { quor: 4.5, achire: 6, attack: 5, "grappling hook": 6, hook: 6, hurl: 4, thrust: 6.5, posture: 4, roll: 4, special: 5 }; // 7.5 || 9 || 6 || 6
 import Player from "../entities/Player";
 import Enemy from "../entities/Enemy";
-import Entity, { ENEMY } from "../entities/Entity";
+import Entity from "../entities/Entity";
 import { Play } from "../main";
 import Party from "../entities/PartyComputer";
 import { ENTITY_FLAGS } from "../phaser/Collision";
@@ -130,6 +130,7 @@ export class Particle {
         this.scene.matterCollision.addOnCollideStart({
             objectA: [sensor],
             callback: (other: any) => {
+                if (attacker?.isDeleting || !attacker?.body?.position) return;
                 const distSq = (this.effect.x - attacker.x) ** 2 + (this.effect.y - attacker.y) ** 2;
                 if (distSq < MIN_DISTANCE) return;
 
@@ -158,14 +159,8 @@ export class Particle {
                 const bodyB = other.bodyB.label;
                 if (bodyB !== "body" && bodyB !== "legs") return;
                 
-                for (const [key, rule] of Object.entries(rules)) {
+                for (const [_key, rule] of Object.entries(rules)) {
                     if (rule(attacker, target)) { // Special handling if needed (party vs enemy, CvC lookup, etc.)
-                        // if (key === "party:enemy" || key === "enemy:enemy") { 
-                        //     // This makes it so if they're not already an enemy, they won't get hit by the projectile, keep it? 
-                        //     const isEnemy = (attacker as Enemy).enemies.find((e: ENEMY) => e.id === target.enemyID);
-                        //     if (!isEnemy) return;
-                        // };
-                        
                         const hitResult = hitLocationDetector.detectParticleLocation(sensor, target);
                         // console.log(`${attacker.ascean.name} hit ${target.ascean.name} in the ${hitResult.location}`);
                         attacker.lastHitLocation = hitResult;
@@ -381,6 +376,8 @@ export default class ParticleManager extends Phaser.Scene {
         particle.effect.setVisible(true);
         particle.effect.setPosition(tipX, tipY);
         particle.effect.world.add(particle.effect.body!);
+
+        return { x: tipX, y: tipY };
     };
 
     quadraticBezier(p0: number, p1: number, p2: number, t: number): number {
@@ -486,7 +483,6 @@ export default class ParticleManager extends Phaser.Scene {
         let particle = this.particles.find((particle) => particle.effect?.active === false && particle.pID === player.particleID && particle.key === key);
         if (particle) {
             particle.reconstruct(particle, action, player, special, key);
-            this.spawnEffect(particle);
         } else {
             particle = new Particle(this.context, action, key, player, special); 
             this.particles.push(particle);
@@ -495,17 +491,18 @@ export default class ParticleManager extends Phaser.Scene {
             key: particle.key,
             repeat: -1
         };
+        const startPos = this.spawnEffect(particle);
 
         if (particle.isParticle === true) particle.effect.play(config);
 
         const duration = TIME[particle.action as keyof typeof TIME];
-        const startX = particle.effect.x;
-        const startY = particle.effect.y;
+        // const startX = particle.effect.x;
+        // const startY = particle.effect.y;
 
         if (action === ACTION_TYPES.HURL) {
-            this.smartArcedTween(particle, duration, startX, startY);
+            this.smartArcedTween(particle, duration, startPos.x, startPos.y);
         } else {
-            this.straightTween(particle, duration, startX, startY);
+            this.straightTween(particle, duration, startPos.x, startPos.y);
         };
 
         return particle;

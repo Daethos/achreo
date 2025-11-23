@@ -20,6 +20,8 @@ import Party from "../entities/PartyComputer";
 import { AoEPool } from "../phaser/AoE";
 import { ExperienceManager } from "../phaser/ExperienceManager";
 import { ChatManager } from "../phaser/ChatManager";
+import Mark from "../matter/Mark";
+import { Marker } from "../../models/settings";
 interface ChunkData {
     key: string;
     x: number;
@@ -68,7 +70,7 @@ export class ArenaCvC extends Phaser.Scene {
     south: any;
     east: any;
     west: any;
-    markers: any;
+    marks: any;
     glowFilter: any;
     hud: Hud;
     wager = { silver: 0, gold: 0, multiplier: 0 };
@@ -83,6 +85,7 @@ export class ArenaCvC extends Phaser.Scene {
     playerChunkY: number = 0;
     experienceManager: ExperienceManager;
     chatManager: ChatManager;
+    markers: Mark[] = [];
 
     constructor (view?: string) {
         const key = view || "ArenaCvC";
@@ -102,7 +105,7 @@ export class ArenaCvC extends Phaser.Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
-        this.markers = [];
+        this.marks = [];
         let camera = this.cameras.main;
         const map = this.make.tilemap({ key: "arena" });
         this.map = map;
@@ -129,7 +132,7 @@ export class ArenaCvC extends Phaser.Scene {
         this.navMesh = navMesh;
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
-        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
+        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.marks.push(summon));
 
         this.highlight = this.add.graphics()
             .lineStyle(4, 0xFFc700)
@@ -157,7 +160,13 @@ export class ArenaCvC extends Phaser.Scene {
 
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
-        
+        const markers = this.hud.settings.markers;
+        if (markers) {
+            for (let i = 0; i < markers.length; ++i) {
+                const mark = new Mark(this, markers[i]);
+                this.markers.push(mark);
+            };
+        };
         this.createArenaEnemy();
         this.aoePool = new AoEPool(this, 30);
         this.scrollingTextPool = new ObjectPool<ScrollingCombatText>(() =>  new ScrollingCombatText(this, this.scrollingTextPool));
@@ -166,6 +175,20 @@ export class ArenaCvC extends Phaser.Scene {
         };
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
+    };
+
+
+    public createMark(marker: Marker) {
+        const mark = new Mark(this, marker);
+        this.markers.push(mark);
+    };
+    public removeMark(id: string) {
+        const mark = this.markers.find((m: Mark) => m.marker.id === id);
+        if (mark) {
+            this.markers = this.markers.filter((m: Mark) => m.marker.id !== id);
+            mark.cleanup();
+            mark.destroy();
+        };
     };
 
     showCombatText(entity: Player | Enemy | Party, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
@@ -300,7 +323,7 @@ export class ArenaCvC extends Phaser.Scene {
                 return;
             };
             for (let j = 0; j < data.length; j++) {
-                let marker = this.markers[Math.floor(Math.random() * this.markers.length)];
+                let marker = this.marks[Math.floor(Math.random() * this.marks.length)];
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
                 this.enemies.push(enemy);
                 enemy.setPosition(marker.x, marker.y);

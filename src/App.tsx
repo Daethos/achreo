@@ -3,7 +3,7 @@ import { Scene } from "phaser";
 import PhaserGame from"./game/PhaserGame";
 import { Game } from "./game/scenes/Game";
 import { dimensions } from "./utility/dimensions";
-import Settings, { initSettings } from "./models/settings";
+import Settings, { initSettings, Marker } from "./models/settings";
 import { initMenu, LANDSCAPE_SCREENS, Menu, SCREENS } from "./utility/screens";
 import Ascean, { createAscean } from "./models/ascean";
 import { CharacterSheet, Compiler, asceanCompiler, initCharacterSheet } from "./utility/ascean";
@@ -25,6 +25,7 @@ import { addSpecial } from "./utility/abilities";
 import { initReputation, Reputation } from "./models/reputation";
 import { initInventory, Inventory } from "./models/inventory";
 import { initSpecialInventory, SpecialInventory } from "./models/specialInventory";
+import { Play } from "./game/main";
 const AsceanBuilder = lazy(async () => await import("./components/AsceanBuilder"));
 const AsceanView = lazy(async () => await import("./components/AsceanView"));
 const MenuAscean = lazy(async () => await import("./components/MenuAscean"));
@@ -551,6 +552,14 @@ export default function App() {
         };
     };
 
+    async function removeMarker(id: string) {
+        setShow(false);
+        const markers = settings()?.markers.filter((mark: Marker) => mark.id !== id);
+        const newSettings = JSON.parse(JSON.stringify({ ...settings(), markers }));
+        await saveSettings(newSettings);
+        (phaserRef?.scene as Play)?.removeMark(id);
+    };
+
     const actions = {
         "Duel": (val: number) => summonEnemy(val),
         "Roster": () => { EventBus.emit("show-roster"); setShow(false); },
@@ -570,6 +579,7 @@ export default function App() {
         "Settings": () => EventBus.emit("highlight", "smallhud"),
         "Enter World" : () => switchScene("Tutorial", "Game"),
         "Enter Tutorial" : () => switchScene("Game", "Tutorial"),
+        "Remove Marker": (id: string) => removeMarker(id),
     };
 
     const sendSettings = () => EventBus.emit("get-settings", settings);

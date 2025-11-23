@@ -28,6 +28,8 @@ import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
 import { ExperienceManager } from "../phaser/ExperienceManager";
 import { ChatManager } from "../phaser/ChatManager";
+import Mark from "../matter/Mark";
+import { Marker } from "../../models/settings";
 interface ChunkData {
     key: string;
     x: number;
@@ -85,7 +87,7 @@ export class Arena extends Phaser.Scene {
     south: any;
     east: any;
     west: any;
-    markers: any;
+    marks: any;
     glowFilter: any;
     hud: Hud;
     platform: MovingPlatform;
@@ -104,6 +106,7 @@ export class Arena extends Phaser.Scene {
     pillars: any[] = [];
     experienceManager: ExperienceManager;
     chatManager: ChatManager;
+    markers: Mark[] = [];
 
     constructor (view?: string) {
         const key = view || "Arena";
@@ -123,7 +126,7 @@ export class Arena extends Phaser.Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
-        this.markers = [];
+        this.marks = [];
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions?.camera?.zoom || 1;
         const map = this.make.tilemap({ key: "arena" });
@@ -163,8 +166,8 @@ export class Arena extends Phaser.Scene {
         this.matter.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels); // Top Down
         (this.sys as any).animatedTiles.init(this.map);
         map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
-        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
-        const random = this.markers[Math.floor(Math.random() * this.markers.length)];        
+        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.marks.push(summon));
+        const random = this.marks[Math.floor(Math.random() * this.marks.length)];        
         if (this.hud.settings.difficulty.arena) {
             this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         } else {
@@ -226,7 +229,14 @@ export class Arena extends Phaser.Scene {
         this.minimap = new MiniMap(this);
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
-
+        const markers = this.hud.settings.markers;
+        if (markers) {
+            for (let i = 0; i < markers.length; ++i) {
+                if (markers[i].scene !== this.scene.key) continue;
+                const mark = new Mark(this, markers[i]);
+                this.markers.push(mark);
+            };
+        };
 
         this.createArenaEnemy();
         this.aoePool = new AoEPool(this, 120);
@@ -238,6 +248,18 @@ export class Arena extends Phaser.Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
+    public createMark(marker: Marker) {
+        const mark = new Mark(this, marker);
+        this.markers.push(mark);
+    };
+    public removeMark(id: string) {
+        const mark = this.markers.find((m: Mark) => m.marker.id === id);
+        if (mark) {
+            this.markers = this.markers.filter((m: Mark) => m.marker.id !== id);
+            mark.cleanup();
+            mark.destroy();
+        };
+    };
     showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
         const combatText = this.scrollingTextPool.acquire();
         combatText.reset(entity, text, duration, context, critical, constant);
@@ -322,7 +344,7 @@ export class Arena extends Phaser.Scene {
             this.player.playerMachine.positiveMachine.setState(States.STEALTH);
             this.stealthEngaged(true);
         };
-        const random = this.markers[Math.floor(Math.random() * this.markers.length)];
+        const random = this.marks[Math.floor(Math.random() * this.marks.length)];
         this.player.setPosition(random.x, random.y);
         this.configureParty();
         if (this.player.isComputer) {
@@ -557,17 +579,17 @@ export class Arena extends Phaser.Scene {
                 this.switchArena();
                 return;
             };
-            let marker: any, markers: any[] = [], count = 0, current: number = 1250;
+            let marker: any, marks: any[] = [], count = 0, current: number = 1250;
             const team = this.registry.get("team");
-            for (let i = 0; i < this.markers.length; i++) {
-                const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+            for (let i = 0; i < this.marks.length; i++) {
+                const position = new Phaser.Math.Vector2(this.marks[i].x, this.marks[i].y);
                 const direction = position.subtract(this.player.position);
                 if (direction.length() < 1250 && direction.length() > 250) { // Not too far, not too close
-                    markers.push(this.markers[i]);
+                    marks.push(this.marks[i]);
                 };
             };
             for (let j = 0; j < data.length; j++) {
-                marker = markers[Math.floor(Math.random() * markers.length)];
+                marker = marks[Math.floor(Math.random() * marks.length)];
                 const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
                 this.enemies.push(enemy);
                 enemy.setPosition(marker.x, marker.y);

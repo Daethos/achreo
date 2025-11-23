@@ -1,6 +1,15 @@
 import { STARTING_MASTERY_UI } from "../utility/abilities";
 import { initTutorial, Tutorial } from "../utility/tutorial";
 
+export type Marker = {
+    id: string;
+    title: string;
+    content: string;
+    scene: string;
+    x: number;
+    y: number;
+};
+
 export default class Settings {
     public _id: string;
     public map: string;
@@ -15,6 +24,7 @@ export default class Settings {
     public specials: string[];
     public totalSpecials: string[];
     public prayer: string;
+    public prayers: string[];
     public fps: { 
         min: number; 
         target: number; 
@@ -89,6 +99,7 @@ export default class Settings {
         enemySpeed: number;
         enemyCombatInteract: boolean;
     };
+    public markers: Marker[];
     public postFx: { 
         enable: boolean; 
         chromaticEnable: boolean; 
@@ -194,6 +205,7 @@ export default class Settings {
         this.specials = []; // STARTING_SPECIALS[mastery];
         this.totalSpecials = []; // STARTING_SPECIALS[mastery];
         this.prayer = "Buff";
+        this.prayers = ["Buff", "Heal", "Debuff", "Damage"];
         this.fps = {
             min: 5,
             target: 60,
@@ -272,6 +284,7 @@ export default class Settings {
             crtHeight: 2,
             crtWidth: 2,
         };
+        this.markers = [];
         this.positions = {
             camera: {
                 x: 0,

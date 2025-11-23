@@ -84,7 +84,7 @@ export const ITEMS: Item[] = [
         weight: 1, // 1 lb
         rarity: "Common",
         maxStack: 10,
-        // systemTrigger?: “” // Don’t think it’s necessary as they’re not for quests, mainly to help the player mark curiosities in their world.
+        systemTrigger: "marker" // Don’t think it’s necessary as they’re not for quests, mainly to help the player mark curiosities in their world.
     // }, { /* ------------------------------------- RITUAL COMPONENT (UNIQUE) ----------------------------------------------- */
 
     // }, { /* -------------------------------------------- CONSUMABLES ------------------------------------------------------ */

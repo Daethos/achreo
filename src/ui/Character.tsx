@@ -3,7 +3,7 @@ import { Form } from "solid-bootstrap";
 import AttributeModal, { AttributeCompiler, AttributeNumberModal } from "../components/Attributes";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
-import Settings from "../models/settings";
+import Settings, { Marker } from "../models/settings";
 import { deleteEquipment, updateSettings } from "../assets/db/db";
 import { OriginModal } from "../components/Origin";
 import { FaithModal } from "../components/Faith";
@@ -106,6 +106,7 @@ const CONTROLS = {
 const FAITH = {
     DEITIES: "Deities",
     JOURNAL: "Journal",
+    MARKERS: "Markers",
 };
 const GET_FORGE_COST = {
     Common: 1,
@@ -439,6 +440,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const completed = quest.requirements.technical.id === "fetch"
                             ? quest.requirements.technical.current === quest.requirements.technical.total && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!
                             : quest.requirements.technical.solved && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
+                        console.log({ quest });
                         return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{ "borderTalent": completed }} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em`, "--base-shadow":"#000 0 0 0 0.2em", "--glow-color": masteryColor(quest.mastery) }}>
                             <h2 classList={{ "animate-flicker-infinite": completed }} style={{ color: "gold", "font-size": completed ? "1.15em" : "", padding: "5px" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    
@@ -448,7 +450,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>;
             case CHARACTERS.REPUTATION:
                 const unnamed = reputationConcern() === "Enemy" 
-                    ? reputation().factions.filter((faction) => faction.named === false)
+                    ? reputation().factions?.filter((faction) => faction?.named === false)
                     : processReputation(reputationConcern().toLowerCase());
                 return <div class="creature-heading">
                     <h1 onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={{...bMargin}}>Reputation ({reputationConcern()})</h1>
@@ -825,7 +827,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 </div>;
             case CHARACTERS.REPUTATION:
                 const unnamed = reputationConcern() === "Enemy" 
-                    ? reputation().factions.filter((faction) => faction.named === false)
+                    ? reputation().factions?.filter((faction) => faction?.named === false)
                     : processReputation(reputationConcern().toLowerCase());
                 return <div class="creature-heading">
                     <h1 onClick={() => currentReputationView(REPUTATION[nextReputation[reputationConcern() as keyof typeof nextReputation] as keyof typeof REPUTATION])} style={{...bMargin}}>Reputation ({reputationConcern()})</h1>
@@ -955,6 +957,21 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
             <p class="gold">{info?.description}</p>
             <h2>{info?.worship}</h2>
         </div>;
+    };
+
+    const markerScroll = (): JSX.Element => {
+        return <div class="center creature-heading" style={{ "flex-wrap": "wrap" }}>
+            <For each={settings().markers}>{(marker: Marker) => {
+                const scene = marker.scene === "Game" ? "World" : marker.scene;
+                return <div class="border">
+                    <h1 class="wrap" style={{ margin: "5% auto" }}>{marker.title}</h1>
+                    <div style={{ "border-bottom":"thick ridge purple", width: "90%", margin: "0 auto" }} />
+                    <h2 class="wrap" style={{ "font-size":"1.25rem", margin: "3% auto" }}>{marker.content}</h2>
+                    <h5 class="gold">[Location: X: {Math.round(marker.x)} | Y: {Math.round(marker.y)}] <br /><span class="bone">Scene: {scene}</span></h5>
+                    <h3></h3>
+                </div>
+            }}</For>
+        </div>
     };
 
     const journalScroll = (): JSX.Element => {
@@ -1102,8 +1119,30 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         setDeity(item?.influences?.[0]);
     };
 
+    // function completeQuest() {
+    //     const newQuests = quests().quests.map((q: Quest) => {
+    //         const newQ = q.title === "Adherence" 
+    //         ? {
+    //             ...q,
+    //             requirements: {
+    //                 ...q.requirements,
+    //                 technical: {
+    //                     ...q.requirements.technical,
+    //                     current: 5
+    //                 }
+    //             }
+    //         }
+    //         : q;
+    //         return newQ;
+    //     });
+    //     const newQuestManager = {
+    //         ...quests(),
+    //         quests: newQuests
+    //     };
+    //     EventBus.emit("update-quests", newQuestManager);
+    // };
+
     usePhaserEvent("character", (type: string) => {
-        console.log({ type });
         setHighlighter(type);
     });
 
@@ -1217,9 +1256,13 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 <button class="highlight menuButton" onClick={() => currentFaithView(FAITH.JOURNAL)}>
                     <div>Deities</div>
                 </button>
+            ) : settings().faithViews === FAITH.JOURNAL ? (
+                <button class="highlight menuButton" onClick={() => currentFaithView(FAITH.MARKERS)}>
+                    <div>Journal</div>
+                </button>
             ) : (
                 <button class="highlight menuButton" onClick={() => currentFaithView(FAITH.DEITIES)}>
-                    <div>Journal</div>
+                    <div>Markers</div>
                 </button>
             ) }     
             </div>
@@ -1599,6 +1642,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 }} style={{height: `${dims.HEIGHT * 0.8}px`, left: "66.75vw", "border-color": masteryColor(ascean().mastery)}}>
                 { settings().asceanViews === VIEWS.CHARACTER ? (
                     <div class="center wrap"> 
+                        {/* <button class="highlight cornerTR" onClick={completeQuest}>Add!</button> */}
                         {characterInfo()}
                     </div>
                 ) : settings().asceanViews === VIEWS.INVENTORY ? ( 
@@ -1621,7 +1665,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </div>
                 ) : ( 
                     <div style={{ "scrollbar-width": "none", overflow: "scroll" }}>
-                        <div class="center" style={{ padding: "2.5%" }}>{settings().faithViews === FAITH.DEITIES ? (createDeityScroll()) : (journalScroll())}</div>
+                        <div class="center" style={{ padding: "2.5%" }}>{settings().faithViews === FAITH.DEITIES ? (createDeityScroll()) : settings().faithViews === FAITH.JOURNAL ? (journalScroll()) : (markerScroll())}</div>
                     </div>
                  ) }
             </div>
@@ -1635,7 +1679,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         <Show when={itemShow().show}>
             <div class="modal" onClick={() => setItemShow({ show: false, item: undefined })}>
                 <Suspense fallback={<Puff color="gold"/>}>
-                    <SpecialItemModal item={itemShow().item} />
+                    <SpecialItemModal item={itemShow().item} possess={true} />
                 </Suspense>
             </div>
         </Show>
@@ -1770,6 +1814,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                     </p>
                     </div>
                     {showQuest()?.quest?.special ? <h4 class="center">Special?: <span class="gold">It's a Mystery</span></h4> : ""}
+                    {showQuest()?.quest?.prayer ? <h4 class="center">Prayer?: <span class="gold">It's a Mystery</span></h4> : ""}
                     <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "1.5% auto", padding: "" }}>
                         {replaceChar(showQuest()?.quest?.requirements.description, showQuest()?.quest?.giver)}
                     </h2>

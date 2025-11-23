@@ -130,7 +130,7 @@ const styleMap: StyleMap = {
         color: "#fdf6d8",
         "margin-right":"0.5em",
         "text-shadow": "1.5px 1.5px 1.5px green",
-        "font-size": "16px",
+        "font-size": "20px",
         "font-weight": 700,
         display: "inline-block"
     },
@@ -138,7 +138,7 @@ const styleMap: StyleMap = {
         color: "#fdf6d8",
         "margin-right":"0.5em",
         "text-shadow": "1.5px 1.5px 1.5px blue",
-        "font-size": "16px",
+        "font-size": "20px",
         "font-weight": 700,
         display: "inline-block"
     },
@@ -146,7 +146,7 @@ const styleMap: StyleMap = {
         color: "#fdf6d8",
         "margin-right":"0.5em",
         "text-shadow": "1.5px 1.5px 1.5px purple",
-        "font-size": "16px",
+        "font-size": "20px",
         "font-weight": 700,
         display: "inline-block"
     },
@@ -154,7 +154,7 @@ const styleMap: StyleMap = {
         color: "#fdf6d8",
         // "margin-right":"1em",
         "text-shadow": "1.5px 1.5px 1.5px darkorange",
-        "font-size": "16px",
+        "font-size": "20px",
         "font-weight": 700,
         display: "inline-block"
     },

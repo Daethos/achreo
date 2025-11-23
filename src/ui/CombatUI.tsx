@@ -122,7 +122,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     });
 
     const hasNet = createMemo(() => {
-        const net = game().specialInventory.inventory.find((item: Item) => item.name === "Net");
+        const net = game().specialInventory.inventory.find((item: Item) => item?.name === "Net");
         return net !== undefined;
     });
 

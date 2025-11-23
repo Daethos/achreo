@@ -444,7 +444,6 @@ export class CombatManager {
         computerTwo.enemyID = computerOne.personalID;
 
         const result = computerCombatCompiler({ computerOne, computerTwo });
-
         computerOneEntity.computerCombatUpdate(result.computerOne);
         computerTwoEntity.computerCombatUpdate(result.computerTwo);
     };
@@ -601,7 +600,7 @@ export class CombatManager {
                 return;
             } else { // Party Combat
                 const party = this.context.party.find((e: Party) => e.enemyID === enemyID);
-                if (party) {  
+                if (party) {
                     const damage = Math.round(party.ascean[party.ascean.mastery as keyof typeof party.ascean])
                         * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
                         * party.playerMachine.levelModifier();
@@ -615,8 +614,11 @@ export class CombatManager {
             if (party.health <= 0) return;
             const comp = this.context.enemies.find((e: Enemy) => e.enemyID === enemyID);
             if (comp) {
+                party.count.stunned++;
+                party.isStunned = true;
+                party.playerMachine.stateMachine.setState(States.STUN);
                 const damage = Math.round(comp.ascean[comp.ascean.mastery as keyof typeof comp.ascean])
-                    * this.computerCaerenicPro(party) * this.computerCaerenicNeg(enemy) * this.computerStalwart(enemy)
+                    * this.computerCaerenicPro(enemy) * this.computerCaerenicNeg(party) * this.computerStalwart(party)
                     * party.playerMachine.levelModifier();
                 this.updateComputerDamage(damage, id, enemyID);
             };
@@ -1009,8 +1011,10 @@ export class CombatManager {
         };
         let party = this.context.party.find((e: Party) => e.enemyID === id);
         if (party) {
+            // if (!party.sansSuffering("isFeared")) return;
             party.isFeared = true;
             party.count.feared++;
+            party.playerMachine.stateMachine.setState(States.FEARED);
         };
     };
     slow = (id: string, time: number = 3000): void => {
@@ -1080,7 +1084,7 @@ export class CombatManager {
         if (party && !party.sansSuffering("isStunned")) {
             party.count.stunned += 1;
             party.isStunned = true;
-            party.playerMachine.stateMachine.setState(States.STUNNED);
+            party.playerMachine.stateMachine.setState(States.STUN);
         };
     };
     stunned = (id: string): void => {
@@ -1102,7 +1106,7 @@ export class CombatManager {
         if (party && !party.sansSuffering("isStunned")) {
             party.count.stunned += 1;
             party.isStunned = true;
-            party.playerMachine.stateMachine.setState(States.STUNNED);
+            party.playerMachine.stateMachine.setState(States.STUN);
         };
     };
     writhe = (id: string, enemyID: string, type = "writhe"): void => {

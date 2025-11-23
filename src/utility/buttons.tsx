@@ -4,7 +4,7 @@ import { Accessor, Setter } from "solid-js";
 import Equipment from "../models/equipment";
 import StatusEffect from "../models/prayer";
 import { EventBus } from "../game/EventBus";
-import { specialDescription } from "../ui/CombatSettings";
+import { PRAYER_DESCRIPTION } from "../ui/CombatSettings";
 const specials = ["Avarice", "Dispel", "Denial", "Insight", "Quicken", "Silence"]; // Slow, Fear, Confuse, Charm
 
 export function BackForth({ id, left, right, menu, setMenu, createCharacter, newAscean }: { id: string, left: { screen: string, text: string }, right: { screen: string, text: string }, menu: () => any, setMenu: (menu: any) => void, createCharacter: (newAscean: any) => void, newAscean: any }) {
@@ -125,7 +125,7 @@ export function PrayerModal({ prayer, show, setShow }: { prayer: Accessor<Status
                 <br />
                 </div>
                 {specials.includes(prayer().prayer) && ( <>
-                    {specialDescription[prayer().prayer]}
+                    {PRAYER_DESCRIPTION[prayer().prayer]}
                 </> )}
                 {prayer()?.effect?.physicalDamage && 
                     <div>Physical Damage: <span class="gold">{prayer()?.effect?.physicalDamage}</span><br /> </div>

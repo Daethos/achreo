@@ -37,6 +37,7 @@ import { ITEMS } from "../assets/db/items";
 import { Item } from "../models/item";
 import SpecialItemModal from "../components/SpecialItemModal";
 import { ENEMY_FRIENDLY, FACTION, initFaction, Reputation } from "../models/reputation";
+import { PRAYER_DESCRIPTION, SPECIAL_PRAYERS } from "./CombatSettings";
 
 function itemCostConverter(cost: number) {
     const convert = cost * 100;
@@ -377,6 +378,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     const [rewardQueue, setRewardQueue] = createSignal<any[]>([]); // Holds the list of remaining rewards
     const [isOverlayVisible, setIsOverlayVisible] = createSignal(false);
     const [showSpecial, setShowSpecial] = createSignal<{show:boolean,special:any}>({ show: false, special: ACTION_ORIGIN["ATTACK"] });
+    const [showPrayer, setShowPrayer] = createSignal<{show:boolean,prayer:any}>({ show: false, prayer: "" });
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [show, setShow] = createSignal<boolean>(false);
     const [enemy, setEnemy] = createSignal(combat().computer as Ascean);
@@ -428,7 +430,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     });
 
     function uniqueItem(item: Item) {
-        const isUnique = game().specialInventory.inventory.find((i: Item) => i.name === item.name && i.isUnique);
+        const isUnique = game().specialInventory.inventory.find((i: Item) => i?.name === item.name && i?.isUnique);
         return isUnique !== undefined;
     };
 
@@ -592,6 +594,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             if (q.giver === enemy.name && completed && qRep) { // Quest The Enemy of One of the Faction Has Given the Player
                 completedQuests.push(q);
             };
+            // completedQuests.push(q);
 
             if (q.requirements.technical.id === "fetch") {
                 fetch.push(q);
@@ -673,6 +676,20 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     rewards.push({ type: "Special", value: quest.special });
                 };
             };
+
+            if (quest.prayer) {
+                const duplicate = settings().prayers ? settings().prayers.includes(quest.prayer) : false;
+                if (duplicate) {
+                    const prayers = SPECIAL_PRAYERS.filter((p: string) => !settings()?.prayers.includes(p));
+                    if (prayers.length) {
+                        const newPrayer = prayers[Math.floor(Math.random() * prayers.length)];
+                        rewards.push({ type: "Prayer", value: newPrayer });
+                        complete.prayer = newPrayer;
+                    };
+                } else {
+                    rewards.push({ type: "Prayer", value: quest.prayer });
+                };
+            };
             
             setCompleteQuestPre(complete);
             setIsOverlayVisible(true);
@@ -715,13 +732,16 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             case "Item":
                 (instance.scene as Play).hud.sound.play("phenomena", { volume: settings().volume });
                 break;
+            case "Prayer":
+                (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
+                break;
             case "Special":
                 (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
                 break;
             default: break;
         };
         
-        if (type === "Item" || type === "Special") {
+        if (type === "Item" || type === "Prayer" || type === "Special") {
             setPopupReward(nextReward);
 
             if (length === 0) { // type === "Special"
@@ -729,6 +749,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 setTimeout(() => {
                     const complete = completeQuestPre();
                     addSpecial(ascean, settings, complete.special);
+                    if (complete.prayer) EventBus.emit("add-prayer", complete.prayer);
                     setShowCompleteQuest(complete);
                     EventBus.emit("save-quest-to-player", complete);
                     EventBus.emit("complete-quest", complete);
@@ -1339,9 +1360,10 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             ...quests(),
             quests: newQuests
         };
-        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted ${enemyArticle()} ${combat().computer?.name} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
+        const value = quest.requirements.action?.value;
+        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted ${enemyArticle()} ${combat().computer?.name} to become ${value}. Rejoice!`, key: "Close" });
         EventBus.emit("update-quests", newQuestManager);
-        (instance.scene as Play).combatManager.convert(combat().enemyID, quest.requirements.action.value);
+        (instance.scene as Play).combatManager.convert(combat().enemyID, value as string);
     };
 
     function convertPlayer(quest: Quest) {
@@ -1365,11 +1387,12 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             quests: newQuests
         };
         
-        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted from ${ascean().faith} to become ${quest.requirements.action.value}. Rejoice!`, key: "Close" });
+        const value = quest.requirements.action?.value;
+        EventBus.emit("alert", { header: `Updating ${quest.title}`, body: `You have successfully converted from ${ascean().faith} to become ${value}. Rejoice!`, key: "Close" });
         EventBus.emit("update-quests", newQuestManager);
         EventBus.emit("update-ascean", {
             ...ascean(),
-            faith: quest.requirements.action.value
+            faith: value
         });
 
     };
@@ -1952,7 +1975,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 </Show>
                             </div>
                         </Show>
-                        <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
+                        <Show when={prospectiveQuests().length > 0}>
+                            <QuestModal quests={prospectiveQuests} show={showQuests} setShow={setShowQuests} enemy={combat().computer as Ascean} />
+                        </Show>
                         <Show when={fetchQuests().length > 0}>
                             <div class="creature-heading">
                                 <For each={fetchQuests()}>{(quest) => {
@@ -2346,20 +2371,29 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             }}</For>
                         </p>
                     </div>
-                    {(showCompleteQuest()?.special && showQuestSave()) ? <h4 class="center" onClick={() => setShowSpecial({show:true,special:ACTION_ORIGIN[showCompleteQuest()?.special.toUpperCase()]})}>Special: <span class="animate">{showCompleteQuest()?.special}</span></h4> : ""}
+                    <Show when={(showCompleteQuest()?.special && showQuestSave())}> 
+                        <h4 class="center" onClick={() => setShowSpecial({show:true,special:ACTION_ORIGIN[showCompleteQuest()?.special.toUpperCase()]})}>
+                            Special: <span class="animate">{showCompleteQuest()?.special}</span>
+                        </h4> 
+                    </Show>
+                    <Show when={(showCompleteQuest()?.prayer && showQuestSave())}> 
+                        <h4 class="center" onClick={() => setShowPrayer({show:true,prayer:showCompleteQuest()?.prayer})}>
+                            Prayer: <span class="animate">{showCompleteQuest()?.prayer}</span>
+                        </h4> 
+                    </Show>
                     <h2 class="wrap" style={{ "text-align":"center", color: "gold", margin: "2.5% auto" }}>
                         {replaceChar(showCompleteQuest()?.requirements.description, showCompleteQuest()?.giver)}
                     </h2>
                     </div>
                 </div>
-                    <Show when={!showQuestSave()}>
-                        <button class="highlight cornerTR animate" style={{ right: "0", "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
-                            <p style={font("1em")}>Complete Quest</p>
-                        </button>
-                    </Show>
-                    <button class={`highlight cornerBR ${showQuestSave() ? "animate" : ""}`} style={{ "color": "red" }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
-                        <p style={font("0.75em")}>X</p>
+                <Show when={!showQuestSave()}>
+                    <button class="highlight cornerTR animate" style={{ right: "0", "font-size" : "1em", "font-weight": 700 }} onClick={() => completeQuest(showCompleteQuest())}>
+                        <p style={font("1em")}>Complete Quest</p>
                     </button>
+                </Show>
+                <button class={`highlight cornerBR ${showQuestSave() ? "animate" : ""}`} style={{ "color": "red" }} onClick={() => {setShowQuestComplete(false); setShowCompleteQuest(undefined); setShowQuestSave(false)}}>
+                    <p style={font("0.75em")}>X</p>
+                </button>
             </div>
         </Show>
         <Show when={isOverlayVisible()}>
@@ -2376,7 +2410,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         </div>
                                     </>
                                 }>
-                                    <h3 class="vibrant-shimmer bone" style={{ margin: popupReward()?.type === "Special" ? "3% auto" : "" }}>{popupReward()?.value}</h3>
+                                    <h3 class="vibrant-shimmer bone" style={{ margin: (popupReward()?.type === "Prayer" || popupReward()?.type === "Special") ? "3% auto" : "" }}>{popupReward()?.value}</h3>
                                 </Show>
                                 <Show when={popupReward()?.type === "Special"}>
                                     <h2 class="wrap" style={{ "font-size": "1.25rem" }}>{ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.description}</h2>
@@ -2386,10 +2420,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                         {ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.time} ({ACTION_ORIGIN[popupReward()?.value.toUpperCase()]?.special})
                                     </h4>
                                 </Show>
+                                <Show when={popupReward()?.type === "Prayer"}>
+                                    <h2 class="wrap" style={{ "font-size": "1.25rem" }}>{PRAYER_DESCRIPTION[popupReward()?.value]}</h2>
+                                </Show>
                             </div>
                     </div>
-                    <Show when={popupReward()?.type === "Item" || popupReward()?.type === "Special"}> 
-                        <button class="highlight middleRight animate" onClick={checkQueue} style={{ "font-size": "1.25rem" }}>{popupReward().type === "Special" ? "Exit" : "Next"}</button>
+                    <Show when={popupReward()?.type === "Item" || popupReward()?.type === "Prayer" || popupReward()?.type === "Special"}> 
+                        <button class="highlight middleRight animate" onClick={checkQueue} style={{ "font-size": "1.25rem" }}>{rewardQueue().length === 0 ? "Exit" : "Next"}</button>
                     </Show>
                 </Show>
             </div>
@@ -2397,6 +2434,17 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         <Show when={rewardItem().show}>
             <div class="modal" onClick={() => setRewardItem({show:false, item:undefined})} style={{ "z-index": 1000 }} >
                 <ItemModal item={rewardItem().item} caerenic={false} stalwart={false} />
+            </div>
+        </Show>
+        <Show when={showPrayer().show}>
+            <div class="modal" onClick={() => setShowPrayer({ show: false, prayer: "" })} style={{ "z-index": 99 }}>
+                <div class="reward-card superCenter animate-explode-in" style={{ "--glow-color":"gold", "--base-shadow":"#000 0 0 0 0.2em" }}>
+                    <div class="creature-heading center" style={{ padding: "1rem" }}>
+                        <h1>Prayer Acquired!</h1>
+                        <h3 class="vibrant-shimmer bone" style={{ margin: "3% auto" }}>{showPrayer()?.prayer}</h3>
+                        <h2 style={{ "font-size": "1.25rem" }}>{PRAYER_DESCRIPTION[showPrayer()?.prayer]}</h2>
+                    </div>
+                </div>
             </div>
         </Show>
         <Show when={showSpecial().show}>

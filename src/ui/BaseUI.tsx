@@ -20,6 +20,7 @@ import QuestManager from "../models/quests";
 import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../utility/combatTypes";
 import { Play } from "../game/main";
 import { Reputation } from "../models/reputation";
+import { SpecialItemPrompt } from "../components/SpecialItemModal";
 const Roster = lazy(async () => await import("./Roster"));
 const Character = lazy(async () => await import("./Character"));
 const CombatUI = lazy(async () => await import("./CombatUI"));
@@ -62,6 +63,7 @@ interface Props {
 };
 export default function BaseUI({ instance, ascean, combat, game, quests, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
+    const [prompt, setPrompt] = createSignal<boolean>(false);
     const [touching, setTouching] = createSignal<string[]>([]);
     const [arena, setArena] = createSignal<ArenaRoster>({ show: false, enemies: [], party: instance?.game?.registry.get("party").length || false, wager: { silver: 0, gold: 0, multiplier: 0 }, result: false, win: false, map: "ARENA", gauntlet: { opponents: 1, type: "RANDOMIZED", round: 1 } });
     const [asceanState, setAsceanState] = createSignal<LevelSheet>({
@@ -83,7 +85,6 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         caeren: 0,
         kyosir: 0,
     });
-    
     createEffect(() => EventBus.emit("combat", combat()));  
     createEffect(() => EventBus.emit("game", game()));  
     createEffect(() => EventBus.emit("reputation", reputation()));
@@ -532,6 +533,16 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         EventBus.emit("enemy-loot", loot);
     };
 
+    function useSpecialItem(special: string) {
+        switch (special) {
+            case "marker":
+                setPrompt(true);
+                break;
+            default: break;
+        };
+    };
+
+    usePhaserEvent("use-special-item", useSpecialItem);
     usePhaserEvent("killing-blow", killingBlow);
     usePhaserEvent("remove-non-aggressive-enemy", removeEnemy);
     usePhaserEvent("initiate-combat", (payload: { data: any, type: string }) => initiateCombat(payload.data, payload.type));
@@ -611,5 +622,10 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         <Suspense fallback={<Puff color="gold" />}>
             <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} instance={instance} />
         </Suspense>
+        <Show when={prompt()}>
+            <Suspense fallback={<Puff color="gold" />}>
+                <SpecialItemPrompt setPrompt={setPrompt} />
+            </Suspense>
+        </Show>
     </div>;
 };

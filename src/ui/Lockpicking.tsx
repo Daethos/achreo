@@ -348,11 +348,8 @@ export default function Lockpicking({ ascean, game, lockpick, settings, setLockp
                         <p>Nice try {ascean().name}, but not everyone is capable of such deft precision.</p>
                         <button class="highlight verticalBottom" onClick={() => resetLock(true)}>Try Again</button> <br />
                     </Show>
-                    {/* <button class="highlight cornerBL" onClick={() => resetLock(gameStatus() !== SUCCESS)}>{gameStatus() === SUCCESS ? "Unlock Another" : "Try Again"}</button> <br /> */}
-                    {/* <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>{gameStatus() === SUCCESS ? "Leave Satisfied" : "Give Up"}</button> */}
                     <Show when={gameStatus() === SUCCESS}>
                         <p>Congratulations {ascean().name}, you have successfully opened the lock! Good job, you rapscallion.</p>
-                        {/* <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "teal" }}>Leave Satisfied</button> */}
                     </Show>
                     </div>
                 </div>
@@ -363,8 +360,8 @@ export default function Lockpicking({ ascean, game, lockpick, settings, setLockp
                 <div class="border superCenter">
                     <div class="center creature-heading wrap">
                         <h1>How to Lockpick</h1>
-                        <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling for vibrations of the tumbler setting into place.{" "}
-                        Once set, rotate the <span style={{ color: "silver" }}>tension wrench</span> clockwise to set the tumblers in place, allowing you to move the lockpick further into more tumblers.</h2>
+                        <h2 class="wrap" style={{ margin: "3% auto" }}>Rotate the <span class="gold">lockpick</span> around, feeling the vibrations of the tumbler being pushed into place.{" "}
+                        Once you feel that, rotate the <span style={{ color: "silver" }}>tension wrench</span> clockwise to set the tumbler, allowing you to move the lockpick further into more tumblers.</h2>
                         <p style={font("1em")}><span style={{ color: "red" }}>Warning: </span>You can break the <span class="gold">lockpick</span> from over rotation when feeling around to set in place. You can also break the <span class="gold">lockpick</span> as you rotate the <span style={{ color: "silver" }}>tension wrench</span>, if not set correctly.</p>
                     </div>
                 </div>
@@ -375,9 +372,6 @@ export default function Lockpicking({ ascean, game, lockpick, settings, setLockp
                 <h1 class="superCenter animate-fade-inout" style={{ top: "25%", "font-size":"4rem", "font-family":"Centaur", width: "100%", "z-index":99 }}>{gameStatus() === SUCCESS ? "The Lock Opened!" : "Tumbler Set"}</h1>
             </div>
         </Show>
-        {/* <Show when={lockpicks() > 0}>
-            <button class="highlight cornerBL" onClick={checkSweetSpot} style={{ color: "green" }}>Tap</button>
-        </Show> */}
         <button class="highlight cornerTL" onClick={() => setShowManual(true)}>Manual</button>
         <button class="highlight cornerBR" onClick={() => setLockpicking(false)} style={{ color: "red" }}>X</button>
         <button class="highlight cornerTR" onClick={() => setDebugMode(!debugMode())} style={{ color: "teal" }}>Debug</button>

@@ -4,6 +4,7 @@ import Settings from "./settings";
 import { ABSORB, ACHIRE, ARC, ASTRAVE, BLINK, CHARM, CHIOMIC, CHIOMISM, CONFUSE, DESPERATION, DISEASE, DISPEL, ENVELOP, FEAR, FREEZE, FROST, FYERUS, GRAPPLE, HEALING, HOOK, HOWL, ILIRECH, KYNISOS, KYRISIAN, KYRNAICISM, LEAP, LIGHTNING, LIKYR, MAIERETH, MALICE, MARK, MENACE, MEND, MODERATE, MULTIFARIOUS, MYSTIFY, NETHERSWAP, PARALYZE, POLYMORPH, PROTECT, PURSUIT, QUOR, RECALL, RECONSTITUTE, RECOVER, REIN, RENEWAL, RUSH, SACRIFICE, SCREAM, SHADOW, SHIELD, SHIMMER, SHIRK, SLOW, SNARE, SPECIAL, SPRINT, STORM, SUTURE, TETHER, WARD, WRITHE } from "../utility/abilities";
 import { ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, ASTRAL_APOSTLE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE } from "../utility/player";
 import { v4 as uuidv4 } from 'uuid';
+import { SPECIAL_PRAYERS } from "../ui/CombatSettings";
 
 const QUESTING = {
     PLAYER_THRESHOLD_ONE: 4,
@@ -60,6 +61,24 @@ export default class QuestManager {
 export const initQuests = new QuestManager("quest");
 export const createQuests = (id: string): QuestManager => new QuestManager(id);
 export type Condition = {key: string; operator: string; value: number | string;}
+type Prospect = {
+    giver: Ascean;
+    mastery: string;
+    title: string;
+    description: string;
+    requirements: {
+        level: number;
+        reputation: number;
+        description: string;
+        technical: FETCH | SOLVE;
+        action?: { name: string, key: string, value: string };
+        dialog?: string;
+        conditions?: Condition;
+    };
+    rewards: string[];
+    prayer: string;   
+};
+
 export class Quest {
     public _id: string;
     public title: string;
@@ -73,9 +92,9 @@ export class Quest {
         level: number,
         reputation: number,
         description: string,
-        dialog?: string,
-        action: { name: string, key: string, value: string },
         technical: FETCH | SOLVE,
+        dialog?: string,
+        action?: { name: string, key: string, value: string },
         conditions?: Condition;
     };
     public rewards: {
@@ -84,8 +103,9 @@ export class Quest {
         items: Equipment[] | string[] | undefined,
     };
     public special: string;
+    public prayer: string;
 
-    constructor(quest: any) {
+    constructor(quest: Prospect) {
         this._id = uuidv4();
         this.title = quest.title;    
         this.description = this.getDescription(quest);
@@ -95,6 +115,7 @@ export class Quest {
         this.requirements = quest.requirements;
         this.rewards = this.getReward(quest);
         this.special = quest.rewards.length ? quest.rewards[Math.floor(Math.random() * quest.rewards.length)] : "";    
+        this.prayer = quest.prayer;    
     };
     [key: string]: any;
 
@@ -461,6 +482,7 @@ export const QUEST_TEMPLATES = [
             }
         },
         reward: [ASTRAVE, CHIOMIC, DESPERATION, DISEASE, FREEZE, FYERUS, HEALING, HOWL, KYNISOS, RENEWAL, SCREAM, WRITHE, ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MULTIFARIOUS, MYSTIFY, PROTECT, RECONSTITUTE, RECOVER, REIN, SHIELD, WARD],
+        prayer: SPECIAL_PRAYERS
     }, {
         name: [DAETHIC_INQUISITOR, DAETHIC_KNIGHT, KINGSMAN, SERA, LIIVI_LEGIONNAIRE],
         title: "Providence",
@@ -481,6 +503,7 @@ export const QUEST_TEMPLATES = [
             }
         },
         reward: [ASTRAVE, CHIOMIC, DESPERATION, DISEASE, FREEZE, FYERUS, HEALING, HOWL, KYNISOS, RENEWAL, SCREAM, WRITHE, ABSORB, ENVELOP, MALICE, MENACE, MEND, MODERATE, MULTIFARIOUS, MYSTIFY, PROTECT, RECONSTITUTE, RECOVER, REIN, SHIELD, WARD],
+        prayer: SPECIAL_PRAYERS
     }
 ]
 export const getQuests = (name: string) => {
@@ -490,8 +513,13 @@ export const getQuests = (name: string) => {
 export const getQuest = (title: string, enemy: Ascean, ascean: Ascean, settings: Settings): Quest | undefined => {
     try {
         const template = QUEST_TEMPLATES.filter(quest => quest.title === title)[0];
-        const rewards = template.reward.filter((r: string) => SPECIAL[ascean.mastery].includes(r) && !settings.totalSpecials.includes(r));
-        const prospect = {
+        let rewards = template.reward.filter((r: string) => SPECIAL[ascean.mastery].includes(r) && !settings.totalSpecials.includes(r));
+        let prayer = "";
+        if (template.prayer) {
+            const prayers = settings.prayers ? SPECIAL_PRAYERS.filter((p: string) => settings.prayers.includes(p)) : SPECIAL_PRAYERS;
+            prayer = prayers[Math.floor(Math.random() * prayers.length)];
+        };
+        const prospect: Prospect = {
             giver: enemy,
             mastery: enemy.mastery,
             title: template.title,
@@ -505,7 +533,8 @@ export const getQuest = (title: string, enemy: Ascean, ascean: Ascean, settings:
                 dialog: template.requirements?.dialog,
                 conditions: template.requirements?.conditions
             },
-            rewards    
+            rewards,
+            prayer   
         };
         return new Quest(prospect);
     } catch (err) {

@@ -32,6 +32,8 @@ import { Entity } from "../main";
 import { ExperienceManager } from "../phaser/ExperienceManager";
 import { ChatManager } from "../phaser/ChatManager";
 import { FACTION } from "../../models/reputation";
+import Mark from "../matter/Mark";
+import { Marker } from "../../models/settings";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 562500; // 640000; 750 / 800
@@ -125,6 +127,7 @@ export class Game extends Scene {
     weather: WeatherManager;
     experienceManager: ExperienceManager;
     chatManager: ChatManager;
+    markers: Mark[] = [];
 
     constructor () {
         super("Game");
@@ -193,6 +196,15 @@ export class Game extends Scene {
         this.input.mouse?.disableContextMenu();
         this.glowFilter = this.plugins.get("rexGlowFilterPipeline");
 
+        const markers = this.hud.settings.markers;
+        if (markers) {
+            for (let i = 0; i < markers.length; ++i) {
+                if (markers[i].scene !== this.scene.key) continue;
+                const mark = new Mark(this, markers[i]);
+                this.markers.push(mark);
+            };
+        };
+
         this.startDayCycle();
         
         this.aoePool = new AoEPool(this, 110);
@@ -232,6 +244,18 @@ export class Game extends Scene {
         // });
     };
 
+    public createMark(marker: Marker) {
+        const mark = new Mark(this, marker);
+        this.markers.push(mark);
+    };
+    public removeMark(id: string) {
+        const mark = this.markers.find((m: Mark) => m.marker.id === id);
+        if (mark) {
+            this.markers = this.markers.filter((m: Mark) => m.marker.id !== id);
+            mark.cleanup();
+            mark.destroy();
+        };
+    };
     private updateChunks() {
         this.isTransitioning = true;
 

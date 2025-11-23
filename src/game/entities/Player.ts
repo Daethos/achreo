@@ -1783,7 +1783,7 @@ export default class Player extends Entity {
         if (this.isClimbing || this.inWater) {
             finalSpeed *= 0.65;
         };
-        
+        if (suffering && this.isStuck()) return;
         this.playerVelocity.limit(finalSpeed);
         this.setVelocity(this.playerVelocity.x, this.playerVelocity.y);
     };

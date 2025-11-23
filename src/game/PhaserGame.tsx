@@ -1,8 +1,9 @@
 import { onCleanup, onMount, createSignal, Accessor, Setter, Show, lazy, Suspense } from "solid-js";
+import { v4 as uuidv4 } from "uuid";
 import { createStore } from "solid-js/store";
 import Ascean from "../models/ascean";
 import Equipment, { getOneRandom, getOneSpecific, upgradeEquipment } from "../models/equipment";
-import Settings from "../models/settings";
+import Settings, { Marker } from "../models/settings";
 import Statistics from "../models/statistics";
 import StartGame, { Play } from "./main";
 import { EventBus } from "./EventBus";
@@ -26,6 +27,7 @@ import { getSpecificItem, Item } from "../models/item";
 import { Inventory } from "../models/inventory";
 import { Reputation, FACTION, ENEMY_AGGRESSION, ENEMY_FRIENDLY, ENEMY_HOSTILE } from "../models/reputation";
 import { SpecialInventory } from "../models/specialInventory";
+import { BASE_PRAYERS } from "../ui/CombatSettings";
 const BaseUI = lazy(async () => await import("../ui/BaseUI"));
 
 const RARITY_GOLD_MAP: {[key:string]: number} = {
@@ -224,7 +226,7 @@ export default function PhaserGame (props: IProps) {
     async function purchaseSpecialItem(purchase: {item: Item; cost: { silver: number; gold: number; };}) {
         try {
             let inventory = JSON.parse(JSON.stringify(game().specialInventory.inventory));
-            const duplicate = inventory.find((it: Item) => it.name === purchase.item.name);
+            const duplicate = inventory.find((it: Item) => it?.name === purchase.item.name);
             if (duplicate) { // just add to quantity rather than creating and pushing new item
                 duplicate.quantity += purchase.item.quantity;
                 await updateItemData(duplicate);
@@ -632,14 +634,16 @@ export default function PhaserGame (props: IProps) {
     function recordQuestUpdate(enemy: Ascean) {
         let quests = JSON.parse(JSON.stringify(props.quests().quests));
         let updated = false;
-        let updateTimer = 0;
+        let updateTimer = 1;
         for (let i = 0; i < quests.length; ++i) {
             const quest: Quest = quests[i];
             if (quest.title === "Principles and Principalities") {
                 const enemies = ENEMY_ENEMIES[quest.giver as keyof typeof ENEMY_ENEMIES];
                 if (enemies.includes(enemy.name) && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
-                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 4000, key: "Close"});
+                        if (!showDeity()) {
+                            EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is an enemy of ${quest.giver}, updating Principles and Principalities.`, delay: 4000, key: "Close"});
+                        };
                     }, updateTimer * 4000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
@@ -649,7 +653,9 @@ export default function PhaserGame (props: IProps) {
             if (quest.title === "Replenish Firewater") {
                 if (enemy.level >= props.ascean().level && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
-                        EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 4000, key: "Close"});
+                        if (!showDeity()) {
+                            EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 4000, key: "Close"});
+                        };
                     }, updateTimer * 4000);
                     updateTimer++;
                     quest.requirements.technical.current = Math.min(quest.requirements.technical.current as number + 1, quest.requirements.technical.total as number);
@@ -1029,6 +1035,49 @@ export default function PhaserGame (props: IProps) {
         };
     };
 
+    async function setMarkerPrompt(marker: {title: string; content: string;}) {
+        const { title, content } = marker;
+        let markers = props.settings().markers;
+        if (!markers) markers = [];
+        const player = (instance.scene as Play)?.player;
+        const newMarker: Marker = {
+            id: uuidv4(),
+            title,
+            content,
+            scene: instance.scene?.scene.key as string,
+            x: player.x,
+            y: player.y
+        };
+        markers.push(newMarker);
+
+        let inventory = JSON.parse(JSON.stringify(game().specialInventory.inventory));
+        const item = inventory.find((it: Item) => it?.name === "Marker");
+        if (item) { // just add to quantity rather than creating and pushing new item
+            item.quantity -= 1;
+            if (item.quantity === 0) {
+                inventory = inventory.filter((eqp: Item) => eqp._id !== item._id);
+                await deleteItemData(item._id);
+            } else {
+                await updateItemData(item);
+            };
+        };
+        const clean = { ...game().specialInventory, inventory };
+        setGame({ ...game(), specialInventory: clean });
+        EventBus.emit("update-special-inventory", clean);
+
+        let newSettings = JSON.parse(JSON.stringify({...props.settings(), markers}));
+        EventBus.emit("save-settings", newSettings);
+        (instance.scene as Play)?.createMark(newMarker);
+    };
+
+    function addPrayer(prayer: string) {
+        let prayers = props.settings().prayers;
+        if (!prayers) prayers = BASE_PRAYERS;
+        prayers.push(prayer);
+        const newSettings = JSON.parse(JSON.stringify({ ...props.settings(), prayers }));
+        EventBus.emit("save-settings", newSettings);
+    };
+
     function checkUi(): boolean {
         return props.scene() === "Game" || props.scene() === "Underground" || props.scene() === "Gauntlet" || props.scene() === "Arena" || props.scene() === "Tutorial";
     };
@@ -1243,6 +1292,7 @@ export default function PhaserGame (props: IProps) {
             const dialog = getNodesForNPC(npcIds[e.type]);
                 setGame({ ...game(), dialog: dialog, interactCount: e.interactCount });    
         });
+        EventBus.on("add-prayer", addPrayer);
         EventBus.on("changeDamageType", (e: string) => setCombat({ ...combat(), playerDamageType: e }));
         EventBus.on("changePrayer", (e: string) => {
             setCombat({ ...combat(), playerBlessing: e });
@@ -1467,6 +1517,7 @@ export default function PhaserGame (props: IProps) {
             setGame({ ...game(), specialInventory });
             EventBus.emit("update-special-inventory", specialInventory);
         });
+        EventBus.on("set-marker-prompt", setMarkerPrompt);
 
         onCleanup(() => {
             if (instance.game) {
@@ -1484,6 +1535,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("blend-combat");
             EventBus.removeListener("blend-game");
             
+            EventBus.removeListener("add-prayer");
             EventBus.removeListener("changeDamageType");
             EventBus.removeListener("changePrayer");
             EventBus.removeListener("changeWeapon");

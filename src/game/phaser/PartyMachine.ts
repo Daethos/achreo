@@ -228,7 +228,11 @@ export default class PlayerMachine {
     }; 
     onChaseUpdate = (_dt: number) => {
         const target = this.player.currentTarget;
-        if (!target || !target.body || !target.position) return;
+        if (!target || !target.body || !target.position) {
+            this.player.inComputerCombat = false
+            this.stateMachine.setState(States.FOLLOW);
+            return;
+        };
         
         const ctx = this.player.getCombatContext();
         const mind = this.player.mindState;
@@ -859,14 +863,9 @@ export default class PlayerMachine {
         this.player.handleIdleAnimations();
         const direction = this.scene.player.position.subtract(this.player.position);
         const distance = direction.length();
-        if (distance > 96 && !this.stateMachine.isCurrentState(States.FOLLOW)) { // 144
+        if (distance > 120 && !this.stateMachine.isCurrentState(States.FOLLOW)) { // 144
             this.stateMachine.setState(States.FOLLOW);
         };
-    
-        // if (this.player.velMoving()) {
-        //     this.stateMachine.setState(States.MOVING);
-        //     return;
-        // };
     };
     onIdleExit = () => {};
 
@@ -901,6 +900,8 @@ export default class PlayerMachine {
     
     onComputerCombatEnter = () => {
         if (this.player.shouldExitCombat()) return;
+        this.player.currentAction = "";
+        this.player.computerCombatSheet.computerAction = "";
         this.player.anims.stop();
         this.player.partyAnimation();
         this.player.swingCheck();
@@ -909,7 +910,6 @@ export default class PlayerMachine {
 
     onComputerAttackEnter = () => {
         this.player.isAttacking = true;
-        // this.player.currentAction = "";
         this.player.attack();
     };
     onComputerAttackUpdate = (_dt: number) => {
@@ -922,7 +922,6 @@ export default class PlayerMachine {
     };
 
     onComputerParryEnter = () => {
-        // this.player.currentAction = "";
         this.player.isParrying = true;
         this.player.anims.play(FRAMES.PARRY, true).once(FRAMES.ANIMATION_COMPLETE, () => this.player.isParrying = false);
         if (this.player.hasMagic) {
@@ -1182,27 +1181,28 @@ export default class PlayerMachine {
 
     onBlinkEnter = () => {
         this.player.enemySound("caerenic", true);
+        const blink = PLAYER.SPEED.BLINK / 2;
         if (this.scene.scene.key === "Game") {
             if (this.player.velocity?.x as number > 0) {
-                this.player.setPosition(this.player.x + PLAYER.SPEED.BLINK, this.player.y);
+                this.player.setPosition(this.player.x + blink, this.player.y);
             } else if (this.player.velocity?.x as number < 0) {
-                this.player.setPosition(this.player.x - PLAYER.SPEED.BLINK, this.player.y);
+                this.player.setPosition(this.player.x - blink, this.player.y);
             };
             if (this.player.velocity?.y as number > 0) {
-                this.player.setPosition(this.player.x, this.player.y + PLAYER.SPEED.BLINK);
+                this.player.setPosition(this.player.x, this.player.y + blink);
             } else if (this.player.velocity?.y as number < 0) {
-                this.player.setPosition(this.player.x, this.player.y - PLAYER.SPEED.BLINK);
+                this.player.setPosition(this.player.x, this.player.y - blink);
             };
         } else {
             if (this.player.velocity?.x as number > 0) {
-                this.player.setPosition(Math.min(this.player.x + PLAYER.SPEED.BLINK, this.scene.map.widthInPixels), this.player.y);
+                this.player.setPosition(Math.min(this.player.x + blink, this.scene.map.widthInPixels), this.player.y);
             } else if (this.player.velocity?.x as number < 0) {
-                this.player.setPosition(Math.max(this.player.x - PLAYER.SPEED.BLINK, 0), this.player.y);
+                this.player.setPosition(Math.max(this.player.x - blink, 0), this.player.y);
             };
             if (this.player.velocity?.y as number > 0) {
-                this.player.setPosition(this.player.x, Math.min(this.player.y + PLAYER.SPEED.BLINK, this.scene.map.heightInPixels));
+                this.player.setPosition(this.player.x, Math.min(this.player.y + blink, this.scene.map.heightInPixels));
             } else if (this.player.velocity?.y as number < 0) {
-                this.player.setPosition(this.player.x, Math.max(this.player.y - PLAYER.SPEED.BLINK, 0));
+                this.player.setPosition(this.player.x, Math.max(this.player.y - blink, 0));
             };
             const mapBounds = {
                 minX: 32,
@@ -2882,7 +2882,7 @@ export default class PlayerMachine {
     onSlowedEnter = () => {
         this.scene.showCombatText(this.player, "Slowed", DURATION.TEXT, EFFECT, false, true);
         this.player.setTint(0xFFC700);
-        this.player.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
+        this.player.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.player.slowDuration, () =>{
             this.player.isSlowed = false;
             this.negativeMachine.setState(States.CLEAN);
@@ -2892,14 +2892,14 @@ export default class PlayerMachine {
     onSlowedExit = () => {
         this.player.clearTint();
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
-        this.player.adjustSpeed((PLAYER.SPEED.SLOW - 0.25));
+        this.player.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
     onSnaredEnter = () => {
         this.scene.showCombatText(this.player, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.player.snareDuration = DURATION.SNARED;
         this.player.setTint(0x0000FF);
-        this.player.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
+        this.player.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.player.snareDuration, () =>{
             this.player.isSnared = false;
             this.negativeMachine.setState(States.CLEAN);
@@ -2908,7 +2908,7 @@ export default class PlayerMachine {
     onSnaredExit = () => { 
         this.player.clearTint(); 
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX); 
-        this.player.adjustSpeed((PLAYER.SPEED.SNARE - 0.25));
+        this.player.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 
     onStunnedEnter = () => {

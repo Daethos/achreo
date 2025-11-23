@@ -16,6 +16,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
     drop: Equipment;
     scene: any;
     tween: Phaser.Tweens.Tween;
+    sensor: any;
 
     constructor(data: any) {
         let { scene, enemyID, drop } = data;
@@ -101,6 +102,7 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
         const lootSensor = Bodies.circle(this.x, this.y, 12, { isSensor: true, label: "lootSensor" });
         this.setExistingBody(lootSensor);
         this.setStatic(true);
+        this.sensor = lootSensor;
         this.setCollisionCategory(ENTITY_FLAGS.LOOT);
         this.scene.matterCollision.addOnCollideStart({
             objectA: [lootSensor],
@@ -138,6 +140,9 @@ export default class LootDrop extends Phaser.Physics.Matter.Image { // Physics.M
             if (this.scene.player.interacting.length === 0) EventBus.emit('smallhud-deactivate', 'loot');
             this.scene.plugins.get('rexGlowFilterPipeline').remove(this);
             this.tween.stop();
+            this.removeInteractive();
+            this.world.remove(this.body!);
+            this.world.remove(this.sensor);
             this.cleanUp();
             this.destroy();
         };

@@ -35,7 +35,6 @@ export class ChatBubble {
             color: "#fdf6d8",
             padding: {
                 bottom: 1,
-                // top: 1
             },
             stroke: "#000000",
             strokeThickness: 1,
@@ -50,6 +49,10 @@ export class ChatBubble {
             fontFamily: "Centaur",
             fontSize: "14px",
             color: "#ffd700",
+            padding: {
+                bottom: 1,
+            },
+            resolution: 2,
             stroke: "#000000",
             strokeThickness: 1,    
         }).setVisible(false);

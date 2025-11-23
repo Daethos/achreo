@@ -63,6 +63,7 @@ export const audio: { key: string, value: string }[] = [
 export const image: {key: string, value:string}[] = [
     {key: "beam", value: "../assets/gui/beam.png"},
     {key: "cursor", value: "../assets/images/cursor.png"},
+    {key: "marker", value: "../assets/images/marker.png"},
     {key: "target", value: "../assets/gui/target_1.png"},
     {key: "castle_outside", value: "../assets/gui/castle_outside.png"},
     {key: "GrasslandMainLev2.0", value: "../assets/gui/GrasslandMainLev2.0-extruded.png"},

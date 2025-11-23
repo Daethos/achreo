@@ -67,6 +67,12 @@ export const BLUE_COLOR_MATRIX = [
     0, 0, 1, 0, 0, 
     0, 0, 0, 1, 0
 ];
+export const PURPLE_COLOR_MATRIX = [
+    0.502, 0, 0, 0, 0,    // Red @ ~50%
+    0, 0, 0, 0, 0,        // Green @ 0%
+    0, 0, 0.502, 0, 0,    // Blue @ ~50%
+    0, 0, 0, 1, 0         // Alpha @ 100%
+];
 export const GRAY_COLOR_MATRIX = [
     0.33, 0.33, 0.33, 0, 0,  // Mix all colors to create Red channel (at ~53% brightness)
     0.33, 0.33, 0.33, 0, 0,  // Mix all colors to create Green channel
@@ -744,7 +750,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
     
     applyKnockback(target: Enemy | Player | Party, force = 10, override = false) {
-        if (!override && (Number.isNaN(force) || force <= 0 || target.isTrying() || target.isPraying || target.isRolling || target.isCasting || !target.position)) return;
+        if (!override && (Number.isNaN(force) || force <= 0 || !target || target.isTrying() || target.isPraying || target.isRolling || target.isCasting || !target.position)) return;
         force *= 0.4; // 0.35
         const angle = Phaser.Math.Angle.BetweenPoints(this, target);
         this.scene.tweens.add({
@@ -787,7 +793,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     handleMovementAnimations = () => {
-        // if (this.getAttack()) return;
         if (this.isClimbing) {
             this.anims.play(FRAMES.CLIMB, true);
         } else if (this.inWater) {
@@ -864,6 +869,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isFrozen || this.isParalyzed || this.isPolymorphed || this.isStunned;
+    isStuck = (): boolean => this.isFrozen || this.isParalyzed || this.isStunned;
     sansSuffering = (ailment: string): boolean => {
         switch (ailment) {
             case "isConfused":
@@ -984,8 +990,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         const weaponBounds = this.weaponHitbox.getBounds();
         const targetBounds = target.getBounds();
 
-
-        
         if (Phaser.Geom.Intersects.RectangleToRectangle(weaponBounds, targetBounds)) {
             const hitResult = hitLocationDetector.detectHitLocation(this.weaponHitbox, target);
             
@@ -1016,10 +1020,12 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
     };
 
     grapplingHook = (x: number, y: number) => {
-        const point = new Phaser.Math.Vector2(x,y);
+        const point = new Phaser.Math.Vector2(x, y);
         const distance = point.subtract(this.position).length();
         const duration = Math.max(100, distance * 2);
         this.grappleTime = duration;
+        const effect = this.particleEffect;
+        if (effect) (this as unknown as Player).killParticle();
         if (this.scene.hud.cinemaMode) {
             this.hooking = false;
             this.scene.hud.cinemaMode = false;
@@ -1033,7 +1039,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             y: { from: this.y, to: y, duration },
             onStart: () => {
                 (this as unknown as Player).playerMachine.stateMachine.setState(States.GRAPPLING_ROLL);    
-                this.beam.pointEmitter(x,y,duration)
+                this.beam.pointEmitter(x,y,duration);
             },
             onComplete: () => {
                 this.hooking = false;
@@ -1538,6 +1544,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, States.PARRY, (this as unknown as Enemy).enemyID);
                 } else if (this.name === "party") {
                     if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.PARRY;
+                    (this as unknown as Party).currentAction = States.PARRY;
                 };
             } else if (frameIndex === 5 && !this.isRanged) {
                 this.checkActionSuccess();
@@ -1567,6 +1574,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                         if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, States.THRUST, (this as unknown as Enemy).enemyID);
                     } else if (this.name === "party") {
                         if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.THRUST;
+                        (this as unknown as Party).currentAction = States.THRUST;
                     };
                 };
             } else if (frameIndex === 3 && !this.isRanged) {
@@ -1602,6 +1610,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     this.particleEffect = this.scene.particleManager.addEffect(ROLL, this, this.bowDamageType());
                 };
             } else if (frameIndex === 1 && !this.isRanged) {
+                this.currentAction = States.ROLL;
                 this.checkActionSuccess();
             };
         },
@@ -1630,6 +1639,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, States.POSTURE, (this as unknown as Enemy).enemyID);
                 } else if (this.name === "party") {
                     if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.POSTURE;
+                    (this as unknown as Party).currentAction = States.POSTURE;
                 };
             } else if (frameIndex === 3 && this.hasMagic) {
                 this.particleEffect = this.scene.particleManager.addEffect(POSTURE, this, this.currentDamageType);
@@ -1671,6 +1681,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
                     if ((this as unknown as Enemy).isCurrentTarget) this.scene.combatManager.combatMachine.input(COMPUTER_ACTION, States.ATTACK, (this as unknown as Enemy).enemyID);
                 } else if (this.name === "party") {
                     if (this.inComputerCombat) (this as unknown as Party).computerCombatSheet.computerAction = States.ATTACK;
+                    (this as unknown as Party).currentAction = States.ATTACK;
                 };
             } else if (frameIndex === 8 && !this.isRanged) {
                 this.checkActionSuccess();

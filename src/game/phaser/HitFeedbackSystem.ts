@@ -539,6 +539,7 @@ export class HitFeedbackSystem {
     public healing = (pos: Phaser.Math.Vector2): void => {
         this.heal.explode(25, pos.x, pos.y+6);
     };
+
     private ghost = (entity: Entity, add: number) => {
         let texture, frame;
         if (entity.isLeaping) {
@@ -551,12 +552,13 @@ export class HitFeedbackSystem {
             texture = "player_slide";
             frame = "player_slide_0";
         };
+        
         const ghost = this.scene.add.sprite(entity.x, entity.y, texture, frame);
         ghost.setAlpha(0.4 + add)
-        .setDepth(entity.depth - 1)
-        .setFlipX(entity.flipX)
-        .setScale(0.8)
-        .setTint(masteryNumber(entity.ascean.mastery));
+            .setDepth(entity.depth - 1)
+            .setFlipX(entity.flipX)
+            .setScale(0.8)
+            .setTint(masteryNumber(entity.ascean.mastery));
         
         this.scene.tweens.add({
             targets: ghost,

@@ -527,30 +527,30 @@ export const QuestModal = ({ quests, show, setShow, enemy }: { quests: Accessor<
     return ( // onClick={() => setShow(!show())}
         <>
         <Show when={show()}>
-        <div class="modal" style={{ "z-index": 2 }}>
-            <div class="thick-border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", "max-height" : "95%", width: "65%", "z-index": 2, top: "47.5%" }}>
-                <div class="creature-heading wrap">
-                    <h1 style={{ margin: "3%" }}>Quests</h1>
-                    <svg height="5" width="100%" class="tapered-rule mt-2">
-                        <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
-                    </svg>
-                    <h2 style={font("1.2rem")}>These are the quests you have available to you. Each quest has its own requirements and rewards. 
-                    Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
-                    <div style={{ "font-size": "1rem", margin: "5%" }}>
-                    {quests().map((quest: Quest, index: number) => {
-                        return <div style={{ margin: "3%" }}>
-                            <div class="dialog-buttons inner juiceNB" style={{ color: index % 2 === 0 ? "gold" : "white", "font-size": "1.25rem", background: "#000" }}>[{quest.title}]: {quest.description}</div>
-                            <button class="highlight" onClick={() => {EventBus.emit("add-quest", {title:quest.title,enemy}); }} style={font("1.25rem", "green")}>Accept {quest.title}</button>
+            <div class="modal" style={{ "z-index": 2 }}>
+                <div class="thick-border superCenter" style={{ "font-size": "1.25em", "overflow-y": "auto", "scrollbar-width": "none", "max-height" : "95%", width: "65%", "z-index": 2, top: "47.5%" }}>
+                    <div class="creature-heading wrap">
+                        <h1 style={{ margin: "3%" }}>Quests</h1>
+                        <svg height="5" width="100%" class="tapered-rule mt-2">
+                            <polyline points={`0,0 ${poly},2.5 0,5`}></polyline>
+                        </svg>
+                        <h2 style={font("1.2rem")}>These are the quests you have available to you. Each quest has its own requirements and rewards. 
+                        Quests may be shared between multiple enemies, but the player may only choose one quest giver.</h2>
+                        <div style={{ "font-size": "1rem", margin: "5%" }}>
+                        {quests().map((quest: Quest, index: number) => {
+                            return <div style={{ margin: "3%" }}>
+                                <div class="dialog-buttons inner juiceNB" style={{ color: index % 2 === 0 ? "gold" : "white", "font-size": "1.25rem", background: "#000" }}>[{quest.title}]: {quest.description}</div>
+                                <button class="highlight" onClick={() => {EventBus.emit("add-quest", {title:quest.title,enemy}); }} style={font("1.25rem", "green")}>Accept {quest.title}</button>
+                            </div>
+                        })}
+                        [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                         </div>
-                    })}
-                    [Note: Your decisions have granted this avenue of gameplay experience. There are more to discover.]
                     </div>
                 </div>
+                <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setShow(!show())}>
+                    <p style={font("0.5em")}>X</p>
+                </button>
             </div>
-            <button class="highlight cornerBR" style={{ transform: "scale(0.85)", bottom: "0", right: "0", "background-color": "red" }} onClick={() => setShow(!show())}>
-                <p style={font("0.5em")}>X</p>
-            </button>
-        </div>
         </Show>
         <button class="highlight inner" style={{ color: "#fdf6d8", background: "#000", margin: "3% auto", "--glow-color":"#fdf6d8", "font-size":"1.15rem", "font-weight": 900 }} onClick={() => setShow(!show())}><span class="gold">[Quests]:</span> You have potential quests available. Would you like to examine them?</button>
         </>

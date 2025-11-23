@@ -29,6 +29,8 @@ import { DEFEATED, VICTORIOUS } from "../../utility/enemy";
 import { Entity } from "../main";
 import { ExperienceManager } from "../phaser/ExperienceManager";
 import { ChatManager } from "../phaser/ChatManager";
+import Mark from "../matter/Mark";
+import { Marker } from "../../models/settings";
 
 interface ChunkData {
     key: string;
@@ -91,7 +93,7 @@ export class Underground extends Scene {
     south: any;
     east: any;
     west: any;
-    markers: any;
+    marks: any[] = [];
     glowFilter: any;
     hud: Hud;
     wager = { silver: 0, gold: 0, multiplier: 0 };
@@ -108,6 +110,7 @@ export class Underground extends Scene {
     pillars: any[] = [];
     experienceManager: ExperienceManager;
     chatManager: ChatManager;
+    markers: Mark[] = [];
 
     constructor () {
         super("Underground");
@@ -125,7 +128,6 @@ export class Underground extends Scene {
         this.offsetX = 0;
         this.offsetY = 0;
         this.tweenManager = {};
-        this.markers = [];
         let camera = this.cameras.main;
         camera.zoom = this.hud.settings.positions.camera.zoom;
         const map = this.make.tilemap({ key: "underground" });
@@ -193,7 +195,14 @@ export class Underground extends Scene {
         this.combatManager = new CombatManager(this);
         this.experienceManager = new ExperienceManager(this);
         this.particleManager = new ParticleManager(this);
-
+        const markers = this.hud.settings.markers;
+        if (markers) {
+            for (let i = 0; i < markers.length; ++i) {
+                if (markers[i].scene !== this.scene.key) continue;
+                const mark = new Mark(this, markers[i]);
+                this.markers.push(mark);
+            };
+        };
         this.time.addEvent({
             delay: 10000,
             loop: true,
@@ -202,7 +211,7 @@ export class Underground extends Scene {
         });
 
         map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => this.pillars.push(pillar));
-        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.markers.push(summon));
+        map?.getObjectLayer("summons")?.objects.forEach((summon: any) => this.marks.push(summon));
         map?.getObjectLayer("dms")?.objects.forEach((_dm: any) => {
             this.dm = new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 });
             // (this.dms as any).push(new DM({ scene: this, x: 912, y: 78, texture: "player_actions", frame: "player_idle_0", npcType: "Merchant-All", id: 11 }));
@@ -241,6 +250,20 @@ export class Underground extends Scene {
         };
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
+    };
+
+    public createMark(marker: Marker) {
+        const mark = new Mark(this, marker);
+        this.markers.push(mark);
+    };
+
+    public removeMark(id: string) {
+        const mark = this.markers.find((m: Mark) => m.marker.id === id);
+        if (mark) {
+            this.markers = this.markers.filter((m: Mark) => m.marker.id !== id);
+            mark.cleanup();
+            mark.destroy();
+        };
     };
 
     showCombatText(entity: Entity, text: string, duration: number, context: string, critical: boolean = false, constant: boolean = false): void {
@@ -499,36 +522,36 @@ export class Underground extends Scene {
     drinkFlask = (): boolean => EventBus.emit("drink-firewater");
 
     createEnemy = () => {
-        let marker: any, markers: any[] = [];
-        for (let i = 0; i < this.markers.length; i++) {
-            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+        let m: any, marks: any[] = [];
+        for (let i = 0; i < this.marks.length; i++) {
+            const position = new Phaser.Math.Vector2(this.marks[i].x, this.marks[i].y);
             const direction = position.subtract(this.player.position);
             if (direction.length() < 600) {
-                markers.push(this.markers[i]);
+                marks.push(this.marks[i]);
             };
         };
-        marker = markers[Math.floor(Math.random() * markers.length)];
+        m = marks[Math.floor(Math.random() * marks.length)];
         const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: undefined  });
-        enemy.setPosition(marker.x, marker.y);
+        enemy.setPosition(m.x, m.y);
         this.enemies.push(enemy);
         return enemy;
     };
 
     createArenaEnemy = (data: Compiler[]) => {
-        let marker: any, markers: any[] = [], count = 0, current = 600;
-        for (let i = 0; i < this.markers.length; i++) {
-            const position = new Phaser.Math.Vector2(this.markers[i].x, this.markers[i].y);
+        let m: any, marks: any[] = [], count = 0, current = 600;
+        for (let i = 0; i < this.marks.length; i++) {
+            const position = new Phaser.Math.Vector2(this.marks[i].x, this.marks[i].y);
             const direction = position.subtract(this.player.position);
             if (direction.length() < 600) {
-                markers.push(this.markers[i]);
+                marks.push(this.marks[i]);
             };
         };
         for (let j = 0; j < data.length; j++) {
-            marker = markers[Math.floor(Math.random() * markers.length)];
+            m = marks[Math.floor(Math.random() * marks.length)];
             const enemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: data[j] });
             this.enemies.push(enemy);
-            enemy.setPosition(marker.x, marker.y);
-            const markerPosition = new Phaser.Math.Vector2(marker.x, marker.y);
+            enemy.setPosition(m.x, m.y);
+            const markerPosition = new Phaser.Math.Vector2(m.x, m.y);
             const distance = markerPosition.subtract(this.player.position).length();
             if (distance < current) {
                 count = j;

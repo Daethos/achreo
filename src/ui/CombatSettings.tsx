@@ -1,4 +1,4 @@
-import { Accessor, For, JSX, Match, Setter, Show, Switch, createEffect, createSignal, onMount } from "solid-js";
+import { Accessor, For, JSX, Match, Setter, Show, Switch, createEffect, createMemo, createSignal, onMount } from "solid-js";
 import { EventBus } from "../game/EventBus";
 import { borderColor } from "../utility/styling"; 
 import { GameState } from "../stores/game";
@@ -28,19 +28,23 @@ const highlightCycle = {
     }
 };
 
-export const PRAYERS = ["Buff", "Heal", "Debuff", "Damage", "Avarice", "Denial", "Dispel", "Insight", "Quicken", "Silence"];
+const highlightStyle: JSX.CSSProperties = {color: "gold", "font-size": "1.15em", "font-weight": 700, "text-align": "center", margin: "3%"};
+const optionStyle: JSX.CSSProperties = {color: "#fdf6d8", "font-size": "0.9em", "font-weight": 700, "text-align": "center"};
 
-export const specialDescription: {[key: string]: string} = {
-    Buff: "Increases the strength of their weapon.",
-    Heal: "Heals the player over time.",
+export const ALL_PRAYERS = ["Buff", "Heal", "Debuff", "Damage", "Avarice", "Denial", "Dispel", "Insight", "Quicken", "Silence"];
+export const BASE_PRAYERS = ["Buff", "Heal", "Debuff", "Damage"];
+export const SPECIAL_PRAYERS = ["Avarice", "Denial", "Dispel", "Insight", "Quicken", "Silence"];
+export const PRAYER_DESCRIPTION: {[key: string]: string} = {
+    Buff: "Increases the strength of your current weapon.",
+    Heal: "Heals you periodically over time.",
     Debuff: "Decreases the strength of the enemy's weapon.",
-    Damage: "Damages the enemy over time.",
+    Damage: "Damages the enemy periodically over time.",
     Avarice: "Increases the amount of experience and gold gained.",
     Dispel: "Removes the last prayer affecting the enemy.",
-    Denial: "Prevents the enemy from killing you.",
-    Insight: "The grace required for your next special action is reduced to 0 if above 0.",
-    Quicken: "The stamina required for your next physical action is reduced to 0.",
-    Silence: "Prevents the enemy from praying."
+    Denial: "Damage that would fell you instead reduces you to 1.",
+    Insight: "Your next special action requires no grace.",
+    Quicken: "Your next physical action requires no stamina.",
+    Silence: "Prevents the enemy from calling for prayers."
 };
 
 export default function CombatSettings({ combat, game, settings, editShow, setEditShow }: { combat: Accessor<Combat>; game: Accessor<GameState>; settings: Accessor<Settings>; editShow: Accessor<boolean>; setEditShow: Setter<boolean>; }) {
@@ -51,12 +55,18 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         height: settings()?.combatSettings?.height || "50%",
         width: settings()?.combatSettings?.width || "50%",
     });
-    const [prayerModal, setPrayerModal] = createSignal({ show: false, prayer: PRAYERS[game().selectedPrayerIndex], description: specialDescription[PRAYERS[game().selectedPrayerIndex]] });
+    const [prayerModal, setPrayerModal] = createSignal({ show: false, prayer: ALL_PRAYERS[game().selectedPrayerIndex], description: PRAYER_DESCRIPTION[ALL_PRAYERS[game().selectedPrayerIndex]] });
     const poly = window.innerWidth * Number(`0.${settings()?.combatSettings?.width.split("%")[0]}`) * 0.9;
+
     createEffect(() => {
         if (!settings().combatSettings) return;
         setEdit({...settings().combatSettings});
     });
+
+    const totalPrayers = createMemo(() => {
+        return settings()?.prayers || BASE_PRAYERS;
+    });
+
     function editCombatText(key: string, value: string): void {
         const update = {
             ...settings(),
@@ -67,28 +77,31 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         };
         EventBus.emit("save-settings", update);
     };
+
     const prayer = (el: string) => el === combat().playerBlessing ?  true : false;
-    onMount(() => EventBus.emit("selectPrayer", { index: PRAYERS.findIndex(prayer), highlight: game().selectedHighlight }));
+
+    onMount(() => EventBus.emit("selectPrayer", { index: ALL_PRAYERS.findIndex(prayer), highlight: game().selectedHighlight }));
+
     const mapTypes = (types: any, prayer: boolean) => {
         let newTypes = []; 
         for (let i = 0; i < types.length; i++) {
             newTypes.push(
-                <p onClick={prayer ? () => setPrayerModal({ show: true, prayer: types[i], description: specialDescription[types[i]] }) : () => {}} style={{ color: borderColor(types[i]), display: "inline-block", margin: "0%", "text-shadow": "0.025em 0.025em 0.025em #fdf6d8", "font-size": "1.25em" }}>
+                <p onClick={prayer ? () => setPrayerModal({ show: true, prayer: types[i], description: PRAYER_DESCRIPTION[types[i]] }) : () => {}} style={{ color: borderColor(types[i]), display: "inline-block", margin: "0%", "text-shadow": "0.025em 0.025em 0.025em #fdf6d8", "font-size": "1.25em" }}>
                     {`-> ${types[i]} <- ${(i + 1) % 4 === 0 ? "\n\n" : ""}`}    
                 </p>
             );
         };
         return newTypes;
     };
-    const highlightStyle: JSX.CSSProperties = {color: "gold", "font-size": "1.15em", "font-weight": 700, "text-align": "center", margin: "3%"};
-    const optionStyle: JSX.CSSProperties = {color: "#fdf6d8", "font-size": "0.9em", "font-weight": 700, "text-align": "center"};
+    
     function handleButton(direction: string) {
         if (direction === "up" || direction === "down") {
             if (game().selectedHighlight === "Prayer") {
+                const prayers = totalPrayers();
                 const index = direction === "up" ? -1 : 1;
-                const newIndex = (game().selectedPrayerIndex + index + PRAYERS.length) % PRAYERS.length;
+                const newIndex = (game().selectedPrayerIndex + index + prayers.length) % prayers.length;
                 EventBus.emit("selectPrayer", { index: newIndex, highlight: "Prayer" });
-                EventBus.emit("changePrayer", PRAYERS[newIndex]);
+                EventBus.emit("changePrayer", prayers[newIndex]);
             } else if (game().selectedHighlight === "Damage") {
                 const index = direction === "up" ? -1 : 1;
                 const newIndex = (game().selectedDamageTypeIndex + index + (combat()?.weapons?.[0]?.damageType?.length || 0)) % (combat()?.weapons?.[0]?.damageType?.length || 0) as number;
@@ -147,8 +160,8 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
                 </Match>
                 <Match when={game().selectedHighlight === "Prayer"}>
                     <div class="center animate-flicker">
-                        <p class="shadow" onClick={() => setPrayerModal({ show: true, prayer: PRAYERS[game().selectedPrayerIndex], description: specialDescription[PRAYERS[game().selectedPrayerIndex]] })} style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(PRAYERS[game().selectedPrayerIndex]), "text-shadow": "0.025em 0.025em 0.025em #fdf6d8" }}>{PRAYERS[game().selectedPrayerIndex]}</span></p>
-                        <div style={optionStyle}>{mapTypes(PRAYERS, true)}</div>
+                        <p class="shadow" onClick={() => setPrayerModal({ show: true, prayer: totalPrayers()[game().selectedPrayerIndex], description: PRAYER_DESCRIPTION[totalPrayers()[game().selectedPrayerIndex]] })} style={highlightStyle}>Current Prayer: <span style={{ color: borderColor(totalPrayers()[game().selectedPrayerIndex]), "text-shadow": "0.025em 0.025em 0.025em #fdf6d8" }}>{totalPrayers()[game().selectedPrayerIndex]}</span></p>
+                        <div style={optionStyle}>{mapTypes(totalPrayers(), true)}</div>
                     </div>
                 </Match>
                 </Switch>

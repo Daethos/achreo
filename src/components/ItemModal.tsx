@@ -3,7 +3,7 @@ import { Accessor, Show } from "solid-js";
 import { dimensions } from "../utility/dimensions";
 import Equipment from "../models/equipment";
 import { roundToTwoDecimals } from "../utility/combat";
-import { specialDescription } from "../ui/CombatSettings";
+import { PRAYER_DESCRIPTION } from "../ui/CombatSettings";
 import Talents from "../models/talents";
 
 export function attrSplitter(string: string, value: number) {
@@ -88,7 +88,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                 </div>
                 <Show when={prayer}>
                     <p style={{ "font-size": "0.85rem", margin: caerenic ? "-2% auto 2%" : "-2% auto 4%" }}>
-                        [<span class="gold">{prayer?.()}</span>]: {specialDescription[prayer?.() as string]}
+                        [<span class="gold">{prayer?.()}</span>]: {PRAYER_DESCRIPTION[prayer?.() as string]}
                     </p>
                 </Show>
                 <Show when={caerenic}>

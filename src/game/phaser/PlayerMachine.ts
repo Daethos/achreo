@@ -3892,8 +3892,8 @@ export default class PlayerMachine {
 
     onSlowedEnter = () => {
         this.scene.showCombatText(this.player, "Slowed", DURATION.TEXT, EFFECT, false, true);
-        this.player.setTint(0xFFC700);
-        this.player.adjustSpeed(-(PLAYER.SPEED.SLOW - 0.25));
+        this.player.setTint(0x008080);
+        this.player.adjustSpeed(-PLAYER.SPEED.SLOW);
         this.scene.time.delayedCall(this.player.slowDuration, () =>{
             this.player.isSlowed = false;
             this.negativeMachine.setState(States.CLEAN);
@@ -3904,14 +3904,14 @@ export default class PlayerMachine {
     onSlowedExit = () => {
         this.player.clearTint();
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
-        this.player.adjustSpeed((PLAYER.SPEED.SLOW - 0.25));
+        this.player.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
     onSnaredEnter = () => {
         this.scene.showCombatText(this.player, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.player.snareDuration = DURATION.SNARED;
-        this.player.setTint(0x0000FF);
-        this.player.adjustSpeed(-(PLAYER.SPEED.SNARE - 0.25));
+        this.player.setTint(0x008080);
+        this.player.adjustSpeed(-PLAYER.SPEED.SNARE);
         this.scene.time.delayedCall(this.player.snareDuration, () =>{
             this.player.isSnared = false;
             this.negativeMachine.setState(States.CLEAN);
@@ -3921,7 +3921,7 @@ export default class PlayerMachine {
     onSnaredExit = () => { 
         this.player.clearTint(); 
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF); 
-        this.player.adjustSpeed((PLAYER.SPEED.SNARE - 0.25));
+        this.player.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 
     onStunnedEnter = () => {

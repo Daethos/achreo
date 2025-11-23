@@ -25,6 +25,7 @@ import { CacheDirection, CombatContext, MindState, MindStates } from "../phaser/
 import { CHIOMISM, DEVOUR, SACRIFICE, SUTURE } from "../../utility/combatTypes";
 import { HitLocation } from "../phaser/HitDetection";
 import { FACTION } from "../../models/reputation";
+import { DAGGER, TWO_HAND } from "../../utility/weaponTypes";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 const HEALTH = "Health";
@@ -683,6 +684,9 @@ export default class Enemy extends Entity {
         this.currentWeaponCheck();
 
         if (e.computerDamaged) this.scene.combatManager.hitFeedbackSystem.spotEmit(this.enemyID, e.computerEnemyDamageType);
+
+        this.computerCombatSheet.computerAction = "";
+        this.computerCombatSheet.computerEnemyAction = "";
         this.computerCombatSheet.criticalSuccess = false;
         this.computerCombatSheet.glancingBlow = false;
         this.computerCombatSheet.parrySuccess = false;
@@ -1000,13 +1004,13 @@ export default class Enemy extends Entity {
         this.weaponHitbox = this.scene.add.circle(this.spriteWeapon.x, this.spriteWeapon.y, 24, 0xfdf6d8, 0);
         this.scene.add.existing(this.weaponHitbox);
         this.checkMeleeOrRanged(weapon);
-        if (weapon.grip === "Two Hand") {
-            this.spriteWeapon.setScale(0.65);
+        if (weapon.grip === TWO_HAND) {
+            this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_TWO);
         } else {
-            if (weapon.type === "Dagger") {
-                this.spriteWeapon.setScale(0.4);
+            if (weapon.type === DAGGER) {
+                this.spriteWeapon.setScale(PLAYER.SCALE.DAGGER);
             } else {
-                this.spriteWeapon.setScale(0.5);
+                this.spriteWeapon.setScale(PLAYER.SCALE.WEAPON_ONE);
             };
         };
     }; 

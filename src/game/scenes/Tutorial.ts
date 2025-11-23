@@ -28,6 +28,8 @@ import { fetchTutorial } from "../../utility/enemy";
 import Treasure from "../matter/Treasure";
 import { getSpecificItem, Item } from "../../models/item";
 import { updateItemData } from "../../assets/db/db";
+import { Marker } from "../../models/settings";
+import Mark from "../matter/Mark";
 // @ts-ignore
 const { Body, Bodies } = Phaser.Physics.Matter.Matter;
 interface ChunkData {
@@ -109,6 +111,7 @@ export class Tutorial extends Phaser.Scene {
     tileCache = new Map<string, {climb:boolean, water:boolean}>();
     climbing: any;
     swimming: any;
+    markers: Mark[] = [];
     private treeComposites: { id: string; x: number; y: number; bottomY: number; width: number; height: number; tiles: Phaser.Tilemaps.Tile[] }[] = [];
 
     constructor () {
@@ -176,7 +179,9 @@ export class Tutorial extends Phaser.Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(965, 328);
         if (this.hud.prevScene !== "Game") {
-            this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
+            if (this.player.ascean.level !== 1 && this.player.ascean.experience !== 0) {
+                this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
+            };
         } else if (this.hud.prevScene === "Game") {
             this.player.setPosition(1024, 104);
         };
@@ -201,7 +206,15 @@ export class Tutorial extends Phaser.Scene {
         });
 
         this.particleGenerator = new ParticleTextures(this);
-
+        
+        const markers = this.hud.settings.markers;
+        if (markers) {
+            for (let i = 0; i < markers.length; ++i) {
+                if (markers[i].scene !== this.scene.key) continue;
+                const mark = new Mark(this, markers[i]);
+                this.markers.push(mark);
+            };
+        };
         // map?.getObjectLayer("pillars")?.objects.forEach((pillar: any) => {
         //     const type = pillar.properties?.[0].value;
         //     const graphics = new Phaser.Physics.Matter.Image(this.matter.world, pillar.x, pillar.y, "beam");
@@ -273,6 +286,18 @@ export class Tutorial extends Phaser.Scene {
         EventBus.emit("current-scene-ready", this);
     };
 
+    public createMark(marker: Marker) {
+        const mark = new Mark(this, marker);
+        this.markers.push(mark);
+    };
+    public removeMark(id: string) {
+        const mark = this.markers.find((m: Mark) => m.marker.id === id);
+        if (mark) {
+            this.markers = this.markers.filter((m: Mark) => m.marker.id !== id);
+            mark.cleanup();
+            mark.destroy();
+        };
+    };
     createMatterTrigger(obj: any) {
         const type = obj?.properties?.[0]?.value;
         if (!type) return;

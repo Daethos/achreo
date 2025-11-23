@@ -49,7 +49,9 @@ export function deepFreeze<T>(obj: T): T {
 
 export async function getSpecificItem(name: string, id: string): Promise<Item> {
     const item = ITEMS.find(i => i.name === name) as Item;
+    console.log({item});
     const newItem = new Item(item);
+    console.log({newItem});
     await addItem(newItem, id);
     return newItem;
 };

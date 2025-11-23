@@ -49,7 +49,7 @@ export function DynamicButton({ style, text, callback, opacity, left }: { style:
                            
 export function ActionButtonModal({ currentAction, actions, handleAction, special }: { currentAction: Accessor<any>, actions: string[], handleAction: (action: string, index: number) => void, special?: boolean }) {
     return (
-        <div class="border superCenter" style={{ width: "40%", height: "75%", overflow: "scroll", "scrollbar-width": "none" }}>
+        <div class="superCenter" style={{ background: "#000", border: "thick ridge #fdf6d8", width: "40%", height: "75%", overflow: "scroll", "scrollbar-width": "none" }}>
         <div class="creature-heading">
             <h1 style={{ "text-align": "center" }}>{special ? currentAction().special : currentAction().action}</h1>
             <div class="center" style={{ overflow: "scroll", width: "100%", height: "100%", "scrollbar-width": "none" }}>

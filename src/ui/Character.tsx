@@ -223,7 +223,7 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
         */
         
         const speaking = playerTraitWrapper();
-        let extra: any[] = ["Leap"]; // ["Lightning"]; // Testing
+        let extra: any[] = []; // ["Lightning"]; // Testing
         let physical = JSON.parse(JSON.stringify(ACTIONS));
 
         if (ascean().level >= 4) {
@@ -440,7 +440,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                         const completed = quest.requirements.technical.id === "fetch"
                             ? quest.requirements.technical.current === quest.requirements.technical.total && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!
                             : quest.requirements.technical.solved && quest.requirements.reputation <= reputation().factions.find((f: FACTION) => f.name === quest.giver)?.reputation!;
-                        console.log({ quest });
                         return <div class="border juiced wrap" onClick={() => checkQuest(quest)} classList={{ "borderTalent": completed }} style={{ "min-height": "100%", margin: "5% auto", "text-align": "center", "border-color": masteryColor(quest.mastery), "box-shadow": `#000 0 0 0 0.2em, ${masteryColor(quest.mastery)} 0 0 0 0.3em`, "--base-shadow":"#000 0 0 0 0.2em", "--glow-color": masteryColor(quest.mastery) }}>
                             <h2 classList={{ "animate-flicker-infinite": completed }} style={{ color: "gold", "font-size": completed ? "1.15em" : "", padding: "5px" }}>{quest.title} {completed ? "(Completed)" : ""}</h2>
                             <p style={{ "margin-left": "10%", width: "80%" }}>{quest.description}</p>    

@@ -153,13 +153,16 @@ export default class PlayerMachine {
 
     onHurtEnter = () => {
         this.player.clearAnimations();
-        this.player.clearTint();
-        this.player.setStatic(true);
+        // this.player.clearTint();
+        this.player.colorMatrix.reset();
+        // this.player.setStatic(true);
+        this.player.setVelocity(0);
         this.player.hurtTime = 0;
     };
     onHurtUpdate = (dt: number) => {
         this.player.hurtTime += dt;
-        if (this.player.hurtTime >= 300) this.player.isHurt = false;
+        if (this.player.hurtTime >= 500) this.player.isHurt = false;
+        this.player.anims.play(FRAMES.HURT, true);
         if (!this.player.isHurt) {
             if (this.player.inComputerCombat === true && this.player.health > 0) {
                 this.stateMachine.setState(States.COMPUTER_COMBAT);
@@ -171,7 +174,7 @@ export default class PlayerMachine {
     onHurtExit = () => {
         this.player.isHurt = false;
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
-        this.player.setStatic(false);
+        // this.player.setStatic(false);
     };
 
     onChaseEnter = () => {
@@ -1566,7 +1569,7 @@ export default class PlayerMachine {
     chiomism = (id: string, power: number) => {
         const modifiedPower = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
+        if (!enemy || enemy.health <= 0) return;
         const damage = Math.round(this.mastery() * (1 + modifiedPower / CHIOMISM) * this.caerenicDamage() 
             * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
             * (this.levelModifier() ** 2));
@@ -1611,7 +1614,7 @@ export default class PlayerMachine {
     sacrifice = (id: string, power: number) => {
         power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
+        if (!enemy || enemy.health <= 0) return;
         let damage = Math.round(this.mastery() * this.caerenicDamage() 
             * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
             * (this.levelModifier() ** 2));
@@ -1629,7 +1632,7 @@ export default class PlayerMachine {
     suture = (id: string, power: number) => {
         power = this.player.entropicMultiplier(power);
         const enemy = this.scene.enemies.find((e: any) => e.enemyID === id);
-        if (!enemy) return;
+        if (!enemy || enemy.health <= 0) return;
         const damage = Math.round(this.mastery() * this.caerenicDamage() 
             * this.scene.combatManager.computerCaerenicNeg(enemy) * this.scene.combatManager.computerStalwart(enemy)
             * (this.levelModifier() ** 2)) * (1 * power / SUTURE);

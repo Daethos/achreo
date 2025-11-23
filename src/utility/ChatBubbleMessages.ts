@@ -43,6 +43,7 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     "Opening up this menu system will allow you to understand everything about this game, its capabilities and yours.",
                     "From configuring your button selection, to how enemies of this world view you and each other.",
                     "Other options include: combat settings, combat logs, resetting the cursor, pause (the game), and toggling its visibility.",
+                    "Also, performing a horizontal swipe below your character hud can zoom you in or out; swiping below the target hud can wipe it clean.",
                     "After you're satisfied, continue your journey South, to learn more about this world's combat."
                 ],
                 specials: [{}, {key: "combatHud", value: ""}, {key: "combatHud", value: ""}, {key: "highlight", value: "smallhud"}, {key: "highlight", value: "smallhud"}],
@@ -54,9 +55,10 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
             combat: {
                 messages: [
                     "Perfect! With the controls to your liking, you're ready for combat. Well ... possibly.",
-                    "Your physical actions are all that is available in the beginning, but is more than enough to tackle your enemies.", 
+                    "Your physical actions are all that is available in the beginning, but is more than enough to tackle your enemies.",
                     "Physically, everyone is capable of swinging their weapon and shooting projectiles, in addition to forms of evasion with dodge and roll.",
                     "Your right joystick will capture your conceptual gaze, and where you manually aim your ranged attacks and eventually, specials.",
+                    "In your combat settings (icon of a training dummy) you can change tactics: which weapon you wield, how you strike, and what prayer you seek in combat.",
                     "When dealing with enemies, they're quite easy to spot as they are tinted red (or perhaps green if you gain their favor!), as you will soon see.",
                     "You won't have a training dummy ... but they're about as close as you will get.",
                     // "I would be beleaguered if you actually fail to defeat them, as I have been assured it's nigh impossible.",
@@ -67,7 +69,7 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     "You may end up fighting against the likes of myself ({speaker.name} is level {speaker.level}), so I suggest you get started."
                 ],
                 nextStage: "resolution",
-                specials: [{}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "joystick-right"}],
+                specials: [{}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "action-bar"}, {key: "highlight", value: "joystick-right"}, {key: "highlight", value: "smallhud"}],
                 unlockConditions: {
                     playerCompleted: [], // "settings"
                     execute: ["fetch-tutorial-enemy"]
@@ -75,9 +77,9 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
             },
             resolution: {
                 messages: [
-                    "Powerful, you survived, I hope it wasn't too much trouble, though you are at {health.current} health right now.",
+                    "Powerful, you survived! I hope it wasn't too much trouble, though you are at {health.current} health right now.",
                     "Seems quite low to me ({speaker.name} has {speaker.health.max} health, forgive him and his great constitution!).", 
-                    "But you do have a flask that'll aid in revitalizing you, which is in your player menu's inventory section.",
+                    "But you do have a flask of fyervasos that will revitalize you, which is in your player menu's inventory section.",
                     "Either way, you won't need be worried about any more enemies ... less you wander back into the fray.",
                     "Venture North and I'll meet you there, I have a couple more concepts for you to familiarize yourself with.",
                 ],
@@ -93,6 +95,7 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     "Merchants also sell multitudes of armor, weapons, and jewelry, some specialized and others more general in their wares.",
                     "Treasure chests are also abound in this world, for reasons I cannot explain ... nor fathom.",
                     "I have supplied for you lockpicks which will be the standard tool to combat these foes.",
+                    "You can see these items in your special inventory, when you toggle the equipment inventory button in your player menu.",
                     "Most locks you encounter in this world are fairly standard, and the manual itself is short and sweet.",
                     // "No need for me to ramble on and explain... ahem. But yes, once you gather its treasures--",
                     "Once you gather its treasures, be sure to check your inventory and see if they are to your liking.",
@@ -121,8 +124,6 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     playerCompleted: [] // "improvement"
                 }
             },
-
-            // ... more stages
             arena: {
                 messages: [
                     "Magnificent! I love that you're adventurous enough to see what an arena will be like.",
@@ -134,10 +135,9 @@ export const MESSAGES: {[key: string]: NPC_MESSAGES} = {
                     playerCompleted: [], // "final"
                     execute: ["fetch-arena-combat"]
                 }
-            },
-            
-            // Random chirps that can play anytime (not progression-based)
+            }
         },
+        // Random chirps that can play anytime (not progression-based)
         // ambient: {
         //     encouragement: [
         //         "Keep practicing - every master was once a beginner!",

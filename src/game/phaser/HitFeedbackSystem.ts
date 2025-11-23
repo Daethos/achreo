@@ -552,7 +552,7 @@ export class HitFeedbackSystem {
             texture = "player_slide";
             frame = "player_slide_0";
         };
-        
+
         const ghost = this.scene.add.sprite(entity.x, entity.y, texture, frame);
         ghost.setAlpha(0.4 + add)
             .setDepth(entity.depth - 1)

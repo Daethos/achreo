@@ -815,7 +815,7 @@ export default class Party extends Entity {
         this.castbar.setVisible(true); // Added
         this.castbar.setup(this.x, this.y, name);
         this.isCasting = true;
-        this.scene.showCombatText(this, name, duration / 2, style, false, true);
+        // this.scene.showCombatText(this, name, duration / 2, style, false, true);
         this.castbar.setTotal(duration);
         if (name !== "Healing" && name !== "Reconstituting") this.beam.enemyEmitter(this.currentTarget, duration, this.ascean.mastery); // scene.player
         if (channel === true) this.castbar.setTime(duration);

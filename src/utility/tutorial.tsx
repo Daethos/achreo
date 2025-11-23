@@ -267,10 +267,10 @@ const VIEWS_TUTORIAL_STEPS: STEP[] = [
     },{
         id: "character",
         type: "stats-display",
-        position: {top: "15%", right: "1%"},
-        class: "cornerTR",
-        title: "↑ Equipment / Stats ↑",
-        content: "Toggles your current inventory equipment and your character's current statistics."
+        position: {height: "65%", width: "27%"},
+        class: "superCenter",
+        title: "← Equipment / Stats / Special Inventory ↑",
+        content: "Toggles your current inventory equipment and your character's current statistics. Also can switch between your equipment and special inventory."
     },{
         id: "character",
         type: "character-display",

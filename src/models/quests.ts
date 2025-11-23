@@ -241,10 +241,10 @@ export const QUEST_TEMPLATES = [
     // }, {
         name: [ACHREON_DRUID, AHNARE_APOSTLE, ANASHTRE, CAMBIREN_DRUID, CHIOMIC_JESTER, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, DORIEN, EUGENES, FANG_DUELIST, FANG_MERCENARY, FIEROUS, FIRESWORN, FYERS_OCCULTIST, GARRIS, ILIRE_OCCULTIST, KINGSMAN, KRECEUS, KYNGIAN_SHAMAN, KYRISIAN_OCCULTIST, LEAF, LIIVI_LEGIONNAIRE, MAIER_OCCULTIST, MARAUDER, MAVROSIN_OCCULTIST, MIRIO, NORTHREN_WANDERER, NYREN, OLD_LIIVI_OCCULTIST, QUOREITE_OCCULTIST, QUOREITE_STALKER, RAHVREHCUR, SEDYRIST, SERA, SEVA_SHRIEKER, SHRYGEIAN_BARD, SOUTHRON_WANDERER, SYNAETHI, TORREOUS, TSHAERAL_SHAMAN, VINCERE],
         // name: [AHNARE_APOSTLE, ASTRAL_APOSTLE, DAETHIC_INQUISITOR, DAETHIC_KNIGHT, TSHAERAL_SHAMAN, KYNGIAN_SHAMAN, ACHREON_DRUID, CAMBIREN_DRUID, SEVA_SHRIEKER, FIRESWORN, FYERS_OCCULTIST, LIIVI_LEGIONNAIRE, QUOREITE_OCCULTIST, SEDYRIST],
-        title: "Replenish Firewater",
+        title: "Replenish Fyervasos",
         description: "To walk in the land of hush and tendril and refill your flask, you must let it bleed--not of yourself but of our enemy.",
         requirements: {
-            description: "Defeat 5 enemies of the {name} that are worthy of replenishing your flask of Fyervas Firewater.",
+            description: "Defeat 5 enemies of the {name} that are worthy of replenishing your flask of Fyervasos.",
             technical: initFetch
         },
         reward: [BLINK, CHARM, CONFUSE, DESPERATION, DISPEL, FEAR, FREEZE, HEALING, MARK, NETHERSWAP, PARALYZE, POLYMORPH, RECALL, RECONSTITUTE, SHIRK, SLOW, SNARE],

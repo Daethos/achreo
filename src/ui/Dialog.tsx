@@ -1958,7 +1958,6 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 <Show when={persuasionShow()}>
                                     <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} /> 
                                 </Show>
-                                    {/* <PersuasionModal traits={persuasionTraits} callback={attemptPersuasion} name={combat().computer?.name as string} influence={influence as Accessor<string>} show={persuasionModalShow} setShow={setPersuasionModalShow} />  */}
                                 </>
                         ) : ("") }
                         <Show when={combat().persuasionScenario}> 

@@ -1577,7 +1577,7 @@ export default class Enemy extends Entity {
         this.spriteWeapon.setVisible(true);
         this.setStatic(false);
         this.currentTargetCheck();
-        if (this.isCurrentTarget) this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: this.health, id: this.enemyID, type: "heals" }, type: HEALTH });
+        if (this.isCurrentTarget) this.scene.combatManager.combatMachine.action({ data: { key: NAME, value: this.health, id: this.enemyID, type: "recovers" }, type: HEALTH });
 
         this.scene.matter.setCollisionCategory(this.body as any, ENTITY_FLAGS.ENEMY);
         this.scene.matter.setCollidesWith(this.body as any, 
@@ -1922,22 +1922,30 @@ export default class Enemy extends Entity {
     swingCheck = () => {
         if (this.isSwinging) return;
         this.isSwinging = true;
-        // if (this.inCombat) console.log("setting delayed call");
         this.scene.time.delayedCall(this.swingTime(), () => {
             this.isSwinging = false;
             this.currentAction = this.evaluateCombat();
-            // if (this.inCombat) console.log("SWING!", { action: this.currentAction });
         }, undefined, this);
     };
 
-    /* 
-        One Hand: 2500
-        Two Hand: 3000
-        Per Level Reduction: 250 / 300
-        Swing Speed Max: 500 / 600
+    /*  
+        Swing Time Calculation by Enemy Level
+        _____________________________________
+        One Hand: 2500 | Two Hand: 3000
+        Per Level Reduction: 300 / 360
+        Level ¼: 2725  |  3270
+        Level ½: 2650  |  3180
+        Level 1: 2500  |  3000 ----- DEFAULT
+        Level 2: 2200  |  2640
+        -------- DOES NOT EXIST ---- Level 3: 1900 | 2280
+        Level 4: 1600  |  1920
+        -------- DOES NOT EXIST ---- Level 5: 1300 | 1560
+        Level 6: 1000  |  1200
+        -------- DOES NOT EXIST ---- Level 7: 700  | 840
+        Level 8: 400   |  580 ------ MAX
     */
 
-    swingTime = (): number => Math.max(0.2, 1 - (this.ascean.level - 1) * 0.1) * this.swingTimer;
+    swingTime = (): number => Math.max(0.16, 1 - (this.ascean.level - 1) * 0.12) * this.swingTimer;
 
     onCombatEnter = () => {
         if (this.shouldExitCombat()) return;

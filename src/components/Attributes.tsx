@@ -10,7 +10,7 @@ const dims = dimensions();
 
 export default function AttributeModal({ attribute }: { attribute: any }) {
     const poly = dimensions().WIDTH * 0.55;
-    return <div class="border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "60%", padding: "1%" } : { width: "75%" }}>
+    return <div class="thick-border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "65%", padding: "1%" } : { width: "75%" }}>
         <div class="creature-heading wrap" style={{ "text-wrap": "balance", "white-space": "pre-wrap" }}>
             <h1>{attribute.name.charAt(0).toUpperCase() + attribute.name.slice(1)}</h1>
             <br />
@@ -30,7 +30,7 @@ export default function AttributeModal({ attribute }: { attribute: any }) {
 
 export function AttributeNumberModal({ attribute }: { attribute: Accessor<any>; }) {
     const poly = dims.WIDTH * 0.55;
-    return <div class="border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "50%", padding: "1%", "z-index": 9 } : { width: "75%" }}>
+    return <div class="thick-border superCenter" style={dims?.ORIENTATION === "landscape" ? { top: "48%", width: "50%", padding: "1%", "z-index": 9 } : { width: "75%" }}>
         <div class="creature-heading wrap" style={{ "text-wrap": "balance", "white-space": "pre-wrap" }}>
             <h1 style={{ margin: "5% auto" }}>{attribute().attribute}</h1>
             <svg height="5" width="100%" class="tapered-rule">

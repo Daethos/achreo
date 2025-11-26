@@ -36,15 +36,15 @@ import Mark from "../matter/Mark";
 import { Marker } from "../../models/settings";
 
 export const CHUNK_SIZE = 4096;
-const DISTANCE_CLOSE = 562500; // 640000; 750 / 800
-const DISTANCE_MID = 1000000; // 1440000; 1100 / 1200
-const DISTANCE_FAR = 1562500; // 2560000; 1400 / 1600
+const DISTANCE_CLOSE = 360000; // (600) 562500; // 562500; 750 / 800
+const DISTANCE_MID = 810000; // (900) 1000000; // 1440000; 1000 / 1200
+const DISTANCE_FAR = 1440000; // (1200) 1562500; // 2560000; 1250 / 1600
 const UPDATE_CLOSE = 60;
-const UPDATE_MID = 24;
-const UPDATE_FAR = 5;
+const UPDATE_MID = 10;
+const UPDATE_FAR = 3;
 const UPDATE_OFF = 1;
 const TILE_SIZE = 32;
-export const OVERLAY_BUFFER = 64;
+export const OVERLAY_BUFFER = 128;
 
 interface ChunkData {
     key: string;
@@ -248,6 +248,7 @@ export class Game extends Scene {
         const mark = new Mark(this, marker);
         this.markers.push(mark);
     };
+
     public removeMark(id: string) {
         const mark = this.markers.find((m: Mark) => m.marker.id === id);
         if (mark) {
@@ -530,7 +531,7 @@ export class Game extends Scene {
         });
 
         // Spawn additional random enemies
-        const enemyCount = this.hud.settings.desktop ? 60 : 20;
+        const enemyCount = this.hud.settings.desktop ? 60 : 10; // 20
         for (let i = 0; i < enemyCount; i++) {
             const e = new Enemy({
                 scene: this, 
@@ -1200,6 +1201,7 @@ export class Game extends Scene {
             } else if (dist < DISTANCE_FAR) {
                 target = UPDATE_FAR;
             };
+            
             enemy.acc += delta;
             const stepMs = 1000 / target;
             if (enemy.acc >= stepMs) { // update

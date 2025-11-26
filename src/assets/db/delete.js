@@ -76,7 +76,7 @@ export default function deleteIt() {
                             if (idx === (keys.length - 1)) {
                                 res(success.call(
                                     this,
-                                    `${keys.length} Doc${keys.length > 1 ? 's' : ''} in ${name} deleted.`,
+                                    `${keys.length} Doc${keys.length > 1 ? "s" : ""} in ${name} deleted.`,
                                     { criteria }
                                 ));
                             };
@@ -109,18 +109,18 @@ export default function deleteIt() {
                 });
             };
             
-            if (typeof criteria == 'object') {
+            if (typeof criteria == "object") {
                 return this.deleteDocumentByCriteria();
             } else {
                 return this.deleteDocumentByKey();
             };
         };
         let documentLevel = level.call(this);
-        if (documentLevel === 'db') {
+        if (documentLevel === "db") {
             return this.deleteDatabase();
-        } else if (documentLevel === 'collection') {
+        } else if (documentLevel === "collection") {
             return this.deleteCollection();
-        } else if (documentLevel === 'doc') {
+        } else if (documentLevel === "doc") {
             return this.deleteDocument();
         };
     });

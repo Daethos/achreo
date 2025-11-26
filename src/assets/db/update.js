@@ -30,7 +30,7 @@ export default function update(doc) {
                         if (index === (docsToUpdate.length - 1)) {
                             res(success.call(
                                 this,
-                                `${docsToUpdate.length} Doc${docsToUpdate.length > 1 ? 's' : ''} in ${name} updated.`,
+                                `${docsToUpdate.length} Doc${docsToUpdate.length > 1 ? "s" : ""} in ${name} updated.`,
                                 doc
                             ))
                         };
@@ -63,12 +63,12 @@ export default function update(doc) {
         };
 
         if (!doc) {
-            console.log('No doc specified. Provide doc-value pair ala { name: "Elijiah" }');
-        } else if (!(typeof doc == 'object' && doc instanceof Array == false)) {
-            console.log('Doc must be an object.');
+            console.log("No doc specified. Provide doc-value pair ala { name: 'Elijiah' }");
+        } else if (!(typeof doc == "object" && doc instanceof Array == false)) {
+            console.log("Doc must be an object.");
         };
 
-        if (typeof criteria == 'object') {
+        if (typeof criteria == "object") {
             this.updateDocumentByCriteria();
         } else {
             this.updateDocumentByKey();

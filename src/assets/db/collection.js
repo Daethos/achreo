@@ -1,10 +1,10 @@
 import localforage from "localforage";
 export default function collection(name) {
     if (!name) {
-        console.log('No collection name specified. Provide a string value.');
+        console.log("No collection name specified. Provide a string value.");
         return this;
-    } else if (typeof name !== 'string') {
-        console.log('Collection name must be a string.');
+    } else if (typeof name !== "string") {
+        console.log("Collection name must be a string.");
         return this;
     } else {
         this.name = name;

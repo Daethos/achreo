@@ -459,6 +459,7 @@ export function populateEnemy(enemy: Ascean): Ascean {
     const ringTwo: Equipment = Rings.find(ring => ring.name === enemy.ringTwo.name && ring.rarity === enemy.ringTwo.rarity) as Equipment;
     const amulet: Equipment = Amulets.find(amulet => amulet.name === enemy.amulet.name && amulet.rarity === enemy.amulet.rarity) as Equipment;
     const trinket: Equipment = Trinkets.find(trinket => trinket.name === enemy.trinket.name && trinket.rarity === enemy.trinket.rarity) as Equipment;
+    
     return {
         ...enemy,
         weaponOne: weaponOne,
@@ -480,10 +481,6 @@ export function getEnemy(name: string, level: number) {
     return enemy;
 };
 
-export function getOneComputerReset() {
-
-};
-
 export function getEnemies(level: number, mastery: string) {
     let enemies = Asceans.filter(ascean => ascean.level === level && ascean.mastery === mastery);
     enemies = enemies.map((enemy) => {
@@ -497,6 +494,7 @@ export function nonRandomEnemy(level: number, mastery: string): Ascean {
     const enemy = roster[Math.floor(Math.random() * roster.length)];
     return enemy;
 };
+
 export function randomEnemy(min: number, max: number): Ascean {
     const random = Asceans.filter(ascean => ascean.level >= min && ascean.level <= max);
     const enemy = random[Math.floor(Math.random() * random.length)];

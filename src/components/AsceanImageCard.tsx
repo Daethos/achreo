@@ -2,6 +2,7 @@ import { Accessor, JSX, Setter } from "solid-js";
 import Ascean from "../models/ascean";
 import Equipment from "../models/equipment";
 import { getRarityColor } from "../utility/styling";
+const image = { width: "100%", height: "100%" };
 interface Props {
     ascean: Accessor<Ascean>;
     setEquipment: Setter<Equipment | undefined>;
@@ -24,7 +25,6 @@ export default function AsceanImageCard({ ascean, setEquipment, show, setShow, f
             <img src={eqp.imgUrl} alt={eqp.name} class="juiceNB" style={image} />
         </div>;
     };
-    const image = { width: "100%", height: "100%" };
     function info(item: Equipment): void {
         setEquipment(item);
         setShow(!show());

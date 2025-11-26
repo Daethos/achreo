@@ -264,7 +264,7 @@ export default function Typewriter({ stringText, styling, performAction, main, n
         const clean = styleHTML(check);
         const typedContent = {
             strings: [clean],
-            typeSpeed: 30,
+            typeSpeed: 20,
             backSpeed: 0,
             showCursor: false,
             onBegin: () => isTyping = true,

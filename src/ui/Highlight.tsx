@@ -4,6 +4,7 @@ import Ascean from "../models/ascean";
 import { dimensions } from "../utility/dimensions";
 import { EventBus } from "../game/EventBus";
 import { getRarityColor } from "../utility/styling";
+import { roundToTwoDecimals } from "../utility/combat";
 
 function canEquip(level: number, rarity: string): boolean {
     switch (rarity) {
@@ -159,10 +160,10 @@ export default function Highlight({ ascean, pouch, highlighted, inventoryType, r
                 `Defense: ${highlighted()?.item?.physicalResistance} Phys | ${highlighted()?.item?.magicalResistance} Magi`
                 : "Defense: 0 Phys | 0 Magi";
         const asceanPenetration = ascean()[inventoryType()]?.physicalPenetration || ascean()[inventoryType()]?.magicalPenetration ? 
-                `Pen: ${ascean()[inventoryType()]?.physicalPenetration} Phys | ${ascean()[inventoryType()]?.magicalPenetration} Magi`
+                `Pen: ${roundToTwoDecimals(ascean()[inventoryType()]?.physicalPenetration)} Phys | ${roundToTwoDecimals(ascean()[inventoryType()]?.magicalPenetration)} Magi`
                 : "Pen: 0 Phys | 0 Magi";
         const inventoryPenetration = highlighted()?.item?.physicalPenetration || highlighted()?.item?.magicalPenetration ? 
-                `Pen: ${highlighted()?.item?.physicalPenetration} Phys | ${highlighted()?.item?.magicalPenetration} Magi`
+                `Pen: ${roundToTwoDecimals(highlighted()?.item?.physicalPenetration as number)} Phys | ${roundToTwoDecimals(highlighted()?.item?.magicalPenetration as number)} Magi`
                 : "Pen: 0 Phys | 0 Magi";
         const asceanCritChance = `Crit Chance: ${ascean()[inventoryType()]?.criticalChance}%`;
         const inventoryCritChance = `Crit Chance: ${highlighted()?.item?.criticalChance}%`;

@@ -12,7 +12,8 @@ export default function MenuAscean({ menu, viewAscean, loadAscean }: IProps) {
     const shortDescription = (desc: string): string => desc.split(" ").slice(0, 3).join(" ") + (desc.split(" ").length > 3 ? "..." : "");
     const shortName = (name: string): string => name.split(" ").slice(0, 2).join(" ") + (name.split(" ").length > 2 ? "..." : "");
     const buttonStyle = {
-        "margin": "2.5% 2.5% 5%", "font-size": menu().asceans.length === 3 ? "0.8em" : "1em"
+        "margin": "1% 2.5% 6%", 
+        "font-size": menu().asceans.length === 3 ? "0.8rem" : ""
     };
     async function clickPlay() {
         if (!click.ended) click.pause();

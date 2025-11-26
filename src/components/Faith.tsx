@@ -1,7 +1,8 @@
 import { createSignal, Show, For, Accessor, Setter } from "solid-js";
-import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 import { click } from "../App";
+import { dimensions } from "../utility/dimensions";
+import { Portal } from "solid-js/web";
 
 const dims = dimensions();
 
@@ -30,12 +31,18 @@ export const FAITHS = [{
 
 export const FaithModal = ({ faith }: { faith: string }) => {
     const religion = FAITHS.find((f) => f.worshipers === faith);
-    return <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ? { position: "absolute", left: "15%", top: "48%", width: "70%",
-        "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : {}}>
-        <div class="creature-heading" style={{ "text-wrap": "balance" }}> 
-            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%", border: "thick ridge" }} />
-            <p class="gold small wrap" style={{ margin: "3%" }}>{religion?.origin}</p>
-            <h2 class="gold wrap" style={{ margin: "3%" }}>{religion?.character}</h2>
+    return <div class="border borderTalent" style={{ 
+        position: "absolute", 
+        left: "0", 
+        top: "0",
+        height: "95.5%",
+        width: "97.75%",
+        "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8"
+    }}>
+        <div class="creature-heading" style={{ "text-wrap": "balance", width: "90%", margin: "0 auto" }}> 
+            <img src={religion?.iconography} alt={religion?.name} id="origin-pic" style={{ width: "15%", "margin-top": "3%", border: "thick ridge" }} />
+            <p class="gold small" style={{ margin: "3% auto" }}>{religion?.origin}</p>
+            <h2 class="gold" style={{ margin: "3% auto", "font-size": "1.25rem" }}>{religion?.character}</h2>
         </div>
     </div>;
 };
@@ -49,15 +56,24 @@ const FaithCard = ({ faith, newAscean, setNewAscean }: { faith: any; newAscean: 
         click.play();
     };
     return <Show when={show()} fallback={<button onClick={handleFaith} class="highlight" style={{ "--glow-color":"gold", color: faith.worshipers === newAscean().faith ? "gold" : "#fdf6d8", animation: faith.worshipers === newAscean().faith ? "texty 1s infinite ease alternate" : "none" }}>{faith.name}</button>}>
-        <div class="modal" onClick={handleShow}>
-        <div class="border verticalCenter borderTalent" style={dims.ORIENTATION === "landscape" ?{ position: "absolute", left: "15%", width: "70%", top: "48%", "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" } : { }}>
-        <div class="creature-heading" style={{ "white-space": "pre-wrap" }}> 
-            <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: dims.ORIENTATION === "landscape" ? "15%" : "", "margin-top": "3%" }} />
-            <p class="gold small" style={{ margin: "3%" }}>{faith.origin}</p>
-            <h2 class="gold wrap" style={{ margin: "3%" }}>{faith.character}</h2>
-        </div>
-        </div>
-        </div>
+        <Portal>
+            <div class="modal" onClick={handleShow}>
+                <div class="border borderTalent" style={{ 
+                    position: "absolute", 
+                    left: "0", 
+                    top: "0",
+                    height: "95.5%",
+                    width: "97.75%",
+                    "--base-shadow":"#000 0 0 0 0.2em", "--glow-color":"#fdf6d8" 
+                }}>
+                <div class="creature-heading" style={{ "white-space": "pre-wrap", width: "90%", margin: "0 auto" }}> 
+                    <img src={faith.iconography} alt={faith.name} id="origin-pic" style={{ width: "15%", "margin-top": "3%", border: "thick ridge" }} />
+                    <p class="gold small" style={{ margin: "3% auto" }}>{faith.origin}</p>
+                    <h2 class="gold" style={{ margin: "3% auto", "font-size": "1.25rem" }}>{faith.character}</h2>
+                </div>
+                </div>
+            </div>
+        </Portal>
     </Show>;
 };
 

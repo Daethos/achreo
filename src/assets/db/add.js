@@ -1,10 +1,10 @@
 import reset from "./reset";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 export default function add(data, keyProvided) {
     if (!data) {
-        console.log('No data specified. Provide keyProvided-value pair ala { name: "John" }');
-    } else if (typeof data !== 'string' && typeof data !== 'object') {
-        console.log('Data must be a string or an object.');
+        console.log("No data specified. Provide keyProvided-value pair ala { name: 'Elijiah' }");
+    } else if (typeof data !== "string" && typeof data !== "object") {
+        console.log("Data must be a string or an object.");
     };
     let name = this.name;
     return new Promise((res, rej) => {

@@ -1,6 +1,5 @@
 import subset from "./subset";
 import { error, success } from "./add";
-import level from "./level";
 
 export default function set(newDoc, options = { keys: false }) {
     let name = this.name;
@@ -20,10 +19,10 @@ export default function set(newDoc, options = { keys: false }) {
                         newDoc
                     ));
                 } else {
-                    console.log('Keys Provided');
+                    console.log("Keys Provided");
                     let docsWithoutKey = 0;
                     newDoc.forEach(doc => {
-                        if (!doc.hasOwnProperty('_key')) {
+                        if (!doc.hasOwnProperty("_key")) {
                             docsWithoutKey++;
                         };
                     });
@@ -76,7 +75,7 @@ export default function set(newDoc, options = { keys: false }) {
                             if (index === (docsToSet.length - 1)) {
                                 res(success.call(
                                     this,
-                                    `${docsToSet.length} Doc${docsToSet.length > 1 ? 's' : ''} in ${name} set.`,
+                                    `${docsToSet.length} Doc${docsToSet.length > 1 ? "s" : ""} in ${name} set.`,
                                     newDoc
                                 ));
                             };
@@ -106,7 +105,7 @@ export default function set(newDoc, options = { keys: false }) {
                 });
             };
         
-            if (typeof criteria == 'object') {
+            if (typeof criteria == "object") {
                 return this.setDocument.byCriteria();
             } else {
                 return this.setDocument.byKey();
@@ -114,18 +113,18 @@ export default function set(newDoc, options = { keys: false }) {
         };
 
         if (!newDoc) {
-            console.log('No Doc Provided');
-        } else if (level === 'doc') {
-            if (!(typeof newDoc == 'object' && newDoc instanceof Array == false)) {
-                console.log('Doc must be an object.');
+            console.log("No Doc Provided");
+        } else if (level === "doc") {
+            if (!(typeof newDoc == "object" && newDoc instanceof Array == false)) {
+                console.log("Doc must be an object.");
             };
-        } else if (level === 'collection') {
-            if (!(typeof newDoc == 'object' && newDoc instanceof Array)) {
-                console.log('Collection must be an array.');
+        } else if (level === "collection") {
+            if (!(typeof newDoc == "object" && newDoc instanceof Array)) {
+                console.log("Collection must be an array.");
             };
         };
 
-        if (level === 'collection') {
+        if (level === "collection") {
             return this.setCollection();
         } else {
             return this.setDocument();

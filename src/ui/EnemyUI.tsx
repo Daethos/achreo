@@ -30,6 +30,7 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
     const [attributeShow, setAttributeShow] = createSignal<boolean>(false);
     const [itemShow, setItemShow] = createSignal<boolean>(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
+    const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, true);
     createEffect(() => setEnemy(state().computer));
     const removeEnemy = (id: string) => {
         const combat = instance.game?.registry.get("inCombat");
@@ -63,40 +64,49 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
     }; // style={{ "z-index": 99 }}
     return <Portal>
         <div class="modal">
-            <div class="border center" style={{ 
+            <div class="thick-border center" style={{ 
                 "height": dims.ORIENTATION === "landscape" ? "95%" : "50%", 
                 // "max-height": dims.ORIENTATION === "landscape" ? "95%" : "50%",
                 "width": dims.ORIENTATION === "landscape" ? "50%" : "70%", 
                 "margin-top": dims.ORIENTATION === "landscape" ? `${dims.HEIGHT * 0.025}px` : "25%",
+                overflow: "auto", "scrollbar-width": "none"
             }}>
                 <button class="highlight cornerBL" onClick={clearEnemy}>
-                    <p>Clear UI</p>
+                    <div>Clear UI</div>
                 </button>
                 { state().isEnemy || state().npcType ? (
                     <button class="highlight cornerTL" onClick={() => removeEnemy(state().enemyID)}>
-                        <p>Remove {enemy()?.name.split(" ")[0]}</p>
+                        <div>Remove {enemy()?.name.split(" ")[0]}</div>
                     </button>
                 ) : (
                     <button class="highlight cornerTL" onClick={removeParty} style={{ color: "red" }}>
-                        <p>Remove <b>{enemy()?.name}</b> <br /> From The Party <br /> <br /> <b>[PERMANENT]</b></p>
+                        <div>Remove <b>{enemy()?.name}</b> <br /> From The Party <br /> <br /> <b>[PERMANENT]</b></div>
                     </button>
                 ) }
-                <button class="highlight cornerTR" onClick={() => setShow(!show)}>
-                    <p>X</p>
+                <button class="highlight cornerTR" onClick={() => setShow(!show())}>
+                    <div>X</div>
                 </button>
-                <div class="creature-heading center" style={{ height: "100%", width: "100%" }}>
-                    <h1 style={{ "text-align": "center", color: "gold", "padding-top": "0" }}>
+                <div class="creature-heading" style={{ height: "100%", width: "100%", "display": "grid", "align-items": "center", "grid-template-rows": "repeat(auto-fill, 1fr)" }}>
+                    <h1 style={{ color: "gold", "padding-top": "0" }}>
                         {state().computer?.name}
                     </h1>
-                    <h2 style={{ margin: "2%" }}>
+                    <h2 style={{ margin: "2% auto" }}>
                         {state().computer?.description}
                     </h2>
-                    <Suspense fallback={<Puff color="gold"/>}>
-                    <div style={{ position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dims.WIDTH > 1200 ? "1%" : "0%" }}>
-                        <HealthBar combat={state} enemy={true} game={game} />
+                    <div style={{ display: "flex", position: "relative", "margin-left": "12%", height: "6vh", width: "75%", overflow: "hidden", border: "1mm ridge #fdf6d8", "border-radius": "1rem" }}>
+                        <p class="playerPortrait center" style={{ color: "purple", "font-family": "Cinzel Regular", "text-shadow": "0 0 0 #000", "font-size": dims.WIDTH > 850 ? "1.25em" : "1em" }}>{healthDisplay()}</p>
+                        <div style={{ position: "absolute", bottom: 0, left: 0, top: 0, width: `${healthPercentage()}%`, 
+                            "background": "linear-gradient(gold, #fdf6d8)", 
+                            transition: "width 1s ease-out, background 1s ease-out" }}>
+                        </div>
+                        {/* <HealthBar combat={state} enemy={true} game={game} /> */}
                     </div>
-                    </Suspense>
-                    <div style={{ color: "#fdf6d8", "margin-top": dims.WIDTH > 1200 ? "13.5%" : "10%", "font-size": dims.WIDTH > 1200 ? "1.25em" : "0.875em" }}>
+                    {/* <div style={{ width: "50vw", height: "75vh" }}>
+                    </div> */}
+                        {/* <Suspense fallback={<Puff color="gold"/>}>
+                        </Suspense> */}
+                        {/* position: "absolute", left: "25vw", display: "inline", height: "75%", width: "50vw", "margin-top": dims.WIDTH > 1200 ? "1%" : "0%" */}
+                    <div style={{ color: "#fdf6d8", "margin-top": dims.WIDTH > 1200 ? "7.5%" : "3%", "font-size": dims.WIDTH > 1200 ? "1.25em" : "0.875em" }}>
                         Level <span class="gold">{state().computer?.level}</span> | Mastery <span class="gold">{state().computer?.mastery.charAt(0).toUpperCase()}{state().computer?.mastery.slice(1)}</span>
                     </div>
                     <div style={{ transform: "scale(0.875)", "margin-top": dims.WIDTH > 1200 ? "2.5%" : "1%", "z-index": 1, "margin-bottom": dims.WIDTH > 1200 ? "7.5%" : "3%" }}>
@@ -229,7 +239,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
         }}></div>
         </div>
         <img id="enemyHealthbarBorder" src={"../assets/gui/enemy-healthbar-bold.png"} alt="Health Bar" style={{ "z-index": -1 }} />
-        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), "height": "7.5vh", border: `1mm groove ${getRarityColor(state()?.computerWeapons?.[0]?.rarity as string)}`}}>
+        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), right: "24.5vw", "height": "10vh", "max-height": "44px", width: "5vw", "max-width": "44px", transform: "scale(1)", border: `1mm groove ${getRarityColor(state()?.computerWeapons?.[0]?.rarity as string)}`}}>
             <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
         </div>
         {/* <button class="highlight center" onClick={() => createPrayer()}>

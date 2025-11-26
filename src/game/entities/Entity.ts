@@ -147,7 +147,7 @@ export const SWING_FORCE_ATTRIBUTE: Attribute = {
     "Physical": "strength",
     "Magic": "caeren"
 };
-type DamageArray = { [key:string]: string[]; };
+type DamageArray = {[key:string]: string[];};
 const PARTICLE_MAP = [
     // Inner circle (8 points)
     [0, -25], 
@@ -164,7 +164,10 @@ const PARTICLE_MAP = [
 ];
 const GLOW_INTENSITY = 0.25;
 const SPEED = 1.2; // 1.35;
-const DAMAGE_TYPES: DamageArray = { magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], physical: ["blunt", "pierce", "slash"] };
+const DAMAGE_TYPES: DamageArray = { 
+    magic: ["earth", "fire", "frost", "lightning", "righteous", "spooky", "sorcery", "wild", "wind"], 
+    physical: ["blunt", "pierce", "slash"] 
+};
 const ACCELERATION_FRAMES = 10; 
 const DAMPENING_FACTOR = 0.9; 
 const KNOCKBACK_DURATION = 128;
@@ -514,11 +517,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
 
     createShadow(create: boolean) {
         if (create) {
-            // this.shadow? = this.postFX?.addShadow(0.1, 4, 0.025, 1, 0x000000); // 16
-
-            // this.shadow?.flipY(true);
-            // this.shadow?.y = -this.shadow?.y;
-
             this.shadow = this.scene.add.sprite(this.x, this.y, this.texture.key, this.frame.name);
             this.shadow.setFlipY(true);
             this.shadow.setTint(0x000000);
@@ -526,14 +524,6 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.shadow.setDepth(this.depth - 1);
             this.shadow.setPosition(this.x, this.y + 33);
             this.shadow.scaleY = 0.25;
-
-            // this.shadow? = this.scene.add.graphics();
-            // this.shadow?.fillStyle(0x000000, 0.3);
-            // this.shadow?.fillEllipse(0, 0, 20, 10); // Wide, flat ellipse
-            // this.shadow?.setDepth(1); // Behind player
-            // this.shadow?.setPosition(this.x, this.y + 25);
-        } else {
-            // this.postFX?.remove(this.shadow?);
         };
     };
 
@@ -706,6 +696,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.currentAction = "";
         });
     };
+    
     hurt = () => {
         this.clearAnimations();
         this.clearTint();

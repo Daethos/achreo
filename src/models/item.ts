@@ -49,9 +49,7 @@ export function deepFreeze<T>(obj: T): T {
 
 export async function getSpecificItem(name: string, id: string): Promise<Item> {
     const item = ITEMS.find(i => i.name === name) as Item;
-    console.log({item});
     const newItem = new Item(item);
-    console.log({newItem});
     await addItem(newItem, id);
     return newItem;
 };
@@ -60,23 +58,23 @@ export class Item {
     public _id: string; // Unique identifier
     public name: string; // Name of the item
     public description: string; // Flavor text of the item
-    public type: string; // "Tool", "Consumable", "Quest Item", "Material", "Key Item"
+    public type: string; // "Tool", "Consumable", "Quest Item", "Material", "Key Item" | Relays the purpose of said item
     public imgUrl: string; // Image URL to represent the item
     public quantity: number; // Number of items in the stack
 
-    public effects: Effects[];
+    public effects: Effects[]; // Type of effect it may grant, whether from Consumable or perhaps Constant EFfect ala Morrowind ??
 
-    public isConsumable: boolean; // Is it a consumable
-    public isQuestItem: boolean; // Is it a quest item
+    public isConsumable: boolean; // Can be consumed and "used up" for an effect
+    public isQuestItem: boolean; // Tied to a quest
     public isSellable: boolean; // Can it be sold to vendors
-    public isUnique: boolean; // Unique items cannot be stacked or purchased beyond 1
+    public isUnique: boolean; // Unique items cannot be purchased beyond (1)
 
     public value: number; // Value of the item in currency
-    public weight: number; // Weight per single item
+    public weight: number; // Weight per (1) item. Burdens player. Is not currently a utilized variable in-game.
     public rarity: string; // Common, Uncommon, Rare, Epic, Legendary
 
-    public maxStack?: number;
-    public systemTrigger?: string;
+    public maxStack?: number; // Max stack per item slot. Is not currently a utilized variable in-game.
+    public systemTrigger?: string; // Special prompt to utilize in-game
 
     constructor(item: Item) {
         this._id = uuidv4();
@@ -100,4 +98,5 @@ export class Item {
         this.maxStack = item.maxStack;
         this.systemTrigger = item.systemTrigger;
     };
+    [key: string]: any;
 };

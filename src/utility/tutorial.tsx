@@ -283,8 +283,8 @@ const VIEWS_TUTORIAL_STEPS: STEP[] = [
         type: "firewater-button",
         position: {right: "1%", top: "15%", height: "45%", width: "27%"},
         class: "cornerTR",
-        title: "Firewater ↑",
-        content: `This is a bottle of Fyervas Firewater to replenish health to full, containing a maximum of 5 uses before needing to be refilled.`
+        title: "Fyervasos ↑",
+        content: `This is a flask of Fyervasos to replenish health to full, containing a maximum of 5 uses before needing to be refilled.`
     },
 ];
 

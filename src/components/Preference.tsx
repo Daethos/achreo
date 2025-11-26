@@ -1,13 +1,16 @@
 import { Accessor, For, Setter, Show, createSignal, onMount } from "solid-js";
 import { CharacterSheet } from "../utility/ascean";
 import { click } from "../App";
+
 const poly = window.innerWidth * 0.55;
+
 export const preferenceState = [
     { key: "Plate", name: "Plate-Mail", description: "Heavier armor inhibiting move speed, offset with higher absolute defense." },
     { key: "Chain", name: "Chain-Mail", description: "Malleable and defensible, though still weighted." },
     { key: "Leather", name: "Leather-Mail", description: "Light armor allowing for unrestricted movement at the cost of exposure." },
     { key: "Cloth", name: "Leather-Cloth", description: "Little physical value translates into greater mobility." },
 ];
+
 const ArmorCard = ({ preference, newAscean, setNewAscean, show, setShow, setArmor, setPreferences }: 
     { preference: any; newAscean: Accessor<CharacterSheet>; setNewAscean: Setter<CharacterSheet>; show: Accessor<boolean>; setShow: Setter<boolean>; setArmor: any; setPreferences: Setter<any[]>; }) => {
     const handleArmor = (e: any) => {
@@ -22,7 +25,7 @@ const ArmorCard = ({ preference, newAscean, setNewAscean, show, setShow, setArmo
 };
 
 export function ArmorModal({ armor }: { armor: { name: string; description: string; } }) {
-    return <div class="border superCenter" style={{ "text-wrap": "balance", width: "60%", top: "48%" }}>
+    return <div class="thick-border superCenter" style={{ "text-wrap": "balance", width: "60%", top: "48%" }}>
     <div class="creature-heading wrap">
         <h1 style={{ "margin": "5%" }}>{armor.name}</h1>
         <svg height="5" width="100%" class="tapered-rule"><polyline points={`0,0 ${poly},2.5 0,5`}></polyline></svg>
@@ -55,7 +58,7 @@ export default function Preference({ newAscean, setNewAscean }: { newAscean: Acc
         </For>
         <Show when={show()}>
             <div class="modal" onClick={handleShow}>
-                <div class="border superCenter" style={{ "text-wrap": "balance", width: "60%", top: "48%" }}>
+                <div class="thick-border superCenter" style={{ "text-wrap": "balance", width: "60%", top: "48%" }}>
                 <div class="creature-heading wrap">
                     <h1 style={{ "margin": "5%" }}>{armor().name}</h1>
                     <svg height="5" width="100%" class="tapered-rule"><polyline points={`0,0 ${poly},2.5 0,5`}></polyline></svg>

@@ -29,6 +29,9 @@ import { Item } from "../models/item";
 // import { faithSuccess } from "../utility/combat";
 // import { faithSuccess } from "../utility/combat";
 // import { addSpecial, addStance } from "../utility/abilities";
+
+const dims = dimensions();
+
 interface Props {
     ascean: Accessor<Ascean>;
     state: Accessor<Combat>;
@@ -41,7 +44,6 @@ interface Props {
     talents: Accessor<Talents>;
 };
 export default function CombatUI({ ascean, state, game, settings, stamina, grace, talents, touching, instance }: Props) {
-    const dims = dimensions();
     const [effect, setEffect] = createSignal<StatusEffect>();
     const [show, setShow] = createSignal<boolean>(false);
     const [prayerShow, setPrayerShow] = createSignal<boolean>(false);
@@ -175,10 +177,15 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
             "background": caerenic && stealth ? `linear-gradient(${masteryColor(state()?.player?.mastery as string)}, #444)` : caerenic ? masteryColor(state()?.player?.mastery as string) : stealth ? "linear-gradient(#000, #444)" : "black",
             "border": border(borderColor(state()?.playerBlessing), 0.15),
             "--glow-color": borderColor(state()?.playerBlessing),
-            "height": "7.5vh",
+            "width": "5vw", // dims.WIDTH < 768 ? "3vw" : 
+            height: "10vh",
+            "max-height": "44px",
+            "max-width": "44px",
             "mix-blend-mode": "multiply",
+            transform: "scale(1)",
+            top: "2vh",
             transition: "background 0.5s ease-out",
-        };
+        } as any;
     };
 
     function stalwart(caerenic: boolean, stealth: boolean) {
@@ -274,16 +281,15 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         <Show when={settings().specials.length}>
             <GraceBubble grace={grace} show={graceShow} setShow={setGraceShow} settings={settings} />
         </Show>
-        <div class="combatUiWeapon" classList={{
-                "animate-texty": previousHealth().show && previousHealth().positive,
-                "animate-flicker": previousHealth().show && !previousHealth().positive,
-                "reset-animation": !previousHealth().show,
-            }} onClick={() => setShow(show => !show)} style={{...caerenic(state().caerenic.active, state().isStealth) as any, left: settings().specials.length ? "37.25vw" : "31.5vw", border: `1mm groove ${borderColor(state()?.playerBlessing)}`}}>
+        <div class="combatUiWeapon" classList={{ "animate-texty": previousHealth().show && previousHealth().positive, "animate-flicker": previousHealth().show && !previousHealth().positive, "reset-animation": !previousHealth().show }} onClick={() => setShow(show => !show)} style={{
+            ...caerenic(state().caerenic.active, state().isStealth), left: settings().specials.length ? "36.5vw" : "30.75vw", border: `1mm groove ${borderColor(state()?.playerBlessing)}`
+        }}>
             <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
         </div>
         <Show when={state().stalwart.active}>
-        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} 
-        style={{ ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), left: settings().specials.length ? "43vw" : "37.25vw", border: `1mm groove ${getRarityColor(ascean().shield?.rarity as string)}` }}>
+        <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ 
+            ...itemStyle(state()?.player?.shield?.rarity as string), ...stalwart(state().caerenic.active, state().isStealth), left: settings().specials.length ? "43vw" : "37.25vw", border: `1mm groove ${getRarityColor(ascean().shield?.rarity as string)}` 
+        }}>
             <img src={state()?.player?.shield.imgUrl} alt={state()?.player?.shield.name} style={{transform: `[{ rotate: "-45deg" }, { scale: 0.875 }]` }} />
         </div>
         </Show>

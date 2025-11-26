@@ -2,7 +2,7 @@ import { Item } from "../../models/item";
 
 export const ITEMS: Item[] = [
     { /* ------------------------------------------------- TOOLS ----------------------------------------------------- */
-        _id: "uuidv4()",
+        _id: "",
         name: "Lockpick",
         description: "A small, slender tool used to unlock contraptions without a key.",
         type: "Tool",
@@ -19,7 +19,7 @@ export const ITEMS: Item[] = [
         maxStack: 50,
         // systemTrigger: "" // This is a mini-game and handled in-game
     },{
-        _id: "uuidv4()",
+        _id: "",
         name: "Tension Wrench",
         description: "A small tool used to apply tension to locks while picking them.",
         type: "Tool",
@@ -36,7 +36,7 @@ export const ITEMS: Item[] = [
         // systemTrigger: "" // This is a mini-game and handled in-game
 
     },{
-        _id: "uuidv4()",
+        _id: "",
         name: "Net",
         description: "A sturdy net used to capture dead bodies for transport.",
         type: "Tool",
@@ -52,7 +52,7 @@ export const ITEMS: Item[] = [
         rarity: "Common",
         // systemTrigger: "" // This is physics based and handled in-game
     },{
-        _id: "uuidv4()",
+        _id: "",
         name: "Tree Tap",
         description: "A tap to collect sap from trees. Different saps may have different properties.",
         type: "Tool",
@@ -69,7 +69,7 @@ export const ITEMS: Item[] = [
 
         // systemTrigger: "" // Don’t think this is necessary, unless systemTrigger becomes a sort of use insofar as checking for an allowance of in-game behavior, i.e. tapping a tree for sap
     },{
-        _id: "uuidv4()",
+        _id: "",
         name: "Marker",
         description: "A hardened, flat piece of petrified wood. Good for inscription.",
         type: "Tool",
@@ -84,7 +84,7 @@ export const ITEMS: Item[] = [
         weight: 1, // 1 lb
         rarity: "Common",
         maxStack: 10,
-        systemTrigger: "marker" // Don’t think it’s necessary as they’re not for quests, mainly to help the player mark curiosities in their world.
+        systemTrigger: "marker" // Brings up form to create title and content of marker you leave in the world
     // }, { /* ------------------------------------- RITUAL COMPONENT (UNIQUE) ----------------------------------------------- */
 
     // }, { /* -------------------------------------------- CONSUMABLES ------------------------------------------------------ */

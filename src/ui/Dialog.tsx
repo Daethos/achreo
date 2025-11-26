@@ -2060,7 +2060,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             ) : combat().computer && combat().npcType !== "Merchant-Alchemy" && combat().npcType !== "Merchant-Smith" ? (
                 <DialogTree
                     game={game} combat={combat} ascean={ascean()} enemy={combat().computer} dialogNodes={getNodesForNPC(npcIds[combat().npcType])} reputation={reputation}
-                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={{"white-space":"pre-wrap", margin: "2% auto"}}
+                    setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} actions={actions} styling={TYPEWRITER}
                 />
             ) : ( "" ) } 
             <Show when={merchantTable()?.length > 0}>

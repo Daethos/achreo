@@ -24,7 +24,14 @@ export default function Preview({ newAscean }: { newAscean: Accessor<CharacterSh
         }).join("");
         setDescription(desc);
     };
-    const photo = { transform: "scale(1.25)", "width": dims.ORIENTATION === "landscape" ? "7.5vw" : "15vw", "top": dims.ORIENTATION === "landscape" ? "5vh" : "0", "left": dims.ORIENTATION === "landscape" ? `33vw` : "3vw", border: "1mm ridge gold", "border-radius": "25%" };
+    const photo = { 
+        transform: "scale(1.25)", 
+        "width": "7.5vw", 
+        "left": dims.WIDTH < 800 ? "40vw" : "33vw", 
+        "top": "5vh", 
+        border: "1mm ridge gold", 
+        "border-radius": "25%"
+    };
     function qualifiers(char: string, idx: number, count: number, splitter: number): boolean {
         if ((char === " " || char === ".") && idx !== 0 && idx !== splitter - 1 && ((idx <= 49 && idx >= 25 && count === 0) || (idx <= 74 && idx >= 50 && count === 1))) {
             return true;

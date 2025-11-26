@@ -1,9 +1,8 @@
 import { Accessor, createSignal, For, Setter, Show } from 'solid-js';
-import { dimensions } from '../utility/dimensions';
 import { CharacterSheet } from '../utility/ascean';
+import { Portal } from 'solid-js/web';
 import { click } from '../App';
 
-const dims = dimensions();
 
 const ORIGINS = [{
     name: "Ashtre",
@@ -83,16 +82,18 @@ const ORIGINS = [{
 
 export const OriginModal = ({ origin }: { origin: string }) => {
     const race = ORIGINS.find((o) => o.name === origin);
-    return <div class="border verticalCenter" style={{ position: "absolute",
-        top: "48%",
-        width: dims.ORIENTATION === "landscape" ? "85%" : "", 
-        left: dims.ORIENTATION === "landscape" ? "7.5%" : "",
+    return <div class="center thick-border" style={{ 
+        position: "absolute",
+        left: "0",
+        top: "0",
+        height: "97.5%",
+        width: "98.75%",
     }}>
-        <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
-            <p class="super wrap">
+        <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}><br />
+            <p class="super">
                 {race?.bio}<br /><br />{race?.bioTwo}
             </p>
-            <p class="gold small mb-3">Bonuses: {race?.bonus}</p>
+            <p class="gold small" style={{ "margin-top": "5%" }}>Bonuses: {race?.bonus}</p>
         </div>
     </div>;
 };
@@ -107,21 +108,24 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
     }; 
 
     return <Show when={show()} fallback={<button onClick={handleOrigin} class="highlight" style={{ "--glow-color":"gold", color: origin.name === newAscean()?.origin ? "gold" : "#fdf6d8", animation: origin.name === newAscean()?.origin ? "texty 1s infinite ease alternate" : "none" }}>{origin.name}</button>}>
-        <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance" }}>
-        <div class="border verticalCenter" style={{ position: "absolute",
-            width: dims.ORIENTATION === "landscape" ? "85%" : "", 
-            left: dims.ORIENTATION === "landscape" ? "7.5%" : "",
-            // height: dims.ORIENTATION === "landscape" ? "" : "75%",
-            top: dims.ORIENTATION === "landscape" ? "48%" : "0%",
-        }}>
-            <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance" }}><br />
-                <p class="super wrap">
-                    {origin.bio}<br /><br />{origin.bioTwo}
-                </p>
-                <p class="gold small mb-3">Bonuses: {origin.bonus}</p>
+        <Portal>
+            <div class="modal" onClick={handleShow} style={{ "text-wrap": "balance", "z-index": 2 }}>
+                <div class="center thick-border" style={{ 
+                    position: "absolute",
+                    left: "0",
+                    top: "0",
+                    height: "97.5%",
+                    width: "98.5%",
+                }}>
+                    <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}><br />
+                        <p class="super">
+                            {origin.bio}<br /><br />{origin.bioTwo}
+                        </p>
+                        <p class="gold small" style={{ "margin-top": "3%" }}>Bonuses: {origin.bonus}</p>
+                    </div>
+                </div>
             </div>
-        </div>
-        </div>
+        </Portal> 
     </Show>;
 };
 

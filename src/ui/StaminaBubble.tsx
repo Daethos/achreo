@@ -8,12 +8,18 @@ export default function StaminaBubble({ stamina, show, setShow, settings }: {sta
     const [newStamina, setNewStamina] = createSignal(0);
     createEffect(() => setNewStamina(Math.round((staminaPercentage() * stamina() / 100))));
     function setText(setting: string) {
+        const tiny = dims.WIDTH < 768;
         const smol = dims.WIDTH < 850;
         const mobile = dims.WIDTH < 1024;
         const desktop = dims.WIDTH > 1600;
         switch (setting) {
             case "PERCENTAGE":
-                if (smol) {
+                if (tiny) { 
+                    return {
+                        "font-size": "0.85rem",
+                        "margin-top": "20%"
+                    };
+                } else if (smol) {
                     return {
                         "font-size": "1em",
                         "margin-top": "20%"
@@ -35,7 +41,12 @@ export default function StaminaBubble({ stamina, show, setShow, settings }: {sta
                     };
                 };
             default:
-                if (smol) {
+                if (tiny) { 
+                    return {
+                        "font-size": "0.85rem",
+                        "margin-top": "20%"
+                    };
+                } else if (smol) {
                     return {
                         "font-size": "1.1em",
                         "margin-top": "20%"

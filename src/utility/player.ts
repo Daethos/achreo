@@ -173,7 +173,7 @@ export const PLAYER: {[key:string]: {[key:string]: number}} = {
         SPRINT: 1,
         STEALTH: 0.5,
         LEAP: 300,
-        BLINK: 250,
+        BLINK: 200, // 250
         RUSH: 300,
     },  
     SCALE: {

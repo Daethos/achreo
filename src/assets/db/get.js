@@ -35,7 +35,7 @@ export default function get(options = { keys: false }) {
                     });
                 }
             }
-            if (direction == 'desc') {
+            if (direction == "desc") {
                 logMessage += ` (descending)`;
                 collection.reverse();
             }
@@ -63,7 +63,7 @@ export default function get(options = { keys: false }) {
                 };
             }).then(() => {
                 if (!collection.length) {
-                    // console.log('No document found.');
+                    console.log("No document found.");
                 } else {
                     document = collection[0];
                     reset.call(this);    
@@ -75,40 +75,40 @@ export default function get(options = { keys: false }) {
         this.getDocumentByKey = () => {
             return this.lf[name].getItem(criteria).then((value) => {
                 if (value == null) {
-                    console.log('No document found.');
+                    console.log("No document found.");
                 } else {
                     document = value;
                     reset.call(this);
                     return document;
                 };
             }).catch(err => {
-                console.log('Could not get document.');
+                console.log("Could not get document.");
                 reset.call(this);
             })
         };
 
-        if (typeof criteria == 'object') {
+        if (typeof criteria == "object") {
             return this.getDocumentByCriteria();
         } else {
             return this.getDocumentByKey();
         };
     };
 
-    if (!(typeof options == 'object' && options instanceof Array == false)) {
-        console.log('Data must be an object.')
+    if (!(typeof options == "object" && options instanceof Array == false)) {
+        console.log("Data must be an object.")
     } else {
-        if (!options.hasOwnProperty('keys')) {
-            console.log('Data must be an object with a key.')
+        if (!options.hasOwnProperty("keys")) {
+            console.log("Data must be an object with a key.")
         } else {
-            if (typeof options.keys !== 'boolean') console.log('Data must be an object with a boolean key.');
+            if (typeof options.keys !== "boolean") console.log("Data must be an object with a boolean key.");
         };
     };
     let currentSelectionLevel = level.call(this);
-    if (currentSelectionLevel == 'collection') {
+    if (currentSelectionLevel == "collection") {
         return this.getCollection();
-    } else if (currentSelectionLevel == 'doc') {
+    } else if (currentSelectionLevel == "doc") {
         return this.getDocument();
     } else {
-        console.log('No collection or document selected.')
+        console.log("No collection or document selected.")
     };
 };

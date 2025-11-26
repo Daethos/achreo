@@ -64,7 +64,7 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
         </>}>
             <div class="animate-flicker" style={{ position: "absolute", width: "70%", left: "15%" }}>
             <div class="left" style={{ width: "48%" }}>
-                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="" style={{ width: "75%", height: "50%", border: "1mm groove gold", "border-radius": "50%" }} />
+                <img src={`../assets/images/${newAscean()?.origin}-${newAscean()?.sex}.jpg`} id="" style={{ width: dims.WIDTH < 768 ? "65%" : "75%", height: "50%", border: "1mm groove gold", "border-radius": "50%" }} />
             </div>
             <div class="right" style={{ width: "48%" }}>
             <div class="creature-heading center">

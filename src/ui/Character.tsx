@@ -259,7 +259,6 @@ const Character = ({ quests, reputation, settings, setSettings, statistics, tale
                 const sTraitTwo = `${traitTwoName} (${trait.name})`;
                 extra.push(sTraitTwo);
             };
-
             
             if (traitOneName === "Stealth" || traitTwoName === "Stealth" || traitThreeName === "Stealth") {
                 if (!settings().stances.stealth && ascean().level >= 2) {

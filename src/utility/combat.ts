@@ -138,6 +138,7 @@ const getArmorTypeNum = (enemy: Ascean, locationNum: number): number => {
 const usesRandomness = (damageTypeNum: number): boolean => damageTypeNum >= DAMAGE_TYPE_NUMS.SLASH; // SLASH, WIND, SORCERY, WILD
 
 export function roundToTwoDecimals(num: number, dec: number = 2): number {
+    if (!num) return num;
     const roundedNum = Number(num.toFixed(dec));
     if (roundedNum.toString().match(/\.\d{3,}$/)) {
         return parseFloat(roundedNum.toString());

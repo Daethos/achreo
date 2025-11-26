@@ -702,26 +702,26 @@ export default function App() {
                 </button></>
                 }>
                 <>{(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV !== LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class="highlight cornerBL" onClick={() => {if (!click.ended) click.pause(); click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
+                        <button style={{ "z-index": 1 }} class="highlight cornerBL" onClick={() => {if (!click.ended) click.pause(); click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV);}}>
                             Back ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.PREV as keyof typeof LANDSCAPE_SCREENS]?.TEXT})
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT !== LANDSCAPE_SCREENS.PREMADE.KEY) && 
-                        <button class="highlight cornerBR" onClick={() => {if (!click.ended) click.pause(); click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
+                        <button style={{ "z-index": 1 }} class="highlight cornerBR" onClick={() => {if (!click.ended) click.pause(); click.play(); setScreen(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT);}}>
                             Next ({LANDSCAPE_SCREENS[LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.NEXT as keyof typeof LANDSCAPE_SCREENS]?.TEXT})
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.COMPLETE.KEY) && 
-                        <button class="highlight cornerBR animate" onClick={() => createCharacter(newAscean())}>
+                        <button style={{ "z-index": 1 }} class="highlight cornerBR animate" onClick={() => createCharacter(newAscean())}>
                             Create {newAscean()?.name?.split(" ")[0]}
                         </button>
                     }
                     {(LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY && LANDSCAPE_SCREENS[menu()?.screen as keyof typeof LANDSCAPE_SCREENS]?.KEY === LANDSCAPE_SCREENS.PREMADE.KEY) && 
-                        <button class="highlight cornerBL animate" onClick={() => createCharacter(newAscean())}>
+                        <button style={{ "z-index": 1 }} class="highlight cornerBL animate" onClick={() => createCharacter(newAscean())}>
                             Create {newAscean()?.name?.split(" ")[0]}
                         </button>
                     }
-                    <button class="highlight cornerTR" onClick={() => {if (!click.ended) click.pause(); click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
+                    <button style={{ "z-index": 1 }} class="highlight cornerTR" onClick={() => {if (!click.ended) click.pause(); click.play(); setMenu({ ...menu(), creatingCharacter: false });}}>
                         Back (Menu)
                     </button>
                 </>

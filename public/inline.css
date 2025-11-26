@@ -25,7 +25,7 @@
 }
 .characterMenu { z-index: 2; position: fixed; top: 0; left: 0; }
 .playerSettingSelect { font-size: 1.25em; position: fixed; top: 0; right: 0.5vh; z-index: 1 }
-.character-name {font-size:1em}
+.character-name {font-size:1rem}
 .compare-border {border: 0.1rem solid #fdf6d8;border-left: 0.1rem solid #fdf6d8;border-right: 0.1rem solid #fdf6d8;padding:0.5%;}
 .borderless {border: none;}
 .borderCircle {border-radius: 50%;}
@@ -267,7 +267,7 @@
 }
 
 .vibrant-shimmer {
-    font-size: 2.5em;
+    font-size: 2.5rem;
     color: gold;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 140, 0, 0.7);
     /* Optional: Small text animation for extra effect */
@@ -328,18 +328,18 @@
 
 @keyframes borderTalent {
     0% {
-      box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.1em 0.3em;
+      box-shadow: var(--base-shadow), var(--glow-color) 0 0 0.1rem 0.3em;
     }
     100% {
-      box-shadow: var(--base-shadow), var(--glow-color) 0 0 1em 0.3em;
+      box-shadow: var(--base-shadow), var(--glow-color) 0 0 1rem 0.3em;
     }
 }
 @keyframes borderMenu {
     0% {
-      box-shadow: var(--base-shadow), inset var(--glow-color) 0 0 0 0.3em, var(--glow-color) 0 0 0.1em 0.3em;
+      box-shadow: var(--base-shadow), inset var(--glow-color) 0 0 0 0.3em, var(--glow-color) 0 0 0.1rem 0.3em;
     }
     100% {
-      box-shadow: var(--base-shadow), inset var(--glow-color) 0 0 0 0.3em, var(--glow-color) 0 0 1em 0.3em;
+      box-shadow: var(--base-shadow), inset var(--glow-color) 0 0 0 0.3em, var(--glow-color) 0 0 1rem 0.3em;
     }
 }
 @keyframes gradientShimmer {
@@ -650,8 +650,8 @@ svg.defs {
 .disengage {position: absolute;left: 10vw;top: 5vh;}
 .menuButton {font-family: "Cinzel-Regular";font-size:1rem;}
 .lootDropWindow {position: absolute;font-family: "Cinzel-Regular";background-color: #000;height: 40%;width: 35%;top: 50%;left: 32.5%;padding: 0.5rem;border: 0.15rem solid gold;border-radius: 0.25em;box-shadow: 0 0 0.5rem rgba(255, 215, 0, 1);overflow-y: scroll;z-index: 2;scrollbar-width: none;}
-.menuHeader { font-size: 1.1em; margin-left: 3%; margin-top: 3%; }
-.insideMenu { margin: 0.5em 0.25em 0 0; }
+.menuHeader { font-size: 1.1rem; margin-left: 3%; margin-top: 3%; }
+.insideMenu { margin: 0.5rem 0.25em 0 0; }
 .playerMenuHeading {font-family: "Cinzel-Regular";font-size: 1rem; text-align: center;color: #fdf6d8;background-color: black;padding: 0;}
 .playerWindow {position: absolute;top: 10vh;color: #fdf6d8;text-align: center;height: 80vh;width: 32.5vw;border: 0.15rem solid gold;background-color: #000;overflow: scroll; scrollbar-width: none;}
 .playerSaveInventoryOuter {position: fixed;background-color: #000;top: -0.5vh;right: 0.5vw;border-radius: 5%;}
@@ -664,7 +664,7 @@ svg.defs {
 .enemyUiWeapon {position: absolute;top: 3vh;right: 25.25vw;align-items: center;justify-content: center;border-radius: 50%;transform: scale(1.3);}
 .enemyHealthbar {display: flex;position: absolute;margin-left: 15%;width: 70%;max-height:24px;overflow: hidden;border: 0.1rem solid #fdf6d8;border-radius: 0.5rem;}
 .enemyName {position: absolute;right: 5vw;font-family: "Cinzel Regular";font-size: 1rem;color: red;font-weight: 600;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);}
-.enemyPortrait {font-family: "Cinzel Regular";font-size:1.1em;font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
+.enemyPortrait {font-family: "Cinzel Regular";font-size:1.1rem;font-weight: 600;text-align: center;text-shadow: 0 0 0.5rem rgba(0, 0, 0, 1);z-index: 1;}
 .enemyHealthBar {position: fixed;top: 7.5vh;right: 2vw;width: 20.5vw;height: 5vh;overflow: hidden;border: 0.5mm ridge red;}
 #enemyHealthbarBorder {position: fixed;top: 4vh;right: 0;height: 12.5vh;width: 25vw;max-height:74px;z-index: 1;}
 .enemyPreview {position: absolute;color: #fdf6d8; border-color: #fdf6d8; text-align: center; width: 25vw;border-radius: 25%;top: 10vh;right: 5vw;}
@@ -715,8 +715,8 @@ svg.defs {
 .skill-bar-fill {background-color:blue;height:4vh;overflow:hidden}
 .combatText {position:absolute;left:25vw;height:30vh;width:50vw;top:60vh;margin:auto 0;overflow:scroll;scrollbar-width:none;background-color:#000;border:0.15rem solid #ffc700;border-radius:0.25em;box-shadow:0 0 0.25em #ffc700;white-space:pre;}
 .toast {background-color: #000; padding: 0.5rem; margin: 0.5rem; border: 0.1rem solid #ffc700; border-radius: 0.5rem; box-shadow: 0 0 1rem #ffc700;}
-.toastBody {color:#fdf6d8; font-size:0.75em; font-weight:500; margin: 0.75em;}
-.toastButton {font-size: 0.75em; margin: auto; 
+.toastBody {color:#fdf6d8; font-size:0.75rem; font-weight:500; margin: 0.75rem;}
+.toastButton {font-size: 0.75rem; margin: auto; 
     /* margin-left: 50%; transform: translateX(-50%); */
 }
 .toastHeader {color:gold; font-size:0.875em; font-weight:600; margin: 0.25em;}
@@ -1019,7 +1019,7 @@ svg.defs {
 }
 
 .small-label {
-    font-size: 0.75em;
+    font-size: 0.75rem;
     opacity: 0.7;
 }
 
@@ -1032,31 +1032,24 @@ svg.defs {
     margin: 0 0.4rem;
     opacity: 0.5;
 }
-
-@media screen and (max-width: 800px) {
-    .stat-block.wide .section-left,
-    .stat-block.wide .section-right {display: inline-block; width: 100%;}
-    .stat-block.wide .section-left {margin: 0;}
-    .stat-block.wide .section-right {margin: 0;}
-}
 @media screen and (max-width: 875px) {
     .highlight {
         color: #fdf6d8; background: #000; border-radius: 0.25em; 
         font-family: "Cinzel-Regular", "Cinzel-Bold"; 
-        font-size: 0.85em; font-variant: small-caps; padding: 0.15em 1rem; margin: 0.35em;
+        font-size: 0.85rem; font-variant: small-caps; padding: 0.15rem 1rem; margin: 0.35em;
 
     }
     .creature-heading h1{
-        font-size: 1.5em;
+        font-size: 1.5rem;
         margin: 10px 0 0;
         letter-spacing: 1px;
     }
-    .creature-heading h2{font-size: 1em;}
-    .creature-heading p{font-size: 1em;}
+    .creature-heading h2{font-size: 1rem;}
+    .creature-heading p{font-size: 1rem;}
     .property-line h4,
     .property-line p{
         margin: 0;
-        font-size: 1em;
+        font-size: 1rem;
     }
     .property-line {text-indent: -1rem;padding-left: 1rem;}
     .property-line.first {margin: 10px 0 0}
@@ -1065,35 +1058,57 @@ svg.defs {
         font-size: 0.9rem;
     }
     .abilities h4 {
-        margin: 10px 0 4px;font-size: 1em;
+        margin: 10px 0 4px;font-size: 1rem;
     }
     .abilities p{
         margin: 0 0 10px;
     }
     .property-block h4,
     .property-block p {
-        font-size: 1em;
+        font-size: 1rem;
     }
     .property-block {padding: 10px 4px 0;}
     .actions h3 {
         border-bottom: 2px solid #5a0043;
-        font-size: 1.5em;letter-spacing: 1px;
+        font-size: 1.5rem;letter-spacing: 1px;
         margin: 20px 0 0;padding: 0 0 10px;
         text-indent: 4px;
     }
 }
+@media screen and (max-width: 800px) {
+    .stat-block.wide .section-left,
+    .stat-block.wide .section-right {display: inline-block; width: 100%;}
+    .stat-block.wide .section-left {margin: 0;}
+    .stat-block.wide .section-right {margin: 0;}
+}
+@media screen and (max-width: 768px) {
+    .creature-heading h1{
+        font-size: 1.25rem
+    }
+}
+@media screen and (max-height: 324px) {
+    .creature-heading h1 {
+        font-size: 1.1rem;
+    }
+    .creature-heading h2 {
+        font-size: 0.85rem;
+    }
+    .creature-heading p {
+        font-size: 0.85rem;
+    }
+}
 @media screen and (min-width: 940px) {
     .creature-heading h1{
-        font-size: 1.75em;
+        font-size: 1.75rem;
         margin: 12px 0 0;
         letter-spacing: 1px;
     }
-    .creature-heading h2{font-size: 1.15em;}
-    .creature-heading p{font-size: 1.15em;}
+    .creature-heading h2{font-size: 1.15rem;}
+    .creature-heading p{font-size: 1.15rem;}
     .property-line h4,
     .property-line p{
         margin: 0;
-        font-size: 1.15em;
+        font-size: 1.15rem;
     }
     .property-line {text-indent: -1rem;padding-left: 1.1rem;}
     .property-line.first {margin: 12px 0 0}
@@ -1102,19 +1117,19 @@ svg.defs {
         font-size: 1rem;
     }
     .abilities h4 {
-        margin: 12px 0 4px;font-size: 1.15em;
+        margin: 12px 0 4px;font-size: 1.15rem;
     }
     .abilities p{
         margin: 0 0 12px;
     }
     .property-block h4,
     .property-block p {
-        font-size: 1.15em;
+        font-size: 1.15rem;
     }
     .property-block {padding: 12px 4px 0;}
     .actions h3 {
         border-bottom: 2px solid #5a0043;
-        font-size: 1.75em;letter-spacing: 1px;
+        font-size: 1.75rem;letter-spacing: 1px;
         margin: 24px 0 0;padding: 0 0 12px;
         text-indent: 6px;
     }
@@ -1214,7 +1229,7 @@ svg.defs {
     .playerHealthBar {left: 2vw;top: 7vh;border: 0.2rem solid purple;max-height:36px;}
     .enemyHealthBar {right: 5vw; top: 7vh;border: 0.2rem solid red;max-height:36px;}
     .healthbar {border: 0.2rem solid #fdf6d8;}
-    .playerPortrait, .enemyPortrait {font-size:1.5em;}
+    .playerPortrait, .enemyPortrait {font-size:1.5rem;}
     .staminaBubble,
     .graceBubble {
         border: 0.25em solid purple;

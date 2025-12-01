@@ -1,7 +1,7 @@
 import EnemyDialogNodes from "../utility/EnemyDialogNodes.json";
 import { DialogNodeOption, DialogNode } from "../utility/DialogNode";
 import { Accessor, createEffect, createSignal } from "solid-js";
-import Ascean from "../models/ascean";
+import Ascean, { Entry } from "../models/ascean";
 import { Combat } from "../stores/combat";
 import { GameState } from "../stores/game";
 import { EventBus } from "../game/EventBus";
@@ -12,6 +12,7 @@ import Statistics from "../models/statistics";
 import { addSpecial, addStance } from "../utility/abilities";
 import Settings from "../models/settings";
 import { Reputation } from "../models/reputation";
+import { Portal } from "solid-js/web";
 
 // enum DEITIES {
 //     DAETHOS,
@@ -37,7 +38,7 @@ import { Reputation } from "../models/reputation";
 //     TSHAER
 // };
 
-const colors = {
+const colors: {[key: string]: string;} = {
     constitution: "#fdf6d8",
     strength: "#ff0000",
     agility: "#00ff00",
@@ -48,9 +49,9 @@ const colors = {
 
 const deityBorder = (mastery: string) => {
     return {
-        "border": `0.15em solid ${colors[mastery as keyof typeof colors]}`,
+        "border": `0.15em solid ${colors[mastery]}`,
         "border-radius": "50%",
-        "box-shadow": `0 0 5em ${colors[mastery as keyof typeof colors]}`,
+        "box-shadow": `0 0 5em ${colors[mastery]}`,
         "margin-bottom": "5%",
         "margin-top": "2.5%",
         "width": "40%",
@@ -126,17 +127,17 @@ export default function Deity({ ascean, combat, game, reputation, settings, stat
         try {
             const data = {
                 statistics,
-                asceanID: ascean()._id,
                 deity: deity().name,
                 entry: {
                     title: "Phenomenon",
                     body: playerResponses(),
                     footnote: "",
                     date: Date.now(),
+                    location: "",
                     keywords: keywordResponses(),
-                },
+                } as Entry,
             };
-            const res = await evaluateDeity(data);
+            const res = await evaluateDeity(ascean, data);
             EventBus.emit("fetch-ascean", res.data._id);
             EventBus.emit("show-deity", false);
             if (game().pauseState) {
@@ -166,15 +167,17 @@ export default function Deity({ ascean, combat, game, reputation, settings, stat
         }, faithsArray[0]);
         return highestFaith[0];
     };
-    return <div class="modal" style={{ background: "rgba(0, 0, 0, 1)" }}>
-        <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? "superfade-in" : "fade-out"} src={ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.png" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.png" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt={ascean().faith} id={"godBorder-"+ascean().mastery} />
-        <div class="deity-box deity-type">
-            <div class="wrap" style={{ width: "100%" }}>
-            <br />
-            {dialogNodes().length > 0 && (
-                <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} reputation={reputation} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />
-            )}
+    return <Portal>
+        <div class="modal" style={{ background: "rgba(0, 0, 0, 1)" }}>
+            <img style={deityBorder(ascean().mastery as string)} class={showDeity() === true ? "superfade-in" : "fade-out"} src={ascean()?.faith === "Adherent" ? "../assets/images/achreo-rising.png" : ascean()?.faith === "Devoted" ? "../assets/images/daethos-forming.png" : "../assets/images/" + ascean().origin + "-" + ascean().sex + ".jpg"} alt={ascean().faith} id={"godBorder-"+ascean().mastery} />
+            <div class="deity-box deity-type">
+                <div class="wrap" style={{ width: "100%" }}>
+                <br />
+                {dialogNodes().length > 0 && (
+                    <DialogTree combat={combat} game={game} ascean={ascean()} enemy={deity() as Ascean | NPC} dialogNodes={dialogNodes()} actions={actions} reputation={reputation} setKeywordResponses={setKeywordResponses} setPlayerResponses={setPlayerResponses} />
+                )}
+                </div>
             </div>
         </div>
-    </div>;
+    </Portal>;
 };

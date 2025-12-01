@@ -15,10 +15,10 @@ function computerCombatWeaponMaker(combat: ComputerCombat): ComputerCombat {
         combat.computerDamageType = combat.computerWeapons[0]?.damageType?.[0] as string;
         return combat;
     };
-    let defenseTypes: any = {"Leather-Cloth": 0,"Leather-Mail": 0,"Chain-Mail": 0,"Plate-Mail": 0};
-    defenseTypes[combat.computerEnemy?.helmet.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.helmet;
-    defenseTypes[combat.computerEnemy?.chest.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.chest;
-    defenseTypes[combat.computerEnemy?.legs.type as keyof typeof defenseTypes] += ARMOR_WEIGHT.legs;
+    let defenseTypes: {[key: string]: number;} = {"Leather-Cloth": 0,"Leather-Mail": 0,"Chain-Mail": 0,"Plate-Mail": 0};
+    defenseTypes[combat.computerEnemy?.helmet.type as string] += ARMOR_WEIGHT.helmet;
+    defenseTypes[combat.computerEnemy?.chest.type as string] += ARMOR_WEIGHT.chest;
+    defenseTypes[combat.computerEnemy?.legs.type as string] += ARMOR_WEIGHT.legs;
     const sortedDefenses = Object.entries(defenseTypes)
         .sort((a, b) => b[1] as number - (a[1] as number)) // Sort based on the values in descending order
         .map(([type, weight]) => ({ type, weight })); // Convert back to an array of objects
@@ -26,13 +26,13 @@ function computerCombatWeaponMaker(combat: ComputerCombat): ComputerCombat {
     let computerTypes: any = {0: [],1: [],2: []};
     combat.computerWeapons.forEach((weapon, index) => {
         weapon?.damageType?.forEach((type) => {
-            if (STRONG_TYPES[sortedDefenses[0].type as keyof typeof STRONG_TYPES].includes(type)) {
-                computerTypes[index as keyof typeof computerTypes].push({ type, rank: 1 });
-            } else if (STRONG_TYPES[sortedDefenses[1].type as keyof typeof STRONG_TYPES].includes(type)) {
+            if (STRONG_TYPES[sortedDefenses[0].type].includes(type)) {
+                computerTypes[index].push({ type, rank: 1 });
+            } else if (STRONG_TYPES[sortedDefenses[1].type].includes(type)) {
                 computerTypes[index].push({ type, rank: 2 });
-            } else if (STRONG_TYPES[sortedDefenses[2].type  as keyof typeof STRONG_TYPES].includes(type)) {
+            } else if (STRONG_TYPES[sortedDefenses[2].type].includes(type)) {
                 computerTypes[index].push({ type, rank: 3 });
-            } else if (STRONG_TYPES[sortedDefenses[3].type  as keyof typeof STRONG_TYPES].includes(type)) {
+            } else if (STRONG_TYPES[sortedDefenses[3].type].includes(type)) {
                 computerTypes[index].push({ type, rank: 4 });
             };
         });      

@@ -220,6 +220,13 @@ export class Game extends Scene {
             callbackScope: this           
         });
 
+        this.time.addEvent({
+            delay: 1000,
+            loop: true,
+            callback: () => this.checkChunkTransition(),
+            callbackScope: this
+        });
+
         EventBus.emit("add-postfx", this);
         EventBus.emit("current-scene-ready", this);
 
@@ -516,7 +523,7 @@ export class Game extends Scene {
         });
 
         // Spawn enemies from map
-        map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any) => {
+        map?.getObjectLayer("Enemies")?.objects.forEach((enemy: any, i: number) => {
             const e = new Enemy({ 
                 scene: this, 
                 x: 200, 
@@ -525,9 +532,11 @@ export class Game extends Scene {
                 frame: "player_idle_0", 
                 data: undefined 
             });
-            this.enemies.push(e);
             enemies.push(e);
             e.setPosition(enemy.x + offsetX, enemy.y + offsetY);
+            this.time.delayedCall((i + 1) * 96, () => {
+                this.enemies.push(e);
+            }, undefined, this);
         });
 
         // Spawn additional random enemies
@@ -541,9 +550,11 @@ export class Game extends Scene {
                 frame: "player_idle_0", 
                 data: undefined 
             });
-            this.enemies.push(e);
             enemies.push(e);
             e.setPosition(Phaser.Math.Between(offsetX + 200, offsetX + CHUNK_SIZE - 200), Phaser.Math.Between(offsetY + 200, offsetY + CHUNK_SIZE - 200));
+            this.time.delayedCall((i + 1) * 124, () => {
+                this.enemies.push(e);
+            }, undefined, this);
         };
 
         // Spawn NPCs
@@ -1097,8 +1108,6 @@ export class Game extends Scene {
         this.setCameraOffset();
         this.checkEnvironment(this.player);
         this.hud.rightJoystick.update();
-        if (this.frameCount % 60 !== 0) return;
-        this.checkChunkTransition();
     };
 
 

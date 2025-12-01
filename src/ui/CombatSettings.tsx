@@ -132,10 +132,10 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
     };
     return <div>
         <button class="highlight" onClick={() => setEditShow(!editShow())} style={{ top: `${Number(edit().top.split("%")[0]) - 12.5}%`, left: `${Number(edit().left.split("%")[0]) - 1.25}%`, position: "absolute", color: "gold", transform: "scale(0.75)" }}>{svg("UI")}</button>
-        <div class="center combatSettings" style={{ ...edit(), background: "#000", "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700", "font-size": edit()?.size, overflow: "scroll", "scrollbar-width": "none" }}>
+        <div class="center combatSettings" style={{ ...edit(), background: "#000", "font-size": edit()?.size, overflow: "scroll", "scrollbar-width": "none" }}>
             <div class="center shadow animate-flicker" style={{ display: "flex", "flex-direction": "row", "margin-top": "1%", width: "100%", "z-index": 1 }}>
             <For each={BUTTONS}>{((button) => {
-                return <button class="highlight gold" style={{ "z-index": 1 }} onClick={() => handleButton(button.direction)}>
+                return <button class="highlight gold" onClick={() => handleButton(button.direction)}>
                     {buttonText(button.direction, game().selectedHighlight)}
                 </button>;
             })}</For>
@@ -169,7 +169,7 @@ export default function CombatSettings({ combat, game, settings, editShow, setEd
         </div>
         <Show when={editShow()}>
             <div class="modal">
-            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
+            <div class="thick-border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
                 <h1>Size</h1>
                 <button class="highlight" onClick={() => editCombatText("size", 
                     `${Math.max(Number(edit().size.split("em")[0]) - 0.25, 0.25)}em`)}>-</button>

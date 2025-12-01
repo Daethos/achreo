@@ -217,9 +217,9 @@ export function criticalCompiler(player: boolean, ascean: Ascean, critChance: nu
         let skill: number = 1;
         
         if (weapon.type === "Ancient Shard") {
-            skill = skills[weapon.damageType?.[0] as keyof typeof skills] || 1;
+            skill = skills[weapon.damageType?.[0] as string] || 1;
         } else {
-            skill = skills[weapon.type as keyof typeof skills] || 1;
+            skill = skills[weapon.type] || 1;
         };
         
         const modifier = skill / (ascean.level * 100);
@@ -847,7 +847,7 @@ function computerDualWieldCompiler(combat: Combat, playerPhysicalDefense: number
             combat.computerWin = true;
         };
     };
-    combat.computerActionDescription = `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ""}${weapons[1]?.damageType?.[1] ? " / " + weapons[1].damageType?.[1] : ""} ${firstWeaponCrit === true && secondWeaponCrit === true ? "damage (Critical)" : firstWeaponCrit === true || secondWeaponCrit === true ? "damage (Partial Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
+    combat.computerActionDescription = `${computer?.name} dual-wield ${ENEMY_ATTACKS[combat.computerAction]} you with ${weapons[0].name} and ${weapons[1].name} for ${Math.round(combat.realizedComputerDamage)} ${combat.computerDamageType} and ${weapons[1].damageType?.[0] ? weapons[1].damageType[0] : ""}${weapons[1]?.damageType?.[1] ? " / " + weapons[1].damageType?.[1] : ""} ${firstWeaponCrit === true && secondWeaponCrit === true ? "damage (Critical)" : firstWeaponCrit === true || secondWeaponCrit === true ? "damage (Partial Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
     return combat;
 };
 
@@ -948,7 +948,7 @@ function computerAttackCompiler(combat: Combat, computerAction: string): Combat 
     if (combat.berserk.active === true) combat.berserk.charges += 1;
     combat.newPlayerHealth -= combat.realizedComputerDamage;
 
-    combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction as keyof typeof ENEMY_ATTACKS]} you with their ${computerWeapon.name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? "damage (Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
+    combat.computerActionDescription = `${combat.computer?.name} ${ENEMY_ATTACKS[combat.computerAction]} you with their ${computerWeapon.name} for ${Math.round(computerTotalDamage)} ${combat.computerDamageType} ${combat.computerCriticalSuccess === true ? "damage (Critical)" : combat.computerGlancingBlow === true ? "damage (Glancing)" : "damage"}.`;
     
     if (combat.newPlayerHealth <= 0) {
         if (combat.playerEffects.find(effect => effect.prayer === PRAYERS.DENIAL)) {
@@ -1218,7 +1218,7 @@ function attackCompiler(combat: Combat, playerAction: string): Combat {
     const skill = mainWeapon.type === "Ancient Shard" ? mainWeapon.damageType?.[0] as string : mainWeapon.type;
     combat.skillData.push(skill);
     combat.totalDamageData = Math.max(combat.realizedPlayerDamage, combat.totalDamageData);
-    combat.playerActionDescription = `You ${ATTACKS[playerAction as keyof typeof ATTACKS]} ${combat.computer?.name} with your ${mainWeapon.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
+    combat.playerActionDescription = `You ${ATTACKS[playerAction]} ${combat.computer?.name} with your ${mainWeapon.name} for ${Math.round(combat.realizedPlayerDamage)} ${combat.playerDamageType} ${combat.criticalSuccess === true ? "damage (Critical)" : combat.glancingBlow === true ? "damage (Glancing)" : "damage"}.`    
     
     if (combat.newComputerHealth <= 0) {
         combat.newComputerHealth = 0;

@@ -2,7 +2,7 @@ import Equipment from "../models/equipment";
 import { PRAYERS } from "../models/prayer";
 
 export const ARMOR_WEIGHT: any = {helmet:2,chest:1.5,legs:1};
-export const ATTACKS = {
+export const ATTACKS: {[key: string]: string;} = {
     achire: "achire",
     attack: "attack",
     hurl: "hurls",
@@ -17,7 +17,7 @@ export const ATTACKS = {
     thrust: "thrust attack",
     writhe: "writhe into",
 };
-export const ACTION_TYPES = {
+export const ACTION_TYPES: {[key: string]: string;} = {
     ACHIRE: "achire",
     ARC: "arc",
     ATTACK: "attack",
@@ -59,7 +59,7 @@ export const DAMAGE = {
     TICK_FULL: 0.33,
     HALF: 0.5,
 };
-export const ARMORS = {
+export const ARMORS: {[key: string]: number;} = {
     FIFTEEN: 1.15,
     TEN: 1.1,
     EIGHT: 1.08,
@@ -75,7 +75,7 @@ export const ARMORS = {
     RANDOM: 0.15,
 };
 
-export const DAMAGE_TYPE_NUMS = {
+export const DAMAGE_TYPE_NUMS: {[key: string]: number;} = {
     BLUNT: 0,
     FIRE: 1,
     EARTH: 2,
@@ -90,25 +90,25 @@ export const DAMAGE_TYPE_NUMS = {
     WILD: 11
 } as const;
 
-export const ATTACK_TYPE_NUMS = {
+export const ATTACK_TYPE_NUMS: {[key: string]: number;} = {
     PHYSICAL: 0,
     MAGIC: 1
 } as const;
 
-export const DEFENSE_TYPE_NUMS = {
+export const DEFENSE_TYPE_NUMS: {[key: string]: number;} = {
     PLATE_MAIL: 0,
     CHAIN_MAIL: 1,
     LEATHER_MAIL: 2,
     LEATHER_CLOTH: 3
 } as const;
 
-export const LOCATION_NUMS = {
+export const LOCATION_NUMS: {[key: string]: number;} = {
     head: 0,
     chest: 1,
     legs: 2
 } as const;
 
-export const MASTERY = {
+export const MASTERY: {[key: string]: string;} = {
     CONSTITUTION: "constitution",
     STRENGTH: "strength",
     AGILITY: "agility",
@@ -116,8 +116,8 @@ export const MASTERY = {
     CAEREN: "caeren",
     KYOSIR: "kyosir"
 };
-export const HOLD_TYPES = { ONE_HAND: "One Hand", TWO_HAND: "Two Hand" };
-export const THRESHOLD = {ONE_HAND: 100, TWO_HAND: 150};
+export const HOLD_TYPES: {[key: string]: string;} = { ONE_HAND: "One Hand", TWO_HAND: "Two Hand" };
+export const THRESHOLD: {[key: string]: number;} = {ONE_HAND: 100, TWO_HAND: 150};
 
 
 export const DUAL_ELIGIBILITY = {
@@ -365,7 +365,7 @@ export const LOCATION_TO_NUM = new Map([
     ["legs", LOCATION_NUMS.legs]
 ]);
 
-export const ENEMY_ATTACKS: {[key:string]: string} = {
+export const ENEMY_ATTACKS: {[key:string]: string;} = {
     achire: "achires into",
     attack: "attacks",
     hook: "hooks into",

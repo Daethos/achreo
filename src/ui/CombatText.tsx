@@ -40,7 +40,7 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
         EventBus.emit("save-settings", update);
     };
     return <div>
-        <div class="combatText" ref={combatTextEl} style={{...edit(), "border": "0.1em solid #FFC700", "border-radius": "0.25em", "box-shadow": "0 0 0.5em #FFC700"}}>
+        <div class="combatText" ref={combatTextEl} style={{...edit(), "border": "thick ridge #fdf6d8", "border-radius": "0.25em"}}>
         <div class="animate-flicker" style={{ "text-wrap": "balance", margin: "3%", "--glow-color":"#000" }}> 
             <Show when={partyShow()} fallback={
                 <div style={{ "font-size": edit()?.size, "z-index": 1 }} innerHTML={combatHistory()} />
@@ -54,7 +54,7 @@ export default function CombatText({ settings, combat, combatHistory, partyHisto
         </div>
         <Show when={editShow()}>
             <div class="modal">
-            <div class="border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
+            <div class="thick-border creature-heading center superCenter" style={{ padding: "2.5%", width: "30vw", "font-size": "0.75em", height: "80vh", "overflow-y": "scroll", "scrollbar-width": "none" }}>
                 <h1>Size</h1>
                 <button class="highlight" onClick={() => editCombatText("size", 
                     `${Math.max(Number(edit().size.split("em")[0]) - 0.25, 0.25)}em`)}>-</button>

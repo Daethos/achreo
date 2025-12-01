@@ -284,7 +284,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         <div class="combatUiWeapon" classList={{ "animate-texty": previousHealth().show && previousHealth().positive, "animate-flicker": previousHealth().show && !previousHealth().positive, "reset-animation": !previousHealth().show }} onClick={() => setShow(show => !show)} style={{
             ...caerenic(state().caerenic.active, state().isStealth), left: settings().specials.length ? "36.5vw" : "30.75vw", border: `1mm groove ${borderColor(state()?.playerBlessing)}`
         }}>
-            <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "2.5%" }} />
+            <img src={state()?.weapons?.[0]?.imgUrl} alt={state()?.weapons?.[0]?.name} style={{ "margin": "5% 12.5%" }} />
         </div>
         <Show when={state().stalwart.active}>
         <div class={`combatUiShield ${state().stalwart.active ? "super-in" : "superfade-out"}`} onClick={() => setShieldShow(shieldShow => !shieldShow)} style={{ 

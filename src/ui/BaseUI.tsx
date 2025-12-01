@@ -468,7 +468,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
                     opponent: res.computer?.level,
                     opponentExp: Math.min(experience + ascean().experience, res?.player?.level! * 1000),
                 };
-                EventBus.emit("record-win", { record: res, experience: newState });
+                EventBus.emit("record-win", { record: res, levelSheet: newState });
                 
                 const scene = instance.scene?.scene.key;
                 if (scene !== "Tutorial") {
@@ -528,7 +528,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         };
         (instance.scene as any).showCombatText((instance.scene as any).player, `+${experience} XP`, 3000, "effect");
         (instance.scene as any).experienceManager.gainExperience(enemyID);
-        EventBus.emit("record-win", { record: combat(), experience: newState });
+        EventBus.emit("record-win", { record: combat(), levelSheet: newState });
         const loot = { enemyID, level: e.level };
         EventBus.emit("enemy-loot", loot);
     };

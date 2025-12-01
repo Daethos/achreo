@@ -1486,29 +1486,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     //     EventBus.emit("update-ascean", update);
     // };
 
-    // usePhaserEvent("highlight-typing", (e: boolean) => {
-    //     setIsTyping(e);
-    // });
-
     function fetchOptions() {
         const currentRep = reputation().factions.find((f: FACTION) => f.name === combat().computer?.name.split("(Converted)")[0].trim()) as FACTION;
-        if (!currentRep) {
-            return {};
-        };
-        if (combat().isHostile) {
-            return {
-                challenge: {},
-                persuasion: {},
-            };
-        };
-        if (currentRep.reputation < 10) {
-            return {
-                conditions: {},
-                challenge: {}, 
-                farewell: {},
-                persuasion: {}, 
-            };
-        };
+        if (!currentRep) return {};
+        if (combat().isHostile) return { challenge: {}, persuasion: {} };
+        if (currentRep.reputation < 15) return { conditions: {}, challenge: {},  farewell: {}, persuasion: {} };
         return game().dialog;
     };
     
@@ -1739,15 +1721,18 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         <>
                             <Typewriter styling={TYPEWRITER}  stringText={`The Alchemist's eyes scatter about your presence, eyeing ${ascean().firewater?.current} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} performAction={hollowClick} />
                             <br />
-                            <button class="highlight dialog-buttons" style={{ color: "blueviolet", "font-size":"1em" }} onClick={refillFlask}>Walk over and refill your firewater?</button>
+                            <button class="highlight dialog-buttons" style={{ color: "blueviolet", "font-size":"1em" }} onClick={refillFlask}>Walk over and refill your flask?</button>
                         </>
                     </Show>
                     <Show when={party()}>
                         <>
                             <br />
-                            <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={`Look upon the registry and perchance recruit someone of your preference to your party.`} performAction={hollowClick} />
-                            <br />
-                            <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button> 
+                            <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={`Look upon the registry and perchance recruit someone of your preference to your party.
+
+        <button class="highlight" data-function-name="setRegistry">Check the Registry.</button>
+                            `} performAction={performAction} />
+                            {/* <br /> */}
+                            {/* <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button>  */}
                         </>
                     </Show>
                 </>

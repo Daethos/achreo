@@ -23,7 +23,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
     if (!item) return undefined;
     const attribute = item?.constitution + item?.strength + item?.agility + item?.achre + item?.caeren + item?.kyosir;
     const dims = dimensions();
-    const poly = dims.WIDTH * 0.45;
+    const poly = dims.WIDTH * 0.55;
     const scale = dims.WIDTH / 800;
     const empty = item.name.includes("Empty");
     const name = item.name.includes("Starter") ? ( item.name.split(" ")[0] + " " + item.name.split(" ")[1] ) : ( item.name );

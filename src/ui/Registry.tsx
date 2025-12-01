@@ -1,7 +1,6 @@
 import { Accessor, createSignal, For, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchPartyPotential } from "../utility/enemy";
 import Ascean from "../models/ascean";
-// import Currency from "../utility/Currency";
 import { IRefPhaserGame } from "../game/PhaserGame";
 import { fullStyle, masteryColor, partialStyle } from "../utility/styling";
 import { EventBus } from "../game/EventBus";
@@ -9,9 +8,11 @@ import AsceanImageCard from "../components/AsceanImageCard";
 import Equipment from "../models/equipment";
 import ItemModal from "../components/ItemModal";
 import { Compiler } from "../utility/ascean";
+import Currency from "../utility/Currency";
+import { Portal } from "solid-js/web";
 const selectors = {
-    0.5: { prev: 0.5, next: 1 },
-    1: { prev: 0.5, next: 2 },
+    // 0.5: { prev: 0.5, next: 1 },
+    1: { prev: 1, next: 2 },
     2: { prev: 1, next: 4 },
     4: { prev: 2, next: 6 },
     6: { prev: 4, next: 8 },
@@ -30,7 +31,18 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
     const [view, setView] = createSignal<Ascean | undefined>(undefined);
 
     function addToParty() {
-        EventBus.emit("add-party", {name:view()?.name,level:view()?.level,force:true});
+        const prospect = view();
+        if (prospect === undefined) return;
+        const gold = ascean().currency.gold;
+        if (gold < prospect.level) {
+            EventBus.emit("alert", { header: "Insufficient Funds", body: `You require ${prospect.level - gold} more gold to recruit ${prospect.name} to your party.` });
+            setAddShow(false); 
+            setView(undefined);
+            return;
+        };
+        EventBus.emit("add-party", {name:prospect.name, level:prospect.level, force:true});
+        EventBus.emit("alert", { header: "Congratulations!", body: `You have successfully recruited ${prospect.name} to join your party. Your party size is now ${total() + 1}.` });
+        EventBus.emit("charge-currency", { silver: 0, gold: prospect.level });
         EventBus.emit("action-button-sound");
         setAddShow(false); 
         setView(undefined);
@@ -47,6 +59,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
         setView(undefined);
         setTimeout(() => {
             setParty(instance?.game?.registry.get("party"));
+            // EventBus.emit("update-pause", false);
         }, 1000);
     };
 
@@ -55,7 +68,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
             ...selector(),
             [type]: value
         });
-        const res: any = fetchPartyPotential(selector().level, selector().mastery);
+        const res: Ascean[] = fetchPartyPotential(selector().level, selector().mastery);
         setPotential(res);
     };
 
@@ -69,9 +82,10 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                             <div class="textGlow" style={{ color: masteryColor(party.ascean.mastery), "--glow-color":masteryColor(party.ascean.mastery), margin: 0 }}>{party.ascean.name} | ({party.ascean.level}) | {party.ascean.mastery.charAt(0).toUpperCase() + party.ascean.mastery.slice(1)} <button class="highlight" onClick={() => {setView(party.ascean); setRemoveShow(true);}} style={{ animation: "" }}>View</button></div>
                         )
                     }}</For>
-                    {/* <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Currency</p> */}
-                    {/* <Currency ascean={ascean} /> */}
-                    <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Registry Option Query</p>
+                    <p style={{ color: "gold", margin: "8px 0 0", "font-size": "1.4em", padding: "0" }}>Currency</p>
+                    <span style={{ "font-size": "0.75rem" }}>[Recruitment Cost: <span class="gold">1g</span> per level.]</span>
+                    <Currency ascean={ascean} />
+                    {/* <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Registry Option Query</p> */}
                     <div style={{ display: "grid", "grid-template-columns": "repeat(2, 50%)" }}>
                         <div>
                             <p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Opponent Level ({selector().level}) <br /> 
@@ -146,7 +160,9 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
         </Show>
         <Show when={itemShow()}>
             <div class="modal" onClick={() => setItemShow(false)}>
+                <Portal>
                 <ItemModal item={equipment()} stalwart={false} caerenic={false} /> 
+                </Portal>
             </div>
         </Show>
     </Show>

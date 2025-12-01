@@ -419,6 +419,10 @@ export default class SmallHud extends Phaser.GameObjects.Container {
                     this.switches.info = !this.switches.info;
                     break;
                 case "dialog":
+                    const currentScene = this.scene.scene.get(`${this.scene.currScene}`) as Play;
+                    if (currentScene.state.computer === undefined) {
+                        return;
+                    };
                     EventBus.emit("action-button-sound");
                     EventBus.emit("show-dialogue");
                     this.switches.dialog = !this.switches.dialog;

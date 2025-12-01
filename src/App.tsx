@@ -382,6 +382,7 @@ export default function App() {
             };
             phaserRef.game?.registry.set("party", compiledParty);
             EventBus.emit("remove-from-party", party);
+            // togglePause(false);
         } catch(err) {
             console.warn(err, "Error Adding to Party");
         };

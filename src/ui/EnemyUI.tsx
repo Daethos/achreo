@@ -1,4 +1,4 @@
-import { Accessor, For, Setter, Show, Suspense, createEffect, createSignal, lazy } from "solid-js"
+import { Accessor, For, Setter, Show, createEffect, createMemo, createSignal } from "solid-js"
 import { Portal } from "solid-js/web";
 import ItemModal from "../components/ItemModal";
 import { IRefPhaserGame } from "../game/PhaserGame";
@@ -17,21 +17,18 @@ import StatusEffect from "../models/prayer";
 import { PrayerModal } from "../utility/buttons";
 import { GameState } from "../stores/game";
 import { EnemySheet } from "../utility/enemy";
-import { Puff } from "solid-spinner";
 import { createHealthDisplay } from "../utility/health";
-const HealthBar = lazy(async () => await import("./HealthBar"));
 
 const dims = dimensions();
 
 function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<Combat>, show: Accessor<boolean>, setShow: Setter<boolean>; game: Accessor<GameState>, instance: Store<IRefPhaserGame> }) {
-    const [enemy, setEnemy] = createSignal(state().computer);
     const [attribute, setAttribute] = createSignal(Attributes[0]);
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(state().computerWeapons[0]);
     const [attributeShow, setAttributeShow] = createSignal<boolean>(false);
     const [itemShow, setItemShow] = createSignal<boolean>(false);
     const [attributeDisplay, setAttributeDisplay] = createSignal<{ attribute: any; show: boolean; total: number, equip: number, base: number }>({ attribute: undefined, show: false, base: 0, equip: 0, total: 0 });
     const { healthDisplay, changeDisplay, healthPercentage } = createHealthDisplay(state, game, true);
-    createEffect(() => setEnemy(state().computer));
+    const enemy = createMemo(() =>  state().computer);
     const removeEnemy = (id: string) => {
         const combat = instance.game?.registry.get("inCombat");
         if (combat) {
@@ -93,11 +90,9 @@ function EnemyModal({ state, show, setShow, game, instance }: { state: Accessor<
                     <h2 style={{ margin: "2% auto" }}>
                         {state().computer?.description}
                     </h2>
-                    <div style={{ display: "flex", position: "relative", "margin-left": "12%", height: "6vh", width: "75%", overflow: "hidden", border: "1mm ridge #fdf6d8", "border-radius": "1rem" }}>
-                        <p class="playerPortrait center" style={{ color: "purple", "font-family": "Cinzel Regular", "text-shadow": "0 0 0 #000", "font-size": dims.WIDTH > 850 ? "1.25em" : "1em" }}>{healthDisplay()}</p>
-                        <div style={{ position: "absolute", bottom: 0, left: 0, top: 0, width: `${healthPercentage()}%`, 
-                            "background": "linear-gradient(gold, #fdf6d8)", 
-                            transition: "width 1s ease-out, background 1s ease-out" }}>
+                    <div onClick={changeDisplay} style={{ display: "flex", position: "relative", "margin-left": "12%", height: "6vh", width: "75%", overflow: "hidden", border: "1mm ridge #fdf6d8", "border-radius": "1rem" }}>
+                        <p onClick={changeDisplay} class="playerPortrait center" style={{ color: "purple", "font-family": "Cinzel Regular", "text-shadow": "0 0 0 #000", "font-size": dims.WIDTH > 850 ? "1.25em" : "1em" }}>{healthDisplay()}</p>
+                        <div onClick={changeDisplay} style={{ position: "absolute", bottom: 0, left: 0, top: 0, width: `${healthPercentage()}%`, "background": "linear-gradient(gold, #fdf6d8)", transition: "width 1s ease-out, background 1s ease-out" }}>
                         </div>
                         {/* <HealthBar combat={state} enemy={true} game={game} /> */}
                     </div>
@@ -196,7 +191,7 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                     positive:false
                 });
             }, 1000);
-        }
+        };
     });
     // function createPrayer() {
     //     console.log("Creating prayer...");
@@ -239,8 +234,8 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
         }}></div>
         </div>
         <img id="enemyHealthbarBorder" src={"../assets/gui/enemy-healthbar-bold.png"} alt="Health Bar" style={{ "z-index": -1 }} />
-        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), right: "24.5vw", "height": "10vh", "max-height": "44px", width: "5vw", "max-width": "44px", transform: "scale(1)", border: `1mm groove ${getRarityColor(state()?.computerWeapons?.[0]?.rarity as string)}`}}>
-            <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} />
+        <div class="enemyUiWeapon" onClick={() => setItemShow(!itemShow())} style={{...itemStyle(state()?.computerWeapons?.[0]?.rarity as string), right: "24.75vw", "height": "10vh", "max-height": "44px", width: "5vw", "max-width": "44px", transform: "scale(1)", border: `1mm groove ${getRarityColor(state()?.computerWeapons?.[0]?.rarity as string)}`}}>
+            <img src={state().computerWeapons?.[0]?.imgUrl} alt={state().computerWeapons?.[0]?.name} style={{ margin: "5% 12.5%" }} />
         </div>
         {/* <button class="highlight center" onClick={() => createPrayer()}>
             <div style={{ color: "#fdf6d8", "font-size": "0.75em" }}>Create Prayer</div>
@@ -252,7 +247,38 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                 ))}</For>
             </div>
         </Show> 
-        {enemies()?.length > 0 && enemies()?.map((enemy, index) => {
+        {/* <For each={enemies()}>{(enemy, index) => {
+            const prevIdx = Number(index()) - 1 === -1 ? enemies().length - 1 : Number(index()) - 1;
+            const prevIdxMore = prevIdx - 1 < 0 ? enemies().length + (prevIdx - 1) : prevIdx - 1;
+            if (enemies().length < 2 || enemies()[prevIdx].id !== state().enemyID) return;
+            const truePrev = enemies()[prevIdxMore].id !== state().enemyID && enemy.id !== enemies()[prevIdxMore].id;
+            let cleanName = enemies()[prevIdxMore].game.name;
+            cleanName = cleanName.includes(" ") ? cleanName.split(" ")[0] + " " + cleanName.split(" ")[1] : cleanName;
+            let cleanEnemy = enemy.game.name;
+            cleanEnemy = cleanEnemy.includes(" ") ? cleanEnemy.split(" ")[0] + " " + cleanEnemy.split(" ")[1] : cleanEnemy;
+            return (
+                <Show when={truePrev} fallback={
+                    <div style={{ transform: "scale(0.75)", "background-color": "#000", position: "absolute", height: "auto", width: "10vw", top: "13.5vh", right: "0vw" }}>
+                        <button class="center" style={{ width: "auto", height: "100%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemy)}>
+                            <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" />
+                            <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanEnemy}</div>
+                        </button>
+                    </div>
+                }>
+                    <div style={{ transform: "scale(0.75)", position: "absolute", width: "20vw", top: "13.5vh", right: "-2vw" }}>
+                        <button class="center" style={{ height: "100%", width: "50%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemies()[prevIdxMore])}>
+                            <img src={`../assets/images/${enemies()[prevIdxMore].game.origin}-${enemies()[prevIdxMore].game.sex}.jpg`} alt={enemies()[prevIdxMore].game.name} id="deity-pic" />
+                            <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanName}</div>
+                        </button>
+                        <button class="center" style={{ width: "50%", height: "100%", display: "inline-block", "background-color": "#000" }} onClick={() => fetchEnemy(enemy)}>
+                            <img src={`../assets/images/${enemy.game.origin}-${enemy.game.sex}.jpg`} alt={cleanEnemy} id="deity-pic" />
+                            <div style={{ color: "gold", "text-align": "center", "font-size": "0.75em" }}>{cleanEnemy}</div>
+                        </button>
+                    </div>
+                </Show> 
+        )}}</For> */}
+        
+        {enemies()?.length > 0 && enemies().map((enemy, index) => {
             const prevIdx = Number(index) - 1 === -1 ? enemies().length - 1 : Number(index) - 1;
             const prevIdxMore = prevIdx - 1 < 0 ? enemies().length + (prevIdx - 1) : prevIdx - 1;
             if (enemies().length < 2 || enemies()[prevIdx].id !== state().enemyID) return;
@@ -281,7 +307,8 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
                         </button>
                     </div>
                 </Show> 
-        )})}
+            )}
+        )}
         <Show when={showModal()}>
             <EnemyModal state={state} show={showModal} setShow={setShowModal} game={game} instance={instance} /> 
         </Show>

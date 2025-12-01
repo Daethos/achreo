@@ -89,7 +89,8 @@ export const OriginModal = ({ origin }: { origin: string }) => {
         height: "97.5%",
         width: "98.75%",
     }}>
-        <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}><br />
+        <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}>
+            <h1>{race?.name}</h1>
             <p class="super">
                 {race?.bio}<br /><br />{race?.bioTwo}
             </p>
@@ -117,7 +118,8 @@ const OriginsCard = ({ origin, newAscean, setNewAscean }: { origin: any; newAsce
                     height: "97.5%",
                     width: "98.5%",
                 }}>
-                    <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}><br />
+                    <div class="creature-heading" style={{ height: "100%", "text-wrap": "balance", "align-items": "center", "align-content": "center", "justify-content": "center", width: "90%", margin: "auto" }}>
+                        <h1 style={{  }}>{origin.name}</h1>
                         <p class="super">
                             {origin.bio}<br /><br />{origin.bioTwo}
                         </p>

@@ -179,7 +179,7 @@ export class Tutorial extends Phaser.Scene {
         this.player = new Player({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0" });
         this.player.setPosition(965, 328);
         if (this.hud.prevScene !== "Game") {
-            if (this.player.ascean.level !== 1 && this.player.ascean.experience !== 0) {
+            if (this.player.ascean.level !== 1 || this.player.ascean.experience !== 0) {
                 this.player.setPosition(this.hud.settings?.coordinates?.x || 965, this.hud.settings?.coordinates?.y || 328);
             };
         } else if (this.hud.prevScene === "Game") {

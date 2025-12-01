@@ -3,27 +3,33 @@ import { FAITHS } from "./Faith";
 import { dimensions } from "../utility/dimensions";
 import { CharacterSheet } from "../utility/ascean";
 
-const LANDS = {
-    "Ashtre": "the Astralands",
-    "Nothos": "the Soverains",
-    "Notheo": "the Daethic Kingdom",
-    "Fyers": "the Firelands",
-    "Sedyreal": "Sedyrus",
-    "Li'ivi": "Licivitas",
-    "Quor'eite": "Quor'eia",
+const LANDS: {[key: string]: string} = {
+    "Ashtre": "the Astralands, the swampy stormlands to the East",
+    "Nothos": "the Soverains, cold and wet forests to the Nothren'eas",
+    "Notheo": "the Daethic Kingdom, cold and wet forests to the Nothren'wes",
+    "Fyers": "the Firelands, the fertile Southron wilderness",
+    "Sedyreal": "Sedyrus, the harsh Southron deserts and mountains",
+    "Li'ivi": "Licivitas, the widespread, central prairies",
+    "Quor'eite": "Quor'eia, the lush Southron beaches and jungles",
 };
 
-const ARMORS = {
+const ARMORS_NAME: {[key: string]: string} = {
+    "leather-cloth": "cloth",
+    "leather-mail": "leather",
+    "chain-mail": "chain",
+    "plate-mail": "plate",
+};
+
+const ARMORS_DESCRIPTION: {[key: string]: string} = {
     "leather-cloth": "apostles, occultists, and Sages.",
     "leather-mail": "druids, shaman, and wandering outlaws.",
-    "chain-mail": "men of a particular sort.",
+    "chain-mail": "men of particular classis.",
     "plate-mail": "guards and knights of various vows.",
 };
-
 export default function Review({ newAscean }: { newAscean: Accessor<CharacterSheet> }) {
     const originArticle = ["a", "e", "i", "o", "u"].includes(newAscean()?.origin[0].toLowerCase()) ? "an" : "a";
     const descArticle = ["a", "e", "i", "o", "u"].includes(newAscean()?.description[0].toLowerCase()) ? "an" : "a";
-    const land = LANDS[newAscean()?.origin as keyof typeof LANDS];
+    const land = LANDS[newAscean()?.origin];
     const [name, setName] = createSignal("");
     const [character, setCharacter] = createSignal("");
     const dims = dimensions();
@@ -44,8 +50,8 @@ export default function Review({ newAscean }: { newAscean: Accessor<CharacterShe
             <h2 class="p-3">
                 You are <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.name}</span>, {originArticle} <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.origin}</span> {newAscean()?.sex === "Man" ? "man" : "woman"} of <span class="gold" style={{ "--glow-color":"gold" }}>{land}</span>, recently matured and leaving home, venturing to the Ascea. 
                 By your own admission, you are {descArticle} <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.description}</span>.
-                The kind of armor you choose to wear is <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.preference.toLowerCase()}</span>, similar to those worn by {ARMORS[newAscean()?.preference.toLowerCase() as keyof typeof ARMORS]} Your mastery lies in <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
-                in some sense, that is how one perceives this world. Your faith is <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.faith}</span>, the worship of <span class="gold" style={{ "--glow-color":"gold" }}>{name()}</span>. {character()} 
+                The armor you choose to wear is <span class="gold" style={{ "--glow-color":"gold" }}>{ARMORS_NAME[newAscean()?.preference.toLowerCase()]}</span>, similar to those worn by {ARMORS_DESCRIPTION[newAscean()?.preference.toLowerCase()]} Your mastery lies in <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.mastery.charAt(0).toUpperCase() + newAscean()?.mastery.slice(1)}</span>, and it is said that,
+                in some sense, how you perceive this world. Your are <span class="gold" style={{ "--glow-color":"gold" }}>{newAscean()?.faith}</span>, and worship <span class="gold" style={{ "--glow-color":"gold" }}>{name()}</span>. {character()} 
             </h2>
         </div>
         <Show when={dims.ORIENTATION === "landscape"} fallback={<>

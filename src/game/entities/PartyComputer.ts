@@ -563,6 +563,7 @@ export default class Party extends Entity {
         this.weapons = e.computerWeapons;
         this.currentRound = e.combatRound;
         if (e.computerDamaged) this.scene.combatManager.hitFeedbackSystem.spotEmit(this.enemyID, e.computerEnemyDamageType);
+        if (e?.realizedComputerDamage > 0) EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
         
         this.computerCombatSheet.computerAction = "";
         this.computerCombatSheet.computerEnemyAction = "";
@@ -581,7 +582,6 @@ export default class Party extends Entity {
 
         this.checkGear(e.computer?.shield as Equipment, e.computerWeapons?.[0] as Equipment, e.computerDamageType.toLowerCase());
         this.scene.combatManager.checkPlayerFocus(this.enemyID, this.health);
-        if (e?.realizedComputerDamage > 0) EventBus.emit("party-combat-text", { text: `${this.ascean.name} ${ENEMY_ATTACKS[e.computerAction]} ${e.computerEnemy?.name} with their ${e.computerWeapons[0]?.name} for ${Math.round(e?.realizedComputerDamage as number)} ${e.computerDamageType} damage.` });
         if (this.health <= 0) this.playerMachine.stateMachine.setState(States.DEFEATED);
     };
     
@@ -810,7 +810,7 @@ export default class Party extends Entity {
         this.scene.showCombatText(this, "Resisted", PLAYER.DURATIONS.TEXT, EFFECT);
     };
 
-    startCasting = (name: string, duration: number, style: string, channel = false) => {
+    startCasting = (name: string, duration: number, _style: string, channel = false) => {
         this.castbar.reset();
         this.castbar.setVisible(true); // Added
         this.castbar.setup(this.x, this.y, name);

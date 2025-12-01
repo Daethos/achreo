@@ -1,3 +1,4 @@
+import { FRAMES } from "../entities/Entity";
 import { Play } from "../main";
 
 interface TeleportEffectConfig {
@@ -276,6 +277,9 @@ export class ParticleTextures {
                 entity.setAlpha(0);
                 entity.setScale(0.1);
                 entity.setRotation(-Math.PI / 4);
+                entity.anims.play(FRAMES.ROLL, true).once(FRAMES.ANIMATION_COMPLETE, () => {
+                    entity.anims.play(FRAMES.IDLE);
+                });
             },
             onUpdate: (tween: Phaser.Tweens.Tween) => {
                 // Pulsing glow during appearance

@@ -1,10 +1,8 @@
 import { createSignal, Show, For, Accessor, Setter } from "solid-js";
 import { CharacterSheet } from "../utility/ascean";
 import { click } from "../App";
-import { dimensions } from "../utility/dimensions";
 import { Portal } from "solid-js/web";
 
-const dims = dimensions();
 
 export const FAITHS = [{
     name: "Ancients",
@@ -21,10 +19,10 @@ export const FAITHS = [{
     character: "To be Daethic is to become Atshaer Ascean, the va'Esai, Laetrois Ath'Shaorah.",
     iconography: "../assets/images/daethos-forming.png"
 }, {
-    name: "None",
+    name: "Nothing",
     origin: "You have no faith and seek other means to hold yourself together.",
     quote: "And yet perchance you seek to twist adherence in its seams, \n To taste its achre burning at the resin of your dreams.",
-    worshipers: "None",
+    worshipers: "Irreligious",
     character: "Although this does not absolve you of othernatural machinations, your aim elsewhere may lead toward a wholly new glory.",
     iconography: "../assets/images/godHand.png"
 }]; 

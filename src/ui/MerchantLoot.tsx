@@ -12,7 +12,7 @@ interface SellProps {
     getCheckmark(id: string): boolean;
 };
 export function MassSell({item, sellIitem, setItem, checkMassSell, getCheckmark}: SellProps){
-    return <div style={{ display: "grid", margin: "5%", border: "thick ridge #fdf6d8", padding: "5%", "max-height": "auto", "grid-template-rows": "0.5fr 1fr 0.5fr 0.5fr 0.5fr" }}>
+    return <div style={{ display: "grid", margin: "5%", border: "thick ridge #fdf6d8", padding: "5%", height: "90%", "max-height": "auto", "grid-template-rows": "0.5fr 1fr 0.5fr 0.5fr 0.5fr" }}>
         <h6 style={{ margin: "0 auto 5%" }}>{item?.name}</h6>
         <div class="center" onClick={() => setItem(item)} style={{ border: `thick ridge ${getRarityColor(item?.rarity as string)}`, "margin": "5.5% auto 0", padding: "0.25em", width: "60%" }}>
             <img src={item?.imgUrl} alt={item?.name} style={{ margin: "5% auto -5%" }} />
@@ -99,7 +99,7 @@ export default function MerchantLoot({ item, ascean, setShow, setHighlight, thie
         width: "60%",
         "height": "fit-content"
     };
-    return <div style={{ display: "grid", margin: "5%", border: "thick ridge #fdf6d8", padding: "5%", "max-height": "auto", "grid-template-rows": template() }}>
+    return <div style={{ display: "grid", margin: "5%", border: "thick ridge #fdf6d8", padding: "5%", height: "90%", "max-height": "auto", "grid-template-rows": template() }}>
         <h6 style={{ margin: "0 auto 5%" }}>{item?.name}</h6>
         <div class="center" onClick={select} style={getItemStyle}>
             <img src={item?.imgUrl} alt={item?.name} style={{ margin: "5% auto -5%" }} />

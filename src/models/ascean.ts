@@ -7,6 +7,15 @@ import { v4 as uuidv4 } from "uuid";
 import { addAscean } from "../assets/db/db";
 import Quest from "./quests";
 
+export type Entry = {
+    title: string,
+    body: any,
+    footnote: string,
+    date: Date | number,
+    location: string,
+    keywords: string[],
+};
+
 export default class Ascean {
     _id: string = uuidv4();
     origin: string = "Ashtre";
@@ -39,14 +48,7 @@ export default class Ascean {
     ringTwo: Equipment;
     trinket: Equipment;
     journal: {
-        entries: [{
-            title: string,
-            body: string,
-            footnote: string,
-            date: Date,
-            location: string,
-            keywords: string[],
-        }] | [],
+        entries: Entry[],
         currentEntry: number,
         lastEntry: number,
     };

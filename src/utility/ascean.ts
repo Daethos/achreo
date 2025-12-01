@@ -428,7 +428,9 @@ const FAITH_HIGH_MODIFIER = 1.075;
 const FAITH_FLAT_MODIFIER = 3;
 const DEFENSE_MODIFIER_DIVIDE = 12;
 
+
 export type Skills = {
+    [key: string]: number;
     "Axe": number;
     "Bow": number;
     "Curved Sword": number;
@@ -451,7 +453,6 @@ export type Skills = {
     "Sorcery": number;
     "Wild": number;
     "Wind": number;
-    [key: string]: number;
 };
 
 export const initSkills: Skills = {

@@ -556,10 +556,6 @@ export function fetchTutorial(enemies: ARENA_ENEMY[] = [{level:0.25, mastery: ["
         console.warn(err, "Error Retrieving Enemies");
     };
 };
-export function fetchPartyPotential(level: number, mastery: string) {
-    try {
-        return getEnemies(level, mastery);
-    } catch (err) {
-        console.warn(err, "Error Fetching Potential Party Members");
-    };
+export function fetchPartyPotential(level: number, mastery: string): Ascean[] {
+    return getEnemies(level, mastery);
 };

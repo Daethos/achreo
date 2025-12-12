@@ -127,54 +127,56 @@ export const TUTORIAL = {
     "health":{"current":10,"max":10}
 };
 
-const KRECEUS = {
-    "_id":"kreceus_16",
+
+
+const CONSTITUTION = {
+    "_id":"ashreuul_16",
     "origin":"Ashtre",
     "sex":"Man",
-    "mastery":"achre",
+    "mastery":"constitution",
     "level":16,
     "experience":0,
     "inventory":[],
-    "name":"Kreceus",
-    "description":"Apostle of Astra",
-    "constitution":44,
-    "strength":26,
-    "agility":45,
-    "achre":84,
-    "caeren":28,
-    "kyosir":47,
+    "name":"Constitution",
+    "description":"",
+    "constitution":52,
+    "strength":90,
+    "agility":38,
+    "achre":26,
+    "caeren":38,
+    "kyosir":26,
     "weaponOne":{
-        name: "Astral Spear",
+        name: "War Hammer",
         rarity: "Legendary",
     },"weaponTwo":{
-        name: "Astral Spear",
+        name: "Claymore",
         rarity: "Legendary",
     },"weaponThree":{
-        name: "Achestra",
+        name: "Battle Axe",
         rarity: "Legendary",
     },"shield":{
-        name: "Parma",
+        name: "Shaorahi",
         rarity: "Legendary",
     },"helmet":{
-        name: "Astral Hood",
+        name: "Ashtre Helm",
         rarity: "Legendary",
     },"chest":{
-        name: "Astral Robes",
+        name: "Ashtre Armor",
         rarity: "Legendary",
     },"legs":{
-        name: "Astral Pants",
+        name: "Ashtre Greaves",
         rarity: "Legendary",
     },"ringOne":{
-        name: "Astral Ring",
+        name: "Ashtre Ring",
         rarity: "Legendary",
     },"ringTwo":{
-        name: "Astral Ring",
+        name: "Ashtre Ring",
         rarity: "Legendary",
     },"amulet":{
-        name: "Astral Amulet",
+        name: "Ashtre Amulet",
         rarity: "Legendary",
     },"trinket":    {
-        name: "Astral Trinket",
+        name: "Ashtre Trinket",
         rarity: "Legendary",
     },
     "faith":"adherent",
@@ -231,6 +233,62 @@ const ASHREUUL = {
         rarity: "Legendary",
     },"trinket":    {
         name: "Ashtre Trinket",
+        rarity: "Legendary",
+    },
+    "faith":"adherent",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":1000,"max":1000}
+};
+
+const KRECEUS = {
+    "_id":"kreceus_16",
+    "origin":"Ashtre",
+    "sex":"Man",
+    "mastery":"achre",
+    "level":16,
+    "experience":0,
+    "inventory":[],
+    "name":"Kreceus",
+    "description":"Apostle of Astra",
+    "constitution":44,
+    "strength":26,
+    "agility":45,
+    "achre":84,
+    "caeren":28,
+    "kyosir":47,
+    "weaponOne":{
+        name: "Astral Spear",
+        rarity: "Legendary",
+    },"weaponTwo":{
+        name: "Astral Spear",
+        rarity: "Legendary",
+    },"weaponThree":{
+        name: "Achestra",
+        rarity: "Legendary",
+    },"shield":{
+        name: "Parma",
+        rarity: "Legendary",
+    },"helmet":{
+        name: "Astral Hood",
+        rarity: "Legendary",
+    },"chest":{
+        name: "Astral Robes",
+        rarity: "Legendary",
+    },"legs":{
+        name: "Astral Pants",
+        rarity: "Legendary",
+    },"ringOne":{
+        name: "Astral Ring",
+        rarity: "Legendary",
+    },"ringTwo":{
+        name: "Astral Ring",
+        rarity: "Legendary",
+    },"amulet":{
+        name: "Astral Amulet",
+        rarity: "Legendary",
+    },"trinket":    {
+        name: "Astral Trinket",
         rarity: "Legendary",
     },
     "faith":"adherent",

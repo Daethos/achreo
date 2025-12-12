@@ -107,6 +107,7 @@ export default class Player extends Entity {
     snareDuration = DURATION.SNARED;
     evasionTime: number = 0;
     prevInstinct: number = 0;
+    previousInstinct: string = "";
     currentEnemies: string[] | [] = [];
     chasing: boolean = false;
     hurtTime: number = 0;
@@ -482,7 +483,6 @@ export default class Player extends Entity {
     };
 
     animateMark = () => {
-        // console.log(this.mark, "Adding Tween?");
         this.scene.tweens.add({
             targets: this.mark,
             tint: 0x00FF00,
@@ -1500,10 +1500,8 @@ export default class Player extends Entity {
         let distance = optimized ? PLAYER.DODGE.DISTANCE * 2 : PLAYER.DODGE.DISTANCE;
         const weapon = this.scene.state.weapons[0];
         const dodge = 1 + (weapon.dodge / 100);
-        // console.log({ dodge, duration, distance });
         duration *= dodge;
         distance *= dodge;
-        // console.log({ duration, distance });
         const dodgeLoop = (timestamp: number) => {
             if (!startTime) startTime = timestamp;
             const progress = timestamp - startTime;

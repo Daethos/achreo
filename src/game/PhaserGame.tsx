@@ -207,6 +207,8 @@ export default function PhaserGame (props: IProps) {
                 }
             };
             EventBus.emit("update-talents", newTalents);
+
+            EventBus.emit("update-enemy-levels", update.level);
         } catch (err: any) {
             console.warn(err, "<- Error in the Controller Updating the Level!")
         };
@@ -741,7 +743,7 @@ export default function PhaserGame (props: IProps) {
         if (!enemies) return newReputation;
         newReputation.factions.forEach((faction: FACTION) => {
             if (enemies.includes(faction.name)) {
-                faction.reputation = Math.min(faction.reputation + 1, 35);
+                faction.reputation = Math.min(faction.reputation + 1, (ENEMY_FRIENDLY / 2));
                 if (faction.reputation > ENEMY_HOSTILE && faction.hostile) {
                     faction.hostile = false;
                 };
@@ -753,8 +755,8 @@ export default function PhaserGame (props: IProps) {
                 };
             };
             if (faction.name === computer.name) {
-                const loss = faction.friendly ? 5 : faction.aggressive ? 4 : faction.hostile ? 3 : 2;
-                faction.reputation = Math.max(-100, faction.reputation - loss);
+                const loss = faction.friendly ? -7 : faction.aggressive ? -5 : faction.hostile ? -4 : -3;
+                faction.reputation = Math.max(-100, faction.reputation + loss);
                 if (faction.reputation <= ENEMY_HOSTILE && !faction.hostile) {
                     faction.hostile = true;
                 };
@@ -777,7 +779,11 @@ export default function PhaserGame (props: IProps) {
             newSkills[skill as keyof typeof newSkills] += 1;
             newSkills[skill as keyof typeof newSkills] = Math.min(newSkills[skill as keyof typeof newSkills], props.ascean().level * 100);
             if (newSkills[skill as keyof typeof newSkills] % 10 === 0) {
-                EventBus.emit("alert", {header: "Skill Up!", body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 6000, key: "Close"});    
+                setTimeout(() => {
+                    if (!showDeity()) {
+                        EventBus.emit("alert", {header: "Skill Up!", body: `You have increased your skill in ${skill} by 1 to ${newSkills[skill as keyof typeof newSkills] / 10}`, delay: 6000, key: "Close"});    
+                    };
+                }, 4000);
             };
         });
         return newSkills;
@@ -908,11 +914,11 @@ export default function PhaserGame (props: IProps) {
                     updated = true;
                 };
             };
-            if (quest.title === "Replenish Firewater") {
+            if (quest.title === "Replenish Fyervasos") {
                 if (enemy.level >= props.ascean().level && quest.requirements.technical.current < quest.requirements.technical.total) {
                     setTimeout(() => {
                         if (!showDeity()) {
-                            EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer and Se'vas, updating Replenish Firewater.`, delay: 4000, key: "Close"});
+                            EventBus.emit("alert",{header:"Quest Update", body:`${enemy.name} is worthy of Fyer, Lilos, and Se'vas, updating Replenish Fyervasos.`, delay: 4000, key: "Close"});
                         };
                     }, updateTimer * 4000);
                     updateTimer++;
@@ -1739,6 +1745,7 @@ export default function PhaserGame (props: IProps) {
             EventBus.removeListener("main-menu", mainMenu);
             EventBus.removeListener("enter-game", enterGame);
             
+            EventBus.removeListener("level-up", levelUp);
             EventBus.removeListener("add-item", addItem);
             EventBus.removeListener("add-lootdrop", addLootdrop);
             EventBus.removeListener("blend-combat", blendCombat);

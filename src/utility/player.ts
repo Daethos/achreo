@@ -146,7 +146,7 @@ export const PLAYER: {[key:string]: {[key:string]: number}} = {
         MIN: 0,
         ATTACK: 50,
         MOMENTUM: 2,
-        THRESHOLD: 75,
+        THRESHOLD: 50,
         CHASE: 75,
         RANGED_ALIGNMENT: 25,
         RANGED_MULTIPLIER: 3,
@@ -432,6 +432,8 @@ export const PLAYER: {[key:string]: {[key:string]: number}} = {
 export const STATE = "stateMachine";
 export const POSITIVE = "positiveMachine";
 
+export const PLAYER_COMPUTER_PHYSICALS = [States.COMPUTER_ATTACK, States.COMPUTER_PARRY, States.ROLL, States.COMPUTER_POSTURE, States.COMPUTER_THRUST];
+
 export const PLAYER_INSTINCTS: {[key:string]: {key:string; value:string;}[]} = {
     "constitution": [
         { // 0 - Critical Heal
@@ -705,10 +707,12 @@ export const PLAYER_INSTINCTS: {[key:string]: {key:string; value:string;}[]} = {
     ]
 };
 
-export const BALANCED = "Balance";
+export const BALANCED = "Balanced";
 export const DEFENSIVE = "Defensive";
 export const OFFENSIVE = "Offensive";
+
 type INSTINCT = { [key:string]: string[] };
+
 export const BALANCED_INSTINCTS: INSTINCT = {
     "constitution": [States.INVOKE, States.ILIRECH, States.LIKYR, States.KYNISOS, States.KYRISIAN, States.PARALYZE, States.WARD],
     "strength": [States.INVOKE, States.RECOVER, States.SPRINTING, States.STORM, States.WARD],
@@ -717,6 +721,7 @@ export const BALANCED_INSTINCTS: INSTINCT = {
     "caeren": [States.INVOKE, States.FEAR, States.ILIRECH, States.HEALING, States.SCREAM],
     "kyosir": [States.INVOKE, States.CONFUSE, States.DISPEL, States.KYNISOS, States.SUTURE],
 };
+
 export const DEFENSIVE_INSTINCTS: INSTINCT = {
     "constitution": [States.ABSORB, States.HEALING, States.INVOKE, States.LIKYR, States.SHIELD, States.SHIRK, States.WARD],
     "strength": [States.INVOKE, States.DESPERATION, States.HOWL, States.SPRINTING, States.WARD],
@@ -725,6 +730,7 @@ export const DEFENSIVE_INSTINCTS: INSTINCT = {
     "caeren": [States.INVOKE, States.DESPERATION, States.FEAR, States.HEALING, States.KYRNAICISM, States.MEND],
     "kyosir": [States.CONFUSE, States.DESPERATION, States.HEALING, States.MYSTIFY, States.PROTECT, States.SUTURE],
 };
+
 export const OFFENSIVE_INSTINCTS: INSTINCT = {
     "constitution": [States.DISPEL, States.ILIRECH, States.KYNISOS, States.KYRISIAN, States.KYRNAICISM, States.LIKYR, States.PARALYZE],
     "strength": [States.INVOKE, States.LEAP, States.QUOR, States.RECOVER, States.RUSH, States.SPRINTING, States.STORM],
@@ -735,6 +741,7 @@ export const OFFENSIVE_INSTINCTS: INSTINCT = {
 };
 
 export const STAMINA = ["attack", "posture", "roll", "dodge", "hurl", "jump", "parry", "thrust"];
+
 export const staminaCheck = (stamina: number, cost: number): { success: boolean; cost: number } => {
     let success: boolean = stamina >= cost;
     return { success, cost };

@@ -190,9 +190,12 @@ export const specialStateMachines = [
 
 export const specialPositiveMachines = [
     States.ABSORB, States.CHIOMIC, States.DISEASE, States.ENVELOP, States.FREEZE, States.HOWL, 
-    States.MALICE, States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, 
+    States.MALICE, States.MENACE, States.MEND, States.MODERATE, States.MULTIFARIOUS, States.MYSTIFY, 
     States.PROTECT, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, 
-    States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE
+    States.SHIELD, States.SHIMMER, States.SPRINTING, States.WARD, States.WRITHE,
+    States.ASTRICATION, States.BERSERK, States.BLIND, States.CAERENESIS, States.CONVICTION,
+    States.ENDURANCE, States.IMPERMANENCE, States.SEER, States.STIMULATE, States.SHIRK, States.SHADOW,
+    States.TETHER, States.DISPEL 
 ];
 
 let idCount = 0;

@@ -455,7 +455,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    getTint = (): number[] => this.inCombat ? RED_COLOR_MATRIX : this.isFriendly ? GREEN_COLOR_MATRIX : RED_COLOR_MATRIX;
+    getTint = (): number[] => this.isStateTinted() ? this.colorMatrix.getData() as unknown as number[] : this.inCombat ? RED_COLOR_MATRIX : this.isFriendly ? GREEN_COLOR_MATRIX : RED_COLOR_MATRIX;
 
     setFriendliness = () => {
         const reputation = this.scene.hud.reputation;
@@ -744,7 +744,7 @@ export default class Enemy extends Entity {
         };
     };
 
-    checkHostility = (): boolean => this.isHostile && !this.inCombat && !this.inComputerCombat && this.health > 0
+    checkHostility = (): boolean => this.isHostile && !this.inCombat && !this.inComputerCombat && !this.defeatedByPlayer && this.health > 0
 
     checkTouching = (): boolean => {
         return this.scene.player.touching.some((t: any) => t.particleID === this.particleID);
@@ -4352,23 +4352,8 @@ export default class Enemy extends Entity {
         this.anims.play(FRAMES.IDLE, true);
         this.colorMatrix.set(BLUE_COLOR_MATRIX);
         this.setVelocity(0);
+        this.startFrozen();
         // this.setStatic(true);
-        this.scene.time.addEvent({
-            delay: DURATION.FROZEN,
-            callback: () => {
-                this.count.frozen -= 1;
-                if (this.count.frozen <= 0) {
-                    this.count.frozen = 0;
-                    this.isFrozen = false;
-                    this.negativeMachine.setState(States.CLEAN);
-                } else {
-                    this.negativeMachine.setState(States.CLEAN);
-                    this.negativeMachine.setState(States.FROZEN);
-                };
-            },
-            callbackScope: this,
-            loop: false,
-        });
     };
     onFrozenUpdate = (_dt: number) => {
         this.setVelocity(0);
@@ -4377,7 +4362,18 @@ export default class Enemy extends Entity {
         if (this.isDeleting) return;
         this.colorMatrix.reset();
         this.colorMatrix.set(this.getTint());
-        // this.setStatic(false);
+    };
+    startFrozen = () => {
+        this.scene.time.delayedCall(DURATION.FROZEN, () => {
+            this.count.frozen -= 1;
+            if (this.count.frozen <= 0) {
+                this.count.frozen = 0;
+                this.isFrozen = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startFrozen();
+            };
+        }, undefined, this);
     };
 
     onHurtEnter = () => {
@@ -4421,22 +4417,30 @@ export default class Enemy extends Entity {
         this.colorMatrix.set(GRAY_COLOR_MATRIX);
         // this.setStatic(true);
         this.setVelocity(0);
-        this.scene.time.delayedCall(this.paralyzeDuration, () => {
-            this.count.paralyzed -= 1;
-            if (this.count.paralyzed <= 0 || this.health <= 0) {
-                this.count.paralyzed = 0;
-                this.isParalyzed = false;
-            } else {
-                this.stateMachine.setState(States.COMBAT);
-            };
-        }, undefined, this);
+        this.startParalyze();
     };
-    onParalyzedUpdate = (_dt: number) => this.combatChecker(this.isParalyzed); 
+    onParalyzedUpdate = (_dt: number) => {
+        this.setVelocity(0);
+        this.combatChecker(this.isParalyzed);
+    }; 
     onParalyzedExit = () => {
         if (this.isDeleting) return;
         this.colorMatrix.set(this.getTint());
         // this.setStatic(false);
         this.anims.resume();
+    };
+
+    startParalyze = () => {
+        this.scene.time.delayedCall(this.paralyzeDuration, () => {
+            this.count.paralyzed -= 1;
+            if (this.count.paralyzed <= 0 || this.health <= 0) {
+                this.count.paralyzed = 0;
+                this.isParalyzed = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                this.startParalyze();
+            };
+        }, undefined, this);
     };
 
     onPolymorphedEnter = () => {
@@ -4540,17 +4544,7 @@ export default class Enemy extends Entity {
         this.colorMatrix.set(GRAY_COLOR_MATRIX);
         // this.setStatic(true);
         this.setVelocity(0);
-
-        this.scene.time.delayedCall(this.stunDuration, () => {
-            this.count.stunned -= 1;
-            if (this.count.stunned <= 0 || this.health <= 0) {
-                this.count.stunned = 0;
-                this.isStunned = false;
-            } else {
-                this.stateMachine.setState(States.COMBAT);
-            };
-        }, undefined, this);
-
+        this.startStun();
     };
     onStunnedUpdate = (_dt: number) => {
         this.setVelocity(0);
@@ -4563,6 +4557,19 @@ export default class Enemy extends Entity {
         this.anims.resume();
     };
 
+    startStun = () => {
+        this.scene.time.delayedCall(this.stunDuration, () => {
+            this.count.stunned -= 1;
+            if (this.count.stunned <= 0 || this.health <= 0) {
+                this.count.stunned = 0;
+                this.isStunned = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                this.startStun();
+            };
+        }, undefined, this);
+    };
+
     onCleanEnter = () => {};
     onCleanExit = () => {};
 
@@ -4571,18 +4578,8 @@ export default class Enemy extends Entity {
         this.scene.showCombatText(this, "Rooted", DURATION.TEXT, EFFECT, false, true);
         this.colorMatrix.set(GRAY_COLOR_MATRIX);
         this.setVelocity(0);
+        this.startRoot();
         // this.setStatic(true);
-        this.scene.time.delayedCall(DURATION.ROOTED, () => {
-            this.count.rooted -= 1;
-            if (this.count.rooted <= 0) {
-                this.count.rooted = 0;
-                this.isRooted = false;
-                this.negativeMachine.setState(States.CLEAN);
-            } else {
-                this.negativeMachine.setState(States.CLEAN);
-                this.negativeMachine.setState(States.ROOTED);
-            };
-        }, undefined, this);
     };
     onRootedUpdate = (_dt: number) => {
         this.setVelocity(0);
@@ -4596,10 +4593,33 @@ export default class Enemy extends Entity {
         this.stateMachine.setState(States.CHASE);
     };
 
+    startRoot = () => {
+        this.scene.time.delayedCall(DURATION.ROOTED, () => {
+            this.count.rooted -= 1;
+            if (this.count.rooted <= 0) {
+                this.count.rooted = 0;
+                this.isRooted = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startRoot();
+                // this.negativeMachine.setState(States.CLEAN);
+                // this.negativeMachine.setState(States.ROOTED);
+            };
+        }, undefined, this);    
+    };
+
     onSlowedEnter = () => {
         this.scene.showCombatText(this, "Slowed", DURATION.TEXT, EFFECT, false, true);
         this.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.adjustSpeed(-PLAYER.SPEED.SLOW);
+        this.startSlow();
+    };
+    onSlowedExit = () => {
+        this.colorMatrix.set(this.getTint());
+        this.adjustSpeed(PLAYER.SPEED.SLOW);
+    };
+
+    startSlow = () => {
         this.scene.time.delayedCall(this.slowDuration, () => {
             this.count.slowed -= 1;
             if (this.count.slowed <= 0) {
@@ -4607,14 +4627,9 @@ export default class Enemy extends Entity {
                 this.isSlowed = false;
                 this.negativeMachine.setState(States.CLEAN);
             } else {
-                this.negativeMachine.setState(States.CLEAN);
-                this.negativeMachine.setState(States.SLOWED);
+                this.startSlow();
             };
         }, undefined, this);
-    };
-    onSlowedExit = () => {
-        this.colorMatrix.set(this.getTint());
-        this.adjustSpeed(PLAYER.SPEED.SLOW);
     };
 
     onSnaredEnter = () => {
@@ -4622,6 +4637,14 @@ export default class Enemy extends Entity {
         this.snareDuration = DURATION.SNARED;
         this.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.adjustSpeed(-PLAYER.SPEED.SNARE);
+        this.startSnare();
+    };
+    onSnaredExit = () => {
+        this.colorMatrix.set(this.getTint());
+        this.adjustSpeed(PLAYER.SPEED.SNARE);
+    };
+
+    startSnare = () => {
         this.scene.time.delayedCall(this.snareDuration, () => {
             this.count.snared -= 1;
             if (this.count.snared <= 0) {
@@ -4629,14 +4652,9 @@ export default class Enemy extends Entity {
                 this.isSnared = false;
                 this.negativeMachine.setState(States.CLEAN);
             } else {
-                this.negativeMachine.setState(States.CLEAN);
-                this.negativeMachine.setState(States.SNARED);
+                this.startSnare();
             };
         }, undefined, this);
-    };
-    onSnaredExit = () => {
-        this.colorMatrix.set(this.getTint());
-        this.adjustSpeed(PLAYER.SPEED.SNARE);
     };
 
     killParticle = () => {

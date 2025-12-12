@@ -29,7 +29,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
     const name = item.name.includes("Starter") ? ( item.name.split(" ")[0] + " " + item.name.split(" ")[1] ) : ( item.name );
     const centerImage = dims.ORIENTATION === "landscape" ? (name.length > 18 ? "45%" : name.length > 10 ? "7.5%" : "15%") : (name.length > 13 ? "40%" : name.length > 10 ? "5%" : "10%");
     const styling = { "font-size": "1.1rem", margin: "2% auto" }; // "font-size": "1.25em", 
-    return <div class="thick-border superCenter" style={{ width: dims.ORIENTATION === "landscape" ? "60%" : "75%", "top": "48%", "z-index": 99, border: "thick ridge" }}> 
+    return <div class="thick-border superCenter" style={{ width: dims.ORIENTATION === "landscape" ? "60%" : "75%", left: "49.75%", "top": "48%", "z-index": 99, border: "thick ridge" }}> 
         <div class="wrap" style={{ height: "100%" }}>
             <div class="creature-heading" style={{ width: "100%"}}>
                 <h1 style={ empty ? { "text-align": "center", margin: "24px 0" } : { "justify-content": "space-evenly", margin: "24px 0 16px" }}>{name} 
@@ -54,7 +54,6 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                 <Show when={item?.type && !item?.grip}>
                     <div style={styling}>{item.type}</div>
                 </Show>
-                
 
                 {attrSplitter("CON", item?.constitution)}
                 {attrSplitter("STR", item?.strength)}
@@ -63,6 +62,7 @@ export default function ItemModal({ item, stalwart, caerenic, prayer, talents }:
                 {attrSplitter("CAER", item?.caeren)}
                 {attrSplitter("KYO", item?.kyosir)}
                 { attribute ? <br /> : "" }
+                
                 Damage: <span class="gold">{item?.physicalDamage}</span> Phys | <span class="gold">{item?.magicalDamage}</span> Magi <br />
                 <Show when={item?.physicalResistance || item?.magicalResistance}>
                     Defense: <span class="gold">{roundToTwoDecimals(item?.physicalResistance as number)}</span> Phys | <span class="gold">{roundToTwoDecimals(item?.magicalResistance as number)}</span> Magi <br />

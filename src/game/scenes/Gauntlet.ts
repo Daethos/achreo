@@ -353,7 +353,6 @@ export class Gauntlet extends Phaser.Scene {
         this.resumeMusic();
         this.state = this.registry.get("combat");
         this.gauntlet = this.registry.get("gauntlet");
-        console.log(this.gauntlet, "Current Gauntlet");
         this.player.health = this.state.newPlayerHealth;
         this.player.healthbar.setValue(this.state.newPlayerHealth);
         this.player.healthbar.setTotal(this.state.playerHealth);
@@ -366,6 +365,7 @@ export class Gauntlet extends Phaser.Scene {
         this.player.setPosition(random.x, random.y);
         this.configureParty();
         if (this.player.isComputer) {
+            this.player.checkSpecials();
             this.hud.actionBar.setVisible(false);
             this.hud.joystick.joystick.setVisible(false);
             this.hud.rightJoystick.joystick.setVisible(false);

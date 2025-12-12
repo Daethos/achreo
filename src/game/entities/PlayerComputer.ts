@@ -1,9 +1,9 @@
-import Ascean from "../../models/ascean";
-import { SPECIAL, TRAIT_SPECIALS } from "../../utility/abilities";
+import { TRAIT_SPECIALS } from "../../utility/abilities";
 import { fetchTrait } from "../../utility/ascean";
 import { DURATION } from "../../utility/enemy";
 import { PLAYER, staminaCheck } from "../../utility/player";
 import { Particle } from "../matter/ParticleManager";
+import { HEAL } from "../phaser/ScrollingCombatText";
 import { States } from "../phaser/StateMachine";
 import Enemy from "./Enemy";
 import Player from "./Player";
@@ -19,7 +19,7 @@ export default class PlayerComputer extends Player {
         this.originPoint = {}; // For Leashing
         this.isComputer = true;
         this.combatConcerns = undefined;
-        this.checkSpecials(ascean);
+        this.checkSpecials();
         this.scene.registry.set("player", this);
     };
 
@@ -30,17 +30,19 @@ export default class PlayerComputer extends Player {
         this.isMoving = false;
     };
     
-    checkSpecials(ascean: Ascean) {
+    checkSpecials() {
         const traits = {
             primary: fetchTrait(this.scene.hud.gameState?.traits.primary.name),
             secondary: fetchTrait(this.scene.hud.gameState?.traits.secondary.name),
             tertiary: fetchTrait(this.scene.hud.gameState?.traits.tertiary.name),
         };
         const potential = [traits.primary.name, traits.secondary.name, traits.tertiary.name];
-        let mastery = SPECIAL[ascean.mastery];
+
+        let mastery = this.scene.hud.settings.totalSpecials;
         mastery = mastery.filter((m) => {
             return m !== "Mark" && m !== "Recall" && m !== "Consume";
-        })
+        });
+
         let extra: any[] = [];
         for (let i = 0; i < 3; i++) {
             const trait = TRAIT_SPECIALS[potential[i]];
@@ -49,12 +51,12 @@ export default class PlayerComputer extends Player {
             };
         };
         if (extra.length > 0) {
-            let start = [...mastery, ...extra];
-            start.sort();
-            this.combatSpecials = start;
-        } else {
-            this.combatSpecials = [...mastery];
+            mastery.concat(extra);
         };
+
+        this.combatSpecials = mastery.map((special: string) => {
+            return special.toLowerCase();
+        });
     };
     
     setSpecialCombat = (mult = 0.5, remove = false) => {
@@ -177,29 +179,63 @@ export default class PlayerComputer extends Player {
     
     evaluateCombat = () => {
         if (this.isCasting || this.isPraying || this.isSuffering() || this.health <= 0) return;
-        let actionNumber = Math.floor(Math.random() * 101);
-        let action = "";
-        const loadout = this.scene.hud.settings.computerLoadout; // || { attack: 20, parry: 10, roll: 10, thrust: 15, posture: 15, jump: 10 };
-        if (actionNumber > 100 - loadout.attack) { // 81-100 (20%)
-            action = States.COMPUTER_ATTACK;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry) { // 71-80 (10%)
-            action = States.COMPUTER_PARRY;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll) { // 61-70 (10%)
-            action = States.ROLL;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust) { // 51-60 (10%)
-            action = States.COMPUTER_THRUST;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture) { // 36-50 (15%)
-            action = States.COMPUTER_POSTURE;
-        } else if (actionNumber > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture - loadout.jump) { // 21-35 (15%)
-            action = States.JUMP;
-        } else { // Special State 1-20
-            action = States.CONTEMPLATE;
+        let roll = Math.floor(Math.random() * 101);
+        // let action = "";
+        const loadout = this.scene.hud.settings.computerLoadout;
+        let action = States.CONTEMPLATE; // Default fallback
+        let cumulative = 0;
+
+        // Check in order of priority/probability
+        cumulative += loadout.attack;
+        if (roll < cumulative) action = States.COMPUTER_ATTACK;
+        else {
+            cumulative += loadout.parry;
+            if (roll < cumulative) action = States.COMPUTER_PARRY;
+            else {
+                cumulative += loadout.roll;
+                if (roll < cumulative) action = States.ROLL;
+                else {
+                    cumulative += loadout.thrust;
+                    if (roll < cumulative) action = States.COMPUTER_THRUST;
+                    else {
+                        cumulative += loadout.posture;
+                        if (roll < cumulative) action = States.COMPUTER_POSTURE;
+                        else {
+                            cumulative += loadout.jump;
+                            if (roll < cumulative) action = States.JUMP;
+                            else {
+                                cumulative += loadout.hurl;
+                                if (roll < cumulative) action = States.HURL;
+                            };
+                        };
+                    };
+                };
+            };
         };
+        
+        // if (roll > 100 - loadout.attack) {
+        //     action = States.COMPUTER_ATTACK;
+        // } else if (roll > 100 - loadout.attack - loadout.parry) {
+        //     action = States.COMPUTER_PARRY;
+        // } else if (roll > 100 - loadout.attack - loadout.parry - loadout.roll) {
+        //     action = States.ROLL;
+        // } else if (roll > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust) {
+        //     action = States.COMPUTER_THRUST;
+        // } else if (roll > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture) {
+        //     action = States.COMPUTER_POSTURE;
+        // } else if (roll > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture - loadout.jump) {
+        //     action = States.JUMP;
+        // } else if (roll > 100 - loadout.attack - loadout.parry - loadout.roll - loadout.thrust - loadout.posture - loadout.jump - loadout.hurl) {
+        //     action = States.HURL
+        // } else {
+        //     action = States.CONTEMPLATE;
+        // };
+
         let check: {success: boolean; cost: number;} = staminaCheck(this.stamina, PLAYER.STAMINA[action.toUpperCase()]);
         if (check.success === true && this.playerMachine.stateMachine.isState(action)) {
             this.playerMachine.stateMachine.setState(action);
         } else {
-            this.scene.showCombatText(this, "Catch Your Breath", 750, "dread", false, true);
+            this.scene.showCombatText(this, "You catch your breath", 750, HEAL, false, true);
             this.scene.combatManager.useStamina(-5);
         };
     };

@@ -29,10 +29,15 @@ const EnemyPreview = lazy(async () => await import("./EnemyPreview"));
 const EnemyUI = lazy(async () => await import("./EnemyUI"));
 const SmallHud = lazy(async () => await import("./SmallHud"));
 const TutorialOverlay = lazy(async () => await import("../utility/tutorial"));
+
 export type ArenaRoster = {
     show: boolean;
     enemies: ARENA_ENEMY[] | [];
-    wager: { silver: number; gold: number; multiplier: number; };
+    wager: { 
+        silver: number; 
+        gold: number; 
+        multiplier: number; 
+    };
     result: boolean;
     win: boolean;
     party: boolean;
@@ -41,8 +46,9 @@ export type ArenaRoster = {
         opponents: number,
         round: number,
         type: string,
-    }
+    };
 };
+
 interface Props {
     instance: Store<IRefPhaserGame>;
     ascean: Accessor<Ascean>;
@@ -61,6 +67,7 @@ interface Props {
     setShowTutorial: Setter<boolean>;
     showDeity: Accessor<boolean>;
 };
+
 export default function BaseUI({ instance, ascean, combat, game, quests, reputation, settings, setSettings, statistics, talents, stamina, grace, tutorial, showDeity, showTutorial, setShowTutorial }: Props) {
     const [enemies, setEnemies] = createSignal<EnemySheet[]>([]);
     const [prompt, setPrompt] = createSignal<boolean>(false);
@@ -85,6 +92,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         caeren: 0,
         kyosir: 0,
     });
+
     createEffect(() => EventBus.emit("combat", combat()));  
     createEffect(() => EventBus.emit("game", game()));  
     createEffect(() => EventBus.emit("reputation", reputation()));
@@ -622,6 +630,7 @@ export default function BaseUI({ instance, ascean, combat, game, quests, reputat
         <Suspense fallback={<Puff color="gold" />}>
             <Roster arena={arena} ascean={ascean} setArena={setArena} base={true} game={game} settings={settings} instance={instance} />
         </Suspense>
+
         <Show when={prompt()}>
             <Suspense fallback={<Puff color="gold" />}>
                 <SpecialItemPrompt setPrompt={setPrompt} />

@@ -99,9 +99,9 @@ const SETTINGS = {
 };
 const CONTROLS = {
     BUTTONS: "Buttons",
-    DIFFICULTY: "Difficulty",
+    DIFFICULTY: "Settings",
     POST_FX: "Post FX",
-    PHASER_UI: "Phaser UI",
+    PHASER_UI: "UI",
 };
 const FAITH = {
     DEITIES: "Deities",

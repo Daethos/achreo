@@ -44,9 +44,9 @@ const cleanFx = {
 };
 const CONTROLS = {
     BUTTONS: "Buttons",
-    DIFFICULTY: "Difficulty",
+    DIFFICULTY: "Settings",
     POST_FX: "Post FX",
-    PHASER_UI: "Phaser UI",
+    PHASER_UI: "UI",
 };
 const FOCUS = {
     Balanced: "Defensive",
@@ -59,6 +59,21 @@ const THIEVERY = {
     Hard: "Master",
     Master: "Legendary",
     Legendary: "Easy",
+};
+function difficultyColor(difficulty: string) {
+    switch (difficulty) {
+        case "Easy":
+            return "#fdf6d8";
+        case "Medium":
+            return "gold";
+        case "Hard":
+            return "orange";
+        case "Master":
+            return "darkorange";
+        case "Legendary":
+            return "red";
+        default: return "#fdf6d8"
+    };
 };
 export default function PhaserSettings({ settings, setSettings, actions, specials }: { settings: Accessor<Settings>; setSettings: Setter<Settings>; actions: Accessor<any[]>; specials: Accessor<any[]>; }) {
     const [actionShow, setActionShow] = createSignal<boolean>(false);
@@ -272,28 +287,28 @@ export default function PhaserSettings({ settings, setSettings, actions, special
     //     // setShowRestart(false); 
     //     // EventBus.emit("set-show-player");
     // };
-    // <div style={{...font("0.5em", "#fdf6d8"), margin: "1% auto", display: "block"}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
+    // <div style={{...font("0.65rem", "#fdf6d8"), margin: "1% auto", display: "block"}}>Number Mapping Reads Left to Right. <br /> Special Options are Restricted: Mastery; Traits.</div>
     return <>
         <div class="center" style={{ display: "flex", "flex-direction": "row", height: "100%" }}>
-        <div class="gold" style={{ position: "absolute", top: "0", "font-size": "1.25em", display: "inline" }}>
-            <div style={{ "padding-top": "5%" }}>Controls - {settings().control}</div>
+        <div class="gold" style={{ position: "absolute", top: "0", "font-size": "1.25rem", display: "inline" }}>
+            <div style={{ "margin-top": "5%" }}>Controls - {settings().control}</div>
             <Show when={settings().control !== CONTROLS.BUTTONS}>
-                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
+                <button class="highlight" style={{ "font-size": "0.65rem", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.BUTTONS)}>Buttons</button>
             </Show>
             <Show when={settings().control !== CONTROLS.POST_FX}>
-                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
+                <button class="highlight" style={{ "font-size": "0.65rem", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.POST_FX)}>PostFx</button>
             </Show>
             <Show when={settings().control !== CONTROLS.DIFFICULTY}>
-                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
+                <button class="highlight" style={{ "font-size": "0.65rem", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.DIFFICULTY)}>Settings</button>
             </Show>
             <Show when={settings().control !== CONTROLS.PHASER_UI}>
-                <button class="highlight" style={{ "font-size": "0.5em", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
+                <button class="highlight" style={{ "font-size": "0.65rem", display: "inline", width: "auto" }} onClick={() => currentControl(CONTROLS.PHASER_UI)}>UI</button>
             </Show>
         </div>
         <Switch>
             <Match when={settings().control === CONTROLS.BUTTONS}>
             <div style={dims.ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
-                <div style={font("1em", "gold")}>Physicals<br /></div>
+                <div style={font("1rem", "gold")}>Physicals<br /></div>
                 {settings().actions?.map((action: string, index: number) =>
                     <button class="highlight" onClick={() => actionModal(action, index)} style={{display: "block"}}>
                         <div style={{ width: "100%", "min-width": "60px", "font-size": "0.75em", margin: "3%" }}><span class="gold" style={{ "padding-right": "3px" }}>{index + 1} </span> {action}</div>
@@ -301,7 +316,7 @@ export default function PhaserSettings({ settings, setSettings, actions, special
                 )}
                 </div>
                 <div style={dims.ORIENTATION === "landscape" ? { margin: "25% auto 0" } : { "margin-top": "50%" }}>
-                    <div style={font("1em", "gold")}>Specials<br /></div>
+                    <div style={font("1rem", "gold")}>Specials<br /></div>
                     {settings().specials?.map((special: string, index: number) => 
                         <button  class="highlight" onClick={() => specialModal(special, index)} style={{display: "block"}}>
                             <div style={{ width: "100%", "min-width": "65px", "font-size": "0.75em", margin: "3%" }}><span class="gold" style={{ "padding-right": "3px" }}>{index + 1} </span> {special}</div>
@@ -311,90 +326,90 @@ export default function PhaserSettings({ settings, setSettings, actions, special
             </Match>
             <Match when={settings().control === CONTROLS.POST_FX}>
                 <div class="center creature-heading" style={dims.ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
-                    <h1 onClick={() => resetFx("postfx", !fx().postfx)} style={font("1.25em")}>PostFx</h1>
+                    <h1 onClick={() => resetFx("postfx", !fx().postfx)} style={font("1.25rem")}>PostFx</h1>
                     <Collapse value={fx().postfx} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("enable", !settings().postFx?.enable)}>
                             {settings().postFx?.enable ? "On" : "Off"}
                         </button> 
                         </div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFx("chromatic", !fx().chromatic)} style={font("1.25em")}>Chromatic Abb.</h1>
+                    <h1 onClick={() => resetFx("chromatic", !fx().chromatic)} style={font("1.25rem")}>Chromatic Abb.</h1>
                     <Collapse value={fx().chromatic} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("chromaticEnable", !settings().postFx?.chromaticEnable)}>
                             {settings().postFx?.chromaticEnable ? "On" : "Off"}
                         </button>
                         </div>
                     </Collapse>
                         
-                    <h1 onClick={() => resetFx("chab", !fx().chab)} style={font("1.25em")}>Chab </h1>
+                    <h1 onClick={() => resetFx("chab", !fx().chab)} style={font("1.25rem")}>Chab </h1>
                     <Collapse value={fx().chab} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                             ({settings().postFx.chabIntensity})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.chabIntensity} onChange={(e) => handlePostFx("chabIntensity", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx("vignette", !fx().vignette)} style={font("1.25em")}>Vignette</h1>
+                    <h1 onClick={() => resetFx("vignette", !fx().vignette)} style={font("1.25rem")}>Vignette</h1>
                     <Collapse value={fx().vignette} class="my-transition">
-                    <div style={font("1em", "#fdf6d8")}>
+                    <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("vignetteEnable", !settings().postFx?.vignetteEnable)}>
                             {settings().postFx?.vignetteEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font("1em", "#fdf6d8")}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Vignette Strength ({settings().postFx.vignetteStrength})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteStrength} onChange={(e) => handlePostFx("vignetteStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
-                        <div style={font("1em", "#fdf6d8")}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Vignette Intensity ({settings().postFx.vignetteIntensity})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vignetteIntensity} onChange={(e) => handlePostFx("vignetteIntensity", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx("noise", !fx().noise)} style={font("1.25em")}>Noise</h1>
+                    <h1 onClick={() => resetFx("noise", !fx().noise)} style={font("1.25rem")}>Noise</h1>
                     <Collapse value={fx().noise} class="my-transition">
-                    <div style={font("1em", "#fdf6d8")}>
+                    <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("noiseEnable", !settings().postFx?.noiseEnable)}>
                             {settings().postFx?.noiseEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font("1em", "#fdf6d8")}>Noise Strength ({settings().postFx.noiseStrength})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Noise Strength ({settings().postFx.noiseStrength})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseStrength} onChange={(e) => handlePostFx("noiseStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
-                        <div style={font("1em", "#fdf6d8")}>Noise Seed ({settings().postFx.noiseSeed})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Noise Seed ({settings().postFx.noiseSeed})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.noiseSeed} onChange={(e) => handlePostFx("noiseSeed", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
                     
                     
-                    <h1 onClick={() => resetFx("vhs", !fx().vhs)} style={font("1.25em")}>VHS</h1>
+                    <h1 onClick={() => resetFx("vhs", !fx().vhs)} style={font("1.25rem")}>VHS</h1>
                     <Collapse value={fx().vhs} class="my-transition">
-                    <div style={font("1em", "#fdf6d8")}>
+                    <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("vhsEnable", !settings().postFx?.vhsEnable)}>
                             {settings().postFx?.vhsEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font("1em", "#fdf6d8")}>Strength ({settings().postFx.vhsStrength})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Strength ({settings().postFx.vhsStrength})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.vhsStrength} onChange={(e) => handlePostFx("vhsStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx("scanline", !fx().scanline)} style={font("1.25em")}>Scanlines</h1>
+                    <h1 onClick={() => resetFx("scanline", !fx().scanline)} style={font("1.25rem")}>Scanlines</h1>
                     <Collapse value={fx().scanline} class="my-transition">
-                    <div style={font("1em", "#fdf6d8")}>
+                    <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("scanlinesEnable", !settings().postFx?.scanlinesEnable)}>
                             {settings().postFx?.scanlinesEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font("1em", "#fdf6d8")}>Strength ({settings().postFx.scanStrength})</div>
+                        <div style={font("1rem", "#fdf6d8")}>Strength ({settings().postFx.scanStrength})</div>
                         <Form.Range min={0} max={1} step={0.01} value={settings().postFx.scanStrength} onChange={(e) => handlePostFx("scanStrength", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFx("crt", !fx().crt)} style={font("1.25em")}>CRT Enable</h1>
+                    <h1 onClick={() => resetFx("crt", !fx().crt)} style={font("1.25rem")}>CRT Enable</h1>
                     <Collapse value={fx().crt} class="my-transition">
-                    <div style={font("1em", "#fdf6d8")}>
+                    <div style={font("1rem", "#fdf6d8")}>
                         <button class="highlight" onClick={() => handlePostFx("crtEnable", !settings().postFx?.crtEnable)}>
                             {settings().postFx?.crtEnable ? "On" : "Off"}
                         </button>
                         </div>
-                        <div style={font("1em", "#fdf6d8")}>CRT Height ({settings().postFx.crtHeight})</div>
+                        <div style={font("1rem", "#fdf6d8")}>CRT Height ({settings().postFx.crtHeight})</div>
                         <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtHeight} onChange={(e) => handlePostFx("crtHeight", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
-                        <div style={font("1em", "#fdf6d8")}>CRT Width ({settings().postFx.crtWidth})</div>
+                        <div style={font("1rem", "#fdf6d8")}>CRT Width ({settings().postFx.crtWidth})</div>
                         <Form.Range min={0} max={5} step={0.1} value={settings().postFx.crtWidth} onChange={(e) => handlePostFx("crtWidth", Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
                     <br />
@@ -402,21 +417,21 @@ export default function PhaserSettings({ settings, setSettings, actions, special
             </Match>
             <Match when={settings().control === CONTROLS.DIFFICULTY}>
                 <div class="center creature-heading wrap" style={dims.ORIENTATION === "landscape" ? { "margin-top": "25%" } : { "margin-top": "50%" }}>
-                    <h1 onClick={() => resetFrame("combat", !frame().combat)} style={font("1.25em")}>Combat</h1>
+                    <h1 onClick={() => resetFrame("combat", !frame().combat)} style={font("1.25rem")}>Combat</h1>
                     <Collapse value={frame().combat} class="my-transition">
                         <h1 onClick={() => resetDifficulty("hudCombatText", !difficulty().hudCombatText)} style={font("0.85em")}>Hud Combat Text</h1>
                         <Collapse value={difficulty().hudCombatText} class="my-transition"> 
                             <div style={font("0.85em", "#fdf6d8")}>
-                                <button class="highlight" onClick={handleHudCombatText} style={{ color: settings().show?.hudCombatText ? "gold" : "#fdf6d8" }}>{settings().show?.hudCombatText ? "On" : "Off"}</button>
-                                <div style={font("0.5em")}>[Whether you have a pop-up on the left of combat actions your targeted enemy is performing.]</div>
+                                <button class="highlight" onClick={handleHudCombatText} style={{ color: settings().show?.hudCombatText ? "red" : "#fdf6d8" }}>{settings().show?.hudCombatText ? "On" : "Off"}</button>
+                                <div style={font("0.65rem")}>[Whether you have a pop-up on the left of combat actions your targeted enemy is performing.]</div>
                             </div>
                         </Collapse>
                         
-                        <h1 onClick={() => resetDifficulty("computerArena", !difficulty().computerArena)} style={font("0.85em")}>Arena Combat</h1>
+                        <h1 onClick={() => resetDifficulty("computerArena", !difficulty().computerArena)} style={font("0.85em")}>Computer Combat</h1>
                         <Collapse value={difficulty().computerArena} class="my-transition"> 
                             <div style={font("0.85em", "#fdf6d8")}>
                                 <button class="highlight" onClick={handleArenaCombat} style={{ color: settings().difficulty.arena ? "red" : "#fdf6d8" }}>{settings().difficulty.arena ? "Manual" : "Computer"}</button>
-                                <div style={font("0.5em")}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
+                                <div style={font("0.65rem")}>[Whether you control your character in the Arena. If the Arena has been loaded, you must reload the game for this change to take effect.]</div>
 
                                 <h1 class="gold" style={font("0.85em")}>Player Computer Focus</h1>
                                 <button class="highlight" onClick={handleComputerFocus} style={{ color: settings().computerFocus === "Balanced" ? "gold" : settings().computerFocus === "Offensive" ? "red" : "#fdf6d8" }}>{settings().computerFocus || "Balanced"}</button>
@@ -427,150 +442,150 @@ export default function PhaserSettings({ settings, setSettings, actions, special
                         <h1 onClick={() => resetDifficulty("combatTargeting", !difficulty().combatTargeting)} style={font("0.85em")}>Combat Targeting</h1>
                         <Collapse value={difficulty().combatTargeting} class="my-transition">
                             <div style={font("0.85em", "#fdf6d8")}>
-                                <button class="gold highlight" onClick={() => handleAim()}>{settings().difficulty.aim ? "Manual" : "Auto"} Aim</button>
+                                <button class="highlight" onClick={() => handleAim()} style={{ color: settings().difficulty.aim ? "red" : "#fdf6d8" }}>{settings().difficulty.aim ? "Manual" : "Auto"} Aim</button>
                             </div>
-                            <div style={font("0.5em")}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
+                            <div style={font("0.65rem")}>[Whether You Use the Second Joystick to Aim Ranged Attacks in Combat]</div>
                         </Collapse>
 
                         <h1 onClick={() => resetDifficulty("enemyAggression", !difficulty().enemyAggression)} style={font("0.85em")}>Enemy Aggression</h1>
                         <Collapse value={difficulty().enemyAggression} class="my-transition">
                         <p>Enemies May Always Attack From Accidental Damage.</p>
                         <div style={font("0.85em", "#fdf6d8")}>
-                            <h1 style={font("1.25em")}>Computer Combat</h1>
+                            <h1 style={font("1.25rem")}>Computer Combat</h1>
                             <button class="highlight" onClick={() => handleComputerCombat()} style={{ color: settings().difficulty.computer ? "red" :  "#fdf6d8" }}>{settings().difficulty.computer ? "Enabled" : "Disabled"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Whether Computer Enemies Will Engage In Casual Combat With Each Other On Awareness / Contact.]</div>
+                        <div style={font("0.65rem")}>[Whether Computer Enemies Will Engage In Casual Combat With Each Other On Awareness / Contact.]</div>
                             <div style={font("0.85em")}>
-                            <h1 style={font("1.25em")}>Immersion</h1>
-                            <button class="highlight" onClick={handleAggressionImmersion} style={{ color: settings().difficulty.aggressionImmersion ? "red" :  "#fdf6d8" }}>
-                                {settings().difficulty.aggressionImmersion ? "Enabled" : "Disabled"}
-                            </button>
+                                <h1 style={font("1.25rem")}>Immersion</h1>
+                                <button class="highlight" onClick={handleAggressionImmersion} style={{ color: settings().difficulty.aggressionImmersion ? "red" :  "#fdf6d8" }}>
+                                    {settings().difficulty.aggressionImmersion ? "Enabled" : "Disabled"}
+                                </button>
                             </div>
-                            <div style={font("0.5em")}>[Aggressive Enemy Immersion: Your disposition and their willingness to attack is influenced by your reputation with that kind of enemy.]</div>
+                            <div style={font("0.65rem")}>[Aggressive Enemy Immersion: Your disposition and their willingness to attack is influenced by your reputation with that kind of enemy.]</div>
                         </Collapse> 
                         
                         <Collapse value={difficulty().enemyAggression} class="my-transition">
                             <div style={font("0.85em", "#fdf6d8")}>
-                            <h1 style={font("1.25em")}>Occurrence</h1>
-                            <span class="gold">{settings().difficulty.aggression * 100}%</span> <br />
-                            <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: "red", background: "red", "background-color": "red" }} />
+                                <h1 style={font("1.25rem")}>Occurrence</h1>
+                                <span class="gold" style={font("1rem")}>{settings().difficulty.aggression * 100}%</span> <br />
+                                <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.aggression} onChange={(e) => handleAggression(e)} style={{ color: "red", background: "red", "background-color": "red" }} />
                             </div>
-                            <div style={font("0.5em")}>[Aggressive Enemy Occurrence: Determined By Chance If You Are Not Immersed. 0 - 100%]</div>
+                            <div style={font("0.65rem")}>[Aggressive Enemy Occurrence: Determined By Chance If You Are Not Immersed. 0 - 100%]</div>
                         </Collapse> 
                         {/* handleAggressionImmersion */}
                         <h1 onClick={() => resetDifficulty("enemyInteractive", !difficulty().enemyInteractive)} style={font("0.85em")}>Enemy Interactive (Combat)</h1>
                         <Collapse value={difficulty().enemyInteractive} class="my-transition">
                             <div style={font("0.85em", "#fdf6d8")}>
-                            <button class="gold highlight" onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)}>{settings().difficulty.enemyCombatInteract ? "Enabled" : "Disabled"}</button> <br />
+                                <button class="highlight" onClick={() => handleEnemyCombatInteractive(!settings().difficulty.enemyCombatInteract)} style={{ color: settings().difficulty.enemyCombatInteract ? "red" :  "#fdf6d8" }}>{settings().difficulty.enemyCombatInteract ? "Enabled" : "Disabled"}</button> <br />
                             </div>
-                            <div style={font("0.5em")}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
+                            <div style={font("0.65rem")}>[Enabled: You can focus ANY enemy. <br /> Disabled: If in combat, you cannot focus enemies that are not in combat.]</div>
                         </Collapse>
 
                         <h1 onClick={() => resetDifficulty("enemySpecials", !difficulty().enemySpecials)} style={font("0.85em")}>Enemy Specials</h1>
                         <Collapse value={difficulty().enemySpecials} class="my-transition">
                             <div style={font("0.85em", "#fdf6d8")}>
-                                <span class="gold">{settings().difficulty.special * 100}%</span> <br />
+                                <span class="gold" style={font("1rem")}>{settings().difficulty.special * 100}%</span> <br />
                                 <Form.Range min={0} max={1} step={0.05} value={settings().difficulty.special} onChange={(e) => handleSpecial(e)} style={{ color: "red", background: "red", "background-color": "red" }} />
                             </div>
-                            <div style={font("0.5em")}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
+                            <div style={font("0.65rem")}>[Special (Elite) Enemy Occurrence: 0 - 100%]</div>
                         </Collapse>
                     </Collapse>
-                    {/* <h1 onClick={() => resetFrame("desktop", !frame().desktop)} style={font("1.25em")}>Desktop</h1>
+                    {/* <h1 onClick={() => resetFrame("desktop", !frame().desktop)} style={font("1.25rem")}>Desktop</h1>
                     <Collapse value={frame().desktop} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                         <button class="gold highlight" onClick={() => handleDesktop(!settings().desktop)}>{settings().desktop ? "Enabled" : "Disabled"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
+                        <div style={font("0.65rem")}>[Desktop allows you to hide the joystick UI and reset the button UI, and enable keyboard and mouse for actions and movement.]</div>
                     </Collapse> */}
 
-                    <h1 onClick={() => resetFrame("fps", !frame().fps)} style={font("1.25em")}>FPS</h1>
+                    <h1 onClick={() => resetFrame("fps", !frame().fps)} style={font("1.25rem")}>FPS</h1>
                     <Collapse value={frame().fps} class="my-transition">
-                        <div style={font("1em")}>
-                            <p>Min: ({settings().fps.min})</p>
-                            <button class="highlight" onClick={() => handleFps("min", 5)}>5</button>            
-                            <button class="highlight" onClick={() => handleFps("min", 30)}>30</button>
-                            <button class="highlight" onClick={() => handleFps("min", 60)}>60</button>
-                            <div style={font("0.5em", "gold")}>[The minimum acceptable rendering rate, in frames per second.]</div>
+                        <div style={font("1rem")}>
+                            <p>Min: (<span class="gold">{settings().fps.min}</span>)</p>
+                            <button class="highlight" onClick={() => handleFps("min", 5)} style={{ color: settings().fps.min === 5 ? "gold" : "" }}>5</button>
+                            <button class="highlight" onClick={() => handleFps("min", 30)} style={{ color: settings().fps.min === 30 ? "gold" : "" }}>30</button>
+                            <button class="highlight" onClick={() => handleFps("min", 60)} style={{ color: settings().fps.min === 60 ? "gold" : "" }}>60</button>
+                            <div style={font("0.65rem", "gold")}>[The minimum acceptable rendering rate, in frames per second.]</div>
                             
-                            <p>Target: ({settings().fps.target})</p>
-                            <button class="highlight" onClick={() => handleFps("target", Math.max(settings().fps.min, 30))}>30</button>            
-                            <button class="highlight" onClick={() => handleFps("target", Math.max(settings().fps.min, 60))}>60</button>            
-                            <button class="highlight" onClick={() => handleFps("target", 90)}>90</button>
-                            <button class="highlight" onClick={() => handleFps("target", 120)}>120</button>
-                            <div style={font("0.5em", "gold")}>[The optimum rendering rate, in frames per second. This does not enforce the fps rate, it merely tells Phaser what rate is considered optimal for this game.]</div>
+                            <p>Target: (<span class="gold">{settings().fps.target}</span>)</p>
+                            <button class="highlight" onClick={() => handleFps("target", Math.max(settings().fps.min, 30))} style={{ color: settings().fps.target === 30 ? "gold" : "" }}>30</button>
+                            <button class="highlight" onClick={() => handleFps("target", Math.max(settings().fps.min, 60))} style={{ color: settings().fps.target === 60 ? "gold" : "" }}>60</button>
+                            <button class="highlight" onClick={() => handleFps("target", 90)} style={{ color: settings().fps.target === 90 ? "gold" : "" }}>90</button>
+                            <button class="highlight" onClick={() => handleFps("target", 120)} style={{ color: settings().fps.target === 120 ? "gold" : "" }}>120</button>
+                            <div style={font("0.65rem", "gold")}>[The optimum rendering rate, in frames per second. This does not enforce the fps rate, it merely tells Phaser what rate is considered optimal for this game.]</div>
                             
-                            <p>Limit: ({settings().fps.limit})</p>
-                            <button class="highlight" onClick={() => handleFps("limit", Math.max(settings().fps.min, 30))}>30</button>            
-                            <button class="highlight" onClick={() => handleFps("limit", Math.max(settings().fps.min, 60))}>60</button>            
-                            <button class="highlight" onClick={() => handleFps("limit", 90)}>90</button>
-                            <button class="highlight" onClick={() => handleFps("limit", 120)}>120</button>
-                            <div style={font("0.5em", "gold")}>[Enforces an fps rate limit that the game step will run at, regardless of browser frequency. 0 means "no limit". Never set this higher than RAF can handle.]</div>
+                            <p>Limit: (<span class="gold">{settings().fps.limit}</span>)</p>
+                            <button class="highlight" onClick={() => handleFps("limit", Math.max(settings().fps.min, 30))} style={{ color: settings().fps.target === 30 ? "gold" : "" }}>30</button>
+                            <button class="highlight" onClick={() => handleFps("limit", Math.max(settings().fps.min, 60))} style={{ color: settings().fps.target === 60 ? "gold" : "" }}>60</button>
+                            <button class="highlight" onClick={() => handleFps("limit", 90)} style={{ color: settings().fps.target === 90 ? "gold" : "" }}>90</button>
+                            <button class="highlight" onClick={() => handleFps("limit", 120)} style={{ color: settings().fps.target === 120 ? "gold" : "" }}>120</button>
+                            <div style={font("0.65rem", "gold")}>[Enforces an fps rate limit that the game step will run at, regardless of browser frequency. 0 means "no limit". Never set this higher than RAF can handle.]</div>
                             
                             <button class="highlight" onClick={() => handleFps("forceSetTimeOut", !settings().fps.forceSetTimeOut)}>
                                 Force Set Time Out: ({settings().fps.forceSetTimeOut ? "True" : "False"})
                             </button>            
-                            <div style={font("0.5em", "gold")}>[Use setTimeout instead of requestAnimationFrame to run the game loop.]</div>
+                            <div style={font("0.65rem", "gold")}>[Use setTimeout instead of requestAnimationFrame to run the game loop.]</div>
                             
                             <button class="highlight" onClick={() => handleFps("smoothStep", !settings().fps.smoothStep)}>
                                 Smooth Step: ({settings().fps.smoothStep ? "True" : "False"})
                             </button>            
-                            <div style={font("0.5em", "gold")}>[Apply delta smoothing during the game update to help avoid spikes?]</div>
+                            <div style={font("0.65rem", "gold")}>[Apply delta smoothing during the game update to help avoid spikes?]</div>
                         </div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFrame("speed", !frame().speed)} style={font("1.25em")}>Speed</h1>
+                    <h1 onClick={() => resetFrame("speed", !frame().speed)} style={font("1.25rem")}>Speed</h1>
                     <Collapse value={frame().speed} class="my-transition">
-                        <div style={font("1em")}>
+                        <div style={font("1rem")}>
                             <button class="highlight" onClick={() => handleSpeed(roundToTwoDecimals(Math.max(-1, (settings().difficulty.playerSpeed - 0.025) || 0), 3), "playerSpeed", -0.025)}>-</button>            
                             Player: ({settings().difficulty.playerSpeed})
                             <button class="highlight" onClick={() => handleSpeed(roundToTwoDecimals(Math.min(1, (settings().difficulty.playerSpeed + 0.025) || 0), 3), "playerSpeed", 0.025)}>+</button>
                         </div>
-                        <div style={font("1em")}>
+                        <div style={font("1rem")}>
                             <button class="highlight" onClick={() => handleSpeed(roundToTwoDecimals(Math.max(-1, (settings().difficulty.enemySpeed - 0.025) || 0), 3), "enemySpeed", -0.025)}>-</button>            
                             Enemy: ({settings().difficulty.enemySpeed})
                             <button class="highlight" onClick={() => handleSpeed(roundToTwoDecimals(Math.min(1, (settings().difficulty.enemySpeed + 0.025) || 0), 3), "enemySpeed", 0.025)}>+</button>
                         </div>
-                        <div style={font("0.5em", "gold")}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
+                        <div style={font("0.65rem", "gold")}>[Adjusts the movement speed of the associated entity. This effect is immediate.]</div>
                     </Collapse>
 
-                    <h1 onClick={() => resetFrame("sound", !frame().sound)} style={font("1.25em")}>Sound</h1>
+                    <h1 onClick={() => resetFrame("sound", !frame().sound)} style={font("1.25rem")}>Sound</h1>
                     <Collapse value={frame().sound} class="my-transition">
                         <div style={font("0.75em", "#fdf6d8")}> 
-                            <button class="gold highlight" onClick={() => handleMusic()}>{settings().music ? "Enabled" : "Disabled"}</button>
+                            <button class="highlight" onClick={() => handleMusic()} style={{ color: settings().music ? "red" : "#fdf6d8" }}>{settings().music ? "Enabled" : "Disabled"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Whether any music or sound effects are enabled. Restart Game For This Change To Take Effect.]</div>
+                        <div style={font("0.65rem")}>[Whether any music or sound effects are enabled. Restart Game For This Change To Take Effect.]</div>
                         <div style={{...font("0.75em", "#fdf6d8"), "margin": "3%" }}>Volume ({settings().volume})</div>
                         <Form.Range min={0} max={1} step={0.1} value={settings().volume} onChange={(e) => handleVolume(Number(e.target.value))} style={{ color: "red", background: "red", "background-color": "red" }} />
                     </Collapse>
 
-                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25em")}>Thievery</h1>
+                    <h1 onClick={() => resetFrame("lockpick", !frame().lockpick)} style={font("1.25rem")}>Thievery</h1>
                     <Collapse value={frame().lockpick} class="my-transition">
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                         <h4 style={{ margin: "3% auto 0%" }}>Lockpicking</h4>
-                        <button class="gold highlight" onClick={handleLockpicking}>{settings()?.lockpick?.difficulty || "Easy"}</button>
+                        <button class="highlight" onClick={handleLockpicking} style={{ color: difficultyColor(settings().lockpick?.difficulty) }}>{settings()?.lockpick?.difficulty || "Easy"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
+                        <div style={font("0.65rem")}>[Changes how difficult it is to pick locks. Adjusts the lock's width of success and the lockpick's fragility.]</div>
                     
-                        <div style={font("1em", "#fdf6d8")}>
+                        <div style={font("1rem", "#fdf6d8")}>
                         <h4 style={{ margin: "3% auto 0%" }}>Pickpocketing</h4>
-                        <button class="gold highlight" onClick={handlePickpocketing}>{settings()?.pickpocket?.difficulty || "Easy"}</button>
+                        <button class="highlight" onClick={handlePickpocketing} style={{ color: difficultyColor(settings().pickpocket?.difficulty) }}>{settings()?.pickpocket?.difficulty || "Easy"}</button>
                         </div>
-                        <div style={font("0.5em")}>[Changes how difficult it is to pickpocket. Adjusts the pocket's maze complexity, enemy alertness, and time you can pickpocket.]</div>
+                        <div style={font("0.65rem")}>[Changes how difficult it is to pickpocket. Adjusts the pocket's maze complexity, enemy alertness, and time you can pickpocket.]</div>
                     
                     </Collapse>
                     
-                    <h1 onClick={() => resetFrame("tooltips", !frame().tooltips)} style={font("1.25em")}>Tooltips</h1>
+                    <h1 onClick={() => resetFrame("tooltips", !frame().tooltips)} style={font("1.25rem")}>Tooltips</h1>
                     <Collapse value={frame().tooltips} class="my-transition">
                         <h1 onClick={() => resetDifficulty("actionTooltip", !difficulty().actionTooltip)} style={font("0.85em")}>Button</h1>
                         <Collapse value={difficulty().actionTooltip} class="my-transition">
-                            <button class="gold highlight" onClick={() => handleTooltips()}>{settings().difficulty.tooltips ? "Enabled" : "Disabled"}</button>
-                            <div style={font("0.5em")}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
+                            <button class="highlight" onClick={() => handleTooltips()} style={{ color: settings().difficulty.tooltips ? "red" : "#fdf6d8" }}>{settings().difficulty.tooltips ? "Enabled" : "Disabled"}</button>
+                            <div style={font("0.65rem")}>[Enabled = Click / Hover Actions to Provide an Info Popup, Disabled = No Info Popups]</div>
                         </Collapse>
 
                         <h1 onClick={() => resetDifficulty("tidbits", !difficulty().tidbits)} style={font("0.85em")}>Informational Pop-ups</h1>
                         <Collapse value={difficulty().tidbits} class="my-transition">
-                            <button class="gold highlight" onClick={() => handleTidbits()}>{settings().difficulty.tidbits ? "Enabled" : "Disabled"}</button>
-                            <div style={font("0.5em")}>[Enabled = Helpful Hints and Lore Popups, Disabled = No Info Popups]</div>
+                            <button class="highlight" onClick={() => handleTidbits()} style={{ color: settings().difficulty.tidbits ? "red" : "#fdf6d8" }}>{settings().difficulty.tidbits ? "Enabled" : "Disabled"}</button>
+                            <div style={font("0.65rem")}>[Enabled = Helpful Hints and Lore Popups, Disabled = No Info Popups]</div>
                         </Collapse>
                     </Collapse>
                     <br />
@@ -585,7 +600,7 @@ export default function PhaserSettings({ settings, setSettings, actions, special
                 </div>
             </Match>
         </Switch>
-        <button class="highlight cornerTR" style={{ "background-color": "red", "z-index": 1, "font-size": "0.5em", padding: "0.25em" }} onClick={() => setShowRestart(true)}>
+        <button class="highlight cornerTR" style={{ position: "absolute", "background-color": "red", "z-index": 1, "font-size": "0.5rem", padding: "0.25em" }} onClick={() => setShowRestart(true)}>
             Restart
         </button>
         </div>

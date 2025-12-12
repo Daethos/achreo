@@ -696,7 +696,7 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
             this.currentAction = "";
         });
     };
-    
+
     hurt = () => {
         this.clearAnimations();
         this.clearTint();
@@ -857,6 +857,8 @@ export default class Entity extends Phaser.Physics.Matter.Sprite {
         if (this.isTethering) total++;
         return total;    
     };
+
+    isStateTinted = (): boolean => this.isSlowed || this.isSnared || this.isRooted || this.isFrozen || this.isParalyzed || this.isStunned;
 
     isTrying = (): boolean => this.isAttacking || this.isPosturing || this.isThrusting;
     isSuffering = (): boolean => this.isConfused || this.isFeared || this.isFrozen || this.isParalyzed || this.isPolymorphed || this.isStunned;

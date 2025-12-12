@@ -84,6 +84,7 @@ export default class Settings {
         thrust: number;
         parry: number;
         jump: number;
+        hurl: number;
         special: number;
     };
     public difficulty: {
@@ -251,6 +252,7 @@ export default class Settings {
             thrust: 15,
             parry: 15,
             jump: 0,
+            hurl: 0,
             special: 25,
         };
         this.difficulty = {

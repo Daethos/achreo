@@ -194,7 +194,6 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
         };
     });
     // function createPrayer() {
-    //     console.log("Creating prayer...");
     //     const exists = new StatusEffect(
     //         state(), 
     //         state().computer as Ascean, 
@@ -203,7 +202,6 @@ export default function EnemyUI({ state, game, enemies, instance }: { state: Acc
     //         state().computerAttributes as CombatAttributes, 
     //         state().computerBlessing
     //     );
-    //         console.log(exists, "exists");
     //     EventBus.emit("create-enemy-prayer", exists);
     // };
     return <div class="enemyCombatUi" classList={{

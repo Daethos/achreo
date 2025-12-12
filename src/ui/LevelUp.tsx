@@ -90,7 +90,9 @@ export default function LevelUp({ ascean, asceanState, show, setShow }: Props) {
             || (ascean().kyosir !== asceanState().ascean.kyosir);
     };
 
-    createMemo(() => {if (valueDiscrepancy()) checkAscean();}); 
+    createMemo(() => {
+        if (valueDiscrepancy()) checkAscean();
+    }); 
     onMount(() => {
         EventBus.emit("update-ascean-state", {
             ...asceanState(),

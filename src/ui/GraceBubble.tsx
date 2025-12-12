@@ -1,12 +1,13 @@
-import { createSignal, createEffect, Accessor, Setter } from "solid-js";
+import { Accessor, Setter, createMemo } from "solid-js";
 import createGrace from "../utility/Grace";
 import Settings from "../models/settings";
 import { dimensions } from "../utility/dimensions";
 export default function GraceBubble({ grace, show, setShow, settings }: {grace:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings: Accessor<Settings>;}) {
     const dims = dimensions();
     const { gracePercentage, usedGrace } = createGrace(grace);
-    const [newGrace, setNewGrace] = createSignal(0);
-    createEffect(() => setNewGrace(Math.round((gracePercentage() * grace() / 100))));
+    const newGrace = createMemo(() => {
+        return Math.round(gracePercentage() * grace() / 100);
+    });
     function setText(setting: string) {
         const tiny = dims.WIDTH < 768;
         const smol = dims.WIDTH < 850;

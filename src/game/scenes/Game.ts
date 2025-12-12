@@ -34,6 +34,7 @@ import { ChatManager } from "../phaser/ChatManager";
 import { FACTION } from "../../models/reputation";
 import Mark from "../matter/Mark";
 import { Marker } from "../../models/settings";
+import { getAnEnemy } from "../../utility/enemy";
 
 export const CHUNK_SIZE = 4096;
 const DISTANCE_CLOSE = 360000; // (600) 562500; // 562500; 750 / 800
@@ -264,6 +265,7 @@ export class Game extends Scene {
             mark.destroy();
         };
     };
+
     private updateChunks() {
         this.isTransitioning = true;
 
@@ -775,6 +777,24 @@ export class Game extends Scene {
         EventBus.on("remove-from-party", this.removeFromParty);
         EventBus.on("despawn-enemy-to-party", this.despawnEnemyToParty);
         EventBus.on("kill-enemy", this.killEnemy);
+        EventBus.on("update-enemy-levels", (level: number) => {
+            // console.log("Updating Enemy Levels!");
+            const length = this.enemies.length;
+            for (let i = 0; i < length; ++i) {
+                const enemy = this.enemies[i];
+                if (enemy.inCombat || enemy.inComputerCombat) continue;
+                this.time.delayedCall(1000 * i, () => {
+                    // console.log(`Getting rid of ${enemy.ascean.name}`);
+                    const { x, y } = enemy;
+                    this.killEnemy(enemy, false);
+                    const compiler = getAnEnemy(level);
+                    const newEnemy = new Enemy({ scene: this, x: 200, y: 200, texture: "player_actions", frame: "player_idle_0", data: compiler });
+                    this.enemies.push(newEnemy);
+                    newEnemy.setPosition(x, y);
+                    // console.log(`New enemy! ${newEnemy.ascean.name}`);
+                }, undefined, this);
+            };
+        });
     };
 
     resumeScene = () => {
@@ -991,7 +1011,7 @@ export class Game extends Scene {
         }, undefined, this);
     };
 
-    killEnemy = (enemy: Enemy) => {
+    killEnemy = (enemy: Enemy, recreate: boolean = true) => {
         enemy.isDeleting = true;
         this.combatManager.removeComputerEnemy(enemy.enemyID);
         if (enemy.isCurrentTarget) {
@@ -1001,7 +1021,7 @@ export class Game extends Scene {
             this.enemies = this.enemies.filter((e: Enemy) => e.enemyID !== enemy.enemyID);
             enemy.cleanUp();
             enemy.destroy();
-            this.createEnemy();
+            if (recreate) this.createEnemy();
         }, undefined, this);
     };
 

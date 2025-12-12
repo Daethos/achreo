@@ -263,7 +263,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
     return <Show when={arena().show}>
         <div class="modal" style={{ "z-index": 99 }}>
             <Show when={arena().result} fallback={<>
-                <div class="left" style={{...partialStyle(ascean().mastery), left: "0.5%"}}>
+                <div class="left" style={{...partialStyle(ascean().mastery), left: "0", top: "", height: "97.5%", width: "49%"}}>
                     <div class="creature-heading center" >
                         <h1 style={{ margin: "8px 0" }} onClick={checkTeam}><span style={{ color: "#fdf6d8" }} >Opponent(s):</span> {arena().enemies.length} {arena().party ? "[Party]" : "[Solo]"}</h1>
                         <h1 style={{ margin: "8px 0" }}><span style={{ color: "#fdf6d8" }}>Wager:</span> {arena().wager.gold}g {arena().wager.silver}s</h1>
@@ -306,7 +306,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </Show>
                     </div>
                 </div>
-                <div class="right" style={{...partialStyle(ascean().mastery), left: "50.5%"}}>
+                <div class="right" style={{...partialStyle(ascean().mastery), left: "49.75%", top: "", height: "97.5%", width: "49%"}}>
                     <div class="creature-heading center">
                         <div style={{ display: "grid", "grid-template-columns": "repeat(2, 50%)" }}>
                             <div>
@@ -371,7 +371,7 @@ export default function Roster({ arena, ascean, setArena, base, game, settings, 
                         </Show>
                     </div>
                 </div>
-                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red", "font-weight": "bold" }}>X</button>
+                <button class="highlight cornerBR" onClick={() => setArena({ ...arena(), show: false })} style={{ color: "red", "font-weight": "bold", bottom: "1vh", right: "0.5vw" }}>X</button>
             </>}>
                 <div class="center creature-heading" style={fullStyle(ascean().mastery)}>
                     <p style={{ color: arena().win ?  "gold" : "red", "--glow-color": arena().win ?  "gold" : "red", margin: "12px 0", "font-size": "3.5em", "font-variant": "small-caps", animation: "flicker 1s infinite alternate" }}>{arena().win ? "Victory" : "Defeated"}</p>

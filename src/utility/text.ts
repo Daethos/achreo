@@ -11,6 +11,9 @@ const HUSH = ["envelops", "Invocation", "Hush", "hush", "moderate", "tendril", "
 const NUMBERS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 const TENDRIL = ["flays", "tendril", "tendrils", "suture", "sutures", "sutured", "shield", "shields", "mend", "achire", "kynisos", "quorse"];
 const PRAYERS = ["desperation", "sacrifices", "slowing", "sutures", "Gift"];
+const CRITICAL = "Critical";
+const GLANCING = "Glancing";
+const PARTIAL = "Partial";
 const CONSOLE = "Console";
 const PROVIDENCE = "Providence";
 const ERROR = "Error";
@@ -107,15 +110,15 @@ function styleText(text: string, party?: boolean) {
         const isHeal = HEALS.includes(t);
         const isHush = HUSH.includes(t);
         const isTendril = TENDRIL.includes(t);
-        const isCritical = t.includes("Critical");
-        const isPartial = t.includes("Partial");
-        const isGlancing = t.includes("Glancing");
+        const isCritical = t.includes(CRITICAL);
+        const isGlancing = t.includes(GLANCING);
+        const isPartial = t.includes(PARTIAL);
         const isConsole = t.includes(CONSOLE);
         const isProvidence = t.includes(PROVIDENCE);
         const isError = t.includes(ERROR);
         const isWarning = t.includes(WARNING);
         const lush = isAttack === true || isCast === true || isNumber === true || isHush === true || isTendril === true;
-        const fontWeight = isNumber ? "700" : "normal";
+        const fontWeight = isNumber ? 700 : "normal";
         const fontSize = lush ? "0.7em" : "0.6em";
         const newLine = t === "\n" ? "<br>" : t;
         const style = (isGlancing || isCritical || lush || isPartial) ? "italic" : "normal";
@@ -132,7 +135,7 @@ function styleText(text: string, party?: boolean) {
             isHush ? COLORS.FUCHSIA :
             isWarning ? COLORS.GOLD :
             COLORS.BONE;
-        const line = `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; font-size: ${fontSize}; margin: 0;">${newLine}</span>`;
+        const line = `<span style="color: ${color}; font-style: ${style}; font-weight: ${fontWeight}; font-size: ${fontSize}; margin: 0 auto;">${newLine}</span>`;
         return line;
     };
     const lines = text.split("\n").map(line => {

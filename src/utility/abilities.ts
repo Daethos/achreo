@@ -31,6 +31,7 @@ export function addSpecial(ascean: Accessor<Ascean>, settings: Accessor<Settings
 };
 
 export const ACTIONS = Object.freeze(["Attack", "Posture", "Roll", "Dodge", "Hurl", "Jump", "Parry", "Thrust"]);
+
 export const SPECIALS = [
     "Invoke",
     "Consume",
@@ -42,6 +43,7 @@ export const SPECIALS = [
     "Berserk", // Trait
     "Blind", // Trait
     "Blink",
+    "Charm", // Trait ?
     "Chiomic",
     "Chiomism",
     "Caerenesis", // Trait
@@ -106,7 +108,8 @@ export const SPECIALS = [
     "Tether",
     "Ward",
     "Writhe",
-]; // "Charm", "Shroud"
+]; // "Shroud"
+
 export const SPECIAL: {[key:string]: string[]} = { // 14 Each + Invoke, Consume, Mark, Recall
     "constitution": [
         "Invoke",

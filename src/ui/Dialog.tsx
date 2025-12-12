@@ -99,7 +99,7 @@ const SANITIZE = {
     influences: "Influences",
 };
 const TYPEWRITER = { // "font-family": "Centaur", 
-    "font-family": "Centaur", "font-size": "1.5rem", margin: "0 auto", width: "95%", "white-space": "pre-wrap", padding: "0.5rem 0" , height: "auto"
+    "font-family": "Centaur", "font-size": "1.5rem", margin: "0 auto", width: "100%", "white-space": "pre-wrap", padding: "1rem 0 0" , height: "auto"
 };
 
 interface DialogOptionProps {
@@ -136,15 +136,13 @@ const DialogOption = ({ currentIndex, dialogNodes, option, onClick, actions, set
         setShowDialogOptions(false);
     };
 
-    return (
-      <div>
+    return <div>
         <Show when={showDialogOptions()}>
             <button class="highlight" style={{ "font-size": "0.85rem" }} onClick={handleClick} data-function-name="handleClick">
                 <Typewriter stringText={option.text} styling={{ "overflow-y": "auto", "scrollbar-width": "none", "text-align": "left" }} performAction={hollowClick} />
             </button>
         </Show>
-      </div>
-    );
+    </div>;
 };
 
 interface DialogTreeProps {
@@ -165,11 +163,19 @@ export const DialogTree = ({ ascean, enemy, dialogNodes, game, combat, actions, 
     const [renderedText, setRenderedText] = createSignal<string>("");
     const [renderedOptions, setRenderedOptions] = createSignal<any>(undefined);
     const [currentIndex, setCurrentIndex] = createSignal<number>(0);
-    const [style, setStyle] = createSignal({
-        "overflow-y": "auto",
-        "scrollbar-width" : "none",
-        "text-align": "left",
-        ...styling
+    // const [style, setStyle] = createSignal({
+    //     "overflow-y": "auto",
+    //     "scrollbar-width" : "none",
+    //     "text-align": "left",
+    //     ...styling
+    // });
+    const style = createMemo(() => {
+        return {
+            "overflow-y": "auto",
+            "scrollbar-width": "none",
+            "text-align": "left",
+            ...styling
+        };
     });
     const processText = (text: string, context: any): string => {
         if (!text) return "";
@@ -730,13 +736,15 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 (instance.scene as Play).hud.sound.play("treasure", { volume: settings().volume }); // phenomena
                 break;
             case "Item":
-                (instance.scene as Play).hud.sound.play("phenomena", { volume: settings().volume });
+                (instance.scene as Play).hud.sound.play("equip", { volume: settings().volume });
                 break;
             case "Prayer":
-                (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
+                (instance.scene as Play).hud.sound.play("dungeon", { volume: 1 });
+                // (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
                 break;
             case "Special":
-                (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
+                (instance.scene as Play).hud.sound.play("phenomena", { volume: settings().volume });
+                // (instance.scene as Play).hud.sound.play("righteous", { volume: 1 });
                 break;
             default: break;
         };
@@ -1263,7 +1271,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
     };
 
     const currentItemStyle = (rarity: string): JSX.CSSProperties => {
-        return {border: `0.15em solid ${getRarityColor(rarity)}`, "background-color": "transparent"};
+        return {border: `thick ridge ${getRarityColor(rarity)}`, "background-color": "transparent"};
     };
 
     function itemForge(item: Equipment) {
@@ -1542,6 +1550,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
             };
         });
     });
+
     return (
         <Show when={combat().computer}>
         {/* <<---------- ENEMY DIALOG TABS ---------->> */}
@@ -1612,10 +1621,9 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <button class="highlight cornerBR" onClick={clearDuel} style={{ position: "fixed", bottom: "1vh", right: "0.5vw" }}>Goodbye</button>
                 </Show>
             {/* Uncommon: Achiom, Rare: Senic, Epic: Kyr, Legendary: Sedyreal */}
-            { combat().npcType === "Merchant-Smith" ? ( <>
-                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already.\n\n"Also, if you wish to find some companion to engage in your journey, I've a registry of those looking to venture and find treasure in this world."
-                    <p class="gold">Hanging on the wall is a list of prices for the various items you can forge. The prices are based on the quality.</p>
-                                    <p class="greenMarkup">[Uncommon - 1g]</p> <p class="blueMarkup">[Rare - 3g]</p> <p class="purpleMarkup">[Epic - 12g]</p> <p class="darkorangeMarkup">[Legendary - 60g]</p></br />
+            { combat().npcType === "Merchant-Smith" ? ( <div class="wrap">
+                <Typewriter stringText={`"You've come for forging? I only handle chiomic quality and above. Check my rates and hand me anything you think worth's it. Elsewise I trade with the Armorer if you want to find what I've made already.\n\n"Also, if you wish to find some companion to embark with you in your journey, I've a registry of those looking to venture and find some meaning in this world."
+                    <p class="gold">Hanging on the wall is a list of prices for the various qualities of items you can forge. The prices are based on the forged item's quality:</p>                              <p class="greenMarkup">[Uncommon - 1g]</p> <p class="blueMarkup">[Rare - 3g]</p> <p class="purpleMarkup">[Epic - 12g]</p> <p class="darkorangeMarkup">[Legendary - 60g]</p></br />
         <button class="highlight" data-function-name="setRegistry">Check the Registry.</button>
         <button class="highlight" data-function-name="setTools">Purchase Tools.</button>
         <button class="highlight" data-function-name="setForgeSee">See if any of your equipment can be forged greater.</button>
@@ -1628,7 +1636,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <div>
                         <Currency ascean={ascean} />
                     </div>
-                    <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%" }}>
+                    <div class="playerInventoryBag center" style={{ width: "90%", "margin": "3% auto 5%" }}>
                         <For each={tools()}>{(item: Item, _index: Accessor<number>) => {
                             // if (uniqueItem(item)) return;
                             const cost = itemCostConverter(item.value);
@@ -1647,7 +1655,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             {upgradeItems().map((item: any) => {
                                 if (item === undefined) return;
                                 return (
-                                    <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em", width: "auto" }}>
+                                    <div class="center" onClick={() => itemForge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25rem", width: "auto" }}>
                                         <img src={item?.imgUrl} alt={item?.name} /><br />
                                         Forge
                                     </div>
@@ -1663,13 +1671,13 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Match when={forgings().show && forgings().items.length}>
                         <div>
                             <Currency ascean={ascean} />
-                            <div class="playerInventoryBag center" style={{ width: "90%", "margin": "0 auto 5%", "grid-template-columns":"repeat(7, 1fr)" }}>                    
+                            <div class="playerInventoryBag center" style={{ width: "75%", "margin": "0 auto 5%", "grid-template-columns":"repeat(5, 1fr)" }}>                    
                                 <For each={forgings().items.concat(game().inventory.inventory)}>{(item: Equipment) => {
                                     if (item === undefined) return;
                                     return (
-                                        <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%", padding: "0.25em", width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
+                                        <div class="center" onClick={() => itemReforge(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%", padding: "0.25rem", width: "auto", color: item._id === forgings().highlight ? "gold" : "" }}>
                                             <img src={item?.imgUrl} alt={item?.name} style={{ transform: "scale(1.1)" }} />
-                                            <span style={{ "font-size":"0.75em" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
+                                            <span style={{ "font-size":"0.75rem" }}>{item._id === forgings().highlight ? "Forging!" : "Reforge"}</span>
                                         </div>
                                     );
                                 }}</For>
@@ -1684,11 +1692,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     <Match when={etchings().show && etchings().items.length > 0}>
                         <div>
                             <Currency ascean={ascean} />
-                            <div class="playerInventoryBag center" style={{ width: "90%", "margin-bottom": "5%", "grid-template-columns":"repeat(7, 1fr)", "grid-template-rows": "repeat(3, 1fr)" }}> 
+                            <div class="playerInventoryBag center" style={{ width: "75%", "margin": "0 auto 5%", "grid-template-columns":"repeat(5, 1fr)", "grid-template-rows": "repeat(3, 1fr)" }}> 
                             {etchings().items.map((item: any) => {
                                 if (item === undefined) return;
                                 return (
-                                    <div class="center" onClick={() => itemReetch(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "5%",padding: "0.25em",width: "auto" }}>
+                                    <div class="center" onClick={() => itemReetch(item)} style={{ ...getItemStyle(item?.rarity as string), margin: "2%", padding: "0.25rem", width: "auto" }}>
                                         <img src={item?.imgUrl} alt={item?.name} />
                                         Etch
                                     </div>
@@ -1712,11 +1720,11 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                         }}</For>
                     </div> 
                 </Show>
-                </>
+                </div>
             ) : combat().npcType === "Merchant-Alchemy" ? (
-                <> 
+                <div class="" style={{ width: "90%", margin: "0 auto" }}> 
                     <Show when={ascean()?.firewater?.current < 5} fallback={
-                        <Typewriter styling={TYPEWRITER} stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} performAction={hollowClick} />
+                        <Typewriter styling={TYPEWRITER} stringText={`The Alchemist sways in a slight tune to the swish of your flask as he turns to you. <br /><br /> ^500"If you're needing potions of amusement and might I'm setting up craft now. Seems you're set for now, come back when you're needing more."`} performAction={hollowClick} />
                     }>
                         <>
                             <Typewriter styling={TYPEWRITER}  stringText={`The Alchemist's eyes scatter about your presence, eyeing ${ascean().firewater?.current} swigs left of your Fyervas Firewater before tapping on on a pipe, its sound wrapping round and through the room to its end, a quaint, little spigot with a grated catch on the floor.<br /><br /> ^500 "If you're needing potions of amusement and might I'm setting up craft now. Fill up your flask meanwhile, 10s a fifth what you say? I'll need you alive for patronage."`} performAction={hollowClick} />
@@ -1726,6 +1734,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </Show>
                     <Show when={party()}>
                         <>
+                            <Typewriter styling={TYPEWRITER} stringText={`"Also, if you find yourself in need some of companionship on the road, or otherwise some buttress against this world's denizens, I've a registry you can look at to find someone of some specification for your journey."`} performAction={hollowClick} />
                             <br />
                             <Typewriter styling={{...TYPEWRITER, color: "gold"}} stringText={`Look upon the registry and perchance recruit someone of your preference to your party.
 
@@ -1735,7 +1744,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                             {/* <button class="highlight dialog-buttons" onClick={() => setRegistry(true)} style={{ "font-size":"1em" }}>Check the Registry</button>  */}
                         </>
                     </Show>
-                </>
+                </div>
             ) : ( "" ) }
             { combat().isEnemy && combat().computer ? (
                 <div style={{ "overflow-y": "auto", "scrollbar-width": "none", position: "absolute", width: "99%", left: "0.5%" }}>
@@ -2056,7 +2065,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         {/* <<---------- MODAL WINDOWS ---------->> */}
         <Merchant ascean={ascean} />
         {/* <Thievery ascean={ascean} game={game} setThievery={setThievery} stealing={stealing} setStealing={setStealing} /> */}
-        <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} />
+        <Registry ascean={ascean} show={registry} setShow={setRegistry} instance={instance} reputation={reputation} />
         <Roster arena={arena} ascean={ascean} setArena={setArena} base={false} game={game} settings={settings} instance={instance} />
         <Show when={itemShow().show}>
             <div class="modal" style={{ "z-index": 99 }}>
@@ -2067,7 +2076,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={reforge().show}> 
             <div class="modal" style={{ "z-index": 99 }}>
-                <div class="border left moisten" style={{width: "48%", height: "95%" }}>
+                <div class="thick-border left moisten" style={{left: "0", top: "0", width: "48%", height: "94%" }}>
                 <div class="creature-heading center">
                 <h1 style={{ "justify-content": "space-evenly", margin: "24px 0 16px" }}>{reforge().item?.name} 
                     <span style={{ transform: `scale(${1})`, float: "right", "margin-right": "5%" }}>
@@ -2117,7 +2126,7 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 <button class="highlight cornerBL" style={{ "background-color": "green" }} onClick={handleReforge}>Reforge</button>
                 </div>
                 </div>
-                <div class="border right moisten" style={{width:"48%", height:"95%","margin-left":"-1%"}}>
+                <div class="thick-border right moisten" style={{left: "51%", top: "0", width: "48%", height: "94%", "margin-left":"-1%"}}>
                     <div class="creature-heading center">
                         <p class="center wrap" style={{ "font-size": "1.25em", margin: "5%" }}>
                             Do You Wish To Reforge Your <span class="gold">{reforge().item?.name}</span> For 
@@ -2189,23 +2198,24 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
         </Show>
         <Show when={showSell() || showBuy()}>
             <div class="modal" style={{ background: "rgba(0, 0, 0, 0.5)", "z-index": 99 }}>
-                <div class="creature-heading " style={{  position: "absolute","left": "12.5%",top: "1%",height: "95%",width: "75%",background: "#000","border":"thick ridge #fdf6d8",
+                <div class="creature-heading " style={{  position: "absolute","left": "0",top: "0",height: "97.5%",width: "98.75%",background: "#000","border":"thick ridge #fdf6d8",
                     // "border":"0.1rem solid #fdf6d8", "box-shadow":"inset #000 0 0 0 0.2em, inset #fdf6d8 0 0 0 0.3em",
+                    // "left": "12.5%",top: "1%",height: "95%",width: "75%"
                 }}>
                     <h1 class="center" style={{ "margin-bottom": "0%" }}>Merchant Menu</h1>
                     <div class="center" style={{ "margin-bottom": "5%" }}>
                         <Currency ascean={ascean} />
                     </div>
-                    <span onClick={() => setMerchantSell(!merchantSell())} style={{ float: "left", "margin-left": "2%", "margin-top":"-4%", color:"gold" }}>{merchantSell() ? "Merchant - Focus Buy" : toggleInventorySell() ? "Merchant - Focus Sell" : "Merchant - Split View"} <span style={{color:"#fdf6d8"}}></span></span>
+                    <span onClick={() => setMerchantSell(!merchantSell())} style={{ float: "left", "margin-left": "2%", "margin-top":"-7.5%", color:"gold" }}>{merchantSell() ? "Merchant - Focus Buy" : toggleInventorySell() ? "Merchant - Focus Sell" : "Merchant - Split View"} <span style={{color:"#fdf6d8"}}></span></span>
                     <Show when={merchantSell()} fallback={
-                        <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span onClick={() => setToggleInventorySell(!toggleInventorySell())} style={{color:"green"}}>{toggleInventorySell() ? "Focus Sell" : "Quick Sell"}</span> | <span onClick={sellMassLoot} style={{color:"red"}}>Mass Sell <span style={{color:"red"}}>{massLootSell().length > 0 && `(${massLootSell().length})`}</span> </span> | <span class="" onClick={sellMassLoot} style={{color:"gold"}}>({totalLoot(massLootSell).gold}g {totalLoot(massLootSell).silver}s)</span></span>
+                        <span style={{ float: "right", "margin-right": "2%", "margin-top":"-7.5%" }}> <span onClick={() => setToggleInventorySell(!toggleInventorySell())} style={{color:"green"}}>{toggleInventorySell() ? "Focus Sell" : "Quick Sell"}</span> | <span onClick={sellMassLoot} style={{color:"red"}}>Mass Sell <span style={{color:"red"}}>{massLootSell().length > 0 && `(${massLootSell().length})`}</span> </span> | <span class="" onClick={sellMassLoot} style={{color:"gold"}}>({totalLoot(massLootSell).gold}g {totalLoot(massLootSell).silver}s)</span></span>
                     }>
-                        <span style={{ float: "right", "margin-right": "2%", "margin-top":"-4%" }}> <span style={{color:"green"}}>Quick Buy</span> | <span onClick={buyMassLoot} style={{color:"red"}}>Mass Buy <span style={{color:"red"}}>{massLootBuy().length > 0 && `(${massLootBuy().length})`}</span></span> | <span onClick={buyMassLoot} style={{color:"gold"}}>({totalBuyLoot().gold}g {totalBuyLoot().silver}s)</span></span>
+                        <span style={{ float: "right", "margin-right": "2%", "margin-top":"-7.5%" }}> <span style={{color:"green"}}>Quick Buy</span> | <span onClick={buyMassLoot} style={{color:"red"}}>Mass Buy <span style={{color:"red"}}>{massLootBuy().length > 0 && `(${massLootBuy().length})`}</span></span> | <span onClick={buyMassLoot} style={{color:"gold"}}>({totalBuyLoot().gold}g {totalBuyLoot().silver}s)</span></span>
                     </Show>
                 <Switch>
                     <Match when={merchantSell()}>
-                        <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
-                            <div class="center" style={{ margin:"1%", height: "96%", overflow: "scroll", "scrollbar-width": "none" }}>
+                        <div class="thick-border left menu-3d-container" style={{ display: "inline-block", height: "75%", top: "20.5%", left:"4%", width: "91%", "margin-bottom": "5%" }}>
+                            <div class="center" style={{ margin:"0.5% auto", height: "98%", overflow: "scroll", "scrollbar-width": "none" }}>
                                 <div style={{ display: "grid", "margin-bottom": "5%", width: "100%", "grid-template-columns": "repeat(6, 1fr)" }}>
                                 <For each={merchantTable()}>
                                     {(item: any, _index: Accessor<number>) => {
@@ -2219,8 +2229,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </Match>
                     
                     <Match when={!merchantSell() && toggleInventorySell()}>
-                        <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "96.5%", "margin-bottom": "5%" }}>
-                            <div class="center" style={{ margin:"1%", height: "96%", overflow: "scroll", "scrollbar-width": "none" }}>
+                        <div class="thick-border left menu-3d-container" style={{ display: "inline-block", height: "75%", top: "20.5%", left:"4%", width: "91%", "margin-bottom": "5%" }}>
+                            <div class="center" style={{ margin:"0.5% auto", height: "98%", overflow: "scroll", "scrollbar-width": "none" }}>
                                 <div style={{ display: "grid", "margin-bottom": "5%", "grid-template-columns": "repeat(6, 1fr)" }}> 
                                     <For each={game()?.inventory.inventory}>{(item, _index) => {
                                         if (item === undefined || item === undefined) return;
@@ -2232,8 +2242,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                     </Match>
                 
                     <Match when={!merchantSell()}>
-                        <div class="border left menu-3d-container" style={{ display: "inline-block", height: "72%", left:"1.5%", width: "48%", "margin-bottom": "5%" }}>
-                            <div class="center" style={{margin:"2%", height: "98%"}}>
+                        <div class="thick-border left menu-3d-container" style={{ display: "inline-block", height: "75%", top: "20.5%", left:"3.75%", width: "45%", "margin-bottom": "5%" }}>
+                            <div class="center" style={{margin:"0.5% auto", height: "98%"}}>
                                 <div style={{ display: "grid", "max-height": "97.5%", width: "100%", "grid-template-columns": "repeat(3, 1fr)", overflow: "scroll", "scrollbar-width": "none" }}>
                                 <For each={merchantTable()}>
                                     {(item: any, _index: Accessor<number>) => {
@@ -2244,8 +2254,8 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                                 </div>
                             </div>
                         </div>
-                        <div class="border right menu-3d-container" style={{ display: "inline-block", height: "72%", left:"50%", width: "48%", "margin-bottom": "5%" }}>
-                            <div style={{ margin: "2%", height:"96%", overflow: "scroll", "scrollbar-width": "none" }}>
+                        <div class="thick-border right menu-3d-container" style={{ display: "inline-block", height: "75%", top: "20.5%", left:"50%", width: "45%", "margin-bottom": "5%" }}>
+                            <div style={{ margin:"0.5% auto", height: "98%", overflow: "scroll", "scrollbar-width": "none" }}>
                                 <For each={game()?.inventory.inventory}>{(item, _index) => {
                                     if (item === undefined || item === undefined) return;
                                     return <QuickSell item={item} setItem={setItem} sellIitem={sellIitem} checkMassSell={checkMassSell} getCheckmark={getCheckmark} />
@@ -2257,14 +2267,14 @@ export default function Dialog({ ascean, asceanState, combat, game, settings, qu
                 <br /><br />
                 </div>
                 <Show when={combat().npcType !== "Merchant-Smith"}>
-                    <button class="cornerTL highlight" style={{color:"green"}} onClick={() => refreshLoot()}>Refresh</button>
+                    <button class="cornerTL highlight" style={{color:"green",left:"0.5vw",top:"1vh"}} onClick={() => refreshLoot()}>Refresh</button>
                 </Show>
                 <Show when={merchantSell()} fallback={
-                    <button class="highlight cornerTR" classList={{ "animate": massLootSell().length > 0}} style={{ "font-weight": 700 }} onClick={sellMassLoot}>Sell {massLootSell().length > 0 ? `(${massLootSell().length})` : ""}</button>
+                    <button class="highlight cornerTR" classList={{ "animate": massLootSell().length > 0}} style={{ "font-weight": 700, right: "0.5vw", top: "1vh" }} onClick={sellMassLoot}>Sell {massLootSell().length > 0 ? `(${massLootSell().length})` : ""}</button>
                 }>
-                    <button class="highlight cornerTR" classList={{ "animate": massLootBuy().length > 0}} style={{ "font-weight": 700 }} onClick={buyMassLoot}>Buy {massLootBuy().length > 0 ? `(${massLootBuy().length})` : ""}</button>
+                    <button class="highlight cornerTR" classList={{ "animate": massLootBuy().length > 0}} style={{ "font-weight": 700, right: "0.5vw", top: "1vh" }} onClick={buyMassLoot}>Buy {massLootBuy().length > 0 ? `(${massLootBuy().length})` : ""}</button>
                 </Show>
-                <button class="cornerBR highlight" onClick={() => {setShowBuy(false); setShowSell(false)}} style={{ color: "red" }}>X</button>
+                <button class="cornerBR highlight" onClick={() => {setShowBuy(false); setShowSell(false)}} style={{ color: "red", right: "0.5vw", bottom: "1vh", "font-size": "0.75rem", padding: "0.25rem 0.5rem" }}>X</button>
                 {/* <button class="cornerBL highlight" onClick={addFunds} style={{ "background-color": "green" }}>Add</button> */}
             </div>
         </Show>

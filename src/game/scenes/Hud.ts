@@ -108,6 +108,7 @@ export class Hud extends Phaser.Scene {
         // this.createArenas();
         // this.game.scale.on("resize", this.resize, this);
     };
+    
     // toggleArenaView() { 
     //     // Toggle visibility of the arena grid 
     //     const isVisible = this.arenaContainers[0].visible; 
@@ -305,65 +306,90 @@ export class Hud extends Phaser.Scene {
     
     postFxEvent = (data: {type: string, val: boolean | number}) => {
         const { type, val } = data;
-        if (type === "bloom") this.pipelines[this.currScene].setBloomRadius(val);
-        if (type === "threshold") this.pipelines[this.currScene].setBloomThreshold(val);
-        if (type === "chromatic") {
-            if (val === true) {
-                this.pipelines[this.currScene].setChromaticEnable();
-            } else {
-                this.pipelines[this.currScene].setChromaticEnable(val);
-            };
-        };
-        if (type === "chabIntensity") this.pipelines[this.currScene].setChabIntensity(val);
-        if (type === "vignetteEnable") {
-            if (val === true) {
-                this.pipelines[this.currScene].setVignetteEnable();
-            } else {
-                this.pipelines[this.currScene].setVignetteEnable(val);
-            };
-        };
-        if (type === "vignetteStrength") this.pipelines[this.currScene].setVignetteStrength(val);
-        if (type === "vignetteIntensity") this.pipelines[this.currScene].setVignetteIntensity(val);
-        if (type === "noiseEnable") {
-            if (val === true) {
-                this.pipelines[this.currScene].setNoiseEnable();
-            } else {
-                this.pipelines[this.currScene].setNoiseEnable(val);
-            };
-        };
-        if (type === "noiseSeed") this.pipelines[this.currScene].setNoiseSeed(val);
-        if (type === "noiseStrength") this.pipelines[this.currScene].setNoiseStrength(val);
-        if (type === "vhsEnable") {
-            if (val === true) {
-                this.pipelines[this.currScene].setVHSEnable();
-            } else {
-                this.pipelines[this.currScene].setVHSEnable(val);
-            };
-        };
-        if (type === "vhsStrength") this.pipelines[this.currScene].setVhsStrength(val);
-        if (type === "scanlinesEnable") {
-            if (val === true) {
-                this.pipelines[this.currScene].setScanlinesEnable();
-            } else {
-                this.pipelines[this.currScene].setScanlinesEnable(val);
-            };
-        };
-        if (type === "scanStrength") this.pipelines[this.currScene].setScanStrength(val);
-        if (type === "crtEnable") {
-            if (val === true) {
-                this.pipelines[this.currScene].setCRTEnable();
-            } else {
-                this.pipelines[this.currScene].setCRTEnable(val);
-            };
-        };
-        if (type === "crtHeight") this.pipelines[this.currScene].crtHeight = val;
-        if (type === "crtWidth") this.pipelines[this.currScene].crtWidth = val;
-        if (type === "enable") {
-            if (val === true) {
-                this.setPostFx(true);
-            } else {
-                this.pipelines[this.currScene].setEnable(false);
-            };
+        switch (type) {
+            case "bloom":
+                this.pipelines[this.currScene].setBloomRadius(val);
+                break;
+            case "threshold":
+                this.pipelines[this.currScene].setBloomThreshold(val);
+                break;
+            case "chromatic":
+                if (val === true) {
+                    this.pipelines[this.currScene].setChromaticEnable();
+                } else {
+                    this.pipelines[this.currScene].setChromaticEnable(val);
+                };
+                break;
+            case "chabIntensity":
+                this.pipelines[this.currScene].setChabIntensity(val);
+                break;
+            case "vignetteEnable":
+                if (val === true) {
+                    this.pipelines[this.currScene].setVignetteEnable();
+                } else {
+                    this.pipelines[this.currScene].setVignetteEnable(val);
+                };
+                break;
+            case "vignetteStrength":
+                this.pipelines[this.currScene].setVignetteStrength(val);
+                break;
+            case "vignetteIntensity":
+                this.pipelines[this.currScene].setVignetteIntensity(val);
+                break;
+            case "noiseEnable":
+                if (val === true) {
+                    this.pipelines[this.currScene].setNoiseEnable();
+                } else {
+                    this.pipelines[this.currScene].setNoiseEnable(val);
+                };
+                break;
+            case "noiseSeed":
+                this.pipelines[this.currScene].setNoiseSeed(val);
+                break;
+            case "noiseStrength":
+                this.pipelines[this.currScene].setNoiseStrength(val);
+                break;
+            case "vhsEnable":
+                if (val === true) {
+                    this.pipelines[this.currScene].setVHSEnable();
+                } else {
+                    this.pipelines[this.currScene].setVHSEnable(val);
+                };
+                break;
+            case "vhsStrength":
+                this.pipelines[this.currScene].setVhsStrength(val);
+                break;
+            case "scanlinesEnable":
+                if (val === true) {
+                    this.pipelines[this.currScene].setScanlinesEnable();
+                } else {
+                    this.pipelines[this.currScene].setScanlinesEnable(val);
+                };
+                break;
+            case "scanStrength":
+                this.pipelines[this.currScene].setScanStrength(val);
+                break;
+            case "crtEnable":
+                if (val === true) {
+                    this.pipelines[this.currScene].setCRTEnable();
+                } else {
+                    this.pipelines[this.currScene].setCRTEnable(val);
+                };
+                break;
+            case "crtHeight":
+                this.pipelines[this.currScene].crtHeight = val;
+                break;
+            case "crtWidth":
+                this.pipelines[this.currScene].crtWidth = val;
+                break;
+            case "enable":
+                if (val === true) {
+                    this.setPostFx(true);
+                } else {
+                    this.pipelines[this.currScene].setEnable(false);
+                };
+                break;
+            default: break;
         };
     };
 
@@ -464,9 +490,6 @@ export class Hud extends Phaser.Scene {
         this.currScene = scene;
         if (!this.settings.tutorial?.intro) return;
         this.scene.launch(scene, this);
-        // this.time.delayedCall(128, () => {
-        //     if (!this.settings.tutorial.boot) EventBus.emit("boot-tutorial");
-        // });
     };
 
     gameEvents = (): void => {
@@ -686,17 +709,23 @@ export class Hud extends Phaser.Scene {
     };
     
     highlightElements(type: string) {
-        if (type === "smallhud") {
-            this.smallHud.highlightAnimation();
-        } else if (type === "joystick") {
-            this.joystick.highlightAnimation("left");
-            this.rightJoystick.highlightAnimation("right");
-        } else if (type === "joystick-left") {
-            this.joystick.highlightAnimation("left");
-        } else if (type === "joystick-right") {
-            this.rightJoystick.highlightAnimation("right");
-        } else {
-            this.actionBar.highlightAnimation();
+        switch (type) {
+            case "smallhud":
+                this.smallHud.highlightAnimation();
+                break;
+            case "joystick":
+                this.joystick.highlightAnimation("left");
+                this.rightJoystick.highlightAnimation("right");
+                break;
+            case "joystick-left":
+                this.joystick.highlightAnimation("left");
+                break;
+            case "joystick-right":
+                this.rightJoystick.highlightAnimation("right");
+                break;
+            default:
+                this.actionBar.highlightAnimation();
+                break;
         };
     };
     
@@ -757,8 +786,8 @@ export class Hud extends Phaser.Scene {
             EventBus.emit("alert", { header: "Error Switching Scene", body: `Scene is already switching from ${this.prevScene} to ${this.currScene}` });
             return;
         };
-        this.switchingScene = true;
         const { current, next } = data;
+        this.switchingScene = true;
         this.prevScene = current;
         this.currScene = next;
         this.logger.log(`Console: Moving from ${current} to ${next}.`);

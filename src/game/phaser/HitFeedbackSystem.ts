@@ -4,7 +4,6 @@ import { masteryNumber } from "../../utility/styling";
 import { Entity, Play } from "../main";
 import ChainLightning from "./ChainLightning";
 import { HitProfile, HitProfiles } from "./HitProfiles";
-// import ParticlesAlongBounds from 'phaser3-rex-plugins/plugins/particlesalongbounds.js';
 
 type HitFeedbackContext = {
     source: string;

@@ -332,7 +332,7 @@ export class Tutorial extends Phaser.Scene {
                         };
                         break;
                     case PROGRESSION.ENEMY:
-                        if (count > 2) return;
+                        if (count > 0) return; // 2
                         EventBus.emit("fetch-tutorial-enemy");
                         count++;
                         break;

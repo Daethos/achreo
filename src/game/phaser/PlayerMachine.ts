@@ -1,6 +1,6 @@
 import Player from "../entities/Player";
-import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_INSTINCTS, POSITIVE, staminaCheck, STATE } from "../../utility/player";
+import StateMachine, { specialPositiveMachines, specialStateMachines, States } from "./StateMachine";
+import { BALANCED, BALANCED_INSTINCTS, DEFENSIVE, DEFENSIVE_INSTINCTS, OFFENSIVE, OFFENSIVE_INSTINCTS, PLAYER, PLAYER_COMPUTER_PHYSICALS, PLAYER_INSTINCTS, POSITIVE, staminaCheck, STATE } from "../../utility/player";
 import { FRAMES, MOVEMENT } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import { screenShake, sprint } from "./ScreenShake";
@@ -36,6 +36,33 @@ const DURATION = {
     ROLL: 320,
     SPECIAL: 5000,
 };
+
+/*
+    Eventually create entangling concerns, such as: 
+        enemy_critical / very_far_melee,
+        critical_low / close_ranged,
+        etc.,
+*/
+const SITUATION_MAP: Record<string, string[]> = {
+    "critical_low": [States.DESPERATION, States.DEVOUR, States.HEALING, States.RECONSTITUTE, States.MEND, States.RENEWAL, States.SHIELD, States.SUTURE],
+    "moderate_low": [States.HEALING, States.DEVOUR, States.ENVELOP, States.MEND, States.RENEWAL, States.PROTECT, States.SHIELD, States.SUTURE, States.WARD],
+    "healthy": [States.ACHIRE, States.ABSORB, States.BERSERK, States.CAERENESIS, States.CHIOMISM, States.CONVICTION, States.ENVELOP, States.INVOKE, States.FROST, States.KYRISIAN, States.LIGHTNING, States.MAIERETH, States.MALICE, States.MENACE, States.MEND, States.MODERATE, States.MYSTIFY, States.RECOVER, States.REIN, States.SEER, States.SUTURE],
+    
+    "enemy_critical": [States.ASTRAVE, States.CHIOMISM, States.LEAP, States.ILIRECH, States.KYRISIAN, States.KYRNAICISM, States.LIGHTNING, States.MAIERETH, States.RUSH, States.SACRIFICE, States.STORM],
+    "enemy_moderate": [States.ACHIRE, States.ASTRAVE, States.CHIOMISM, States.ILIRECH, States.KYRISIAN, States.KYRNAICISM, States.LIGHTNING, States.MAIERETH, States.MALICE, States.RUSH, States.SACRIFICE, States.STORM],
+    "enemy_healthy": [States.ACHIRE, States.CHIOMISM, States.DEVOUR, States.ILIRECH, States.KYRISIAN, States.KYRNAICISM, States.LIGHTNING, States.LIKYR, States.MAIERETH, States.MALICE, States.RECOVER, States.REIN, States.SACRIFICE],
+    
+    "close_melee": [States.BLIND, States.CHIOMIC, States.DISEASE, States.FREEZE, States.HOWL, States.MALICE, States.MENACE, States.MYSTIFY, States.RECOVER, States.REIN, States.SCREAM, States.SHIMMER, States.SLOWING, States.STORM, States.SUTURE, States.WRITHE],
+    "mid_melee": [States.GRAPPLING_HOOK, States.HOOK, States.LEAP, States.MALICE, States.PURSUIT, States.RECOVER, States.REIN, States.RUSH, States.SHADOW, States.SHIMMER, States.SPRINTING, States.SLOWING, States.SUTURE, States.TETHER],
+    "far_melee": [States.ABSORB, States.ACHIRE, States.ASTRAVE, States.BLINK, States.FROST, States.GRAPPLING_HOOK, States.HOOK, States.ILIRECH, States.IMPERMANENCE, States.KYNISOS, States.LEAP, States.LIGHTNING, States.MODERATE, States.PURSUIT, States.RUSH, States.SPRINTING, States.SHADOW, States.SHIMMER, States.SHIRK, States.SNARE, States.TETHER],
+    "very_far_melee": [States.ABSORB, States.ACHIRE, States.ASTRAVE, States.BLINK, States.FROST, States.GRAPPLING_HOOK, States.HOOK, States.ILIRECH, States.IMPERMANENCE, States.KYNISOS, States.LEAP, States.LIGHTNING, States.MODERATE, States.PURSUIT, States.PROTECT, States.QUOR, States.PROTECT, States.RUSH, States.SHADOW, States.SHIMMER, States.SHIRK, States.SHIELD, States.SNARE, States.TETHER, States.WARD],
+
+    "close_ranged": [States.BLIND, States.BLINK, States.CHIOMIC, States.DISEASE, States.FREEZE, States.HOWL, States.MALICE, States.MENACE, States.MYSTIFY, States.RECOVER, States.REIN, States.RENEWAL, States.SCREAM, States.SHIMMER, States.SLOWING, States.SPRINTING, States.WRITHE],
+    "mid_ranged": [States.ACHIRE, States.CONFUSE, States.FEAR, States.FROST, States.ILIRECH, States.KYRNAICISM, States.LIGHTNING, States.MALICE, States.PARALYZE, States.SLOWING],
+    "far_ranged": [States.ACHIRE, States.CONFUSE, States.ASTRAVE, States.FEAR, States.FYERUS, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.LIGHTNING, States.PARALYZE, States.QUOR, States.SHIELD, States.SNARE, States.SUTURE, States.WARD],
+    "very_far_ranged": [States.ACHIRE, States.ASTRAVE, States.FYERUS, States.ILIRECH, States.KYNISOS, States.KYRNAICISM, States.LIGHTNING, States.PROTECT, States.QUOR, States.SHIELD, States.SNARE, States.SUTURE, States.WARD]
+};
+
 export default class PlayerMachine {
     scene: Play;
     player: Player;
@@ -183,7 +210,6 @@ export default class PlayerMachine {
     mastery = () => this.scene.state.player?.[this.scene.state.player?.mastery];
 
     chiomism = (id: string, power: number, type: string) => {
-        // console.log({ id, power, type });
         power = this.player.entropicMultiplier(power);
         if (id === this.player.getEnemyId() || id === this.player.playerID) {
             this.scene.combatManager.combatMachine.action({ type: "Chiomic", data: {power, type} }); 
@@ -196,7 +222,6 @@ export default class PlayerMachine {
             const newComputerHealth = enemy.health - chiomic < 0 ? 0 : enemy.health - chiomic;
             const playerActionDescription = `Your ${type} flays ${chiomic} health from ${enemy.ascean?.name}.`;
             EventBus.emit("add-combat-logs", { ...this.scene.state, playerActionDescription });
-            // console.log("chiomic", chiomic, enemy.health, newComputerHealth);
             this.scene.combatManager.combatMachine.action({ type: "Health", data: { key: "enemy", value: newComputerHealth, id } });
         };
         this.scene.combatManager.hitFeedbackSystem.spotEmit(this.player.spellTarget, "Pierce");
@@ -338,7 +363,128 @@ export default class PlayerMachine {
         Distance between Player and Enemy
         Choices in settings of how the Player Computer acts
     */
+
     instincts = () => {
+        if (!this.player.inCombat || this.player.health <= 0) {
+            this.player.inCombat = false;
+            return;
+        };
+        
+        this.player.isMoving = false;
+        this.player.setVelocity(0);
+        
+        const ranged = this.player.isRanged;
+        const mastery = this.player.ascean.mastery;
+        const availableSpecials = (this.player as PlayerComputer).combatSpecials; // Player's actual specials
+
+        const direction = this.player.currentTarget?.position.subtract(this.player.position);
+        const distance = direction?.length() || 0;
+        
+        if (!availableSpecials) {
+            const physical = PLAYER_COMPUTER_PHYSICALS[Math.floor(Math.random() * PLAYER_COMPUTER_PHYSICALS.length)];
+            if (ranged) {
+                this.stateMachine.setState(physical);
+            } else {
+                if (distance <= 75) {
+                    this.stateMachine.setState(physical);
+                } else {
+                    this.stateMachine.setState(States.CHASE);
+                };
+            };
+            return;
+        };
+        
+        const pHealth = this.player.health / this.player.ascean.health.max;
+        const eHealth = this.scene.state.newComputerHealth / this.scene.state.computerHealth;
+        let oHealth = 1; // Lowest party member health
+        
+        for (const party of this.scene.party) {
+            const ratio = party.health / party.ascean.health.max;
+            if (ratio < oHealth) oHealth = ratio;
+        };
+    
+        const situation = this.evaluateSituation(pHealth, eHealth, oHealth, distance, ranged);
+
+        const focus = this.scene.hud.settings.computerFocus || BALANCED;
+        let focusSpecials: string[] = [];
+        
+        switch (focus) {
+            case BALANCED:
+                focusSpecials = BALANCED_INSTINCTS[mastery];
+                break;
+            case DEFENSIVE:
+                focusSpecials = DEFENSIVE_INSTINCTS[mastery];
+                break;
+            case OFFENSIVE:
+                focusSpecials = OFFENSIVE_INSTINCTS[mastery];
+                break;
+        };
+        
+        focusSpecials = focusSpecials.filter(special => availableSpecials.includes(special));
+
+        const situationalSpecials = this.getSituationalSpecials(situation, availableSpecials);
+
+        const candidatePool: string[] = [];
+        
+        if (situationalSpecials.length > 0) {
+            candidatePool.push(...situationalSpecials, ...situationalSpecials, ...situationalSpecials);
+        };
+
+        if (focusSpecials.length > 0) {
+            candidatePool.push(...focusSpecials);
+        };
+        
+        if (candidatePool.length === 0) {
+            candidatePool.push(...availableSpecials);
+        };
+
+        const validPool = candidatePool.filter(special => special !== this.player.previousInstinct);
+        const chosenSpecial = validPool.length > 0 
+            ? validPool[Math.floor(Math.random() * validPool.length)]
+            : candidatePool[Math.floor(Math.random() * candidatePool.length)];
+
+        let key = STATE;
+        if (specialPositiveMachines.includes(chosenSpecial)) {
+            key = POSITIVE;
+        };
+        
+        const graceCost = PLAYER.STAMINA[chosenSpecial.toUpperCase()];
+        const check = staminaCheck(this.player.grace, graceCost);
+        
+        if (check.success) {
+            this.scene.showCombatText(this.player, "Instinct", 750, HUSH, false, true);
+            this.scene.hud.logger.log(`Your instinct leads you to ${chosenSpecial}.`);
+            this.player.previousInstinct = chosenSpecial;
+            (this as any)[key].setState(chosenSpecial); // .toLowerCase()
+            if (key === POSITIVE) this.stateMachine.setState(States.CHASE);
+        } else {
+            this.scene.showCombatText(this.player, "Compose Yourself", 750, "dread", false, true);
+            this.scene.combatManager.useGrace(-5);
+            this.stateMachine.setState(Math.random() > 0.5 ? States.IDLE : States.CHASE);
+        };
+    };
+
+    private evaluateSituation(pHealth: number, eHealth: number, oHealth: number, distance: number, ranged: boolean): string {
+        if (pHealth <= 0.25 || oHealth <= 0.25) return "critical_low";
+        if (pHealth <= 0.5 || oHealth <= 0.5) return "moderate_low";
+        if ((pHealth >= 0.8 && pHealth <= 0.95) || (oHealth >= 0.8 && oHealth <= 0.95)) return "healthy";
+        
+        if (eHealth <= 0.25) return "enemy_critical";
+        if (eHealth <= 0.5) return "enemy_moderate";
+        if (eHealth >= 0.9) return "enemy_healthy";
+        
+        if (distance <= 75) return ranged ? "close_ranged" : "close_melee";
+        if (distance <= 150) return ranged ? "mid_ranged" : "mid_melee";
+        if (distance <= 225) return ranged ? "far_ranged" : "far_melee";
+        return ranged ? "very_far_ranged" : "very_far_melee";
+    };
+
+    private getSituationalSpecials(situation: string, availableSpecials: string[]): string[] {
+        const situationalStates = SITUATION_MAP[situation] || [];
+        return situationalStates.filter(state => availableSpecials.includes(state));
+    };
+
+    fullInstincts = () => {
         if (!this.player.inCombat || this.player.health <= 0) {
             this.player.inCombat = false;
             return;
@@ -421,9 +567,6 @@ export default class PlayerMachine {
                 value = final;
             };
         };
-
-        // const specials = this.scene.hud.settings.totalSpecials;
-        // const specific = this.scene.hud.settings.specials;
 
         let check: {success:boolean;cost:number;} = {success:false,cost:0};
         const grace = PLAYER.STAMINA[value.toUpperCase()];
@@ -736,7 +879,7 @@ export default class PlayerMachine {
         this.player.isMoving = false;
         this.player.setVelocity(0);
         this.player.contemplationTime = Phaser.Math.Between(250, 500);
-        this.scene.time.delayedCall(Phaser.Math.Between(250, 500), () => {
+        this.scene.time.delayedCall(this.player.contemplationTime, () => {
             this.player.isContemplating = false;
             this.player.currentAction = "";
             this.instincts();
@@ -877,7 +1020,6 @@ export default class PlayerMachine {
     };
 
     onAttackEnter = () => {
-        // if (this.player.isPosturing || this.player.isParrying || this.player.isThrusting) return;
         if (this.player.isRanged === true && this.player.inCombat === true) {
             const correct = this.player.getEnemyDirection(this.player.currentTarget);
             if (!correct) {
@@ -1865,7 +2007,6 @@ export default class PlayerMachine {
         let playerLuck = 0, enemyLuck = 0;
         let luck = this.player.luckoutLock.split("(")[1].split(")")[0], luckout = false, particle = "";
         const luckoutTrait = TRAIT_DESCRIPTIONS[luck.charAt(0).toUpperCase() + luck.slice(1)];
-        // console.log({luck, luckoutTrait});
         switch (luck) {
             case "arbituous":
                 playerLuck = player.achre + player.constitution;
@@ -1923,7 +2064,6 @@ export default class PlayerMachine {
             EventBus.emit("luckout", { luck, luckout });
 
             const num = Math.floor(Math.random() * 2);
-            // console.log(luckoutTrait?.luckout?.success[num]);
             const text = `${luckoutTrait?.luckout?.success[num]
                 .replace("{enemy.name}", enemy.ascean.name)
                 .replace("{ascean.weaponOne.influences[0]}", influence)
@@ -3745,22 +3885,26 @@ export default class PlayerMachine {
         this.player.clearAnimations();
         this.player.anims.play("player_idle", true);
         this.player.setVelocity(0);
-        this.player.setStatic(true);
         this.player.setTint(0x0000ff);
-        this.scene.time.addEvent({
-            delay: DURATION.FROZEN,
-            callback: () => {
-                this.player.isFrozen = false;
-                this.negativeMachine.setState(States.CLEAN);
-                this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
-            },
-            callbackScope: this,
-            loop: false,
-        });
         screenShake(this.scene);
+        this.startFrozen();
     };
     onFrozenUpdate = (_dt: number) => this.player.setVelocity(0);
-    onFrozenExit = () => this.player.setStatic(false);
+    onFrozenExit = () => {
+        this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
+    };
+    startFrozen = () => {
+        this.scene.time.delayedCall(DURATION.FROZEN, () => {
+            this.player.count.frozen -= 1;
+            if (this.player.count.frozen <= 0) {
+                this.player.count.frozen = 0;
+                this.player.isFrozen = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startFrozen();
+            }
+        }, undefined, this);
+    };
 
     onParalyzedEnter = () => {
         if (!this.player.isComputer) {
@@ -3781,12 +3925,13 @@ export default class PlayerMachine {
         this.player.anims.pause();
         this.player.setTint(0x666666);
         this.player.setVelocity(0);
+        this.startParalyze();
         // this.player.setStatic(true);
     };
-    onParalyzedUpdate = (dt: number) => {
+    onParalyzedUpdate = (_dt: number) => {
         this.player.setVelocity(0);
-        this.player.paralyzeDuration -= dt;
-        if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
+        // this.player.paralyzeDuration -= dt;
+        // if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
         this.player.combatChecker(this.player.isParalyzed);
     }; 
     onParalyzedExit = () => {
@@ -3803,6 +3948,20 @@ export default class PlayerMachine {
         // this.player.setStatic(false);
         this.player.anims.resume();
     };
+    startParalyze = () => {
+        this.scene.time.delayedCall(this.player.paralyzeDuration, () => {
+            this.player.count.paralyzed -= 1;
+            if (this.player.count.paralyzed <= 0 || this.player.health <= 0) {
+                this.player.count.paralyzed = 0;
+                this.player.isParalyzed = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                // this.stateMachine.setState(States.COMBAT);
+                this.startParalyze();
+            };
+        }, undefined, this);
+    };
+
 
     onPolymorphedEnter = () => {
         if (!this.player.isComputer) {
@@ -3894,11 +4053,8 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Slowed", DURATION.TEXT, EFFECT, false, true);
         this.player.setTint(0x008080);
         this.player.adjustSpeed(-PLAYER.SPEED.SLOW);
-        this.scene.time.delayedCall(this.player.slowDuration, () =>{
-            this.player.isSlowed = false;
-            this.negativeMachine.setState(States.CLEAN);
-        }, undefined, this);
         screenShake(this.scene);
+        this.startSlow();
     };
 
     onSlowedExit = () => {
@@ -3906,22 +4062,43 @@ export default class PlayerMachine {
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
         this.player.adjustSpeed(PLAYER.SPEED.SLOW);
     };
+    startSlow = () => {
+        this.scene.time.delayedCall(this.player.slowDuration, () =>{
+            this.player.count.slowed -= 1;
+            if (this.player.count.slowed <= 0) {
+                this.player.count.slowed = 0;
+                this.player.isSlowed = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startSlow();
+            };
+        }, undefined, this);
+    };
 
     onSnaredEnter = () => {
         this.scene.showCombatText(this.player, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.player.snareDuration = DURATION.SNARED;
         this.player.setTint(0x008080);
         this.player.adjustSpeed(-PLAYER.SPEED.SNARE);
-        this.scene.time.delayedCall(this.player.snareDuration, () =>{
-            this.player.isSnared = false;
-            this.negativeMachine.setState(States.CLEAN);
-        }, undefined, this);
         screenShake(this.scene);
+        this.startSnare();
     };
     onSnaredExit = () => { 
         this.player.clearTint(); 
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF); 
         this.player.adjustSpeed(PLAYER.SPEED.SNARE);
+    };
+    startSnare = () => {
+        this.scene.time.delayedCall(this.player.snareDuration, () =>{
+            this.player.count.snared -= 1;
+            if (this.player.count.snared <= 0) {
+                this.player.count.snared = 0;
+                this.player.isSnared = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startSnare();
+            };
+        }, undefined, this);
     };
 
     onStunnedEnter = () => {
@@ -3937,16 +4114,13 @@ export default class PlayerMachine {
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000);
         this.player.setVelocity(0);
-        // this.player.setStatic(true);
-        // this.scene.time.delayedCall(128, () => this.player.setStatic(false));
         this.player.anims.pause();
         this.specialCombatText("You've been stunned.");
         screenShake(this.scene, 64);
+        this.startStun();    
     };
-    onStunnedUpdate = (dt: number) => {
+    onStunnedUpdate = (_dt: number) => {
         this.player.setVelocity(0);
-        this.player.stunDuration -= dt;
-        if (this.player.stunDuration <= 0) this.player.isStunned = false;
         this.player.combatChecker(this.player.isStunned);
     };
     onStunnedExit = () => {
@@ -3960,7 +4134,18 @@ export default class PlayerMachine {
         this.player.isStunned = false;
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.setTint(0xFF0000, 0xFF0000, 0x0000FF, 0x0000FF);
-        // this.player.setStatic(false);
         this.player.anims.resume();
+    };
+    startStun = () => {
+        this.scene.time.delayedCall(this.player.stunDuration, () => {
+            this.player.count.stunned -= 1;
+            if (this.player.count.stunned <= 0 || this.player.health <= 0) {
+                this.player.count.stunned = 0;
+                this.player.isStunned = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                this.startStun();
+            };
+        }, undefined, this);
     };
 };

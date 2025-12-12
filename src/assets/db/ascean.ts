@@ -8478,6 +8478,114 @@ export const Asceans: any[] = [
     "firewater":{"current":5,"max":5},
     "health":{"current":399,"max":399}
 }, {
+    "_id":"lorian_10",
+    "origin":"Li'ivi",
+    "sex":"Man",
+    "mastery":"constitution",
+    "level":10,
+    "experience":0,
+    "inventory":[],
+    "name":"Lorian of Ky'myr",
+    "description":"Old Li'ivi Occultist",
+    "constitution":50,
+    "strength":20,
+    "agility":20,
+    "achre":30,
+    "caeren":30,
+    "kyosir":30,
+    "weaponOne":{
+        name: "Blessed Dagger",
+        rarity: "Epic",
+    },"weaponTwo":{
+        name: "Cursed Dagger",
+        rarity: "Epic",
+    },"weaponThree":{
+        name: "Daethic Bow",
+        rarity: "Epic",
+    },"shield":{
+        name: "Pavise",
+        rarity: "Epic",
+    },"helmet":{
+        name: "Lilosian Hood",
+        rarity: "Epic",
+    },"chest":{
+        name: "Lilosian Robes",
+        rarity: "Epic",
+    },"legs":{
+        name: "Lilosian Pants",
+        rarity: "Epic",
+    },"ringOne":{
+        name: "Kyrison Ring",
+        rarity: "Epic",
+    },"ringTwo":{
+        name: "Kyrison Ring",
+        rarity: "Epic",
+    },"amulet":{
+        name: "Lilosian Necklace",
+        rarity: "Epic",
+    },"trinket":    {
+        name: "Lilosian Trinket",
+        rarity: "Epic",
+    },
+    "faith":"Devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":497,"max":497}
+},{
+    "_id":"lorian_10",
+    "origin":"Fyers",
+    "sex":"Man",
+    "mastery":"kyosir",
+    "level":10,
+    "experience":0,
+    "inventory":[],
+    "name":"Saelig Sar",
+    "description":"Seer of Chiomyr",
+    "constitution":40,
+    "strength":20,
+    "agility":25,
+    "achre":25,
+    "caeren":20,
+    "kyosir":50,
+    "weaponOne":{
+        name: "Chiomic Spear",
+        rarity: "Epic",
+    },"weaponTwo":{
+        name: "Morningstar",
+        rarity: "Epic",
+    },"weaponThree":{
+        name: "Shrenari",
+        rarity: "Epic",
+    },"shield":{
+        name: "Parma",
+        rarity: "Epic",
+    },"helmet":{
+        name: "Li'kyr Hood",
+        rarity: "Epic",
+    },"chest":{
+        name: "Li'kyr Robes",
+        rarity: "Epic",
+    },"legs":{
+        name: "Li'kyr Pants",
+        rarity: "Epic",
+    },"ringOne":{
+        name: "Kyrison Ring",
+        rarity: "Epic",
+    },"ringTwo":{
+        name: "Kyrison Ring",
+        rarity: "Epic",
+    },"amulet":{
+        name: "Chiomic Amulet",
+        rarity: "Epic",
+    },"trinket":    {
+        name: "Chiomic Trinket",
+        rarity: "Epic",
+    },
+    "faith":"Devoted",
+    "currency":{"silver":0,"gold":0},
+    "firewater":{"current":5,"max":5},
+    "health":{"current":497,"max":497}
+},{
     "_id":"synaethi_10",
     "origin":"Ashtre",
     "sex":"Man",

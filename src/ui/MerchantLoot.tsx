@@ -24,13 +24,13 @@ export function MassSell({item, sellIitem, setItem, checkMassSell, getCheckmark}
 
 export function QuickSell({item, sellIitem, setItem, checkMassSell, getCheckmark}: SellProps) {
     return <div class="row menu-item-3d center" style={{ width: "100%", height: "25%" }}>
-        <div onClick={() => setItem(item)} style={{ margin: "0 5%", padding: "0.5em",width: "12.5%", height: "50%", border: `thick ridge ${getRarityColor(item?.rarity as string)}` }}>
-            <img src={item?.imgUrl} alt={item?.name} />
+        <div onClick={() => setItem(item)} style={{ margin: "0 5%", padding: "0.5em", width: "12.5%", height: "50%", border: `thick ridge ${getRarityColor(item?.rarity as string)}` }}>
+            <img src={item?.imgUrl} alt={item?.name} /> 
         </div>
         <p style={{ margin: "auto", width: "25%" }}>{item.name}</p>
-        <span style={{width:"50%"}}>
-        <button class="highlight" onClick={() => sellIitem(item)} style={{ color: item?.rarity as string === "Common" ? "silver" : "gold" }}>{sellRarity(item?.rarity as string)}</button>
-        <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
+        <span style={{width:"37.5%"}}>
+            <button class="highlight" onClick={() => sellIitem(item)} style={{ color: item?.rarity as string === "Common" ? "silver" : "gold" }}>{sellRarity(item?.rarity as string)}</button>
+            <button class="highlight" onClick={() => checkMassSell(item)} style={{ color: getCheckmark(item._id) ? "gold" : "red" }}>{getCheckmark(item._id) ? "✓" : "▢"}</button>
         </span>
     </div>;
 };

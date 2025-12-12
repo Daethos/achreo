@@ -178,6 +178,17 @@ export default class Equipment {
     [key: string]: any;
 };
 
+type WeaponProperties = {
+    // These were optional in the base class, but are required for a Weapon
+    rarity: string;
+    grip: string;
+    attackType: string;
+    damageType: string[]; 
+    magicalPenetration: number;
+    physicalPenetration: number;
+};
+export type Weapon = Equipment & WeaponProperties;
+
 export const initEquipment: Equipment = new Equipment({
     _id: "",
     name: "Moontear",

@@ -1,6 +1,6 @@
 import Party from "../entities/PartyComputer";
 import StateMachine, { specialStateMachines, States } from "./StateMachine";
-import { FRAMES, GOLD_COLOR_MATRIX, MOVEMENT } from "../entities/Entity";
+import { BLUE_COLOR_MATRIX, FRAMES, GOLD_COLOR_MATRIX, GRAY_COLOR_MATRIX, MOVEMENT, TEAL_COLOR_MATRIX } from "../entities/Entity";
 import { EventBus } from "../EventBus";
 import Bubble from "./Bubble";
 import { BlendModes } from "phaser";
@@ -141,7 +141,7 @@ export default class PlayerMachine {
         this.negativeMachine = new StateMachine(this, "party");
         this.negativeMachine
             .addState(States.CLEAN, { onEnter: this.onCleanEnter, onExit: this.onCleanExit })
-            .addState(States.FROZEN, { onEnter: this.onFrozenEnter, onExit: this.onFrozenExit })
+            .addState(States.FROZEN, { onEnter: this.onFrozenEnter, onUpdate: this.onFrozenUpdate, onExit: this.onFrozenExit })
             .addState(States.SLOWED, { onEnter: this.onSlowedEnter, onExit: this.onSlowedExit })
             .addState(States.SNARED, { onEnter: this.onSnaredEnter, onExit: this.onSnaredExit });
         if (this.scene.state.isStealth) {
@@ -565,11 +565,11 @@ export default class PlayerMachine {
             return;
         } else {
             if (this.player.path && this.player.path.length > 1) {
-                this.player.setVelocity(this.player.pathDirection.x * (this.player.speed * this.player.handleTerrain()), this.player.pathDirection.y * (this.player.speed * this.player.handleTerrain()));
+                this.player.setVelocity(this.player.pathDirection.x * ((this.player.speed + 0.25) * this.player.handleTerrain()), this.player.pathDirection.y * ((this.player.speed + 0.25) * this.player.handleTerrain()));
             } else {
                 if (this.player.isPathing) this.player.isPathing = false;
                 direction.normalize();
-                this.player.setVelocity(direction.x * (this.player.speed * this.player.handleTerrain()), direction.y * (this.player.speed * this.player.handleTerrain()));
+                this.player.setVelocity(direction.x * ((this.player.speed + 0.25) * this.player.handleTerrain()), direction.y * ((this.player.speed + 0.25) * this.player.handleTerrain()));
             };
             this.player.handleMovementAnimations();
         };
@@ -2771,18 +2771,28 @@ export default class PlayerMachine {
         this.scene.showCombatText(this.player, "Frozen", DURATION.TEXT, CAST, false, true);
         this.player.clearAnimations();
         this.player.anims.play("player_idle", true);
-        this.player.setStatic(true);
-        this.scene.time.addEvent({
-            delay: DURATION.FROZEN,
-            callback: () => {
+        this.player.colorMatrix.set(BLUE_COLOR_MATRIX);
+        this.startFrozen();
+    };
+    onFrozenUpdate = (_dt: number) => {
+        this.player.setVelocity(0);
+    };
+    onFrozenExit = () => {
+        this.player.colorMatrix.reset();
+        this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
+    };
+    startFrozen = () => {
+        this.scene.time.delayedCall(DURATION.FROZEN, () => {
+            this.player.count.frozen -= 1;
+            if (this.player.count.frozen <= 0) {
+                this.player.count.frozen = 0;
                 this.player.isFrozen = false;
                 this.negativeMachine.setState(States.CLEAN);
-            },
-            callbackScope: this,
-            loop: false,
-        });
+            } else {
+                this.startFrozen();
+            };
+        }, undefined, this);
     };
-    onFrozenExit = () => this.player.setStatic(false);
 
     onParalyzedEnter = () => {
         this.player.specialCombatText = this.player.scene.showCombatText(this.player, "Paralyzed", DURATION.TEXT, EFFECT, false, true);
@@ -2794,22 +2804,37 @@ export default class PlayerMachine {
         this.player.isDodging = false;
         this.player.currentAction = ""; 
         this.player.anims.pause();
-        this.player.setTint(0x888888); // 0x888888
-        this.player.setStatic(true);
+        this.player.colorMatrix.set(GRAY_COLOR_MATRIX); // 0x888888
+        // this.player.setStatic(true);
+        this.startParalyze();    
     };
-    onParalyzedUpdate = (dt: number) => {
+    onParalyzedUpdate = (_dt: number) => {
         this.player.setVelocity(0);
-        this.player.paralyzeDuration -= dt;
-        if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
+        // this.player.paralyzeDuration -= dt;
+        // if (this.player.paralyzeDuration <= 0) this.player.isParalyzed = false;
         this.player.combatChecker(this.player.isParalyzed);
     }; 
     onParalyzedExit = () => {
         this.player.isParalyzed = false;
         this.player.paralyzeDuration = DURATION.PARALYZED;
+        this.player.colorMatrix.reset();
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
-        this.player.setStatic(false);
         this.player.anims.resume();
     };
+    startParalyze = () => {
+        this.scene.time.delayedCall(this.player.paralyzeDuration, () => {
+            this.player.count.paralyzed -= 1;
+            if (this.player.count.paralyzed <= 0 || this.player.health <= 0) {
+                this.player.count.paralyzed = 0;
+                this.player.isParalyzed = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                // this.stateMachine.setState(States.COMBAT);
+                this.startParalyze();
+            };
+        }, undefined, this);
+    };
+
     onPolymorphedEnter = () => {
         this.player.isPolymorphed = true;
         this.scene.showCombatText(this.player, "Polymorphed", DURATION.TEXT, EFFECT, false, true);
@@ -2884,60 +2909,89 @@ export default class PlayerMachine {
 
     onSlowedEnter = () => {
         this.scene.showCombatText(this.player, "Slowed", DURATION.TEXT, EFFECT, false, true);
-        this.player.setTint(0xFFC700);
+        // this.player.setTint(0xFFC700);
+        this.player.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.player.adjustSpeed(-PLAYER.SPEED.SLOW);
-        this.scene.time.delayedCall(this.player.slowDuration, () =>{
-            this.player.isSlowed = false;
-            this.negativeMachine.setState(States.CLEAN);
-        }, undefined, this);
+        this.startSlow();
     };
-
     onSlowedExit = () => {
         this.player.clearTint();
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
         this.player.adjustSpeed(PLAYER.SPEED.SLOW);
     };
+    startSlow = () => {
+        this.scene.time.delayedCall(this.player.slowDuration, () =>{
+            this.player.count.slowed -= 1;
+            if (this.player.count.slowed <= 0) {
+                this.player.count.slowed = 0;
+                this.player.isSlowed = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startSlow();
+            };
+        }, undefined, this);
+    };
+
 
     onSnaredEnter = () => {
         this.scene.showCombatText(this.player, "Snared", DURATION.TEXT, EFFECT, false, true);
         this.player.snareDuration = DURATION.SNARED;
-        this.player.setTint(0x0000FF);
+        this.player.colorMatrix.set(TEAL_COLOR_MATRIX);
         this.player.adjustSpeed(-PLAYER.SPEED.SNARE);
-        this.scene.time.delayedCall(this.player.snareDuration, () =>{
-            this.player.isSnared = false;
-            this.negativeMachine.setState(States.CLEAN);
-        }, undefined, this);
+        this.startSnare();
     };
     onSnaredExit = () => { 
         this.player.clearTint(); 
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX); 
         this.player.adjustSpeed(PLAYER.SPEED.SNARE);
     };
+    startSnare = () => {
+        this.scene.time.delayedCall(this.player.snareDuration, () =>{
+            this.player.count.snared -= 1;
+            if (this.player.count.snared <= 0) {
+                this.player.count.snared = 0;
+                this.player.isSnared = false;
+                this.negativeMachine.setState(States.CLEAN);
+            } else {
+                this.startSnare();
+            };
+        }, undefined, this);
+    };
 
     onStunnedEnter = () => {
         this.player.isStunned = true;
         this.scene.showCombatText(this.player, "Stunned", PLAYER.DURATIONS.STUNNED, EFFECT, false, true);
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
-        this.player.setTint(0xFF0000);
-        this.player.setStatic(true);
+        this.player.colorMatrix.set(GRAY_COLOR_MATRIX);
         this.player.anims.pause();
+        this.startStun();
         EventBus.emit(PARTY_COMBAT_TEXT, {
             text: `${this.player.ascean.name} has been stunned.`
         });
     };
-    onStunnedUpdate = (dt: number) => {
+    onStunnedUpdate = (_dt: number) => {
         this.player.setVelocity(0);
-        this.player.stunDuration -= dt;
-        if (this.player.stunDuration <= 0) this.player.isStunned = false;
         this.player.combatChecker(this.player.isStunned);
     };
     onStunnedExit = () => {
         this.player.isStunned = false;
         this.player.stunDuration = PLAYER.DURATIONS.STUNNED;
         this.player.colorMatrix.set(GOLD_COLOR_MATRIX);
-        this.player.setStatic(false);
         this.player.anims.resume();
     };
+    startStun = () => {
+        this.scene.time.delayedCall(this.player.stunDuration, () => {
+            this.player.count.stunned -= 1;
+            if (this.player.count.stunned <= 0 || this.player.health <= 0) {
+                this.player.count.stunned = 0;
+                this.player.isStunned = false;
+                this.stateMachine.setState(States.COMBAT);
+            } else {
+                this.startStun();
+            };
+        }, undefined, this);
+    };
+
 
     update(dt: number) {
         this.stateMachine.update(dt);

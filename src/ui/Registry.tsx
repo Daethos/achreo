@@ -1,4 +1,4 @@
-import { Accessor, createSignal, For, Setter, Show } from "solid-js";
+import { Accessor, createMemo, createSignal, For, Setter, Show } from "solid-js";
 import { ARENA_ENEMY, fetchPartyPotential } from "../utility/enemy";
 import Ascean from "../models/ascean";
 import { IRefPhaserGame } from "../game/PhaserGame";
@@ -10,6 +10,7 @@ import ItemModal from "../components/ItemModal";
 import { Compiler } from "../utility/ascean";
 import Currency from "../utility/Currency";
 import { Portal } from "solid-js/web";
+import { ENEMY_FRIENDLY, FACTION, Reputation } from "../models/reputation";
 const selectors = {
     // 0.5: { prev: 0.5, next: 1 },
     1: { prev: 1, next: 2 },
@@ -19,7 +20,7 @@ const selectors = {
     8: { prev: 6, next: 8 },
 };
 
-export default function Registry({ show, ascean, setShow, instance }: { ascean: Accessor<Ascean>; show: Accessor<boolean>; setShow: Setter<boolean>; instance: IRefPhaserGame }) {
+export default function Registry({ show, ascean, setShow, instance, reputation }: { ascean: Accessor<Ascean>; show: Accessor<boolean>; setShow: Setter<boolean>; instance: IRefPhaserGame; reputation: Accessor<Reputation>; }) {
     const [selector, setSelector] = createSignal<ARENA_ENEMY>({ level: Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level + 1), 8), mastery: "constitution", id: "" });
     const [potential, setPotential] = createSignal<any[]>([]);
     const [party, setParty] = createSignal<Compiler[]>(instance?.game?.registry.get("party"));
@@ -30,19 +31,29 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
     const [equipment, setEquipment] = createSignal<Equipment | undefined>(undefined);
     const [view, setView] = createSignal<Ascean | undefined>(undefined);
 
+    const cost = createMemo(() => {
+        const prospect = view();
+        if (!prospect) return 0;
+        const currentRep = reputation().factions.find((f: FACTION) => f.name === prospect.name.trim()) as FACTION;
+        if (!currentRep) return 0;
+        const base = currentRep.reputation > 0 ? currentRep.reputation : 1;
+        const ratio = (ENEMY_FRIENDLY / 2) / base;
+        return Math.round(prospect.level * ratio);
+    });
+
     function addToParty() {
         const prospect = view();
         if (prospect === undefined) return;
         const gold = ascean().currency.gold;
-        if (gold < prospect.level) {
-            EventBus.emit("alert", { header: "Insufficient Funds", body: `You require ${prospect.level - gold} more gold to recruit ${prospect.name} to your party.` });
+        if (gold < cost()) {
+            EventBus.emit("alert", { header: "Insufficient Funds", body: `You require ${cost() - gold} more gold to recruit ${prospect.name} to your party.` });
             setAddShow(false); 
             setView(undefined);
             return;
         };
-        EventBus.emit("add-party", {name:prospect.name, level:prospect.level, force:true});
+        EventBus.emit("add-party", {name:prospect.name, level: cost(), force:true});
         EventBus.emit("alert", { header: "Congratulations!", body: `You have successfully recruited ${prospect.name} to join your party. Your party size is now ${total() + 1}.` });
-        EventBus.emit("charge-currency", { silver: 0, gold: prospect.level });
+        EventBus.emit("charge-currency", { silver: 0, gold: cost() });
         EventBus.emit("action-button-sound");
         setAddShow(false); 
         setView(undefined);
@@ -74,7 +85,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
 
     return <Show when={show()}>
         <div class="modal" style={{ "z-index": 99 }}>
-            <div class="left" style={{...partialStyle(ascean().mastery), left: "0", top: "", height: "97.5%", width: "49%"}}>
+            <div class="left" style={{...partialStyle(ascean().mastery), left: "0", top: "", height: "97.5%", width: "48.75%"}}>
             <div class="creature-heading center">
                     <h1>Current Party ({party().length})</h1>
                     <For each={party()}>{(party) => {
@@ -83,7 +94,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                         )
                     }}</For>
                     <p style={{ color: "gold", margin: "8px 0 0", "font-size": "1.4em", padding: "0" }}>Currency</p>
-                    <span style={{ "font-size": "0.75rem" }}>[Recruitment Cost: <span class="gold">1g</span> per level.]</span>
+                    <p style={{ "font-size": "1rem", margin: "1% auto", width: "90%" }}>[Recruitment Cost: <span class="gold">1g</span> per level, scaled to your reputation with the enemy.]</p>
                     <Currency ascean={ascean} />
                     {/* <p style={{ color: "gold", margin: "8px 0 ", "font-size": "1.4em", padding: "0" }}>Registry Option Query</p> */}
                     <div style={{ display: "grid", "grid-template-columns": "repeat(2, 50%)" }}>
@@ -96,11 +107,12 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", selectors[selector().level as keyof typeof selectors].prev)}>-</button>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("level", Math.min(Math.min((ascean().level % 2 === 0 ? ascean().level : ascean().level - 1), 8), selectors[selector().level as keyof typeof selectors].next))}>+</button>
                         </div>
-                        <div style={{ "margin-bottom": "8px" }}><p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
-                            <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>
-                                ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})
-                            </span>
-                        </p>
+                        <div style={{ "margin-bottom": "8px" }}>
+                            <p style={{ color: "gold", margin: "8px 0", "font-size": "1.4em" }}>Mastery <br /> 
+                                <span style={{ color: masteryColor(selector().mastery), "font-size": "0.75em" }}>
+                                    ({selector().mastery.charAt(0).toUpperCase() + selector().mastery.slice(1)})
+                                </span>
+                            </p>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "constitution")}>Con</button>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "strength")}>Str</button>
                             <button class="highlight" style={{ margin: "1%" }} onClick={() => selectOpponent("mastery", "agility")}>Agi</button>
@@ -120,11 +132,9 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                             <div class="textGlow" style={{ color: masteryColor(party.mastery), "--glow-color":masteryColor(party.mastery), margin: 0 }}>{party.name} <button class="highlight" onClick={() => {setView(party); setAddShow(true);}} style={{ animation: "", color: total() === 3 ? "red" : "" }}>View</button></div>
                         )
                     }}</For>
-                    <div>
-                    </div>
                 </div>
             </div>
-            <button class="highlight cornerBR" onClick={() => setShow(false)} style={{ color: "red" }}>X</button>
+            <button class="highlight cornerBR" onClick={() => setShow(false)} style={{ color: "red", bottom: "1vh", right: "0.25vw" }}>X</button>
         </div>
         <Show when={addShow()}>
             <div class="modal" style={{ "z-index": 99 }}>
@@ -138,7 +148,7 @@ export default function Registry({ show, ascean, setShow, instance }: { ascean: 
                 </div>
                 
                 <Show when={total() < 3}>
-                    <button class="highlight cornerTR animate" onClick={addToParty}>Add To Party</button>
+                    <button class="highlight cornerTR animate" onClick={addToParty}>Add To Party <br /> ({cost()}g)</button>
                 </Show>
                
                 <button class="highlight cornerBR" onClick={() => {setAddShow(false); setView(undefined)}} style={{ color: "red" }}>Cancel</button>

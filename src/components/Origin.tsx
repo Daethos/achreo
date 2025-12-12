@@ -3,12 +3,11 @@ import { CharacterSheet } from '../utility/ascean';
 import { Portal } from 'solid-js/web';
 import { click } from '../App';
 
-
 const ORIGINS = [{
     name: "Ashtre",
     bio: `A hardened people from an inhospitable land to the East in the Astralands, many are ashen from tempest weather. Martial and religious--monotheistic in nature to Astra, the Lightning Ancient, 
         their governance forms of their leaders in a tetrarchy shored by commerce and law. Laconic and mistrusting, few outsiders get to know these folk, 
-        drawing further tension from being the only civilization not to collapse during the Shattering in the War of the Ancients a millenia prior.`,
+        drawing further tension from being the only civilization not to collapse during the Sundering in the War of the Ancients a millenia prior.`,
     index: "ashtre",
     bonus: "+2 STR, +2 AGI, +5% Crit, +5% Crit Dam, +5% Dodge, +5% Roll, +5% Phys Dam, +5% Phys Pen",
     imgUrl: "../assets/images/Ashtre-Man.jpg"

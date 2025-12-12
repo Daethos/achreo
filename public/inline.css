@@ -1,7 +1,7 @@
 #base-ui {z-index: 99;pointer-events:auto;}
 #deity-pic {max-height: 37.5%; max-width: 37.5%; border-radius: 50%; border: 0.15rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
-#origin-pic {display: block; max-height: 25%; max-width: 25%; border-radius: 50%; border: 0.1rem solid #fdf6d8; margin: 0 auto; cursor: pointer;}
-#origin-pic:hover, #deity-pic:hover {border: 0.1rem solid gold;}
+#origin-pic {display: block; max-height: 25%; max-width: 25%; border-radius: 50%; border: thick ridge #fdf6d8; margin: 0 auto; cursor: pointer;}
+#origin-pic:hover, #deity-pic:hover {border: thick ridge gold;}
 #origin-bonus {color: gold; font-weight: 500;}
 #popover-image {right: 0;}
 #typewriter {width: 100%; scroll-behavior: smooth;}

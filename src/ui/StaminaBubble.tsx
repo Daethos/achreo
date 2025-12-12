@@ -1,12 +1,13 @@
-import { createSignal, createEffect, Accessor, Setter } from "solid-js";
+import { Accessor, Setter, createMemo } from "solid-js";
 import createStamina from "../utility/Stamina";
 import Settings from "../models/settings";
 import { dimensions } from "../utility/dimensions";
 export default function StaminaBubble({ stamina, show, setShow, settings }: {stamina:Accessor<number>; show:Accessor<boolean>; setShow:Setter<boolean>; settings:Accessor<Settings>;}) {
     const dims = dimensions();
     const { staminaPercentage, usedStamina } = createStamina(stamina);
-    const [newStamina, setNewStamina] = createSignal(0);
-    createEffect(() => setNewStamina(Math.round((staminaPercentage() * stamina() / 100))));
+    const newStamina = createMemo(() => {
+        return Math.round(staminaPercentage() * stamina() / 100);
+    });
     function setText(setting: string) {
         const tiny = dims.WIDTH < 768;
         const smol = dims.WIDTH < 850;

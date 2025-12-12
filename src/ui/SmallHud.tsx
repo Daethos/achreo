@@ -105,7 +105,6 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
         if (!player.isCasting) EventBus.emit("show-castbar", setShow);
         setClicked({ ...clicked(), showPlayer: setShow });
     };
-
     return <>
         <Show when={toastShow()}>
             <div class="verticalBottom realize" style={{ width: "30%" }}>
@@ -124,9 +123,11 @@ export default function SmallHud({ ascean, asceanState, combat, game, settings, 
             {/* <button class="highlight" onClick={() => setPartyShow(!partyShow())} style={{ top: `${Number(settings().combatText.top.split("vh")[0]) - 11.5}vh`, right: `${Number(settings().combatText.left.split("vw")[0]) - 1.25}vw`, position: "absolute", color: "gold", transform: "scale(0.8)" }}>{svg("INSPECT")}</button> */}
             <button class="highlight" onClick={() => setPartyShow(!partyShow())} style={{ 
                 top: `${Number(settings().combatText.top.split("vh")[0]) - 10.5}vh`, 
-                left: `${Number(settings().combatText.left.split("vw")[0] + settings().combatText.width.split("vw")[0]) - 15}vw`, 
-                // left: `${Number(settings().combatText.width.split("vw")[0]) + 25}vw`, 
-                position: "absolute", color: "gold", transform: "scale(1)" }}>{partyShow() ? "Party Combat" : "Player Combat"}</button>
+                left: `${Number(settings().combatText.left.split("vw")[0]) + Number(settings().combatText.width.split("vw")[0]) - 15}vw`, 
+                position: "absolute", color: "gold", transform: "scale(1)" 
+            }}>
+                {partyShow() ? "Party Combat" : "Player Combat"}
+            </button>
             <CombatText scrollPosition={scrollPosition} setScrollPosition={setScrollPosition} settings={settings} combat={combat} combatHistory={combatHistory} partyHistory={partyHistory} editShow={editTextShow} setEditShow={setEditTextShow} partyShow={partyShow} />
         </Show>
         <Show when={game().showDialog}>

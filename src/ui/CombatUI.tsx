@@ -26,6 +26,7 @@ import Steal from "./Steal";
 import { usePhaserEvent } from "../utility/hooks";
 import Talents from "../models/talents";
 import { Item } from "../models/item";
+// import { Play } from "../game/main";
 // import { faithSuccess } from "../utility/combat";
 // import { faithSuccess } from "../utility/combat";
 // import { addSpecial, addStance } from "../utility/abilities";
@@ -131,6 +132,7 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
     createEffect(() => setPrayer(settings().prayer));
 
     function checkLockpick(e: { id: string; interacting: boolean; type: string; }) {
+        console.log({ e });
         setLockpick(e);
         const pick = game().specialInventory.inventory.find((item: Item) => item.name === "Lockpick");
         const wrench = game().specialInventory.inventory.find((item: Item) => item.name === "Tension Wrench");
@@ -301,6 +303,14 @@ export default function CombatUI({ ascean, state, game, settings, stamina, grace
         </div>
         </Show>
         
+        {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => (instance.scene as any).hud.sound.play("dungeon", { volume: 1 })}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Sound Test</div>
+        </button> */}
+
+        {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => EventBus.emit("update-enemy-levels", ascean().level)}>
+            <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Recreate Enemies</div>
+        </button> */}
+
         {/* <button class="disengage highlight combatUiAnimation" style={{ top: "15vh", left: "0vw" }} onClick={() => (instance.scene as Play).experienceManager.testExperience()}>
             <div style={{ color: "#fdf6d8", "font-size": "0.75rem" }}>Test Experience</div>
         </button> */}

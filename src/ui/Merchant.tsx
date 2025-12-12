@@ -141,5 +141,5 @@ export default function Merchant({ ascean }: { ascean: Accessor<Ascean>; }) {
             </div>
             </div>
         </Show>
-    </div>
+    </div>;
 };

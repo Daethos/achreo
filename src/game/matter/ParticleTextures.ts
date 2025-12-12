@@ -83,7 +83,7 @@ export class ParticleTextures {
         
         graphics.generateTexture('magic_particle', 32, 32);
         graphics.destroy();
-    }
+    };
 
     private generateGlowTexture(scene: Play): void {
         const graphics = scene.add.graphics();
@@ -187,7 +187,7 @@ export class ParticleTextures {
             magicCount = 8,
             glowCount = 6,
             ease = "Back.easeOut",
-            tint = 0x88ccff
+            // tint = 0x88ccff
         } = config;
 
         // Apply tint to magic particles
@@ -236,13 +236,17 @@ export class ParticleTextures {
                 // Emit trailing particles during vanish
                 if (Math.random() > 0.7) {
                     this.sparkEmitter.emitParticle(1, entity.x, entity.y);
-                }
+                };
             },
             onComplete: () => {
                 // entity.setActive(false);
                 entity.setVisible(false);
                 entity.setPosition(targetX, targetY);
             
+                const direction = this.scene.player.position.subtract(entity.position);
+                entity.setFlipX(direction.x < 0);
+                entity.shadow.setPosition(entity.x, entity.y + 33);
+                entity.shadow.setFlipX(entity.flipX);
                 // Phase 3: Appear with effects
                if (reappear) this.animateAppear(entity, smokeCount, sparkCount, magicCount, glowCount, duration, ease);
             }

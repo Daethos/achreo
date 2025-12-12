@@ -404,7 +404,7 @@ export const FAITH_RARITY: {[key: string]: number} = {
 
 export const CHIOMISM = 100;
 export const DEVOUR = 150;
-export const SACRIFICE = 75;
+export const SACRIFICE = 50;
 export const SUTURE = 200;
 
 // [80+, 75-79, 70-74, 65-69, 60-64, 55-59, 50-54, 45-49, 40-44, 35-39, 30-34, 25-29, 20-24]
